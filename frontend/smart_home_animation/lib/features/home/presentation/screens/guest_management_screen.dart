@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:smart_home_animation/core/theme/sh_colors.dart';
 import 'package:smart_home_animation/services/token_auth_service.dart';
 
 class GuestManagementScreen extends StatefulWidget {
-  const GuestManagementScreen({super.key});
+  final bool showAppBar;
+
+  const GuestManagementScreen({super.key, this.showAppBar = true});
 
   @override
   State<GuestManagementScreen> createState() => _GuestManagementScreenState();
 }
 
 class _GuestManagementScreenState extends State<GuestManagementScreen> {
+  static const int _maxGuestDurationMinutes = 30 * 24 * 60;
   List<Map<String, dynamic>> _guests = [];
   bool _loading = true;
   String? _error;
@@ -33,8 +37,7 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
 
   Future<void> _addGuest() async {
     final name = TextEditingController();
-    var duration = 60;
-    final values = [15, 60, 24 * 60, 7 * 24 * 60, 30 * 24 * 60];
+    DateTime selectedDate = DateTime.now().add(const Duration(days: 1));
     final request = await showDialog<Map<String, dynamic>>(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
@@ -43,20 +46,47 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
           content: Column(mainAxisSize: MainAxisSize.min, children: [
             TextField(controller: name, decoration: const InputDecoration(labelText: 'Guest name')),
             const SizedBox(height: 16),
-            DropdownButtonFormField<int>(
-              value: duration,
-              decoration: const InputDecoration(labelText: 'Access duration'),
-              items: values.map((minutes) => DropdownMenuItem(value: minutes, child: Text(_durationLabel(minutes)))).toList(),
-              onChanged: (value) => setDialogState(() => duration = value!),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.calendar_today_outlined),
+              title: const Text('Access valid until'),
+              subtitle: Text(_formatDate(selectedDate)),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () async {
+                final picked = await showDatePicker(
+                  context: context,
+                  initialDate: selectedDate,
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime.now().add(const Duration(days: 30)),
+                  builder: (context, child) => Theme(
+                    data: Theme.of(context).copyWith(
+                      colorScheme: const ColorScheme.dark(
+                        primary: SHColors.primary,
+                        surface: SHColors.cardColor,
+                        onSurface: SHColors.textColor,
+                      ),
+                    ),
+                    child: child!,
+                  ),
+                );
+                if (picked != null) setDialogState(() => selectedDate = picked);
+              },
             ),
           ]),
           actions: [
             TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
-            FilledButton(onPressed: () => Navigator.pop(dialogContext, {'label': name.text, 'duration': duration}), child: const Text('Create')),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, {
+                'label': name.text,
+                'duration': _durationMinutesUntilEndOfDay(selectedDate),
+              }),
+              child: const Text('Create'),
+            ),
           ],
         ),
       ),
     );
+    name.dispose();
     if (request == null) return;
     try {
       final result = await context.read<TokenAuthService>().createGuest(
@@ -88,16 +118,35 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
     await _loadGuests();
   }
 
-  static String _durationLabel(int minutes) {
-    if (minutes < 60) return '$minutes minutes';
-    if (minutes < 24 * 60) return '${minutes ~/ 60} hour${minutes == 60 ? '' : 's'}';
-    return '${minutes ~/ (24 * 60)} day${minutes == 24 * 60 ? '' : 's'}';
+  static int _durationMinutesUntilEndOfDay(DateTime date) {
+    final expiry = DateTime(date.year, date.month, date.day, 23, 59, 59);
+    final minutes = expiry.difference(DateTime.now()).inMinutes;
+    if (minutes < 5) return 5;
+    if (minutes > _maxGuestDurationMinutes) return _maxGuestDurationMinutes;
+    return minutes;
+  }
+
+  static String _formatDate(DateTime date) {
+    final day = date.day.toString().padLeft(2, '0');
+    final month = date.month.toString().padLeft(2, '0');
+    return '$day-$month-${date.year}';
+  }
+
+  static String _formatExpiry(dynamic value) {
+    final parsed = DateTime.tryParse(value?.toString() ?? '');
+    return parsed == null ? 'Unknown' : _formatDate(parsed.toLocal());
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Guest access')),
-    floatingActionButton: FloatingActionButton.extended(onPressed: _addGuest, icon: const Icon(Icons.person_add), label: const Text('Add guest')),
+    backgroundColor: Colors.transparent,
+    appBar: widget.showAppBar ? AppBar(title: const Text('Guest access')) : null,
+    floatingActionButton: FloatingActionButton.extended(
+      onPressed: _addGuest,
+      backgroundColor: SHColors.primary,
+      icon: const Icon(Icons.person_add),
+      label: const Text('Add guest'),
+    ),
     body: RefreshIndicator(
       onRefresh: _loadGuests,
       child: _loading
@@ -106,12 +155,19 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
           ? Center(child: Text(_error!))
           : ListView(
               padding: const EdgeInsets.all(16),
-              children: _guests.map((guest) {
+              children: _guests.isEmpty
+                  ? const [
+                      SizedBox(height: 120),
+                      Icon(Icons.group_outlined, size: 56, color: Colors.white54),
+                      SizedBox(height: 16),
+                      Center(child: Text('No guest access tokens yet.')),
+                    ]
+                  : _guests.map((guest) {
                 final revoked = guest['revokedAt'] != null;
                 return Card(child: ListTile(
                   leading: Icon(revoked ? Icons.person_off : Icons.person, color: revoked ? Colors.red : null),
                   title: Text(guest['label'] as String? ?? 'Guest'),
-                  subtitle: Text(revoked ? 'Revoked' : 'Expires: ${guest['expiresAt']}'),
+                  subtitle: Text(revoked ? 'Revoked' : 'Expires: ${_formatExpiry(guest['expiresAt'])}'),
                   trailing: revoked ? null : IconButton(icon: const Icon(Icons.block), tooltip: 'Revoke access', onPressed: () => _revoke(guest['id'] as String)),
                 ));
               }).toList(),

@@ -69,11 +69,11 @@ class SmHomeBottomNavigationBar extends StatelessWidget {
             ),
             label: 'Scenes',
           ),
-          // BottomNavigationBarItem(
-          // icon: _buildIcon('assets/icons/profile.png', 24),
-          // activeIcon: _buildIcon('assets/icons/profile_active.png', 24, color: SHColors.primary),
-          //   label: 'Profile',
-          // ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline, size: 24),
+            activeIcon: Icon(Icons.person, size: 24),
+            label: 'Profile',
+          ),
         ],
       ),
     );

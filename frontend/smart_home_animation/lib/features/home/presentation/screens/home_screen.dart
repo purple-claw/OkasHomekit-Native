@@ -18,6 +18,7 @@ import 'package:smart_home_animation/features/home/presentation/widgets/page_ind
 import 'package:smart_home_animation/features/home/presentation/widgets/smart_room_page_view.dart';
 import 'package:smart_home_animation/services/device_provider_wrapper.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
+import 'package:smart_home_animation/services/token_auth_service.dart';
 import 'package:ui_common/ui_common.dart' hide DeviceType;
 
 import '../widgets/lighted_background.dart';
@@ -320,7 +321,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ? 'Loads'
                         : _selectedIndex == 2
                         ? 'Scenes'
-                        : 'Profile',
+                        : 'Guest Access',
                     style: context.titleLarge.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -337,31 +338,49 @@ class _HomeScreenState extends State<HomeScreen> {
               const ProfileScreen(),
             ],
           ),
-          bottomNavigationBar:
-              _selectedIndex != 0 || roomSelectorNotifier.value == -1
-              ? SmHomeBottomNavigationBar(
-                  currentIndex: _selectedIndex,
-                  onTabTapped: _onBottomNavTapped,
-                )
-              : null,
+          bottomNavigationBar: SmHomeBottomNavigationBar(
+            currentIndex: _selectedIndex,
+            onTabTapped: _onBottomNavTapped,
+          ),
         ),
       ),
     );
   }
 
   Widget _buildHomeTab() {
-    final okasService = Provider.of<DirectMQTTService>(context, listen: false);
+    final okasService = Provider.of<DirectMQTTService>(context);
 
     if (!okasService.isConnected) {
-      return const Center(
+      final lastAttempt = okasService.brokerAttempts.isNotEmpty
+          ? okasService.brokerAttempts.last
+          : 'Waiting for MQTT connection...';
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.wifi_off, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text('Connecting to OKAS device...'),
-            SizedBox(height: 8),
-            CircularProgressIndicator(),
+            const Icon(Icons.wifi_off, size: 64, color: Colors.grey),
+            const SizedBox(height: 16),
+            const Text('Connecting to OKAS device...'),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 28),
+              child: Text(
+                okasService.lastError ?? lastAttempt,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white70, fontSize: 12),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 24),
+            TextButton(
+              onPressed: () async {
+                await context.read<TokenAuthService>().logout();
+                if (!mounted) return;
+                Navigator.pushReplacementNamed(context, '/token-entry');
+              },
+              child: const Text('Re-authenticate'),
+            ),
           ],
         ),
       );

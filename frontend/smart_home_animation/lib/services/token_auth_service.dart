@@ -106,6 +106,7 @@ class TokenAuthService extends ChangeNotifier {
     if (_token == null) return false;
     final boardIp = await _discoverBoardIp();
     if (boardIp == null) return false;
+    _discoveredIp = boardIp;
     _configureBoard(boardIp);
     final session = await _exchangeToken(_token!, boardIp);
     if (session == null) {
@@ -114,6 +115,7 @@ class TokenAuthService extends ChangeNotifier {
     }
     _session = session;
     _isAuthenticated = true;
+    Constants.setAuthToken(_token!);
     await _storage.write(key: _sessionKey, value: jsonEncode(session));
     notifyListeners();
     return true;

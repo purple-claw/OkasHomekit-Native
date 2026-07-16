@@ -68,16 +68,24 @@ class _SplashScreenState extends State<SplashScreen>
       if (isAuthenticated) {
         final mqtt = authService.mqttCredentials;
         final host = authService.discoveredIp;
-        if (mqtt != null && host != null) {
-          await context.read<DirectMQTTService>().connectAuthenticated(
+        final commandToken = authService.commandToken;
+        var mqttConnected = false;
+        if (mqtt != null && host != null && commandToken != null && commandToken.isNotEmpty) {
+          mqttConnected = await context.read<DirectMQTTService>().connectAuthenticated(
             host: host,
             port: mqtt['port'] as int? ?? 1884,
             username: mqtt['username'] as String? ?? '',
             password: mqtt['password'] as String? ?? '',
-            commandToken: authService.commandToken ?? '',
+            commandToken: commandToken,
             tls: mqtt['tls'] == true,
             expiresAt: mqtt['expiresAt'] as String?,
           );
+        }
+        if (!mqttConnected) {
+          await authService.logout();
+          if (!mounted) return;
+          Navigator.pushReplacementNamed(context, '/token-entry');
+          return;
         }
         Navigator.pushReplacementNamed(context, '/home');
       } else {

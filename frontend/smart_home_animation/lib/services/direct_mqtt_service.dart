@@ -23,8 +23,10 @@ class DirectMQTTService extends ChangeNotifier {
   String? _currentHost;
   int _currentPort = 1884;
   List<String> _brokerAttempts = [];
+  String? _lastError;
   String? _commandToken;
   Timer? _credentialExpiryTimer;
+  StreamSubscription<List<MqttReceivedMessage<MqttMessage>>>? _updatesSubscription;
 
   // Store devices and loads
   final Map<String, Map<String, dynamic>> _devices = {};
@@ -40,6 +42,7 @@ class DirectMQTTService extends ChangeNotifier {
   bool get isConnected => _isConnected;
   bool get isConnecting => _isConnecting;
   List<String> get brokerAttempts => _brokerAttempts;
+  String? get lastError => _lastError;
 
   DirectMQTTService();
 
@@ -56,15 +59,23 @@ class DirectMQTTService extends ChangeNotifier {
     String? expiresAt,
   }) async {
     await disconnect();
+    _brokerAttempts.clear();
+    _lastError = null;
     _commandToken = commandToken;
     _currentHost = host;
     _currentPort = port;
+    _brokerAttempts.add('Trying MQTT $host:$port');
+    notifyListeners();
     _credentialExpiryTimer?.cancel();
     if (expiresAt != null) {
       final expiry = DateTime.tryParse(expiresAt);
       if (expiry != null) {
         final delay = expiry.difference(DateTime.now());
-        if (delay.isNegative) return false;
+        if (delay.isNegative) {
+          _lastError = 'MQTT credentials are already expired.';
+          notifyListeners();
+          return false;
+        }
         _credentialExpiryTimer = Timer(delay, () {
           disconnect();
         });
@@ -550,13 +561,15 @@ class DirectMQTTService extends ChangeNotifier {
       _client = MqttServerClient(host, clientId);
       _client!.port = port;
       _client!.secure = tls;
-      _client!.keepAlivePeriod = 60;
+      _client!.keepAlivePeriod = 30;
+      _client!.disconnectOnNoResponsePeriod = 20;
       _client!.setProtocolV311();
-      _client!.autoReconnect = false;
+      _client!.autoReconnect = true;
+      _client!.resubscribeOnAutoReconnect = true;
 
       final connectMessage = MqttConnectMessage()
           .withClientIdentifier(clientId)
-          .keepAliveFor(60)
+          .keepAliveFor(30)
           .startClean()
           .authenticateAs(username, password);
 
@@ -566,6 +579,8 @@ class DirectMQTTService extends ChangeNotifier {
         print('✅ Connected to OKAS MQTT at $host:$port');
         _isConnected = true;
         _isConnecting = false;
+        _lastError = null;
+        _brokerAttempts.add('Connected to MQTT $host:$port');
         notifyListeners();
         _subscribeToTopics();
         _requestAllLoads();
@@ -576,9 +591,25 @@ class DirectMQTTService extends ChangeNotifier {
         _isConnected = false;
         _isConnecting = false;
         notifyListeners();
+      };
 
-        // A reconnect without a fresh token would keep a guest usable after
-        // expiry or revocation, so leave re-authentication to TokenAuthService.
+      _client!.onAutoReconnect = () {
+        print('🔄 Reconnecting to OKAS MQTT at $host:$port');
+        _isConnected = false;
+        _isConnecting = true;
+        _lastError = 'Reconnecting to OKAS MQTT...';
+        _brokerAttempts.add('Reconnecting to MQTT $host:$port');
+        notifyListeners();
+      };
+
+      _client!.onAutoReconnected = () {
+        print('✅ Reconnected to OKAS MQTT at $host:$port');
+        _isConnected = true;
+        _isConnecting = false;
+        _lastError = null;
+        _brokerAttempts.add('Reconnected to MQTT $host:$port');
+        notifyListeners();
+        _requestAllLoads();
       };
 
       print('Connecting to OKAS at $host:$port...');
@@ -590,9 +621,14 @@ class DirectMQTTService extends ChangeNotifier {
           connMessage.returnCode == MqttConnectReturnCode.connectionAccepted) {
         return true;
       }
+      _lastError = 'MQTT rejected connection: ${connMessage?.returnCode ?? 'no response'}';
+      _brokerAttempts.add(_lastError!);
+      notifyListeners();
       return false;
     } catch (e) {
       print('Connection error to $host: $e');
+      _lastError = 'MQTT connection error to $host:$port - $e';
+      _brokerAttempts.add(_lastError!);
       _isConnected = false;
       _isConnecting = false;
       notifyListeners();
@@ -659,7 +695,7 @@ class DirectMQTTService extends ChangeNotifier {
         print('Subscribed to: $topic');
       }
 
-      _client!.updates!.listen((
+      _updatesSubscription ??= _client!.updates!.listen((
         List<MqttReceivedMessage<MqttMessage>> messages,
       ) {
         for (var message in messages) {
@@ -1098,9 +1134,12 @@ class DirectMQTTService extends ChangeNotifier {
   }
 
   Future<void> disconnect() async {
+    await _updatesSubscription?.cancel();
+    _updatesSubscription = null;
     if (_client != null) {
       _client!.disconnect();
       _isConnected = false;
+      _isConnecting = false;
       notifyListeners();
     }
   }

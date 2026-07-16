@@ -295,12 +295,17 @@ class _TokenEntryScreenState extends State<TokenEntryScreen> {
         _showErrorDialog(context, 'The board did not return MQTT connection details.');
         return;
       }
+      final commandToken = authService.commandToken;
+      if (commandToken == null || commandToken.isEmpty) {
+        _showErrorDialog(context, 'The board did not return a command session token.');
+        return;
+      }
       final connected = await context.read<DirectMQTTService>().connectAuthenticated(
         host: authService.discoveredIp!,
         port: mqtt['port'] as int? ?? 1884,
         username: mqtt['username'] as String? ?? '',
         password: mqtt['password'] as String? ?? '',
-        commandToken: authService.commandToken ?? '',
+        commandToken: commandToken,
         tls: mqtt['tls'] == true,
         expiresAt: mqtt['expiresAt'] as String?,
       );
