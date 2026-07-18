@@ -31,6 +31,20 @@ class _LoungeScreenState extends State<LoungeScreen> {
     'Curtain',
   ];
 
+  /// Maps display-friendly category names to the internal type codes
+  /// used by _getDeviceType / load['type'].
+  static const Map<String, List<String>> _categoryTypeCodes = {
+    'All':     <String>[],
+    'Lights':  ['swt'],
+    'Dimmers': ['dim'],
+    'Tunable': ['tun'],
+    'RGB':     ['rgb'],
+    'HVAC':    ['hvc'],
+    'Scene':   ['scn'],
+    'Fan':     ['fan'],
+    'Curtain': ['cur'],
+  };
+
   @override
   void initState() {
     super.initState();
@@ -169,9 +183,9 @@ class _LoungeScreenState extends State<LoungeScreen> {
     List<Map<String, dynamic>> filteredLoads = allDevices;
 
     if (_selectedCategory != 'All') {
+      final matchingCodes = _categoryTypeCodes[_selectedCategory] ?? <String>[];
       filteredLoads = allDevices.where((load) {
-        final type = _getDeviceType(load['type'] ?? 'swt');
-        return type == _selectedCategory;
+        return matchingCodes.contains(load['type'] ?? 'swt');
       }).toList();
     }
 

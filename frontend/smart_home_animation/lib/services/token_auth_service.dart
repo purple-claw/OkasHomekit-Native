@@ -162,6 +162,33 @@ class TokenAuthService extends ChangeNotifier {
     _decodeResponse(response);
   }
 
+  Future<Map<String, dynamic>> updateGuest({
+    required String guestId,
+    required String label,
+    required int durationMinutes,
+  }) async {
+    _requireAdmin();
+    final response = await http
+        .patch(
+          _apiUri('/api/auth/guests/$guestId'),
+          headers: _authHeaders(),
+          body: jsonEncode({'label': label, 'durationMinutes': durationMinutes}),
+        )
+        .timeout(const Duration(seconds: 10));
+    return _decodeResponse(response);
+  }
+
+  Future<void> deleteGuest(String guestId) async {
+    _requireAdmin();
+    final response = await http
+        .delete(
+          _apiUri('/api/auth/guests/$guestId'),
+          headers: _authHeaders(),
+        )
+        .timeout(const Duration(seconds: 10));
+    _decodeResponse(response);
+  }
+
   Future<String?> _discoverBoardIp() async {
     try {
       final devices = await MDNSDiscovery().discoverOKASDevice();

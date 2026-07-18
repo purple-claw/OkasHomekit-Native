@@ -35,23 +35,34 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
     }
   }
 
-  Future<void> _addGuest() async {
-    final name = TextEditingController();
-    DateTime selectedDate = DateTime.now().add(const Duration(days: 1));
+  Future<void> _openGuestForm({Map<String, dynamic>? guest}) async {
+    final editing = guest != null;
+    final name = TextEditingController(text: guest?['label'] as String? ?? '');
+    DateTime selectedDate = _initialExpiryDate(guest);
     final request = await showDialog<Map<String, dynamic>>(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('Add guest'),
+          backgroundColor: SHColors.cardColor,
+          title: Text(editing ? 'Update guest' : 'Add guest', style: const TextStyle(color: SHColors.textColor)),
           content: Column(mainAxisSize: MainAxisSize.min, children: [
-            TextField(controller: name, decoration: const InputDecoration(labelText: 'Guest name')),
+            TextField(
+              controller: name,
+              style: const TextStyle(color: SHColors.textColor),
+              decoration: const InputDecoration(
+                labelText: 'Guest name',
+                labelStyle: TextStyle(color: Colors.white70),
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white38)),
+                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: SHColors.primary)),
+              ),
+            ),
             const SizedBox(height: 16),
             ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.calendar_today_outlined),
-              title: const Text('Access valid until'),
-              subtitle: Text(_formatDate(selectedDate)),
-              trailing: const Icon(Icons.chevron_right),
+              leading: const Icon(Icons.calendar_today_outlined, color: SHColors.primary),
+              title: const Text('Access valid until', style: TextStyle(color: SHColors.textColor)),
+              subtitle: Text(_formatDate(selectedDate), style: const TextStyle(color: Colors.white70)),
+              trailing: const Icon(Icons.chevron_right, color: Colors.white70),
               onTap: () async {
                 final picked = await showDatePicker(
                   context: context,
@@ -74,13 +85,17 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
             ),
           ]),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel', style: TextStyle(color: Colors.white70)),
+            ),
             FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: SHColors.primary),
               onPressed: () => Navigator.pop(dialogContext, {
                 'label': name.text,
                 'duration': _durationMinutesUntilEndOfDay(selectedDate),
               }),
-              child: const Text('Create'),
+              child: Text(editing ? 'Update' : 'Create'),
             ),
           ],
         ),
@@ -89,33 +104,75 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
     name.dispose();
     if (request == null) return;
     try {
-      final result = await context.read<TokenAuthService>().createGuest(
-        label: request['label'] as String? ?? 'Guest',
-        durationMinutes: request['duration'] as int,
-      );
+      Map<String, dynamic>? result;
+      if (editing) {
+        result = await context.read<TokenAuthService>().updateGuest(
+          guestId: guest['id'] as String,
+          label: request['label'] as String? ?? 'Guest',
+          durationMinutes: request['duration'] as int,
+        );
+      } else {
+        result = await context.read<TokenAuthService>().createGuest(
+          label: request['label'] as String? ?? 'Guest',
+          durationMinutes: request['duration'] as int,
+        );
+      }
       await _loadGuests();
-      if (!mounted) return;
+      if (!mounted || editing) return;
       final token = result['guestToken'] as String;
       await showDialog<void>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Share this guest token now'),
+          backgroundColor: SHColors.cardColor,
+          title: const Text('Share this guest token now', style: TextStyle(color: SHColors.textColor)),
           content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('It is shown once and cannot be recovered later.'),
+            const Text('It is shown once and cannot be recovered later.', style: TextStyle(color: SHColors.textColor)),
             const SizedBox(height: 12),
-            SelectableText(token),
+            SelectableText(token, style: const TextStyle(color: SHColors.primary, fontSize: 22, fontWeight: FontWeight.bold)),
           ]),
-          actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Done'))],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Done', style: TextStyle(color: Colors.white70)),
+            ),
+          ],
         ),
       );
     } catch (error) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error is AuthApiException ? error.message : 'Could not create guest.')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error is AuthApiException ? error.message : 'Could not save guest.')));
     }
   }
 
-  Future<void> _revoke(String id) async {
-    await context.read<TokenAuthService>().revokeGuest(id);
+  Future<void> _deleteGuest(Map<String, dynamic> guest) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: SHColors.cardColor,
+        title: const Text('Delete guest', style: TextStyle(color: SHColors.textColor)),
+        content: Text('Delete ${guest['label'] as String? ?? 'this guest'} access?', style: const TextStyle(color: SHColors.textColor)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel', style: TextStyle(color: Colors.white70)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete', style: TextStyle(color: Colors.redAccent)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    await context.read<TokenAuthService>().deleteGuest(guest['id'] as String);
     await _loadGuests();
+  }
+
+  DateTime _initialExpiryDate(Map<String, dynamic>? guest) {
+    final parsed = DateTime.tryParse(guest?['expiresAt']?.toString() ?? '');
+    if (parsed == null || parsed.isBefore(DateTime.now())) {
+      return DateTime.now().add(const Duration(days: 1));
+    }
+    return parsed.toLocal();
   }
 
   static int _durationMinutesUntilEndOfDay(DateTime date) {
@@ -142,7 +199,7 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
     backgroundColor: Colors.transparent,
     appBar: widget.showAppBar ? AppBar(title: const Text('Guest access')) : null,
     floatingActionButton: FloatingActionButton.extended(
-      onPressed: _addGuest,
+      onPressed: () => _openGuestForm(),
       backgroundColor: SHColors.primary,
       icon: const Icon(Icons.person_add),
       label: const Text('Add guest'),
@@ -152,7 +209,7 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
       child: _loading
         ? const Center(child: CircularProgressIndicator())
         : _error != null
-          ? Center(child: Text(_error!))
+          ? Center(child: Text(_error!, style: const TextStyle(color: Colors.redAccent)))
           : ListView(
               padding: const EdgeInsets.all(16),
               children: _guests.isEmpty
@@ -160,16 +217,38 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
                       SizedBox(height: 120),
                       Icon(Icons.group_outlined, size: 56, color: Colors.white54),
                       SizedBox(height: 16),
-                      Center(child: Text('No guest access tokens yet.')),
+                      Center(child: Text('No guest access tokens yet.', style: TextStyle(color: Colors.white70))),
                     ]
                   : _guests.map((guest) {
                 final revoked = guest['revokedAt'] != null;
-                return Card(child: ListTile(
-                  leading: Icon(revoked ? Icons.person_off : Icons.person, color: revoked ? Colors.red : null),
-                  title: Text(guest['label'] as String? ?? 'Guest'),
-                  subtitle: Text(revoked ? 'Revoked' : 'Expires: ${_formatExpiry(guest['expiresAt'])}'),
-                  trailing: revoked ? null : IconButton(icon: const Icon(Icons.block), tooltip: 'Revoke access', onPressed: () => _revoke(guest['id'] as String)),
-                ));
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.white.withOpacity(0.12)),
+                  ),
+                  child: ListTile(
+                    leading: Icon(revoked ? Icons.person_off : Icons.person, color: revoked ? Colors.redAccent : SHColors.primary),
+                    title: Text(guest['label'] as String? ?? 'Guest', style: const TextStyle(color: SHColors.textColor, fontWeight: FontWeight.w600)),
+                    subtitle: Text(revoked ? 'Revoked' : 'Expires: ${_formatExpiry(guest['expiresAt'])}', style: const TextStyle(color: Colors.white70)),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit_outlined, color: SHColors.primary),
+                          tooltip: 'Update guest',
+                          onPressed: revoked ? null : () => _openGuestForm(guest: guest),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                          tooltip: 'Delete guest',
+                          onPressed: () => _deleteGuest(guest),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
               }).toList(),
             ),
     ),
