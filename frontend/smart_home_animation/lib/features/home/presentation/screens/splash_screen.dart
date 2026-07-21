@@ -167,7 +167,7 @@ class _SplashScreenState extends State<SplashScreen>
                           CircularProgressIndicator(color: Colors.white54),
                           SizedBox(height: 16),
                           Text(
-                            'Authenticating...',
+                            'Loading..',
                             style: TextStyle(
                               color: Colors.white54,
                               fontSize: 12,

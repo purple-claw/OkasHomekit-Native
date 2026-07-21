@@ -276,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
           appBar: _selectedIndex == 0
               ? AppBar(
                   title: const Text(
-                    'Smart Home',
+                    'OKAS Homekit',
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
@@ -303,8 +303,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             okasService.isConnected ? 'Connected' : 'Offline',
                             style: TextStyle(
                               color: okasService.isConnected
-                                  ? Colors.green
-                                  : Colors.red,
+                                  ? Colors.white
+                                  : Colors.white,
                               fontSize: 12,
                             ),
                           ),
@@ -353,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (!okasService.isConnected) {
       final lastAttempt = okasService.brokerAttempts.isNotEmpty
           ? okasService.brokerAttempts.last
-          : 'Waiting for MQTT connection...';
+          : 'Waiting for connection...';
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -379,7 +379,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (!mounted) return;
                 Navigator.pushReplacementNamed(context, '/token-entry');
               },
-              child: const Text('Re-authenticate'),
+              child: const Text('Retry'),
             ),
           ],
         ),
@@ -397,7 +397,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Row(
             children: [
               Text(
-                "Welcome home,",
+                "Welcome to Smart Home.",
                 style: const TextStyle(color: Colors.white70, fontSize: 16),
               ),
               const SizedBox(width: 8),
@@ -444,7 +444,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 _buildActiveLoadCard(
                   'Switch',
-                  _currentRoomSwitchCount,
+                  _totalSwitchCount,
                   Image.asset(
                     'assets/icons/switch.png',
                     width: 24,
@@ -456,7 +456,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: 12),
                 _buildActiveLoadCard(
                   'Dimmer',
-                  _currentRoomDimmerCount,
+                  _totalDimmerCount,
                   Image.asset(
                     'assets/icons/dimmer.png',
                     width: 24,
@@ -468,7 +468,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: 12),
                 _buildActiveLoadCard(
                   'Tunable',
-                  _currentRoomTunableCount,
+                  _totalTunableCount,
                   Image.asset(
                     'assets/icons/tunable.png',
                     width: 24,
@@ -480,7 +480,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: 12),
                 _buildActiveLoadCard(
                   'RGB',
-                  _currentRoomRgbCount,
+                  _totalRgbCount,
                   Image.asset(
                     'assets/icons/rgb.png',
                     width: 24,

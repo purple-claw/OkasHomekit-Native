@@ -101,8 +101,10 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
         ),
       ),
     );
-    name.dispose();
-    if (request == null) return;
+    if (request == null) {
+      name.dispose();
+      return;
+    }
     try {
       Map<String, dynamic>? result;
       if (editing) {
@@ -140,6 +142,28 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
       );
     } catch (error) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error is AuthApiException ? error.message : 'Could not save guest.')));
+    } finally {
+      name.dispose();
+    }
+  }
+
+  Future<void> _toggleGuestStatus(Map<String, dynamic> guest) async {
+    final isRevoked = guest['revokedAt'] != null;
+    try {
+      if (isRevoked) {
+        // Enable guest (unrevoke)
+        await context.read<TokenAuthService>().updateGuest(
+          guestId: guest['id'] as String,
+          label: guest['label'] as String? ?? 'Guest',
+          durationMinutes: 1440, 
+        );
+      } else {
+        // Revoke guest
+        await context.read<TokenAuthService>().revokeGuest(guest['id'] as String);
+      }
+      await _loadGuests();
+    } catch (error) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error is AuthApiException ? error.message : 'Could not update guest status.')));
     }
   }
 
@@ -224,17 +248,39 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.08),
+                    color: SHColors.cardColor,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.white.withOpacity(0.12)),
+                    border: Border.all(color: Colors.white.withOpacity(0.1)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
                   child: ListTile(
-                    leading: Icon(revoked ? Icons.person_off : Icons.person, color: revoked ? Colors.redAccent : SHColors.primary),
-                    title: Text(guest['label'] as String? ?? 'Guest', style: const TextStyle(color: SHColors.textColor, fontWeight: FontWeight.w600)),
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: revoked ? Colors.redAccent.withOpacity(0.1) : SHColors.primary.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(revoked ? Icons.person_off : Icons.person, color: revoked ? Colors.redAccent : SHColors.primary),
+                    ),
+                    title: Text(guest['label'] as String? ?? 'Guest', style: const TextStyle(color: SHColors.textColor, fontWeight: FontWeight.bold)),
                     subtitle: Text(revoked ? 'Revoked' : 'Expires: ${_formatExpiry(guest['expiresAt'])}', style: const TextStyle(color: Colors.white70)),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        IconButton(
+                          icon: Icon(
+                            revoked ? Icons.check_circle_outline : Icons.block,
+                            color: revoked ? Colors.greenAccent : Colors.orangeAccent,
+                          ),
+                          tooltip: revoked ? 'Enable guest' : 'Revoke guest',
+                          onPressed: () => _toggleGuestStatus(guest),
+                        ),
                         IconButton(
                           icon: const Icon(Icons.edit_outlined, color: SHColors.primary),
                           tooltip: 'Update guest',
