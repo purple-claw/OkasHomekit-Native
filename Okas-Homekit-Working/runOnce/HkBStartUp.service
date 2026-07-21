@@ -1,0 +1,16 @@
+[Unit]
+Description=OKAS HomeKit Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/bin/node /home/OhKnx/Index.js
+Restart=on-failure
+RestartSec=5
+User=root
+Type=simple
+Environment=NODE_ENV=production
+WorkingDirectory=/home/OhKnx
+
+[Install]
+WantedBy=multi-user.target

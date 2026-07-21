@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Device Information</title>
+    <link rel="icon" type="image/png" href="./assets/Config.png" />
+    <link href="./assets/bootstrap.min.css" rel="stylesheet" />
+    <link href="./style.css?v=20260528" rel="stylesheet" />
+  </head>
+
+  <body>
+    <div class="app">
+      <header class="app-header">
+        <div class="logo-container">
+          <a href="index.html" aria-label="OKAS Home">
+            <img src="./assets/Okas Logo.png" alt="OKAS" class="app-logo" />
+          </a>
+        </div>
+      </header>
+
+      <nav class="tabs" aria-label="Primary">
+        <a class="tab" href="index.html">Configuration</a>
+        <a class="tab" href="logMgr.html">Log Manager</a>
+        <a class="tab active" href="deviceInfo.html">Device Information</a>
+      </nav>
+
+      <main class="tab-content device-info-page">
+        <section class="device-info-card" aria-labelledby="deviceInfoTitle">
+          <div class="device-info-header">
+            <div>
+              <h2 id="deviceInfoTitle">Device Information</h2>
+            </div>
+          </div>
+
+          <div class="info-table" role="list" aria-label="Device information details">
+            <div class="info-row loading" role="listitem">
+              <div class="info-label">Project Name</div>
+              <div id="prjNm" class="info-value">Loading...</div>
+            </div>
+
+            <div class="info-row loading" role="listitem">
+              <div class="info-label">Total Loads</div>
+              <div id="totLds" class="info-value info-totalLds">Loading...</div>
+            </div>
+
+            <div class="info-row loading" role="listitem">
+              <div class="info-label">KNX Gateway IP Address</div>
+              <div id="knxIp" class="info-value info-value-knxIp">Loading...</div>
+            </div>
+
+            <div class="info-row loading" role="listitem">
+              <div class="info-label">OKAS HomeKit IP Address</div>
+              <div id="devIp" class="info-value info-value-hkIp">Loading...</div>
+            </div>
+
+            <div class="info-row loading" role="listitem">
+              <div class="info-label">MAC Address</div>
+              <div id="macAddr" class="info-value info-value-mac">Loading...</div>
+            </div>
+
+            <div class="info-row loading" role="listitem">
+              <div class="info-label">Accessory Pin No.</div>
+              <div id="pinNo" class="info-value info-value-pin">Loading...</div>
+            </div>
+
+            <div class="info-row loading" role="listitem">
+              <div class="info-label">Auth Token</div>
+              <div id="authToken" class="info-value info-value-token">Loading...</div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <footer class="app-footer">
+      &copy; Miantic AV Distribution Pvt. Ltd.
+    </footer>
+
+    <div class="modal fade" id="genModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="gmTitle">Error</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body text-center" id="eModTxt">
+            This is an error alert message.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-save" data-bs-dismiss="modal" id="cYESbtn">
+              OK
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./assets/bootstrap.bundle.min.js"></script>
+    <script src="./dialog.js?v=20260528"></script>
+
+    <script>
+      async function loadDeviceInfo() {
+        try {
+          const response = await fetch("./getConfig.php");
+
+          if (!response.ok) {
+            throw new Error("Failed to load device data: " + response.status);
+          }
+
+          const responseText = await response.text();
+          let cleanedResponse = responseText;
+          if (responseText.includes("&quot;") || responseText.includes("&amp;")) {
+            const textArea = document.createElement("textarea");
+            textArea.innerHTML = responseText;
+            cleanedResponse = textArea.value;
+          }
+
+          const deviceData = JSON.parse(cleanedResponse);
+
+          if (deviceData && deviceData.length > 0 && deviceData[0]) {
+            const deviceConfig = deviceData[0];
+            const pinCode = deviceConfig.pinCode;
+            const authToken = deviceConfig.authToken;
+
+            updateInfoItem("prjNm", deviceConfig.prjNm || "Not found");
+            updateInfoItem("totLds", deviceData.length - 1 || "0");
+            updateInfoItem("macAddr", deviceConfig.mac ? deviceConfig.mac.toUpperCase() : "Not found");
+            updateInfoItem("knxIp", deviceConfig.gwIP || deviceConfig.knxIp || "Not found");
+            updateInfoItem("devIp", deviceConfig.ip || "Not found");
+
+            if (pinCode) {
+              updateInfoItem("pinNo", pinCode, true);
+            } else {
+              updateInfoItem("pinNo", "PIN not generated yet", true, "error");
+              showInfo("PIN code will be generated when the bridge starts running. Please check if HKB.js is running.");
+            }
+
+            if (authToken) {
+              updateInfoItem("authToken", authToken, true);
+            } else {
+              updateInfoItem("authToken", "Generating...", true, "error");
+            }
+
+            return {
+              projectName: deviceConfig.prjNm,
+              totLds: deviceData.length - 1,
+              macAddr: deviceConfig.mac,
+              ipAddr: deviceConfig.ip,
+              knxIp: deviceConfig.gwIP || deviceConfig.knxIp,
+              pinNo: pinCode,
+              authToken: authToken
+            };
+          }
+
+          throw new Error("Invalid device data format - empty or missing data");
+        } catch (error) {
+          console.error("Error loading device info:", error);
+          updateInfoItem("prjNm", "Error loading data", false, "error");
+          updateInfoItem("totLds", "Error loading data", false, "error");
+          updateInfoItem("macAddr", "Error loading data", false, "error");
+          updateInfoItem("devIp", "Error loading data", false, "error");
+          updateInfoItem("knxIp", "Error loading data", false, "error");
+          updateInfoItem("pinNo", "Error loading data", true, "error");
+          updateInfoItem("authToken", "Error loading data", true, "error");
+          showError("Failed to load device information: " + error.message);
+        }
+      }
+
+      function updateInfoItem(elementId, value, isPin = false, className = "") {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+
+        const parentItem = element.closest(".info-row") || element.parentElement;
+        element.textContent = value;
+        
+        // Set appropriate classes based on element ID
+        const classMap = {
+          'prjNm': 'info-value',
+          'totLds': 'info-value info-totalLds',
+          'knxIp': 'info-value info-value-knxIp',
+          'devIp': 'info-value info-value-hkIp',
+          'macAddr': 'info-value info-value-mac',
+          'pinNo': 'info-value info-value-pin',
+          'authToken': 'info-value info-value-token'
+        };
+        
+        element.className = classMap[elementId] || 'info-value';
+
+        if (parentItem) {
+          parentItem.className = "info-row";
+          if (className) parentItem.classList.add(className);
+        }
+      }
+
+      window.onload = loadDeviceInfo;
+    </script>
+  </body>
+</html>

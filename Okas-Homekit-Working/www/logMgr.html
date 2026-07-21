@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Log Manager</title>
+    <link rel="icon" type="image/png" href="./assets/Log.png" />
+    <link href="./assets/bootstrap.min.css" rel="stylesheet" />
+    <link href="./style.css?v=20260528" rel="stylesheet" />
+  </head>
+
+  <body>
+    <div class="app">
+      <header class="app-header">
+        <div class="logo-container">
+          <a href="index.html" aria-label="OKAS Home">
+            <img src="./assets/Okas Logo.png" alt="OKAS" class="app-logo" />
+          </a>
+        </div>
+      </header>
+
+      <nav class="tabs" aria-label="Primary">
+        <a class="tab" href="index.html">Configuration</a>
+        <a class="tab active" href="logMgr.html">Log Manager</a>
+        <a class="tab" href="deviceInfo.html">Device Information</a>
+      </nav>
+
+      <main class="tab-content log-manager-page">
+        <section class="log-manager-card" aria-labelledby="lmHd">
+          <div class="log-manager-header">
+            <h2 id="lmHd">Log Manager</h2>
+          </div>
+
+          <div class="file-section">
+            <label for="fileList">Select a file</label>
+            <select id="fileList" onchange="viewFile()"></select>
+          </div>
+
+          <div class="log-buttons">
+            <button type="button" class="btn-view" id="vewBtn" onclick="viewFile()">
+              View
+            </button>
+            <button type="button" class="btn-download" id="dldBtn" onclick="downloadFile()">
+              Download
+            </button>
+            <button
+              type="button"
+              class="btn-delete"
+              id="delBtn"
+              data-bs-toggle="modal"
+              data-bs-target="#deleteModal"
+            >
+              Delete
+            </button>
+            <button type="button" class="btn-restore" id="clrBtn" onclick="confirmClearLogs()">
+              Clear All Logs
+            </button>
+          </div>
+
+          <div class="filter-row">
+            <div class="filter-chips" aria-label="Log filters">
+              <button type="button" class="filter-chip active" id="filterAll" onclick="setFilter('all')">
+                All Logs <span class="count" id="countAll">(0)</span>
+              </button>
+              <button type="button" class="filter-chip" id="filterInfo" onclick="setFilter('info')">
+                Info <span class="count" id="countInfo">(0)</span>
+              </button>
+              <button type="button" class="filter-chip" id="filterWarn" onclick="setFilter('warn')">
+                Warnings <span class="count" id="countWarn">(0)</span>
+              </button>
+              <button type="button" class="filter-chip" id="filterError" onclick="setFilter('error')">
+                Errors <span class="count" id="countError">(0)</span>
+              </button>
+            </div>
+
+            <div class="search-box">
+              <span class="search-icon" aria-hidden="true"></span>
+              <input
+                type="text"
+                id="logSearch"
+                placeholder="Search logs..."
+                oninput="updateSearch(this.value)"
+              />
+            </div>
+
+            <div class="date-filter">
+              <label for="logDateFilter">Date</label>
+              <input
+                type="date"
+                id="logDateFilter"
+                onchange="updateDateFilter(this.value)"
+              />
+              <button type="button" class="clear-date" onclick="clearDateFilter()" aria-label="Clear date filter">
+                Clear
+              </button>
+            </div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat">
+              <span class="stat-label">Total Logs:</span>
+              <span class="stat-value" id="totalLogs">0</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Showing:</span>
+              <span class="stat-value" id="showingType">All types</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Date:</span>
+              <span class="stat-value" id="showingDate">All dates</span>
+            </div>
+          </div>
+
+          <div id="fileContent" class="log-viewer" aria-live="polite">
+            <div class="log-line log-line-info">
+              <span class="log-text">Loading logs...</span>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <footer class="app-footer">
+     &copy; Miantic AV Distribution Pvt. Ltd.
+    </footer>
+
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirm Deletion</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            Are you sure you want to delete the selected file?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-cancel" data-bs-dismiss="modal">
+              No
+            </button>
+            <button type="button" class="btn-delete" onclick="deleteFile()">
+              Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="genModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="gmTitle">Notice</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body text-center" id="eModTxt">
+            This is a message alert.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-save" data-bs-dismiss="modal" id="cYESbtn">
+              OK
+            </button>
+            <button type="button" class="btn-delete" data-bs-dismiss="modal" id="cNObtn">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./assets/bootstrap.bundle.min.js"></script>
+    <script src="./dialog.js?v=20260528"></script>
+    <script>
+      let org = window.location.origin.toString();
+      let files = [];
+      let currentLogs = [];
+      let filterType = "all";
+      let searchTerm = "";
+      let dateFilter = "";
+      let logRefreshTimer = null;
+      let logRefreshInFlight = false;
+      const LOG_REFRESH_INTERVAL_MS = 1000;
+
+      function decodeHtml(value) {
+        const textArea = document.createElement("textarea");
+        textArea.innerHTML = value;
+        return textArea.value;
+      }
+
+      function escHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, function (char) {
+          return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+          }[char];
+        });
+      }
+
+      function withCacheBust(url) {
+        const separator = url.includes("?") ? "&" : "?";
+        return `${url}${separator}t=${Date.now()}`;
+      }
+
+      function hasLogFiles() {
+        return Array.isArray(files) && files.length > 0 && files.indexOf("No Files.") < 0;
+      }
+
+      function getLogDateValue(timestamp) {
+        const monthMap = {
+          jan: "01",
+          feb: "02",
+          mar: "03",
+          apr: "04",
+          may: "05",
+          jun: "06",
+          jul: "07",
+          aug: "08",
+          sep: "09",
+          oct: "10",
+          nov: "11",
+          dec: "12"
+        };
+        const match = String(timestamp || "").match(/^(\d{1,2})[./-]([A-Za-z]{3,}|\d{1,2})[./-](\d{4})/);
+        if (!match) return "";
+
+        const day = match[1].padStart(2, "0");
+        const monthToken = match[2].toLowerCase();
+        const month = monthMap[monthToken.slice(0, 3)] || monthToken.padStart(2, "0");
+        return `${match[3]}-${month}-${day}`;
+      }
+
+      function parseLogLines(content) {
+        return content
+          .split(/\r?\n/)
+          .filter((line) => line.trim())
+          .map((line) => {
+            const match = line.match(/^\[(Info|Warn|Error)\]\s+(.+?)>>\s*(.*)$/);
+            if (match) {
+              return {
+                type: match[1].toLowerCase(),
+                timestamp: match[2],
+                date: getLogDateValue(match[2]),
+                message: match[3]
+              };
+            }
+            return { type: "info", timestamp: "", date: "", message: line };
+          });
+      }
+
+      function updateButtons(enabled) {
+        document.getElementById("vewBtn").disabled = !enabled;
+        document.getElementById("delBtn").disabled = !enabled;
+        document.getElementById("dldBtn").disabled = !enabled;
+        document.getElementById("clrBtn").disabled = !enabled;
+      }
+
+      function getSelectedLogFile() {
+        const fileList = document.getElementById("fileList");
+        return fileList ? fileList.value : "";
+      }
+
+      function logMatchesSecondaryFilters(log) {
+        if (dateFilter && log.date !== dateFilter) return false;
+        if (searchTerm && !log.message.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+        return true;
+      }
+
+      function getFilteredLogs(type = filterType) {
+        return currentLogs.filter((log) => {
+          if (!logMatchesSecondaryFilters(log)) return false;
+          if (type !== "all" && log.type !== type) return false;
+          return true;
+        });
+      }
+
+      function updateCounts() {
+        const getCount = (type) => {
+          return getFilteredLogs(type).length;
+        };
+        document.getElementById("countAll").textContent = `(${getCount("all")})`;
+        document.getElementById("countInfo").textContent = `(${getCount("info")})`;
+        document.getElementById("countWarn").textContent = `(${getCount("warn")})`;
+        document.getElementById("countError").textContent = `(${getCount("error")})`;
+      }
+
+      function renderLogs() {
+        updateCounts();
+        const viewer = document.getElementById("fileContent");
+        const filteredLogs = getFilteredLogs();
+
+        document.getElementById("totalLogs").textContent = filteredLogs.length;
+        document.getElementById("showingType").textContent =
+          filterType === "all" ? "All types" : filterType.charAt(0).toUpperCase() + filterType.slice(1);
+        document.getElementById("showingDate").textContent = dateFilter || "All dates";
+
+        if (!hasLogFiles()) {
+          viewer.innerHTML = `<div class="log-line log-line-info"><span class="log-text">There are no Log Files.</span></div>`;
+          return;
+        }
+
+        if (filteredLogs.length === 0) {
+          viewer.innerHTML = `<div class="log-line log-line-info"><span class="log-text">No log entries to display.</span></div>`;
+          return;
+        }
+
+        viewer.innerHTML = filteredLogs.map((log) => {
+          const prefix = log.timestamp
+            ? `<span class="log-time">[${escHtml(log.type.toUpperCase())}] ${escHtml(log.timestamp)}&gt;&gt;</span>`
+            : "";
+          return `<div class="log-line log-line-${escHtml(log.type)}">${prefix}<span class="log-text">${escHtml(log.message)}</span></div>`;
+        }).join("");
+      }
+
+      function setFilter(type) {
+        filterType = type;
+        ["All", "Info", "Warn", "Error"].forEach((key) => {
+          document.getElementById(`filter${key}`).classList.toggle("active", key.toLowerCase() === type);
+        });
+        renderLogs();
+      }
+
+      function updateSearch(value) {
+        searchTerm = value || "";
+        renderLogs();
+      }
+
+      function updateDateFilter(value) {
+        dateFilter = value || "";
+        renderLogs();
+      }
+
+      function clearDateFilter() {
+        dateFilter = "";
+        document.getElementById("logDateFilter").value = "";
+        renderLogs();
+      }
+
+      async function refreshCurrentLog() {
+        if (logRefreshInFlight || !hasLogFiles()) return;
+
+        const filename = getSelectedLogFile();
+        if (!filename) return;
+
+        logRefreshInFlight = true;
+        try {
+          const res = await fetch(withCacheBust(`${org}/readFile.php?file=${encodeURIComponent(filename)}`), { cache: "no-store" });
+          const content = decodeHtml(await res.text());
+          currentLogs = parseLogLines(content);
+          renderLogs();
+        } catch (e) {
+          console.log("Error refreshing the selected log file.", e);
+          showError(`Failed to refresh the selected log file: ${e.message}`);
+        } finally {
+          logRefreshInFlight = false;
+        }
+      }
+
+      function startAutoRefresh() {
+        if (logRefreshTimer) return;
+
+        logRefreshTimer = window.setInterval(() => {
+          if (document.hidden) return;
+          refreshCurrentLog();
+        }, LOG_REFRESH_INTERVAL_MS);
+      }
+
+      function stopAutoRefresh() {
+        if (!logRefreshTimer) return;
+
+        window.clearInterval(logRefreshTimer);
+        logRefreshTimer = null;
+      }
+
+      async function loadFiles() {
+        const fileList = document.getElementById("fileList");
+        const selectedFile = getSelectedLogFile();
+        fileList.innerHTML = "";
+
+        try {
+          const response = await fetch(withCacheBust(`${org}/listFiles.php`), { cache: "no-store" });
+          files = await response.json();
+        } catch (e) {
+          console.log("Error processing the log file response.", e);
+          files = [];
+          showError(`Failed to load the log file list: ${e.message}`);
+        }
+
+        if (!hasLogFiles()) {
+          const option = document.createElement("option");
+          option.textContent = "No Log Files.";
+          option.value = "";
+          fileList.appendChild(option);
+          updateButtons(false);
+          currentLogs = [];
+          renderLogs();
+          return;
+        }
+
+        files.forEach((file) => {
+          const option = document.createElement("option");
+          option.value = file;
+          option.textContent = file;
+          fileList.appendChild(option);
+        });
+
+        if (selectedFile && files.includes(selectedFile)) {
+          fileList.value = selectedFile;
+        } else if (files.length > 0) {
+          fileList.value = files[0];
+        }
+
+        updateButtons(true);
+        await refreshCurrentLog();
+      }
+
+      async function confirmClearLogs() {
+        if (!hasLogFiles()) {
+          showInfo("No log files to clear.");
+          return;
+        }
+
+        const choice = await showConfirmDialog(
+          "This will permanently delete all log files. This action cannot be undone.",
+          { title: "Clear All Logs", type: "warning", confirmText: "Clear All" }
+        );
+        if (choice !== "confirm") return;
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById("deleteModal"));
+        if (modal) modal.hide();
+        await clearLogs();
+      }
+
+      async function clearLogs() {
+        if (!hasLogFiles()) return;
+
+        let cleared = 0;
+        for (const file of files) {
+          try {
+            const res = await fetch(withCacheBust(`${org}/delFile.php?file=${encodeURIComponent(file)}`));
+            const result = await res.text();
+            if (result.trim() === "deleted") cleared++;
+          } catch (e) {
+            console.log("Error deleting file:", file, e);
+          }
+        }
+
+        if (cleared > 0) {
+          showInfo(`Successfully cleared ${cleared} log file${cleared > 1 ? "s" : ""}.`, { type: "success" });
+        } else {
+          showInfo("No log files were cleared.", { type: "info" });
+        }
+
+        currentLogs = [];
+        await loadFiles();
+      }
+
+      async function viewFile() {
+        if (!hasLogFiles()) {
+          currentLogs = [];
+          renderLogs();
+          return;
+        }
+
+        const filename = document.getElementById("fileList").value;
+        if (!filename) {
+          showInfo("Please select a log file first.");
+          return;
+        }
+
+        const viewer = document.getElementById("fileContent");
+        viewer.innerHTML = `<div class="log-line log-line-info"><span class="log-text">Loading logs...</span></div>`;
+
+        try {
+          const res = await fetch(withCacheBust(`${org}/readFile.php?file=${encodeURIComponent(filename)}`), { cache: "no-store" });
+          const content = decodeHtml(await res.text());
+          currentLogs = parseLogLines(content);
+        } catch (e) {
+          console.log("Error loading the selected log file.", e);
+          currentLogs = [];
+          showError(`Failed to load the selected log file: ${e.message}`);
+        }
+
+        renderLogs();
+      }
+
+      async function downloadFile() {
+        const path = document.getElementById("fileList").value;
+        if (!path) {
+          showInfo("Please select a log file first.");
+          return;
+        }
+
+        try {
+          const res = await fetch(withCacheBust(`${org}/readFile.php?file=${encodeURIComponent(path)}`), { cache: "no-store" });
+          const content = decodeHtml(await res.text());
+          const blob = new Blob([content], { type: "text/plain" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = path;
+          a.style.display = "none";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        } catch (e) {
+          showError(`Failed to download the selected log file: ${e.message}`);
+        }
+      }
+
+      async function deleteFile() {
+        const filename = document.getElementById("fileList").value;
+        if (!filename) {
+          showInfo("Please select a log file first.");
+          return;
+        }
+
+        try {
+          const res = await fetch(withCacheBust(`${org}/delFile.php?file=${encodeURIComponent(filename)}`), { cache: "no-store" });
+          const result = await res.text();
+          if (result.trim() === "deleted") {
+            currentLogs = [];
+            await loadFiles();
+            const modal = bootstrap.Modal.getInstance(document.getElementById("deleteModal"));
+            if (modal) modal.hide();
+          } else {
+            showError("The selected file could not be deleted.");
+          }
+        } catch (e) {
+          showError(`Failed to delete the selected log file: ${e.message}`);
+        }
+      }
+
+      window.addEventListener("load", () => {
+        loadFiles();
+        startAutoRefresh();
+      });
+
+      window.addEventListener("beforeunload", stopAutoRefresh);
+    </script>
+  </body>
+</html>

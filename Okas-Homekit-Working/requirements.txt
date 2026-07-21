@@ -1,0 +1,3 @@
+# Python KNX bridge (KNX/knx_bridge.py)
+xknx>=3.0
+paho-mqtt>=2.0
