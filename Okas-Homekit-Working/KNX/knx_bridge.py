@@ -317,7 +317,11 @@ class KnxBridge:
             gateway_ip=conn.get("gateway_ip"),
             gateway_port=conn.get("gateway_port", 3671),
             individual_address=conn.get("individual_address"),
-            auto_reconnect=True,
+            # xknx's internal auto_reconnect loops forever inside a single xknx
+            # object and never lets our outer retry loop rebuild state, so it
+            # traps the bridge when the gateway is unreachable. We own retries
+            # at the outer level and start fresh with a new xknx on each pass.
+            auto_reconnect=False,
             auto_reconnect_wait=3,
             secure_config=conn.get("secure_config"),
         )
@@ -372,8 +376,12 @@ class KnxBridge:
                     log.debug("KNX connect still failing (%s). Next retry in %ds.", exc, retry_delay)
                 self._publish_conn(False)
                 # Tear down xknx state so the next iteration starts fresh.
+                # Bound the teardown so a stuck DISCONNECT_RESPONSE handshake
+                # (gateway unreachable) cannot wedge the retry loop.
                 try:
-                    await self.xknx.stop()
+                    await asyncio.wait_for(self.xknx.stop(), timeout=5.0)
+                except asyncio.TimeoutError:
+                    log.warning("xknx.stop() timed out; discarding tunnel state.")
                 except Exception:  # noqa: BLE001
                     pass
                 self.xknx = XKNX(

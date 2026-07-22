@@ -16,6 +16,40 @@ MQTT broker (Mosquitto) that already runs on the Debian host.
                        MQTT broker (localhost:1883)
 ```
 
+## Gateway outage / IP-change recovery
+
+When the gateway becomes unreachable (router reboot, IP change, eElectron
+KNX Secure interface rebooting, etc.) the bridge MUST stay alive and retry
+until the gateway returns. The implementation:
+
+- `xknx`'s internal `auto_reconnect` loop is **disabled** — it traps the
+  process in an infinite retry inside one xknx object and never lets our
+  outer retry loop rebuild state. Outer-loop retries are the single source
+  of truth.
+- The outer loop in `KnxBridge.run()` catches every tunnel failure,
+  publishes `okas/knx/conn={connected:false}` so the mobile app sees the
+  outage immediately, rebuilds a fresh `XKNX` instance, and waits with
+  exponential backoff capped at 120 s.
+- `xknx.stop()` is bounded with `asyncio.wait_for(timeout=5.0)` so a stuck
+  `DISCONNECT_RESPONSE` handshake (gateway gone mid-session) cannot wedge
+  the loop.
+- `Data/loadData.json` is **only read at startup**. Changing `gwIP` while
+  the service is running has no effect — `systemctl restart OhKnxKnx.service`
+  is required to pick up the new IP.
+
+To switch the active gateway on the live board:
+
+```bash
+ssh root@okas-homekit.local
+sed -i 's/"gwIP": "OLD.IP"/"gwIP": "NEW.IP"/' /home/OhKnx/Data/loadData.json
+systemctl restart OhKnxKnx.service
+journalctl -u OhKnxKnx.service -f
+```
+
+The bridge will connect immediately if the gateway is up, or fall into the
+retry loop with "KNX connect failed (Tunnel connection could not be
+established). Retrying in background …" and keep trying with backoff.
+
 ## Why
 
 The Node `knx` library sent tunnelling telegrams with a fixed/foreign KNX
