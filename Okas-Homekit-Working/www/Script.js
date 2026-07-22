@@ -1,5 +1,12 @@
 let KNXdata = { prjNm: "", knxIp: "", knxPort: 3671, loads: [] };
 let editIndex = -1;
+// sessionStorage key for the in-progress configuration. The three tab pages
+// (index.html, logMgr.html, deviceInfo.html) are separate HTML documents so
+// navigating between them causes a full page reload; without this cache the
+// uncommitted `KNXdata` would be lost on every navigation. We persist after
+// every mutation and rehydrate on script init so the user can move freely
+// between tabs while editing.
+const KNX_SESSION_KEY = "okas_knx_session_v1";
 let lTyp2GA = {
     Switch: ["Swt: Control", "Swt: Status"],
     Dimmer: ["Swt: Control", "Swt: Status", "Dimming", "Bri: Control", "Bri: Value"],
@@ -21,6 +28,47 @@ let expandedLoadTypes = {
     Scene: false,
     HVAC: false
 };
+
+// Persist the current KNXdata snapshot to sessionStorage. Called after every
+// mutation (add/edit/delete load, project metadata change). Safe to call when
+// sessionStorage is unavailable (private-mode Safari, etc.) — falls through.
+function persistKNXSession() {
+    try {
+        sessionStorage.setItem(KNX_SESSION_KEY, JSON.stringify(KNXdata));
+    } catch (_) { /* sessionStorage unavailable, ignore */ }
+}
+
+// Rehydrate KNXdata from sessionStorage if a prior snapshot exists, then
+// mirror the values into the form fields. Returns true if anything was loaded.
+function rehydrateKNXSession() {
+    let raw;
+    try {
+        raw = sessionStorage.getItem(KNX_SESSION_KEY);
+    } catch (_) { return false; }
+    if (!raw) return false;
+    try {
+        const cached = JSON.parse(raw);
+        if (!cached || typeof cached !== "object" || !Array.isArray(cached.loads)) return false;
+        KNXdata = {
+            prjNm: cached.prjNm ?? "",
+            knxIp: cached.knxIp ?? "",
+            knxPort: cached.knxPort ?? 3671,
+            loads: cached.loads
+        };
+        document.getElementById("prjNm").value = KNXdata.prjNm || "";
+        document.getElementById("knxIp").value = KNXdata.knxIp || "192.168.26.45";
+        document.getElementById("knxPort").value = KNXdata.knxPort || 3671;
+        return true;
+    } catch (_) {
+        return false;
+    }
+}
+
+// Drop the cached snapshot — used after a successful "Finish" save or after
+// an explicit restore from file so stale data never lingers across sessions.
+function clearKNXSession() {
+    try { sessionStorage.removeItem(KNX_SESSION_KEY); } catch (_) { /* ignore */ }
+}
 
 function escHtml(value) {
     return String(value ?? "").replace(/[&<>"']/g, function (char) {
@@ -159,6 +207,7 @@ document.getElementById('fInp').addEventListener('change', function () {
                 document.getElementById("prjNm").value = KNXdata.prjNm || "";
                 document.getElementById("knxIp").value = KNXdata.knxIp || "";
                 document.getElementById("knxPort").value = KNXdata.knxPort || 3671;
+                persistKNXSession();
                 shwLds();
 
                 fPth.innerHTML = `Successfully imported data from: <b>'${(file.name).replace('.obak', '')}'</b>`;
@@ -190,6 +239,16 @@ function prepPrj() {
         return false;
     }
     return true;
+}
+
+// Mirror the three project-metadata inputs into KNXdata and persist. Called
+// on blur so navigating away (which triggers the page reload) keeps the
+// values even if the user never pressed "Finish".
+function updPrjMeta() {
+    KNXdata.prjNm = document.getElementById("prjNm").value;
+    KNXdata.knxIp = document.getElementById("knxIp").value;
+    KNXdata.knxPort = document.getElementById("knxPort").value;
+    persistKNXSession();
 }
 
 
@@ -335,6 +394,7 @@ function updLoad(gArr, more) {
     } else {
         KNXdata.loads[index] = load;
     }
+    persistKNXSession();
     shwLds();
     setBackupAvailability();
     updFields();
@@ -480,6 +540,7 @@ function cnfDel() {
 function delLoad() {
     KNXdata.loads.splice(editIndex, 1);
     editIndex = -1;
+    persistKNXSession();
     shwLds();
     setBackupAvailability();
     bootstrap.Modal.getInstance(document.getElementById("deleteModal")).hide();
@@ -501,6 +562,9 @@ async function donCnf() {
         showError("Error sending Configuration Data to System.");
         return;
     }
+    // Configuration successfully written to the board — drop the in-memory
+    // session cache so the next page load starts clean.
+    clearKNXSession();
 
     const choice = await showConfirmDialog(
         `It is advisable to back up the "Configuration Data".\nWould you like to create a backup now?`,
@@ -518,4 +582,11 @@ async function donCnf() {
 }
 
 setBackupAvailability();
+rehydrateKNXSession();
 shwLds();
+// Persist project metadata on blur so navigating between tabs keeps the
+// in-progress inputs even before the user presses "Finish".
+["prjNm", "knxIp", "knxPort"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("blur", updPrjMeta);
+});
