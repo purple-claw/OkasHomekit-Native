@@ -44,6 +44,11 @@ require('../Mqtt/mqttClnt');
             dbg.Err('MQTT: Error publishing KNX status - ' + e.message);
         }
     };
+    // Expose so mqttHdlCmd() can publish status/{ldId} after a successful
+    // command, not only when bus feedback arrives. Some KNX devices do not
+    // echo a status telegram, and without this the retained per-load topic
+    // would stay stale until a physical change happens on the bus.
+    global.mqttRptSts = mqttRptSts;
 
     // Feedback from the KNX bus (relayed by the Python bridge).
     global.applyKnxState = async (ga, val) => {

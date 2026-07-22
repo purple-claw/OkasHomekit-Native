@@ -392,6 +392,13 @@ require("../KNX/actHdlr");
             stsMsg.err = eMsg;
         }
         mqttPub(TPCS.PUB.CMD_ACK, stsMsg);
+        // Refresh the retained per-load topic immediately so subscribers
+        // (mobile app, dashboards) see the new state without waiting for
+        // bus feedback. KNX devices that don't echo status would otherwise
+        // leave status/{ldId} stale.
+        if (scs && typeof global.mqttRptSts === 'function') {
+            global.mqttRptSts(lNm);
+        }
         dbg.Inf('MQTT: Command ' + (scs ? 'executed' : 'FAILED') + ' -> id:' + ldId + ' ' + o2S(pld.cmd));
     };
 

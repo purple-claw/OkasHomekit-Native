@@ -46,7 +46,7 @@ DATA_FILE = os.path.join(BASE_DIR, "Data", "loadData.json")
 
 MQTT_HOST = os.environ.get("MQTT_HOST", "localhost")
 MQTT_PORT = int(os.environ.get("MQTT_PORT", "1883"))
-MQTT_CLIENT_ID = "okas-knx-py"
+MQTT_CLIENT_ID = "okas-knx-tunnel"
 
 # Internal bridge topics (must match KNX/knxBridge.js)
 TPC_CMD = "okas/knx/cmd"      # Node -> Python : { ga, dpt, val, nm?, dp? }
@@ -115,12 +115,26 @@ def to_primitive(val, payload):
 
 
 class KnxBridge:
+    # Debounce CONNECTED/DISCONNECTED pulses from xknx so a flapping tunnel
+    # (e.g. when the KNX/IP gateway is unreachable) doesn't generate an
+    # endless CONNECTED→SYNC→READ→DISCONNECTED loop. The first CONNECTED after
+    # a real DISCONNECT is allowed through immediately and schedules the
+    # autoread; subsequent CONNECTED pulses inside this window are ignored.
+    STATE_STABLE_SECONDS = 3.0
+    # Coalesce multiple SYNC requests inside this window so a flap storm doesn't
+    # queue dozens of GroupValueRead passes against the bus.
+    SYNC_COALESCE_SECONDS = 1.0
+
     def __init__(self, config):
         self.cfg = config
         self.loop = None
         self.xknx = None
         self.mqtt = None
         self.knx_connected = False
+        self._last_state_change = 0.0
+        self._stable_connected = False  # last value we actually published
+        self._autoread_done_for_session = False  # one autoread per real reconnect
+        self._sync_timer = None  # coalesce handle for incoming SYNC requests
 
         # Build GA -> DPT map (for decoding) and the list of status GAs to read.
         self.ga_dpt = {}          # "0/4/5" -> "1.001"
@@ -168,9 +182,7 @@ class KnxBridge:
         if msg.topic == TPC_CMD:
             self._handle_cmd(payload)
         elif msg.topic == TPC_SYNC:
-            log.info("MQTT: sync requested -> re-reading status GAs.")
-            if self.loop:
-                self.loop.call_soon_threadsafe(self._schedule_autoread)
+            self._request_sync()
 
     def _publish_conn(self, connected):
         if self.mqtt:
@@ -205,6 +217,9 @@ class KnxBridge:
             log.error("KNX write to %s failed: %s", ga, e)
 
     def _schedule_autoread(self):
+        self._sync_timer = None
+        if not self.knx_connected:
+            return
         for ga in self.autoread_gas:
             try:
                 group_value_read(self.xknx, ga)
@@ -212,6 +227,28 @@ class KnxBridge:
                 log.error("KNX read request for %s failed: %s", ga, e)
         if self.autoread_gas:
             log.info("KNX: requested read of %d status GAs.", len(self.autoread_gas))
+
+    def _request_sync(self):
+        """Coalesce incoming SYNC requests so a flap storm only triggers one
+        autoread pass. Drops any earlier pending call and schedules a fresh
+        deferred call to _schedule_autoread."""
+        if not self.loop:
+            return
+        if not self.knx_connected:
+            log.debug("MQTT: sync ignored - KNX interface disconnected.")
+            return
+        # MQTT paho callback runs on its own thread; hop onto the asyncio loop.
+        self.loop.call_soon_threadsafe(self._schedule_sync_timer)
+
+    def _schedule_sync_timer(self):
+        if self._sync_timer is not None:
+            try:
+                self._sync_timer.cancel()
+            except Exception:  # noqa: BLE001
+                pass
+        self._sync_timer = self.loop.call_later(self.SYNC_COALESCE_SECONDS,
+                                                self._schedule_autoread)
+        log.info("MQTT: sync requested -> re-reading status GAs (coalesced).")
 
     # ------------------------------------------------------- xknx callbacks ---
     # NOTE: xknx invokes these SYNCHRONOUSLY (it does not await them and does not
@@ -239,15 +276,35 @@ class KnxBridge:
 
     def _on_conn_state(self, state):
         connected = str(getattr(state, "name", state)).upper() == "CONNECTED"
-        if connected == self.knx_connected:
+        now = asyncio.get_event_loop().time() if self.loop else 0.0
+
+        # Debounce flapping tunnels. xknx can pulse CONNECTED→DISCONNECTED in
+        # tight loops while the gateway is unreachable; we only forward a state
+        # change to MQTT if (a) it's the first one in this window, or (b) the
+        # last change is older than STATE_STABLE_SECONDS.
+        if connected == self._stable_connected:
+            # Mirror internal flag without re-publishing.
+            self.knx_connected = connected
             return
+        if connected and self._stable_connected and (now - self._last_state_change) < self.STATE_STABLE_SECONDS:
+            log.debug("KNX interface CONNECTED pulse ignored (flap window).")
+            self.knx_connected = connected
+            return
+
         self.knx_connected = connected
+        self._stable_connected = connected
+        self._last_state_change = now
         log.info("KNX interface %s.", "connected" if connected else "disconnected")
         self._publish_conn(connected)
-        if connected and self.loop:
-            # Give the tunnel a moment to settle, then pull current states.
-            # This callback runs in the loop thread, so call_later is safe.
-            self.loop.call_later(1.5, self._schedule_autoread)
+        if connected:
+            # One autoread per real reconnect — skip subsequent pulses.
+            if not self._autoread_done_for_session and self.loop:
+                self._autoread_done_for_session = True
+                # Give the tunnel a moment to settle, then pull current states.
+                self.loop.call_later(1.5, self._schedule_autoread)
+        else:
+            # Real disconnect — arm the next reconnect to issue another read.
+            self._autoread_done_for_session = False
 
     # ------------------------------------------------------------------ run ---
     async def run(self):
@@ -296,6 +353,11 @@ class KnxBridge:
         first_attempt = True
         while not stop.is_set():
             try:
+                # Fresh connection → let the next real CONNECTED trigger an
+                # autoread pass.
+                self._stable_connected = False
+                self._last_state_change = 0.0
+                self._autoread_done_for_session = False
                 async with self.xknx:
                     retry_delay = 2  # reset on success
                     await stop.wait()
