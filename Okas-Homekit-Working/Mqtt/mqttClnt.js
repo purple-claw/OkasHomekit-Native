@@ -60,12 +60,17 @@ require("../KNX/actHdlr");
             types: ['Switch', 'Dimmer', 'RGB', 'Tunable', 'HVAC', 'Fan'],
             act: async (lNm, val) => {
                 if (['Dimmer', 'RGB', 'Tunable'].includes(knxLod[lNm].Typ)) {
+                    // Always write the Swt GA first so the dimmer relay latches
+                    // ON/OFF on the bus and Val.Sta tracks reality. Then, if we
+                    // are turning on, reapply the last-known brightness (or 100%
+                    // on first-on) so the lamp actually lights up.
+                    const swtRes = await Swt(lNm, val);
+                    if (!swtRes.ok) return swtRes;
                     if (val) {
-                        let vl = knxLod[lNm].Val.Bri > 0 ? knxLod[lNm].Val.Bri : 100;
+                        const vl = knxLod[lNm].Val.Bri > 0 ? knxLod[lNm].Val.Bri : 100;
                         return await Bri(lNm, vl);
-                    } else {
-                        return await Swt(lNm, val);
                     }
+                    return swtRes;
                 } else {
                     return await Swt(lNm, val);
                 }

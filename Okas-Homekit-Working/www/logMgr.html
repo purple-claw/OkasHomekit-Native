@@ -31,30 +31,25 @@
             <h2 id="lmHd">Log Manager</h2>
           </div>
 
-          <div class="file-section">
-            <label for="fileList">Select a file</label>
-            <select id="fileList" onchange="viewFile()"></select>
-          </div>
-
-          <div class="log-buttons">
-            <button type="button" class="btn-view" id="vewBtn" onclick="viewFile()">
-              View
-            </button>
-            <button type="button" class="btn-download" id="dldBtn" onclick="downloadFile()">
-              Download
-            </button>
-            <button
-              type="button"
-              class="btn-delete"
-              id="delBtn"
-              data-bs-toggle="modal"
-              data-bs-target="#deleteModal"
-            >
-              Delete
-            </button>
-            <button type="button" class="btn-restore" id="clrBtn" onclick="confirmClearLogs()">
-              Clear All Logs
-            </button>
+          <div class="file-actions-row">
+            <div class="file-picker">
+              <label for="fileList">Select a file</label>
+              <select id="fileList" onchange="viewFile()"></select>
+            </div>
+            <div class="file-buttons">
+              <button type="button" class="btn-view" id="vewBtn" onclick="viewFile()">
+                All Logs
+              </button>
+              <button type="button" class="btn-download" id="dldBtn" onclick="downloadFile()">
+                Download
+              </button>
+              <button type="button" class="btn-delete" id="delBtn" onclick="confirmDeleteDay()">
+                Delete
+              </button>
+              <button type="button" class="btn-restore" id="clrBtn" onclick="confirmClearLogs()">
+                Clear All Logs
+              </button>
+            </div>
           </div>
 
           <div class="filter-row">
@@ -123,33 +118,6 @@
     <footer class="app-footer">
      &copy; Miantic AV Distribution Pvt. Ltd.
     </footer>
-
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Confirm Deletion</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            Are you sure you want to delete the selected file?
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn-cancel" data-bs-dismiss="modal">
-              No
-            </button>
-            <button type="button" class="btn-delete" onclick="deleteFile()">
-              Yes
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <div class="modal fade" id="genModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
@@ -220,22 +188,11 @@
 
       function getLogDateValue(timestamp) {
         const monthMap = {
-          jan: "01",
-          feb: "02",
-          mar: "03",
-          apr: "04",
-          may: "05",
-          jun: "06",
-          jul: "07",
-          aug: "08",
-          sep: "09",
-          oct: "10",
-          nov: "11",
-          dec: "12"
+          jan: "01", feb: "02", mar: "03", apr: "04", may: "05", jun: "06",
+          jul: "07", aug: "08", sep: "09", oct: "10", nov: "11", dec: "12"
         };
         const match = String(timestamp || "").match(/^(\d{1,2})[./-]([A-Za-z]{3,}|\d{1,2})[./-](\d{4})/);
         if (!match) return "";
-
         const day = match[1].padStart(2, "0");
         const monthToken = match[2].toLowerCase();
         const month = monthMap[monthToken.slice(0, 3)] || monthToken.padStart(2, "0");
@@ -287,16 +244,18 @@
       }
 
       function updateCounts() {
-        const getCount = (type) => {
-          return getFilteredLogs(type).length;
-        };
-        document.getElementById("countAll").textContent = `(${getCount("all")})`;
-        document.getElementById("countInfo").textContent = `(${getCount("info")})`;
-        document.getElementById("countWarn").textContent = `(${getCount("warn")})`;
-        document.getElementById("countError").textContent = `(${getCount("error")})`;
+        document.getElementById("countAll").textContent = `(${getFilteredLogs("all").length})`;
+        document.getElementById("countInfo").textContent = `(${getFilteredLogs("info").length})`;
+        document.getElementById("countWarn").textContent = `(${getFilteredLogs("warn").length})`;
+        document.getElementById("countError").textContent = `(${getFilteredLogs("error").length})`;
       }
 
-      function renderLogs() {
+      function scrollLogViewerToBottom() {
+        const viewer = document.getElementById("fileContent");
+        if (viewer) viewer.scrollTop = viewer.scrollHeight;
+      }
+
+      function renderLogs(scrollTail = false) {
         updateCounts();
         const viewer = document.getElementById("fileContent");
         const filteredLogs = getFilteredLogs();
@@ -322,6 +281,8 @@
             : "";
           return `<div class="log-line log-line-${escHtml(log.type)}">${prefix}<span class="log-text">${escHtml(log.message)}</span></div>`;
         }).join("");
+
+        if (scrollTail) scrollLogViewerToBottom();
       }
 
       function setFilter(type) {
@@ -329,28 +290,27 @@
         ["All", "Info", "Warn", "Error"].forEach((key) => {
           document.getElementById(`filter${key}`).classList.toggle("active", key.toLowerCase() === type);
         });
-        renderLogs();
+        renderLogs(false);
       }
 
       function updateSearch(value) {
         searchTerm = value || "";
-        renderLogs();
+        renderLogs(false);
       }
 
       function updateDateFilter(value) {
         dateFilter = value || "";
-        renderLogs();
+        renderLogs(false);
       }
 
       function clearDateFilter() {
         dateFilter = "";
         document.getElementById("logDateFilter").value = "";
-        renderLogs();
+        renderLogs(false);
       }
 
       async function refreshCurrentLog() {
         if (logRefreshInFlight || !hasLogFiles()) return;
-
         const filename = getSelectedLogFile();
         if (!filename) return;
 
@@ -359,10 +319,9 @@
           const res = await fetch(withCacheBust(`${org}/readFile.php?file=${encodeURIComponent(filename)}`), { cache: "no-store" });
           const content = decodeHtml(await res.text());
           currentLogs = parseLogLines(content);
-          renderLogs();
+          renderLogs(true);
         } catch (e) {
           console.log("Error refreshing the selected log file.", e);
-          showError(`Failed to refresh the selected log file: ${e.message}`);
         } finally {
           logRefreshInFlight = false;
         }
@@ -370,7 +329,6 @@
 
       function startAutoRefresh() {
         if (logRefreshTimer) return;
-
         logRefreshTimer = window.setInterval(() => {
           if (document.hidden) return;
           refreshCurrentLog();
@@ -379,7 +337,6 @@
 
       function stopAutoRefresh() {
         if (!logRefreshTimer) return;
-
         window.clearInterval(logRefreshTimer);
         logRefreshTimer = null;
       }
@@ -405,7 +362,7 @@
           fileList.appendChild(option);
           updateButtons(false);
           currentLogs = [];
-          renderLogs();
+          renderLogs(false);
           return;
         }
 
@@ -431,21 +388,16 @@
           showInfo("No log files to clear.");
           return;
         }
-
         const choice = await showConfirmDialog(
-          "This will permanently delete all log files. This action cannot be undone.",
+          "This will permanently delete ALL log files. This action cannot be undone.",
           { title: "Clear All Logs", type: "warning", confirmText: "Clear All" }
         );
         if (choice !== "confirm") return;
-
-        const modal = bootstrap.Modal.getInstance(document.getElementById("deleteModal"));
-        if (modal) modal.hide();
-        await clearLogs();
+        await clearAllLogs();
       }
 
-      async function clearLogs() {
+      async function clearAllLogs() {
         if (!hasLogFiles()) return;
-
         let cleared = 0;
         for (const file of files) {
           try {
@@ -456,30 +408,56 @@
             console.log("Error deleting file:", file, e);
           }
         }
-
-        if (cleared > 0) {
-          showInfo(`Successfully cleared ${cleared} log file${cleared > 1 ? "s" : ""}.`, { type: "success" });
-        } else {
-          showInfo("No log files were cleared.", { type: "info" });
-        }
-
+        showInfo(`Cleared ${cleared} log file${cleared !== 1 ? "s" : ""}.`, { type: "success" });
         currentLogs = [];
         await loadFiles();
+      }
+
+      async function confirmDeleteDay() {
+        if (!hasLogFiles()) {
+          showInfo("No log files to delete.");
+          return;
+        }
+        const filename = getSelectedLogFile();
+        if (!filename) {
+          showInfo("Please select a log file first.");
+          return;
+        }
+        const choice = await showConfirmDialog(
+          `Delete the log file "${filename}"?\nThis action cannot be undone.`,
+          { title: "Delete Day's Logs", type: "warning", confirmText: "Delete" }
+        );
+        if (choice !== "confirm") return;
+        await deleteOneFile(filename);
+      }
+
+      async function deleteOneFile(filename) {
+        try {
+          const res = await fetch(withCacheBust(`${org}/delFile.php?file=${encodeURIComponent(filename)}`));
+          const result = await res.text();
+          if (result.trim() === "deleted") {
+            showInfo(`Deleted "${filename}".`, { type: "success" });
+            currentLogs = [];
+            await loadFiles();
+          } else {
+            showError(`Could not delete "${filename}".`);
+          }
+        } catch (e) {
+          showError(`Failed to delete "${filename}": ${e.message}`);
+        }
       }
 
       async function viewFile() {
         if (!hasLogFiles()) {
           currentLogs = [];
-          renderLogs();
+          renderLogs(false);
           return;
         }
-
-        const filename = document.getElementById("fileList").value;
+        const filename = getSelectedLogFile();
         if (!filename) {
           showInfo("Please select a log file first.");
           return;
         }
-
         const viewer = document.getElementById("fileContent");
         viewer.innerHTML = `<div class="log-line log-line-info"><span class="log-text">Loading logs...</span></div>`;
 
@@ -492,55 +470,30 @@
           currentLogs = [];
           showError(`Failed to load the selected log file: ${e.message}`);
         }
-
-        renderLogs();
+        renderLogs(true);
       }
 
       async function downloadFile() {
-        const path = document.getElementById("fileList").value;
-        if (!path) {
+        const filename = getSelectedLogFile();
+        if (!filename) {
           showInfo("Please select a log file first.");
           return;
         }
-
         try {
-          const res = await fetch(withCacheBust(`${org}/readFile.php?file=${encodeURIComponent(path)}`), { cache: "no-store" });
+          const res = await fetch(withCacheBust(`${org}/readFile.php?file=${encodeURIComponent(filename)}`), { cache: "no-store" });
           const content = decodeHtml(await res.text());
           const blob = new Blob([content], { type: "text/plain" });
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          a.download = path;
+          a.download = filename;
           a.style.display = "none";
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
           window.URL.revokeObjectURL(url);
         } catch (e) {
-          showError(`Failed to download the selected log file: ${e.message}`);
-        }
-      }
-
-      async function deleteFile() {
-        const filename = document.getElementById("fileList").value;
-        if (!filename) {
-          showInfo("Please select a log file first.");
-          return;
-        }
-
-        try {
-          const res = await fetch(withCacheBust(`${org}/delFile.php?file=${encodeURIComponent(filename)}`), { cache: "no-store" });
-          const result = await res.text();
-          if (result.trim() === "deleted") {
-            currentLogs = [];
-            await loadFiles();
-            const modal = bootstrap.Modal.getInstance(document.getElementById("deleteModal"));
-            if (modal) modal.hide();
-          } else {
-            showError("The selected file could not be deleted.");
-          }
-        } catch (e) {
-          showError(`Failed to delete the selected log file: ${e.message}`);
+          showError(`Failed to download "${filename}": ${e.message}`);
         }
       }
 
