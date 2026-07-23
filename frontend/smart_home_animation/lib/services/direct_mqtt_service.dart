@@ -780,8 +780,14 @@ class DirectMQTTService extends ChangeNotifier {
               ? (fanSpeed / 255 * 250).round()
               : 0;
 
-          // Curtain position
-          final curtainPos = sta?['pos'] as int? ?? sta?['cPs'] as int? ?? 0;
+          // Curtain position. The backend (mqttClnt.js gtLdSt) publishes
+          // { cPs: current, tPs: target } for curtain loads. Earlier code
+          // only looked for pos / cPs, missing tPs and leaving the slider
+          // stuck at 0. Accept any of the three so the value always flows.
+          final curtainPos = sta?['tPs'] as int? ??
+              sta?['cPs'] as int? ??
+              sta?['pos'] as int? ??
+              0;
 
           final loadMap = <String, dynamic>{
             'id': loadId.toString(),
@@ -894,9 +900,13 @@ class DirectMQTTService extends ChangeNotifier {
               load['fSp'] = fanSpeed;
             }
 
-            // Handle curtain position
-            load['cPs'] = sta['pos'] ?? sta['cPs'] ?? load['cPs'];
-            load['pos'] = sta['pos'] ?? sta['cPs'] ?? load['pos'];
+            // Handle curtain position — same fallback chain as in the
+            // initial loads/setLoads parse so the live status update matches
+            // what was seeded from the retained topic.
+            final newPos = sta['tPs'] ?? sta['cPs'] ?? sta['pos'] ?? load['cPs'];
+            load['cPs'] = newPos;
+            load['pos'] = newPos;
+            load['tPs'] = newPos;
 
             // Update devices map
             if (_devices.containsKey(ldId)) {
@@ -924,12 +934,26 @@ class DirectMQTTService extends ChangeNotifier {
               _loads[loadId]!['isOn'] = cSt['on'] ?? _loads[loadId]!['isOn'];
               _loads[loadId]!['brightness'] =
                   cSt['bri'] ?? _loads[loadId]!['brightness'];
+              // Curtain ack: update tPs (target) and cPs (current) if the
+              // ack payload includes them. Some loads only include tPs.
+              if (cSt['tPs'] != null || cSt['cPs'] != null || cSt['pos'] != null) {
+                final ackPos = cSt['tPs'] ?? cSt['cPs'] ?? cSt['pos'];
+                _loads[loadId]!['cPs'] = ackPos;
+                _loads[loadId]!['pos'] = ackPos;
+                _loads[loadId]!['tPs'] = ackPos;
+              }
 
               if (_devices.containsKey(loadId)) {
                 _devices[loadId]!['isOn'] =
                     cSt['on'] ?? _devices[loadId]!['isOn'];
                 _devices[loadId]!['brightness'] =
                     cSt['bri'] ?? _devices[loadId]!['brightness'];
+                if (cSt['tPs'] != null || cSt['cPs'] != null || cSt['pos'] != null) {
+                  final ackPos = cSt['tPs'] ?? cSt['cPs'] ?? cSt['pos'];
+                  _devices[loadId]!['cPs'] = ackPos;
+                  _devices[loadId]!['pos'] = ackPos;
+                  _devices[loadId]!['tPs'] = ackPos;
+                }
               }
             }
             notifyListeners();

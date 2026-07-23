@@ -125,7 +125,9 @@ class OKASConnection extends ChangeNotifier {
         'type': load['typ'] ?? 'swt',
         'isOn': load['sta']?['on'] ?? false,
         'brightness': load['sta']?['bri'],
-        'position': load['sta']?['pos'],
+        // Curtain position: backend publishes tPs (target) and cPs (current).
+        // Read tPs first so the slider reflects where the curtain is going.
+        'position': load['sta']?['tPs'] ?? load['sta']?['cPs'] ?? load['sta']?['pos'],
       };
 
       final roomName = _extractRoomName(load['nm'] ?? '');

@@ -352,7 +352,11 @@ class _LoungeScreenState extends State<LoungeScreen> {
                                   ? '${_convertToKelvin(load['cTp'] ?? 166).toInt()}K'
                                   : deviceType == 'Dimmer'
                                   ? '${(load['brightness'] ?? 0).toInt()}%'
-                                  : '${(load['cPs'] ?? load['pos'] ?? 0).toInt()}%',
+                                  // Curtain: read tPs (target) first, then cPs (current),
+                                  // then pos. Backend publishes tPs/cPs in the retained
+                                  // status payload, so older code that only checked
+                                  // pos/cPs saw 0 forever.
+                                  : '${(load['tPs'] ?? load['cPs'] ?? load['pos'] ?? 0).toInt()}%',
                               style: const TextStyle(
                                 color: SHColors.primary,
                                 fontSize: 12,
@@ -665,7 +669,7 @@ class _LoungeScreenState extends State<LoungeScreen> {
     Map<String, dynamic> load,
     StateSetter setState,
   ) {
-    double position = (load['cPs'] ?? load['pos'] ?? 0).toDouble();
+    double position = (load['tPs'] ?? load['cPs'] ?? load['pos'] ?? 0).toDouble();
 
     return Column(
       children: [

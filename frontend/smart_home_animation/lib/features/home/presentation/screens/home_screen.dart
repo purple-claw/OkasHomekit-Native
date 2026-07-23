@@ -49,6 +49,12 @@ class _HomeScreenState extends State<HomeScreen> {
   int _totalTunableCount = 0;
   int _totalRgbCount = 0;
 
+  // Listener registered with DirectMQTTService so the Active Loads counts
+  // and per-room counts recompute whenever the underlying MQTT state changes
+  // (new loads discovered, status update, command ack). Without this the
+  // counts only updated on pull-to-refresh.
+  VoidCallback? _okasServiceListener;
+
   // Current room load counts
   int _currentRoomSwitchCount = 0;
   int _currentRoomDimmerCount = 0;
@@ -59,7 +65,35 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     controller.addListener(pageListener);
+    // Recompute the Active Loads cards whenever the underlying MQTT
+    // service reports new state (load list, status update, cmd ack).
+    // Without this listener the counts only refresh on pull-to-refresh,
+    // so newly-discovered loads never appear and the per-room counts
+    // stay stale as the user navigates between rooms.
+    final okasService = Provider.of<DirectMQTTService>(context, listen: false);
+    _okasServiceListener = () {
+      if (!mounted) return;
+      _calculateTotalLoadCounts();
+      _updateCurrentRoomLoads(_currentRoomIndex);
+    };
+    okasService.addListener(_okasServiceListener!);
     _loadAllRooms();
+  }
+
+  @override
+  void dispose() {
+    if (_okasServiceListener != null) {
+      try {
+        Provider.of<DirectMQTTService>(context, listen: false)
+            .removeListener(_okasServiceListener!);
+      } catch (_) { /* context may be unmounted */ }
+    }
+    controller.removeListener(pageListener);
+    controller.dispose();
+    pageNotifier.dispose();
+    roomSelectorNotifier.dispose();
+    _refreshController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadAllRooms() async {
@@ -233,17 +267,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadAllRooms();
     _calculateTotalLoadCounts();
     _updateCurrentRoomLoads(_currentRoomIndex);
-  }
-
-  @override
-  void dispose() {
-    controller
-      ..removeListener(pageListener)
-      ..dispose();
-    pageNotifier.dispose();
-    roomSelectorNotifier.dispose();
-    _refreshController.dispose();
-    super.dispose();
   }
 
   void pageListener() {
