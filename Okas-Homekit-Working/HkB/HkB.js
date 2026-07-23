@@ -51,26 +51,10 @@ const path = require('path');
             dbg.Inf('No existing pairings - ready for new pairing.');
             return;
         }
-        dbg.Inf(`Existing pairing found. Waiting ${WD_TOUT/1000}s for client connection...`);
+        dbg.Inf(`Existing pairing found. Keeping bridge published - waiting for clients to connect...`);
         cnWdg = setTimeout(async () => {
             if (!clntCnctd) {
-                dbg.Wrn('No client connected - clearing old pairing data for fresh start.');
-                await rmFldr();
-                dbg.Inf('Old pairing cleared. Restart service to re-advertise, or re-pair now.');
-                try {
-                    await bridge.unpublish();
-                    setTimeout(() => {
-                        bridge.publish({
-                            username: ldArr[0].mac,
-                            pincode: PINcode,
-                            port: 62648,
-                            category: Categories.BRIDGE,
-                        });
-                        dbg.Inf('Bridge re-published - ready for new pairing.');
-                    }, 2000);
-                } catch (e) {
-                    dbg.Err(`Re-publish failed: ${e.message}. Please restart service.`);
-                }
+                dbg.Inf('No client connected yet - bridge remains published for pairing. Clients can connect anytime.');
             }
         }, WD_TOUT);
     };
@@ -294,15 +278,11 @@ const path = require('path');
                                         console.log(`Requested ${acy.Nm} Bri value: ${knxLod[acy.Nm].Val.Bvi}.`);
                                     })
                                     .on('set', (val, callback) => {
-                                        if (knxLod[acy.Nm].Val.Sta) {
-                                            Bri(acy.Nm, val);
-                                            if (acy.Typ == 'RGB') {
-                                                Hue(acy.Nm, knxLod[acy.Nm].Val.Hue);
-                                                Sat(acy.Nm, knxLod[acy.Nm].Val.Sat);
-                                            }
-                                        } else {
-                                            knxLod[acy.Nm].Val.Bvi = val;
-                                        };
+                                        Bri(acy.Nm, val);
+                                        if (knxLod[acy.Nm].Val.Sta && acy.Typ == 'RGB') {
+                                            Hue(acy.Nm, knxLod[acy.Nm].Val.Hue);
+                                            Sat(acy.Nm, knxLod[acy.Nm].Val.Sat);
+                                        }
                                         callback(null);
                                     });
                                 break;

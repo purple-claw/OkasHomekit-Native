@@ -28,6 +28,20 @@ require('./knxBridge');
                         return;
                     }
                     dbg.Inf(`${o2S(rgb)} sent to ${lNm}.`);
+                    // Push RGB state to HomeKit immediately
+                    const hkSvc = hkbAcc[lNm] && hkbAcc[lNm][0];
+                    if (hkSvc) {
+                        try {
+                            hkSvc.updateCharacteristic(Characteristic.Hue, knxLod[lNm].Val.Hue);
+                            hkSvc.updateCharacteristic(Characteristic.Saturation, knxLod[lNm].Val.Sat);
+                            hkSvc.updateCharacteristic(Characteristic.Brightness, knxLod[lNm].Val.Bri);
+                        } catch (e) {
+                            dbg.Inf(`Unable to update HomeKit RGB for ${lNm}: ${o2S(e)}`);
+                        }
+                    }
+                    if (typeof global.mqttRptSts === 'function') {
+                        global.mqttRptSts(lNm);
+                    }
                     rgbTmr = null;
                     resolve({ ok: true });
                 } catch (e) {
@@ -50,6 +64,20 @@ require('./knxBridge');
             knxLod[lNm].Val.Swt = val;
             knxLod[lNm].Val.Sta = val;
             dbg.Inf(`Turn-${val ? 'On' : 'Off'} sent to ${lNm}.`);
+            // Push state to HomeKit + MQTT immediately so the Home app and
+            // mobile app see it without waiting for bus feedback (many KNX
+            // devices do not echo status telegrams).
+            const hkSvc = hkbAcc[lNm] && hkbAcc[lNm][0];
+            if (hkSvc) {
+                try {
+                    hkSvc.updateCharacteristic(Characteristic.On, val);
+                } catch (e) {
+                    dbg.Inf(`Unable to update HomeKit On for ${lNm}: ${o2S(e)}`);
+                }
+            }
+            if (typeof global.mqttRptSts === 'function') {
+                global.mqttRptSts(lNm);
+            }
             return { ok: true };
         } catch (e) {
             dbg.Err(`Unable to send 'On/Off' command to ${lNm} : ${e}.`);
@@ -67,6 +95,18 @@ require('./knxBridge');
             knxLod[lNm].Val.Bri = val;
             knxLod[lNm].Val.Bvi = val;
             dbg.Inf(`Brightness-${val}% sent to ${lNm}.`);
+            // Push brightness to HomeKit + MQTT immediately
+            const hkSvc = hkbAcc[lNm] && hkbAcc[lNm][0];
+            if (hkSvc) {
+                try {
+                    hkSvc.updateCharacteristic(Characteristic.Brightness, val);
+                } catch (e) {
+                    dbg.Inf(`Unable to update HomeKit Brightness for ${lNm}: ${o2S(e)}`);
+                }
+            }
+            if (typeof global.mqttRptSts === 'function') {
+                global.mqttRptSts(lNm);
+            }
             return { ok: true };
         } catch (e) {
             dbg.Err(`Unable to send Brightness command to ${lNm} : ${e}.`);
@@ -91,6 +131,23 @@ require('./knxBridge');
             }
             knxLod[lNm].Val.Tuc = val;
             dbg.Inf(`Color Temperature-${val}K sent to ${lNm}.`);
+            // Convert Kelvin to Mired for HomeKit and push immediately.
+            // Also update knxLod.Tuv so the get callback returns the right
+            // value even if no bus feedback arrives.
+            const safeKel = Number(val) > 0 ? Number(val) : 2000;
+            const miredVal = Math.floor(1000000 / safeKel);
+            knxLod[lNm].Val.Tuv = miredVal;
+            const hkSvc = hkbAcc[lNm] && hkbAcc[lNm][0];
+            if (hkSvc) {
+                try {
+                    hkSvc.updateCharacteristic(Characteristic.ColorTemperature, miredVal);
+                } catch (e) {
+                    dbg.Inf(`Unable to update HomeKit CCT for ${lNm}: ${o2S(e)}`);
+                }
+            }
+            if (typeof global.mqttRptSts === 'function') {
+                global.mqttRptSts(lNm);
+            }
             return { ok: true };
         } catch (e) {
             dbg.Err(`Unable to send Color Temperature command to ${lNm} : ${e}.`);
@@ -107,6 +164,18 @@ require('./knxBridge');
             }
             knxLod[lNm].Val.Tsp = val;
             dbg.Inf(`Setpoint Temperature-${val}°C sent to ${lNm}.`);
+            // Push target temperature to HomeKit + MQTT immediately
+            const hkSvc = hkbAcc[lNm] && hkbAcc[lNm][0];
+            if (hkSvc) {
+                try {
+                    hkSvc.updateCharacteristic(Characteristic.TargetTemperature, val);
+                } catch (e) {
+                    dbg.Inf(`Unable to update HomeKit target temp for ${lNm}: ${o2S(e)}`);
+                }
+            }
+            if (typeof global.mqttRptSts === 'function') {
+                global.mqttRptSts(lNm);
+            }
             return { ok: true };
         } catch (e) {
             dbg.Err(`Unable to send Setpoint Temperature command to ${lNm} : ${e}.`);
@@ -124,6 +193,18 @@ require('./knxBridge');
             }
             knxLod[lNm].Val.Fsc = fnSpd;
             dbg.Inf(`Fan Speed-${fnSpd} sent to ${lNm}.`);
+            // Push fan speed to HomeKit + MQTT immediately
+            const hkSvc = hkbAcc[lNm] && hkbAcc[lNm][0];
+            if (hkSvc) {
+                try {
+                    hkSvc.updateCharacteristic(Characteristic.RotationSpeed, fnSpd);
+                } catch (e) {
+                    dbg.Inf(`Unable to update HomeKit fan speed for ${lNm}: ${o2S(e)}`);
+                }
+            }
+            if (typeof global.mqttRptSts === 'function') {
+                global.mqttRptSts(lNm);
+            }
             return { ok: true };
         } catch (e) {
             dbg.Err(`Unable to send Fan Speed command to ${lNm} : ${e}.`);
@@ -141,6 +222,18 @@ require('./knxBridge');
             knxLod[lNm].Val.Tmc = val;
             let mode = ["OFF", "HEAT", "COOL", "AUTO"][val];
             dbg.Inf(`Temperature Mode-${mode} sent to ${lNm}.`);
+            // Push mode to HomeKit + MQTT immediately
+            const hkSvc = hkbAcc[lNm] && hkbAcc[lNm][0];
+            if (hkSvc) {
+                try {
+                    hkSvc.updateCharacteristic(Characteristic.TargetHeatingCoolingState, val);
+                } catch (e) {
+                    dbg.Inf(`Unable to update HomeKit mode for ${lNm}: ${o2S(e)}`);
+                }
+            }
+            if (typeof global.mqttRptSts === 'function') {
+                global.mqttRptSts(lNm);
+            }
             return { ok: true };
         } catch (e) {
             dbg.Err(`Unable to send Temperature Mode command to ${lNm} : ${e}.`);
@@ -182,6 +275,18 @@ require('./knxBridge');
             }
             knxLod[lNm].Val.Pos = val;
             dbg.Inf(`Position-${val} sent to ${lNm}.`);
+            // Push target position to HomeKit + MQTT immediately
+            const hkSvc = hkbAcc[lNm] && hkbAcc[lNm][0];
+            if (hkSvc) {
+                try {
+                    hkSvc.updateCharacteristic(Characteristic.TargetPosition, val);
+                } catch (e) {
+                    dbg.Inf(`Unable to update HomeKit position for ${lNm}: ${o2S(e)}`);
+                }
+            }
+            if (typeof global.mqttRptSts === 'function') {
+                global.mqttRptSts(lNm);
+            }
             return { ok: true };
         } catch (e) {
             dbg.Err(`Unable to send Curtain Position command to ${lNm} : ${e}.`);
