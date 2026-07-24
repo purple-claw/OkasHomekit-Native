@@ -115,14 +115,7 @@ def to_primitive(val, payload):
 
 
 class KnxBridge:
-    # Debounce CONNECTED/DISCONNECTED pulses from xknx so a flapping tunnel
-    # (e.g. when the KNX/IP gateway is unreachable) doesn't generate an
-    # endless CONNECTED→SYNC→READ→DISCONNECTED loop. The first CONNECTED after
-    # a real DISCONNECT is allowed through immediately and schedules the
-    # autoread; subsequent CONNECTED pulses inside this window are ignored.
     STATE_STABLE_SECONDS = 3.0
-    # Coalesce multiple SYNC requests inside this window so a flap storm doesn't
-    # queue dozens of GroupValueRead passes against the bus.
     SYNC_COALESCE_SECONDS = 1.0
 
     def __init__(self, config):
@@ -150,7 +143,7 @@ class KnxBridge:
         log.info("Mapped %d group addresses (%d status GAs to auto-read).",
                  len(self.ga_dpt), len(self.autoread_gas))
 
-    # ---------------------------------------------------------------- MQTT ---
+    # - MQTT ---
     def start_mqtt(self):
         self.mqtt = mqtt.Client(
             mqtt.CallbackAPIVersion.VERSION2, client_id=MQTT_CLIENT_ID, clean_session=True
@@ -193,9 +186,8 @@ class KnxBridge:
         if self.mqtt:
             self.mqtt.publish(TPC_STATE, json.dumps({"ga": ga, "val": val}), qos=1)
 
-    # ------------------------------------------------------------- Commands ---
+    # -- Commands ---
     def _handle_cmd(self, payload):
-        """A write command from Node.js. Hop onto the asyncio loop to touch xknx."""
         ga = payload.get("ga")
         val = payload.get("val")
         dpt = norm_dpt(payload.get("dpt")) or self.ga_dpt.get(ga)
@@ -229,15 +221,11 @@ class KnxBridge:
             log.info("KNX: requested read of %d status GAs.", len(self.autoread_gas))
 
     def _request_sync(self):
-        """Coalesce incoming SYNC requests so a flap storm only triggers one
-        autoread pass. Drops any earlier pending call and schedules a fresh
-        deferred call to _schedule_autoread."""
         if not self.loop:
             return
         if not self.knx_connected:
             log.debug("MQTT: sync ignored - KNX interface disconnected.")
             return
-        # MQTT paho callback runs on its own thread; hop onto the asyncio loop.
         self.loop.call_soon_threadsafe(self._schedule_sync_timer)
 
     def _schedule_sync_timer(self):
@@ -256,7 +244,6 @@ class KnxBridge:
     # just create an un-awaited coroutine and silently do nothing (no feedback,
     # and the KNX-connected status would never publish -> Node stays isCon=false).
     def _on_telegram(self, telegram):
-        """Incoming bus telegram -> decode -> forward feedback to Node.js."""
         payload = telegram.payload
         if not isinstance(payload, (GroupValueWrite, GroupValueResponse)):
             return
@@ -300,8 +287,9 @@ class KnxBridge:
             # One autoread per real reconnect — skip subsequent pulses.
             if not self._autoread_done_for_session and self.loop:
                 self._autoread_done_for_session = True
-                # Give the tunnel a moment to settle, then pull current states.
-                self.loop.call_later(1.5, self._schedule_autoread)
+                # Give the tunnel time to settle, then pull current states.
+                # Longer delay on initial connect to let IP interface fully initialize.
+                self.loop.call_later(5, self._schedule_autoread)
         else:
             # Real disconnect — arm the next reconnect to issue another read.
             self._autoread_done_for_session = False
@@ -317,10 +305,6 @@ class KnxBridge:
             gateway_ip=conn.get("gateway_ip"),
             gateway_port=conn.get("gateway_port", 3671),
             individual_address=conn.get("individual_address"),
-            # xknx's internal auto_reconnect loops forever inside a single xknx
-            # object and never lets our outer retry loop rebuild state, so it
-            # traps the bridge when the gateway is unreachable. We own retries
-            # at the outer level and start fresh with a new xknx on each pass.
             auto_reconnect=False,
             auto_reconnect_wait=3,
             secure_config=conn.get("secure_config"),
@@ -363,7 +347,7 @@ class KnxBridge:
                 self._last_state_change = 0.0
                 self._autoread_done_for_session = False
                 async with self.xknx:
-                    retry_delay = 2  # reset on success
+                    retry_delay = 2  # reset on Success
                     await stop.wait()
                 break  # normal exit
             except asyncio.CancelledError:

@@ -1,11 +1,10 @@
 
 let isPrep = false;
 
+// Build the in-memory load model (knxLod). No KNX Datapoint objects are
+    // created here anymore — the Python xknx bridge owns all bus I/O. 
+
 (module.exports = () => {
-    // Build the in-memory load model (knxLod). No KNX Datapoint objects are
-    // created here anymore — the Python xknx bridge owns all bus I/O. We keep the
-    // group-address map (knxLod[nm].GA) so knxCmd() can resolve the GA + DPT to
-    // publish, plus the cached values (knxLod[nm].Val) HomeKit reads back.
     prepLoads = async () => {
         return new Promise((r) => {
             ldArr.forEach((v, i) => {

@@ -17,7 +17,6 @@ const { startAuthService, stopAuthService } = require("./Auth/authService");
 //   commands  -> okas/knx/cmd   (JS -> Python)
 //   feedback  <- okas/knx/state (Python -> JS)
 //   link state<- okas/knx/conn  (Python -> JS -> global isCon)
-// Start the Python bridge alongside this service (see runOnce/OhKnxKnx.service).
 
 async function initialize() {
     dbg.Inf("Starting OKAS HomeKit service...");
@@ -27,9 +26,9 @@ async function initialize() {
     // owner token to loadData.json that HomeKit and the web UI depend on.
     try {
         startAuthService();
-        dbg.Inf("Secure authentication service started.");
+        dbg.Inf("OKAS-Secure Service started.");
     } catch (error) {
-        dbg.Err(`Secure authentication service did not start: ${error.message}`);
+        dbg.Err(`OKAS-Secure service did not start: ${error.message}`);
     }
     if (!(await prepLoads())) { dbg.Err("Failed to prepare KNX loads. Aborting."); return; }
     else { dbg.Inf("Prepared KNX Loads."); }
@@ -55,7 +54,6 @@ async function initialize() {
     } else {
         dbg.Inf("MQTT Client connected and subscribed.");
     }
-
     dbg.Inf("Okas HomeKit service started successfully.");
 }
 
