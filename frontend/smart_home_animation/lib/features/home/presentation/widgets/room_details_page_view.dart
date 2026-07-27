@@ -221,7 +221,115 @@ class RoomDetailsPageView extends StatelessWidget {
                 ],
               ),
             ),
+
+          // HVAC Controls: Fan Speed and Mode
+          if (deviceType == 'hvc' && isOn)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Fan Speed Row
+                  const Row(
+                    children: [
+                      Icon(Icons.toys, size: 20),
+                      SizedBox(width: 8),
+                      Text('Fan Speed', style: TextStyle(fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: List.generate(5, (index) {
+                      final speed = index + 1;
+                      final currentSpeed = state?.attributes['fanSpeed'] ?? device.fanSpeed ?? 0;
+                      final isSelected = currentSpeed == speed;
+                      return _buildFanSpeedButton(
+                        speed: speed,
+                        isSelected: isSelected,
+                        onTap: () => onFanSpeedChange(device.id, speed.toDouble()),
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: 16),
+                  // Mode Row
+                  const Row(
+                    children: [
+                      Icon(Icons.ac_unit, size: 20),
+                      SizedBox(width: 8),
+                      Text('Mode', style: TextStyle(fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    children: [
+                      _buildModeChip('Cool', 'cool', state, device, onModeChange),
+                      _buildModeChip('Heat', 'heat', state, device, onModeChange),
+                      _buildModeChip('Auto', 'auto', state, device, onModeChange),
+                      _buildModeChip('Dry', 'dry', state, device, onModeChange),
+                    ],
+                  ),
+                ],
+              ),
+            ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildFanSpeedButton({
+    required int speed,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.blue : Colors.grey[800],
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Center(
+          child: Text(
+            '$speed',
+            style: TextStyle(
+              color: isSelected ? Colors.white : Colors.grey[400],
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildModeChip(
+    String label,
+    String mode,
+    DeviceState? state,
+    Device device,
+    Function(String, String) onModeChange,
+  ) {
+    final currentMode = state?.mode ?? device.mode ?? 'cool';
+    final isSelected = currentMode.toString() == mode || 
+        (currentMode is String && currentMode.toLowerCase() == mode.toLowerCase());
+    return GestureDetector(
+      onTap: () => onModeChange(device.id, mode),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.blue : Colors.grey[800],
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.grey[400],
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
       ),
     );
   }

@@ -134,6 +134,9 @@ class RoomDetailScreen extends StatelessWidget {
     final deviceName = device['name'];
     final deviceType = device['type'] ?? 'swt';
     final brightness = device['brightness'] ?? 0;
+    final fanSpeed = device['fanSpeed'] ?? device['fSp'] ?? 0;
+    final mode = device['hvacMode'] ?? device['mode'] ?? 'cool';
+    final temperature = device['temp'] ?? device['temperature'] ?? 22;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -215,7 +218,127 @@ class RoomDetailScreen extends StatelessWidget {
                 ],
               ),
             ),
+          // HVAC Controls: Fan Speed and Mode
+          if (deviceType == 'hvc' && isOn)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Temperature display
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '${temperature}°C',
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  // Fan Speed Row
+                  const Row(
+                    children: [
+                      Icon(Icons.toys, size: 16, color: Colors.white54),
+                      SizedBox(width: 8),
+                      Text('Fan Speed', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: List.generate(5, (index) {
+                      final speed = index + 1;
+                      final isSelected = fanSpeed == speed;
+                      return _buildFanSpeedButton(
+                        speed: speed,
+                        isSelected: isSelected,
+                        onTap: () {
+                          okasService.sendFanSpeedCommand(deviceId, speed);
+                        },
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: 16),
+                  // Mode Row
+                  const Row(
+                    children: [
+                      Icon(Icons.ac_unit, size: 16, color: Colors.white54),
+                      SizedBox(width: 8),
+                      Text('Mode', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _buildModeChip('Cool', 'cool', mode, deviceId, okasService),
+                      _buildModeChip('Heat', 'heat', mode, deviceId, okasService),
+                      _buildModeChip('Auto', 'auto', mode, deviceId, okasService),
+                      _buildModeChip('Dry', 'dry', mode, deviceId, okasService),
+                    ],
+                  ),
+                ],
+              ),
+            ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildFanSpeedButton({
+    required int speed,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.blue : Colors.grey[800],
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Center(
+          child: Text(
+            '$speed',
+            style: TextStyle(
+              color: isSelected ? Colors.white : Colors.grey[400],
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildModeChip(String label, String mode, String currentMode, String deviceId, DirectMQTTService okasService) {
+    final isSelected = currentMode.toString().toLowerCase() == mode.toLowerCase() ||
+        currentMode == label.toLowerCase();
+    return GestureDetector(
+      onTap: () {
+        okasService.sendHVACModeCommand(deviceId, mode);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.blue : Colors.grey[800],
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.grey[400],
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            fontSize: 12,
+          ),
+        ),
       ),
     );
   }

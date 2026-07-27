@@ -63,6 +63,11 @@ require('./knxBridge');
             }
             knxLod[lNm].Val.Swt = val;
             knxLod[lNm].Val.Sta = val;
+            // For HVAC, when turned off, also clear the mode to 0 (OFF)
+            if (knxLod[lNm].Typ === 'HVAC' && val === 0) {
+                knxLod[lNm].Val.Tmc = 0;
+                knxLod[lNm].Val.Tmv = 0;
+            }
             dbg.Inf(`Turn-${val ? 'On' : 'Off'} sent to ${lNm}.`);
             // Push state to HomeKit + MQTT immediately so the Home app and
             // mobile app see it without waiting for bus feedback (many KNX
@@ -185,12 +190,19 @@ require('./knxBridge');
 
     Fsp = async (lNm, val) => {
         try {
-            const fnSpd = Math.min(255, Math.max(0, Math.round(Number(val))));
+            // Convert 1-5 scale to KNX 0-255 if needed
+            let fnSpd = Number(val);
+            if (val >= 1 && val <= 5) {
+                fnSpd = Math.round((val / 5) * 255);
+            }
+            fnSpd = Math.min(255, Math.max(0, fnSpd));
             let res = knxCmd(lNm, 'Fsc', fnSpd);
             if (!res.ok) {
                 dbg.Err(`Unable to send Fan Speed command to ${lNm}: ${res.err}.`);
                 return res;
             }
+            // Store in both Fsv and Fsc for consistency with status reporting
+            knxLod[lNm].Val.Fsv = fnSpd;
             knxLod[lNm].Val.Fsc = fnSpd;
             dbg.Inf(`Fan Speed-${fnSpd} sent to ${lNm}.`);
             // Push fan speed to HomeKit + MQTT immediately
@@ -214,14 +226,30 @@ require('./knxBridge');
 
     Tmd = async (lNm, val) => {
         try {
-            let res = knxCmd(lNm, 'Tmc', val);
-            if (!res.ok) {
-                dbg.Err(`Unable to send Temperature Mode command to ${lNm}: ${res.err}.`);
-                return res;
+            // Convert string mode to numeric if needed
+            if (typeof val === 'string') {
+                const modeMap = { 'cool': 1, 'heat': 2, 'auto': 3, 'dry': 1 };
+                val = modeMap[val.toLowerCase()] ?? 1;
             }
-            knxLod[lNm].Val.Tmc = val;
-            let mode = ["OFF", "HEAT", "COOL", "AUTO"][val];
-            dbg.Inf(`Temperature Mode-${mode} sent to ${lNm}.`);
+            // HomeKit TargetHeatingCoolingState: 0=OFF, 1=COOL, 2=HEAT, 3=AUTO
+            // When OFF is selected, also turn off the HVAC switch
+            if (val === 0) {
+                dbg.Inf(`HVAC OFF mode - turning off ${lNm}`);
+                await Swt(lNm, 0);
+                // Update state
+                knxLod[lNm].Val.Tmc = 0;
+                knxLod[lNm].Val.Tmv = 0;
+            } else {
+                let res = knxCmd(lNm, 'Tmc', val);
+                if (!res.ok) {
+                    dbg.Err(`Unable to send Temperature Mode command to ${lNm}: ${res.err}.`);
+                    return res;
+                }
+                knxLod[lNm].Val.Tmc = val;
+                knxLod[lNm].Val.Tmv = val;
+                let mode = ["OFF", "HEAT", "COOL", "AUTO"][val];
+                dbg.Inf(`Temperature Mode-${mode} sent to ${lNm}.`);
+            }
             // Push mode to HomeKit + MQTT immediately
             const hkSvc = hkbAcc[lNm] && hkbAcc[lNm][0];
             if (hkSvc) {

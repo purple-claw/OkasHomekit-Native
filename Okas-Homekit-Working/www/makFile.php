@@ -119,6 +119,9 @@ if ($inDat) {
         $oData = o2S($ldData);
         file_put_contents($file, $oData);
         sleep(2);
+        // Restart KNX bridge first (must reconnect to new gateway), then HomeKit service
+        exec("sudo /usr/bin/systemctl restart OhKnxKnx.service");
+        sleep(3);
         exec("sudo /usr/bin/systemctl restart HkBStartUp.service");
         unset($rslt, $kVal);
     }
