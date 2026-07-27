@@ -1,18 +1,19 @@
 // lib/features/home/presentation/screens/add_room_screen.dart
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_home_animation/core/core.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
+import 'package:smart_home_animation/services/room_service.dart';
 
 class AddRoomScreen extends StatefulWidget {
-  const AddRoomScreen({super.key});
+  final Map<String, dynamic>? roomToEdit;
+  
+  const AddRoomScreen({super.key, this.roomToEdit});
 
   @override
   State<AddRoomScreen> createState() => _AddRoomScreenState();
@@ -20,81 +21,65 @@ class AddRoomScreen extends StatefulWidget {
 
 class _AddRoomScreenState extends State<AddRoomScreen> {
   final _nameController = TextEditingController();
-  final Set<String> _selectedLoads = {};
-
-  // Image selection
+  final Set<String> _selectedLoadIds = {};
   String? _roomImagePath;
   bool _isImageLoading = false;
+  List<Map<String, dynamic>> _availableLoads = [];
+  bool get _isEditing => widget.roomToEdit != null;
 
-  // All load types with their details
-  final List<LoadType> _loadTypes = [
-    LoadType(
-      name: 'Switch',
-      defaultName: 'Light',
-      icon: Icons.power_settings_new,
-      color: Colors.green,
-    ),
-    LoadType(
-      name: 'Dimmer',
-      defaultName: 'Dimmer Light',
-      icon: Icons.brightness_low,
-      color: Colors.orange,
-    ),
-    LoadType(
-      name: 'Tunable',
-      defaultName: 'Tunable Light',
-      icon: Icons.tune,
-      color: Colors.purple,
-    ),
-    LoadType(
-      name: 'RGB',
-      defaultName: 'RGB Light',
-      icon: Icons.palette,
-      color: Colors.blue,
-    ),
-    LoadType(
-      name: 'HVAC',
-      defaultName: 'HVAC',
-      icon: Icons.ac_unit,
-      color: Colors.cyan,
-    ),
-    LoadType(
-      name: 'Scene',
-      defaultName: 'Scene',
-      icon: Icons.auto_awesome,
-      color: Colors.pink,
-    ),
-    LoadType(
-      name: 'Fan',
-      defaultName: 'Fan',
-      icon: Icons.toys,
-      color: Colors.teal,
-    ),
-    LoadType(
-      name: 'Curtain',
-      defaultName: 'Curtain',
-      icon: Icons.curtains,
-      color: Colors.brown,
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadAvailableLoads();
+      if (_isEditing) {
+        _loadExistingRoom();
+      }
+    });
+  }
+
+  void _loadExistingRoom() {
+    final room = widget.roomToEdit!;
+    _nameController.text = room['name']?.toString() ?? '';
+    _roomImagePath = room['imagePath']?.toString();
+    final loads = room['loads'] as List<dynamic>? ?? [];
+    setState(() {
+      _selectedLoadIds.addAll(loads.map((e) => e.toString()));
+    });
+  }
+
+  void _loadAvailableLoads() {
+    final mqttService = Provider.of<DirectMQTTService>(context, listen: false);
+    mqttService.addListener(_onLoadsUpdated);
+    _onLoadsUpdated();
+  }
+
+  void _onLoadsUpdated() {
+    final mqttService = Provider.of<DirectMQTTService>(context, listen: false);
+    setState(() {
+      _availableLoads = mqttService.getLoadsList();
+    });
+  }
 
   @override
   void dispose() {
+    try {
+      final mqttService = Provider.of<DirectMQTTService>(context, listen: false);
+      mqttService.removeListener(_onLoadsUpdated);
+    } catch (e) {
+      // Widget may be unmounted
+    }
     _nameController.dispose();
     super.dispose();
   }
 
   Future<String?> _compressAndSaveImage(String originalPath) async {
     try {
-      // Read the original image
       final originalImage = File(originalPath);
       final imageBytes = await originalImage.readAsBytes();
-
-      // Decode the image
       img.Image? image = img.decodeImage(imageBytes);
       if (image == null) return null;
 
-      // Resize image to max width/height of 500px while maintaining aspect ratio
       final maxSize = 500;
       img.Image resizedImage;
       if (image.width > image.height) {
@@ -103,10 +88,7 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
         resizedImage = img.copyResize(image, height: maxSize);
       }
 
-      // Compress JPEG with 70% quality
       final compressedBytes = img.encodeJpg(resizedImage, quality: 70);
-
-      // Save compressed image to app's local directory
       final appDir = await getApplicationDocumentsDirectory();
       final fileName = 'room_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final compressedFile = File('${appDir.path}/$fileName');
@@ -115,28 +97,24 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
       return compressedFile.path;
     } catch (e) {
       print('Error compressing image: $e');
-      return originalPath; // Return original if compression fails
+      return originalPath;
     }
   }
 
   Future<void> _pickImage(ImageSource source) async {
     try {
-      setState(() {
-        _isImageLoading = true;
-      });
+      setState(() => _isImageLoading = true);
 
       final picker = ImagePicker();
       final XFile? pickedImage = await picker.pickImage(
         source: source,
-        maxWidth: 1200, // Slightly larger for better quality before compression
+        maxWidth: 1200,
         maxHeight: 1200,
         imageQuality: 85,
       );
 
       if (pickedImage != null) {
-        // Compress and save the image
         final compressedPath = await _compressAndSaveImage(pickedImage.path);
-
         setState(() {
           _roomImagePath = compressedPath;
           _isImageLoading = false;
@@ -149,17 +127,13 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
           ),
         );
       } else {
-        setState(() {
-          _isImageLoading = false;
-        });
+        setState(() => _isImageLoading = false);
       }
     } catch (e) {
-      setState(() {
-        _isImageLoading = false;
-      });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error picking image: $e')));
+      setState(() => _isImageLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error picking image: $e')),
+      );
     }
   }
 
@@ -240,17 +214,15 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
   }
 
   void _removeImage() {
-    setState(() {
-      _roomImagePath = null;
-    });
+    setState(() => _roomImagePath = null);
   }
 
-  void _toggleLoadSelection(String loadType) {
+  void _toggleLoadSelection(String loadId) {
     setState(() {
-      if (_selectedLoads.contains(loadType)) {
-        _selectedLoads.remove(loadType);
+      if (_selectedLoadIds.contains(loadId)) {
+        _selectedLoadIds.remove(loadId);
       } else {
-        _selectedLoads.add(loadType);
+        _selectedLoadIds.add(loadId);
       }
     });
   }
@@ -259,62 +231,50 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
     final roomName = _nameController.text.trim();
 
     if (roomName.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Please enter a room name')));
-      return;
-    }
-
-    if (_selectedLoads.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select at least one load type')),
+        const SnackBar(content: Text('Please enter a room name')),
       );
       return;
     }
 
-    final okasService = Provider.of<DirectMQTTService>(context, listen: false);
-
-    // Create accessories from selected loads
-    final accessories = _selectedLoads.map((loadType) {
-      final loadTypeObj = _loadTypes.firstWhere((l) => l.name == loadType);
-      return {
-        'id': DateTime.now().millisecondsSinceEpoch.toString() + loadType,
-        'name': loadTypeObj.defaultName,
-        'type': loadType,
-        'isOn': false,
-      };
-    }).toList();
-
-    // Create room data
-    final roomId = DateTime.now().millisecondsSinceEpoch.toString();
+    final String roomId;
+    if (_isEditing && widget.roomToEdit != null) {
+      roomId = widget.roomToEdit!['id']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString();
+    } else {
+      roomId = DateTime.now().millisecondsSinceEpoch.toString();
+    }
+    
     final roomData = {
       'id': roomId,
       'name': roomName,
-      'accessories': accessories,
-      'createdAt': DateTime.now().toIso8601String(),
-      'imagePath': _roomImagePath, // Save the compressed image path
+      'imagePath': _roomImagePath,
+      'loads': _selectedLoadIds.toList(),
+      'createdAt': _isEditing ? widget.roomToEdit!['createdAt'] ?? DateTime.now().toIso8601String() : DateTime.now().toIso8601String(),
     };
 
-    // Send to OKAS board via MQTT
-    okasService.publish('rooms/add', json.encode(roomData));
-
-    // Save locally
-    final prefs = await SharedPreferences.getInstance();
-    final savedRoomsJson = prefs.getStringList('saved_rooms') ?? [];
-    final savedRooms = savedRoomsJson
-        .map((json) => jsonDecode(json) as Map<String, dynamic>)
-        .toList();
-
-    savedRooms.add(roomData);
-    await prefs.setStringList(
-      'saved_rooms',
-      savedRooms.map((room) => jsonEncode(room)).toList(),
+    // Save locally using RoomService
+    final room = Room(
+      id: roomId,
+      name: roomName,
+      imagePath: _roomImagePath,
+      loadIds: _selectedLoadIds.toList(),
+      createdAt: _isEditing ? (widget.roomToEdit!['createdAt'] != null ? DateTime.parse(widget.roomToEdit!['createdAt']) : DateTime.now()) : DateTime.now(),
     );
+    
+    if (_isEditing) {
+      await RoomService.instance.updateRoom(room);
+    } else {
+      await RoomService.instance.addRoom(room);
+    }
+
+    // Send to OKAS board via MQTT
+    final mqttService = Provider.of<DirectMQTTService>(context, listen: false);
+    mqttService.publish('rooms/add', json.encode(roomData));
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Room "$roomName" saved successfully!'),
+          content: Text(_isEditing ? 'Room "$roomName" updated!' : 'Room "$roomName" saved with ${_selectedLoadIds.length} loads!'),
           backgroundColor: SHColors.primary,
         ),
       );
@@ -326,6 +286,52 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
     Navigator.pop(context);
   }
 
+  String _getLoadTypeIcon(String type) {
+    switch (type) {
+      case 'swt':
+        return 'assets/icons/switch.png';
+      case 'dim':
+        return 'assets/icons/dimmer.png';
+      case 'rgb':
+        return 'assets/icons/rgb.png';
+      case 'tun':
+        return 'assets/icons/tunable.png';
+      case 'hvc':
+        return 'assets/icons/hvac.png';
+      case 'fan':
+        return 'assets/icons/fan.png';
+      case 'cur':
+        return 'assets/icons/curtain.png';
+      case 'scn':
+        return 'assets/icons/scene.png';
+      default:
+        return 'assets/icons/light.png';
+    }
+  }
+
+  Color _getLoadTypeColor(String type) {
+    switch (type) {
+      case 'swt':
+        return Colors.green;
+      case 'dim':
+        return Colors.orange;
+      case 'rgb':
+        return Colors.purple;
+      case 'tun':
+        return Colors.amber;
+      case 'hvc':
+        return Colors.cyan;
+      case 'fan':
+        return Colors.teal;
+      case 'cur':
+        return Colors.green;
+      case 'scn':
+        return Colors.pink;
+      default:
+        return Colors.grey;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -333,9 +339,9 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: const Text(
-            'Add New Room',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          title: Text(
+            _isEditing ? 'Edit Room' : 'Add New Room',
+            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -390,111 +396,71 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
                                 ),
                               )
                             : _roomImagePath != null
-                            ? Stack(
-                                fit: StackFit.expand,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: Image.file(
-                                      File(_roomImagePath!),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(16),
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                        colors: [
-                                          Colors.transparent,
-                                          Colors.black.withOpacity(0.7),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    bottom: 8,
-                                    right: 8,
-                                    child: Row(
-                                      children: [
-                                        IconButton(
-                                          onPressed: _showImagePickerOptions,
-                                          icon: const Icon(
-                                            Icons.edit,
-                                            color: Colors.white,
-                                            size: 20,
-                                          ),
-                                          style: IconButton.styleFrom(
-                                            backgroundColor: Colors.black54,
-                                            padding: const EdgeInsets.all(8),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 4),
-                                        IconButton(
-                                          onPressed: _removeImage,
-                                          icon: const Icon(
-                                            Icons.delete,
-                                            color: Colors.red,
-                                            size: 20,
-                                          ),
-                                          style: IconButton.styleFrom(
-                                            backgroundColor: Colors.black54,
-                                            padding: const EdgeInsets.all(8),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Positioned(
-                                    bottom: 8,
-                                    left: 8,
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.black54,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: const Text(
-                                        'Tap to change',
-                                        style: TextStyle(
-                                          color: Colors.white70,
-                                          fontSize: 10,
+                                ? Stack(
+                                    fit: StackFit.expand,
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(16),
+                                        child: Image.file(
+                                          File(_roomImagePath!),
+                                          fit: BoxFit.cover,
                                         ),
                                       ),
-                                    ),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(16),
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              Colors.transparent,
+                                              Colors.black.withOpacity(0.7),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        bottom: 8,
+                                        right: 8,
+                                        child: Row(
+                                          children: [
+                                            IconButton(
+                                              onPressed: _showImagePickerOptions,
+                                              icon: const Icon(Icons.edit, color: Colors.white, size: 20),
+                                              style: IconButton.styleFrom(
+                                                backgroundColor: Colors.black54,
+                                                padding: const EdgeInsets.all(8),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 4),
+                                            IconButton(
+                                              onPressed: _removeImage,
+                                              icon: const Icon(Icons.delete, color: Colors.red, size: 20),
+                                              style: IconButton.styleFrom(
+                                                backgroundColor: Colors.black54,
+                                                padding: const EdgeInsets.all(8),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.add_photo_alternate,
+                                        size: 48,
+                                        color: SHColors.primary.withOpacity(0.7),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      const Text(
+                                        'Tap to add room image',
+                                        style: TextStyle(color: Colors.white54, fontSize: 14),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              )
-                            : Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.add_photo_alternate,
-                                    size: 48,
-                                    color: SHColors.primary.withOpacity(0.7),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Tap to add room image',
-                                    style: TextStyle(
-                                      color: Colors.white54,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Camera or Gallery',
-                                    style: TextStyle(
-                                      color: Colors.white38,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
                       ),
                     ),
 
@@ -514,143 +480,132 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: SHColors.primary.withOpacity(0.3),
-                        ),
+                        border: Border.all(color: SHColors.primary.withOpacity(0.3)),
                       ),
                       child: TextField(
                         controller: _nameController,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
+                        style: const TextStyle(color: Colors.white, fontSize: 16),
                         decoration: const InputDecoration(
                           hintText: 'e.g., Living Room, Bedroom',
                           hintStyle: TextStyle(color: Colors.white38),
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 16,
-                          ),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                         ),
                       ),
                     ),
 
                     const SizedBox(height: 32),
 
-                    // Add Loads Section
+                    // Available Loads Section
                     const Text(
-                      'Add Loads',
+                      'Select Loads for this Room',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: Colors.white70,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
 
-                    // Horizontal Scrollable Load Types
-                    SizedBox(
-                      height: 120,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _loadTypes.length,
-                        itemBuilder: (context, index) {
-                          final loadType = _loadTypes[index];
-                          final isSelected = _selectedLoads.contains(
-                            loadType.name,
-                          );
-                          return _buildLoadCard(loadType, isSelected);
-                        },
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Selected Loads Summary
-                    if (_selectedLoads.isNotEmpty) ...[
+                    if (_availableLoads.isEmpty)
                       Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.05),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: SHColors.primary.withOpacity(0.3),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'No loads found. Configure KNX loads first.',
+                            style: TextStyle(color: Colors.white54),
                           ),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.checklist,
-                                  color: SHColors.primary,
-                                  size: 20,
+                      )
+                    else
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: _availableLoads.length,
+                        itemBuilder: (context, index) {
+                          final load = _availableLoads[index];
+                          final loadId = (load['id'] ?? index + 1).toString();
+                          final loadName = load['name'] ?? load['nm'] ?? 'Load ${index + 1}';
+                          final loadType = (load['type'] ?? load['typ'] ?? 'swt').toString();
+                          final isSelected = _selectedLoadIds.contains(loadId);
+
+                          return GestureDetector(
+                            onTap: () => _toggleLoadSelection(loadId),
+                            child: Container(
+                              margin: const EdgeInsets.only(bottom: 8),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? _getLoadTypeColor(loadType).withOpacity(0.2)
+                                    : Colors.white.withOpacity(0.05),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? _getLoadTypeColor(loadType)
+                                      : Colors.white.withOpacity(0.1),
+                                  width: isSelected ? 2 : 1,
                                 ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Selected Loads (${_selectedLoads.length})',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: _selectedLoads.map((loadName) {
-                                final loadType = _loadTypes.firstWhere(
-                                  (l) => l.name == loadName,
-                                );
-                                return Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: loadType.color.withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
-                                      color: loadType.color.withOpacity(0.5),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: _getLoadTypeColor(loadType).withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Image.asset(
+                                      _getLoadTypeIcon(loadType),
+                                      width: 20,
+                                      height: 20,
+                                      errorBuilder: (_, __, ___) => const Icon(Icons.lightbulb_outline, size: 20),
                                     ),
                                   ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        loadType.icon,
-                                        color: loadType.color,
-                                        size: 16,
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        loadName,
-                                        style: TextStyle(
-                                          color: loadType.color,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w500,
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          loadName,
+                                          style: TextStyle(
+                                            color: isSelected
+                                                ? _getLoadTypeColor(loadType)
+                                                : Colors.white,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                        Text(
+                                          loadType.toUpperCase(),
+                                          style: TextStyle(
+                                            color: Colors.white54,
+                                            fontSize: 11,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                );
-                              }).toList(),
+                                  if (isSelected)
+                                    Icon(
+                                      Icons.check_circle,
+                                      color: _getLoadTypeColor(loadType),
+                                    ),
+                                ],
+                              ),
                             ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
-                    ],
                   ],
                 ),
               ),
             ),
 
-            // Bottom Buttons - Cancel and Save
+            // Bottom Buttons
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -675,11 +630,7 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
                       ),
                       child: const Text(
                         'Cancel',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -695,13 +646,9 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
                         ),
                         elevation: 0,
                       ),
-                      child: const Text(
-                        'Save',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      child: Text(
+                        _selectedLoadIds.isEmpty ? 'Save Room' : 'Save (${_selectedLoadIds.length} loads)',
+                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -713,79 +660,4 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
       ),
     );
   }
-
-  Widget _buildLoadCard(LoadType loadType, bool isSelected) {
-    return GestureDetector(
-      onTap: () => _toggleLoadSelection(loadType.name),
-      child: Container(
-        width: 100,
-        margin: const EdgeInsets.only(right: 12),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? loadType.color.withOpacity(0.2)
-              : Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? loadType.color : Colors.white.withOpacity(0.2),
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Stack(
-              alignment: Alignment.topRight,
-              children: [
-                Icon(
-                  loadType.icon,
-                  color: isSelected ? loadType.color : Colors.white54,
-                  size: 40,
-                ),
-                if (isSelected)
-                  Positioned(
-                    right: -8,
-                    top: -8,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: loadType.color,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.check,
-                        color: Colors.white,
-                        size: 16,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              loadType.name,
-              style: TextStyle(
-                color: isSelected ? loadType.color : Colors.white70,
-                fontSize: 13,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// Load Type Model
-class LoadType {
-  final String name;
-  final String defaultName;
-  final IconData icon;
-  final Color color;
-
-  LoadType({
-    required this.name,
-    required this.defaultName,
-    required this.icon,
-    required this.color,
-  });
 }

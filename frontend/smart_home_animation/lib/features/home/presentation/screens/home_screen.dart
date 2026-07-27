@@ -2,6 +2,7 @@
 // ignore_for_file: unused_field, unused_element, unused_local_variable, unused_import
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,11 +14,14 @@ import 'package:smart_home_animation/core/shared/domain/entities/room.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/add_room_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/lounge_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/profile_screen.dart';
+import 'package:smart_home_animation/features/home/presentation/screens/rooms_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/scene_screen.dart';
+import 'package:smart_home_animation/features/home/presentation/screens/room_loads_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/widgets/page_indicators.dart';
 import 'package:smart_home_animation/features/home/presentation/widgets/smart_room_page_view.dart';
 import 'package:smart_home_animation/services/device_provider_wrapper.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
+import 'package:smart_home_animation/services/room_service.dart' hide Room;
 import 'package:smart_home_animation/services/token_auth_service.dart';
 import 'package:ui_common/ui_common.dart' hide DeviceType;
 
@@ -77,8 +81,17 @@ class _HomeScreenState extends State<HomeScreen> {
       _updateCurrentRoomLoads(_currentRoomIndex);
     };
     okasService.addListener(_okasServiceListener!);
+    // Listen to RoomService so newly added rooms show up immediately on
+    // the Home screen without waiting for a manual refresh.
+    _roomServiceListener = () {
+      if (!mounted) return;
+      _loadRoomsFromService();
+    };
+    RoomService.instance.addListener(_roomServiceListener!);
     _loadAllRooms();
   }
+
+  VoidCallback? _roomServiceListener;
 
   @override
   void dispose() {
@@ -87,6 +100,9 @@ class _HomeScreenState extends State<HomeScreen> {
         Provider.of<DirectMQTTService>(context, listen: false)
             .removeListener(_okasServiceListener!);
       } catch (_) { /* context may be unmounted */ }
+    }
+    if (_roomServiceListener != null) {
+      RoomService.instance.removeListener(_roomServiceListener!);
     }
     controller.removeListener(pageListener);
     controller.dispose();
@@ -105,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadSavedRooms() async {
     final prefs = await SharedPreferences.getInstance();
-    final roomsJson = prefs.getStringList('saved_rooms') ?? [];
+    final roomsJson = prefs.getStringList('home_saved_rooms') ?? [];
     setState(() {
       _savedRooms = roomsJson
           .map((json) => jsonDecode(json) as Map<String, dynamic>)
@@ -114,36 +130,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _loadRoomsFromService() {
-    final okasService = Provider.of<DirectMQTTService>(context, listen: false);
-    final List<Room> allRooms = [];
-
-    final mqttRooms = okasService.rooms.entries.map((entry) {
-      final roomData = entry.value;
-      return Room(
-        id: roomData['id'] ?? entry.key,
-        name: entry.key,
-        devices: [],
-        createdAt: DateTime.now(),
-      );
-    }).toList();
-    allRooms.addAll(mqttRooms);
-
-    for (var savedRoom in _savedRooms) {
-      allRooms.add(
-        Room(
-          id: savedRoom['id'],
-          name: savedRoom['name'],
-          devices: [],
-          createdAt: DateTime.parse(savedRoom['createdAt']),
-        ),
-      );
-    }
-
+    final serviceRooms = RoomService.instance.rooms;
     final uniqueRooms = <String, Room>{};
-    for (var room in allRooms) {
-      uniqueRooms[room.id] = room;
+    for (final r in serviceRooms) {
+      uniqueRooms[r.id] = Room(
+        id: r.id,
+        name: r.name,
+        wallpaperUrl: r.imagePath,
+        devices: [],
+        createdAt: r.createdAt,
+      );
     }
-
     setState(() {
       _rooms = uniqueRooms.values.toList();
     });
@@ -343,8 +340,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     _selectedIndex == 1
                         ? 'Loads'
                         : _selectedIndex == 2
-                        ? 'Scenes'
-                        : 'Guest Access',
+                            ? 'Rooms'
+                            : _selectedIndex == 3
+                                ? 'Scenes'
+                                : 'Guest Access',
                     style: context.titleLarge.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -357,6 +356,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               _buildHomeTab(),
               const LoungeScreen(),
+              RoomsTab(),
               const SceneScreen(),
               const ProfileScreen(),
             ],
@@ -521,108 +521,127 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildRoomCard() {
-    final smartRooms = _rooms.map((room) {
-      final savedRoom = _savedRooms.firstWhere(
-        (saved) => saved['id'] == room.id,
-        orElse: () => {},
-      );
-
-      final accessories = savedRoom['accessories'] as List<dynamic>? ?? [];
-
-      final devices = accessories.map((accessory) {
-        MQTTDeviceType mqttType;
-        switch (accessory['type']) {
-          case 'Switch':
-            mqttType = MQTTDeviceType.swt;
-            break;
-          case 'Dimmer':
-            mqttType = MQTTDeviceType.dim;
-            break;
-          case 'RGB':
-            mqttType = MQTTDeviceType.rgb;
-            break;
-          case 'Tunable':
-            mqttType = MQTTDeviceType.tun;
-            break;
-          case 'HVAC':
-            mqttType = MQTTDeviceType.hvc;
-            break;
-          case 'Scene':
-            mqttType = MQTTDeviceType.scn;
-            break;
-          case 'Fan':
-            mqttType = MQTTDeviceType.fan;
-            break;
-          case 'Curtain':
-            mqttType = MQTTDeviceType.cur;
-            break;
-          default:
-            mqttType = MQTTDeviceType.swt;
-        }
-
-        return Device(
-          id: accessory['id'],
-          name: accessory['name'],
-          type: DeviceType.light,
-          roomId: room.id,
-          room: room.name,
-          icon: Icons.lightbulb_outline,
-          color: Colors.amber,
-          isOn: accessory['isOn'] ?? false,
-          mqttType: mqttType,
-          sensortype: accessory['type'].toLowerCase(),
-          lastSeen: DateTime.now(),
-          isOnline: true,
-        );
-      }).toList();
-
-      return SmartRoom(
-        id: room.id,
-        name: room.name,
-        imageUrl: '',
-        temperature: 22.0,
-        airHumidity: 45.0,
-        lights: SmartDevice(isOn: false, value: 0),
-        airCondition: SmartDevice(isOn: false, value: 0),
-        timer: SmartDevice(isOn: false, value: 0),
-        musicInfo: MusicInfo(isOn: false, currentSong: Song.defaultSong),
-        devices: devices,
-        sensors: [],
-        automationRules: [],
-      );
-    }).toList();
-
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 24),
+        const Padding(
+          padding: EdgeInsets.only(top: 16, bottom: 8),
+          child: Text(
+            'Your Rooms',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
         SizedBox(
-          height: 380,
-          child: Stack(
-            fit: StackFit.expand,
-            clipBehavior: Clip.none,
-            children: [
-              // SmartRoomsPageView(
-              //   rooms: smartRooms,
-              //   pageNotifier: pageNotifier,
-              //   roomSelectorNotifier: roomSelectorNotifier,
-              //   controller: controller,
-              // ),
-              Positioned.fill(
-                top: null,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    PageIndicators(
-                      roomSelectorNotifier: roomSelectorNotifier,
-                      pageNotifier: pageNotifier,
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          height: 200,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            itemCount: _rooms.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              final room = _rooms[index];
+              return _buildHorizontalRoomCard(context, room);
+            },
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildHorizontalRoomCard(BuildContext context, Room room) {
+    final serviceRoom = RoomService.instance.getRoomById(room.id);
+    final imagePath = serviceRoom?.imagePath ?? room.wallpaperUrl;
+
+    return GestureDetector(
+      onTap: () {
+        if (serviceRoom != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => RoomLoadsScreen(room: serviceRoom),
+            ),
+          );
+        }
+      },
+      child: Container(
+        width: 220,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              SHColors.primary.withOpacity(0.3),
+              SHColors.primary.withOpacity(0.1),
+            ],
+          ),
+          border: Border.all(
+            color: SHColors.primary.withOpacity(0.3),
+            width: 1,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
+              child: SizedBox(
+                height: 110,
+                width: double.infinity,
+                child: imagePath != null && imagePath.isNotEmpty && File(imagePath).existsSync()
+                    ? Image.file(File(imagePath), fit: BoxFit.cover)
+                    : Container(
+                        color: Colors.black26,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Image.asset(
+                            'assets/icons/room.png',
+                            color: Colors.white70,
+                            errorBuilder: (_, __, ___) => const Icon(
+                              Icons.meeting_room,
+                              size: 48,
+                              color: Colors.white38,
+                            ),
+                          ),
+                        ),
+                      ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    room.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${(serviceRoom?.loadIds.length ?? 0)} loads',
+                    style: const TextStyle(
+                      color: Colors.white54,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

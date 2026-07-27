@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/core.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
+import '../widgets/load_grid_card.dart';
 
 class LoungeScreen extends StatefulWidget {
   const LoungeScreen({super.key});
@@ -210,7 +211,7 @@ class _LoungeScreenState extends State<LoungeScreen> {
     return GridView.builder(
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+        crossAxisCount: 3,
         childAspectRatio: 0.75,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
@@ -224,13 +225,11 @@ class _LoungeScreenState extends State<LoungeScreen> {
   }
 
   Widget _buildLoadCard(Map<String, dynamic> load) {
-    final isOn = load['isOn'] ?? false;
-    final deviceName = load['name'] ?? 'Device';
-    final deviceType = _getDeviceType(load['type'] ?? 'swt');
     final loadId = load['id']?.toString() ?? '';
-    final color = _getLoadColor(deviceType);
+    final deviceType = _getDeviceType(load['type'] ?? 'swt');
 
-    return GestureDetector(
+    return LoadGridCard(
+      load: load,
       onTap: () {
         if (deviceType == 'Dimmer' ||
             deviceType == 'Tunable' ||
@@ -241,138 +240,9 @@ class _LoungeScreenState extends State<LoungeScreen> {
           _showControlBottomSheet(load, deviceType);
         }
       },
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isOn
-                ? [color.withOpacity(0.3), color.withOpacity(0.1)]
-                : [
-                    Colors.white.withOpacity(0.08),
-                    Colors.white.withOpacity(0.03),
-                  ],
-          ),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isOn
-                ? color.withOpacity(0.5)
-                : Colors.white.withOpacity(0.1),
-            width: 1,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Icon - Fixed size
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Center(
-                  child: _getLoadIcon(
-                    deviceType,
-                    isOn ? color : Colors.white54,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-
-              // Name - Fixed text size
-              Text(
-                deviceName,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 2),
-
-              // Type - Fixed text size
-              Text(
-                deviceType,
-                style: const TextStyle(color: Colors.white54, fontSize: 10),
-              ),
-              const SizedBox(height: 6),
-
-              // ON/OFF Switch
-              Switch(
-                value: isOn,
-                onChanged: (value) {
-                  _sendCommand(load['id'], value ? 'ON' : 'OFF');
-                },
-                activeColor: color,
-                inactiveThumbColor: Colors.grey,
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-
-              // Quick Control Preview - Only shown when ON
-              if (isOn &&
-                  (deviceType == 'Dimmer' ||
-                      deviceType == 'Tunable' ||
-                      deviceType == 'Curtain'))
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              deviceType == 'Tunable'
-                                  ? 'Tunning'
-                                  : deviceType == 'Dimmer'
-                                  ? 'Brightness'
-                                  : 'Movement',
-                              style: const TextStyle(
-                                color: Colors.white70,
-                                fontSize: 10,
-                              ),
-                            ),
-                            Text(
-                              deviceType == 'Tunable'
-                                  ? '${_convertToKelvin(load['cTp'] ?? 166).toInt()}K'
-                                  : deviceType == 'Dimmer'
-                                  ? '${(load['brightness'] ?? 0).toInt()}%'
-                                  // Curtain: read tPs (target) first, then cPs (current),
-                                  // then pos. Backend publishes tPs/cPs in the retained
-                                  // status payload, so older code that only checked
-                                  // pos/cPs saw 0 forever.
-                                  : '${(load['tPs'] ?? load['cPs'] ?? load['pos'] ?? 0).toInt()}%',
-                              style: const TextStyle(
-                                color: SHColors.primary,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
+      onToggle: (value) {
+        _sendCommand(load['id'], value ? 'ON' : 'OFF');
+      },
     );
   }
 

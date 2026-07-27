@@ -12,6 +12,7 @@ import 'package:network_info_plus/network_info_plus.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/music_info.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/smart_device.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/smart_room.dart';
+import 'package:smart_home_animation/services/room_service.dart';
 
 // Note: We're not using multicast_dns due to API issues
 // Instead, we'll use network scanning and hostname resolution
@@ -672,12 +673,43 @@ class DirectMQTTService extends ChangeNotifier {
     publish('rooms/add', json.encode(roomData));
   }
 
+  void deleteRoom(String roomId) {
+    publish('rooms/delete', json.encode({'id': roomId}));
+  }
+
+  void updateRoom(Map<String, dynamic> roomData) {
+    publish('rooms/add', json.encode(roomData));
+  }
+
   void getRooms() {
     publish('rooms/get', '{}');
   }
 
   List<Map<String, dynamic>> getLoadsList() {
     return _loads.values.toList();
+  }
+
+  String _defaultLoadName(String type, int loadId) {
+    switch (type) {
+      case 'swt':
+        return 'Switch $loadId';
+      case 'dim':
+        return 'Dimmer $loadId';
+      case 'rgb':
+        return 'RGB Light $loadId';
+      case 'tun':
+        return 'Tunable Light $loadId';
+      case 'hvc':
+        return 'AC $loadId';
+      case 'fan':
+        return 'Fan $loadId';
+      case 'cur':
+        return 'Curtain $loadId';
+      case 'scn':
+        return 'Scene $loadId';
+      default:
+        return 'Load $loadId';
+    }
   }
 
   void _subscribeToTopics() {
@@ -688,6 +720,7 @@ class DirectMQTTService extends ChangeNotifier {
         'command/cmdAck',
         'status/+',
         'status/mobAck',
+        'rooms/set',
       ];
 
       for (String topic in topics) {
@@ -727,8 +760,17 @@ class DirectMQTTService extends ChangeNotifier {
           final loadId = i + 1;
 
           // FIX: Handle nullable values properly
-          final loadName = load['nm'] as String? ?? 'Load ${loadId}';
-          final loadType = load['typ'] as String? ?? 'swt';
+          final loadType = load['typ'] as String? ?? load['type'] as String? ?? 'swt';
+          final rawNm = load['nm'];
+          final rawName = load['name'];
+          String loadName;
+          if (rawNm is String && rawNm.isNotEmpty) {
+            loadName = rawNm;
+          } else if (rawName is String && rawName.isNotEmpty) {
+            loadName = rawName;
+          } else {
+            loadName = _defaultLoadName(loadType, loadId);
+          }
 
           final sta = load['sta'] as Map<String, dynamic>?;
           final isOn = sta?['on'] as bool? ?? false;
@@ -839,6 +881,30 @@ class DirectMQTTService extends ChangeNotifier {
 
         notifyListeners();
         print('✅ Loaded ${_loads.length} loads from OKAS');
+      }
+
+      // Handle rooms updates - board is the source of truth, replace list
+      if (topic == 'rooms/set' && data.containsKey('rooms')) {
+        final roomsData = data['rooms'] as List<dynamic>;
+        final newRooms = <Room>[];
+        for (var roomJson in roomsData) {
+          final room = Room(
+            id: roomJson['id']?.toString() ?? '',
+            name: roomJson['name']?.toString() ?? 'Unnamed',
+            imagePath: roomJson['imagePath']?.toString(),
+            loadIds: List<String>.from(
+              (roomJson['loads'] as List<dynamic>? ?? [])
+                  .map((e) => e.toString())
+                  .toList(),
+            ),
+            createdAt: DateTime.tryParse(roomJson['createdAt'] ?? '') ??
+                DateTime.now(),
+          );
+          newRooms.add(room);
+        }
+        // Replace entire rooms list to avoid duplicates
+        RoomService.instance.replaceRooms(newRooms);
+        print('✅ Loaded ${newRooms.length} rooms from OKAS');
       }
 
       // Handle status updates for specific loads

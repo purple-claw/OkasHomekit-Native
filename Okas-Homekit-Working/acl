@@ -1,0 +1,43 @@
+## Topic ACl Config File 
+## Author : Miantic Dev Team
+## Last Edited : 08-04-2026
+
+# =============================
+# Okas Hercules
+# Local Topics to be accessed by Hercules
+# (secured by localhost binding)
+# =============================
+topic readwrite loads/+
+topic readwrite command/+
+topic readwrite status/+
+
+# Room management topics
+topic readwrite rooms/+
+
+# =============================
+# Internal KNX Bridge (Python xknx <-> Node.js)
+# Accessed via localhost (secured by binding)
+# =============================
+topic readwrite okas/knx/#
+
+# =============================
+# Mobile Client (authenticated)
+# =============================
+user okasapi
+
+topic write loads/getLoads
+topic read loads/setLoads
+
+# Commands
+topic write command/sndCmd
+topic read command/cmdAck
+
+# Per Load Status
+topic read status/+
+topic write status/mobAck
+
+# Room management
+topic write rooms/get
+topic read rooms/set
+topic write rooms/add
+

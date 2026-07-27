@@ -26,12 +26,22 @@ class RoomSectionWidget extends StatelessWidget {
     final imagePath = savedRoomData['imagePath'] as String?;
 
     // Count different types of loads
-    final switchCount = accessories.where((a) => a['type'] == 'Switch').length;
-    final dimmerCount = accessories.where((a) => a['type'] == 'Dimmer').length;
-    final tunableCount = accessories
-        .where((a) => a['type'] == 'Tunable')
-        .length;
-    final rgbCount = accessories.where((a) => a['type'] == 'RGB').length;
+    final switchCount = accessories.where((a) {
+      final t = a['type']?.toString().toLowerCase() ?? '';
+      return t == 'switch' || t == 'swt';
+    }).length;
+    final dimmerCount = accessories.where((a) {
+      final t = a['type']?.toString().toLowerCase() ?? '';
+      return t == 'dimmer' || t == 'dim';
+    }).length;
+    final tunableCount = accessories.where((a) {
+      final t = a['type']?.toString().toLowerCase() ?? '';
+      return t == 'tunable' || t == 'tun';
+    }).length;
+    final rgbCount = accessories.where((a) {
+      final t = a['type']?.toString().toLowerCase() ?? '';
+      return t == 'rgb';
+    }).length;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
@@ -70,10 +80,17 @@ class RoomSectionWidget extends StatelessWidget {
                             ? Image.file(File(imagePath), fit: BoxFit.cover)
                             : Container(
                                 color: Colors.white.withOpacity(0.05),
-                                child: Icon(
-                                  _getRoomIcon(),
-                                  color: SHColors.primary,
-                                  size: 30,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(12),
+                                  child: Image.asset(
+                                    _getRoomIconAsset(),
+                                    color: SHColors.primary,
+                                    errorBuilder: (_, __, ___) => Icon(
+                                      _getRoomIcon(),
+                                      color: SHColors.primary,
+                                      size: 30,
+                                    ),
+                                  ),
                                 ),
                               ),
                       ),
@@ -124,7 +141,7 @@ class RoomSectionWidget extends StatelessWidget {
                         context,
                         'Switch',
                         switchCount,
-                        Icons.power_settings_new,
+                        'assets/icons/switch.png',
                         Colors.green,
                       ),
                       const SizedBox(width: 16),
@@ -132,7 +149,7 @@ class RoomSectionWidget extends StatelessWidget {
                         context,
                         'Dimmer',
                         dimmerCount,
-                        Icons.brightness_low,
+                        'assets/icons/dimmer.png',
                         Colors.orange,
                       ),
                       const SizedBox(width: 16),
@@ -140,7 +157,7 @@ class RoomSectionWidget extends StatelessWidget {
                         context,
                         'Tunable',
                         tunableCount,
-                        Icons.tune,
+                        'assets/icons/tunable.png',
                         Colors.purple,
                       ),
                       const SizedBox(width: 16),
@@ -148,7 +165,7 @@ class RoomSectionWidget extends StatelessWidget {
                         context,
                         'RGB',
                         rgbCount,
-                        Icons.palette,
+                        'assets/icons/rgb.png',
                         Colors.blue,
                       ),
                     ],
@@ -178,7 +195,7 @@ class RoomSectionWidget extends StatelessWidget {
     BuildContext context,
     String label,
     int count,
-    IconData icon,
+    String iconAsset,
     Color color,
   ) {
     return Expanded(
@@ -190,7 +207,17 @@ class RoomSectionWidget extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Icon(icon, color: color, size: 20),
+            Image.asset(
+              iconAsset,
+              width: 20,
+              height: 20,
+              color: color,
+              errorBuilder: (_, __, ___) => Icon(
+                Icons.lightbulb_outline,
+                color: color,
+                size: 20,
+              ),
+            ),
             const SizedBox(height: 4),
             Text(
               count.toString(),
@@ -228,6 +255,23 @@ class RoomSectionWidget extends StatelessWidget {
       return Icons.work;
     } else {
       return Icons.home;
+    }
+  }
+
+  String _getRoomIconAsset() {
+    final roomName = room.name.toLowerCase();
+    if (roomName.contains('living') || roomName.contains('lounge')) {
+      return 'assets/icons/room.png';
+    } else if (roomName.contains('bedroom')) {
+      return 'assets/icons/room.png';
+    } else if (roomName.contains('kitchen')) {
+      return 'assets/icons/room.png';
+    } else if (roomName.contains('bathroom')) {
+      return 'assets/icons/room.png';
+    } else if (roomName.contains('office')) {
+      return 'assets/icons/room.png';
+    } else {
+      return 'assets/icons/room.png';
     }
   }
 }

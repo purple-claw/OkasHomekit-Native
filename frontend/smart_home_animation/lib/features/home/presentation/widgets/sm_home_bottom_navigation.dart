@@ -61,6 +61,15 @@ class SmHomeBottomNavigationBar extends StatelessWidget {
             label: 'Loads',
           ),
           BottomNavigationBarItem(
+            icon: _buildIcon('assets/icons/room.png', 24),
+            activeIcon: _buildIcon(
+              'assets/icons/room.png',
+              24,
+              color: SHColors.primary,
+            ),
+            label: 'Rooms',
+          ),
+          BottomNavigationBarItem(
             icon: _buildIcon('assets/icons/scene.png', 24),
             activeIcon: _buildIcon(
               'assets/icons/scene.png',
@@ -81,7 +90,22 @@ class SmHomeBottomNavigationBar extends StatelessWidget {
 
   // For PNG/JPG images
   Widget _buildIcon(String path, double size, {Color? color}) {
-    return Image.asset(path, width: size, height: size, color: color);
+    // Handle missing icons gracefully
+    try {
+      return Image.asset(path, width: size, height: size, color: color);
+    } catch (e) {
+      // Fallback to appropriate icon based on path
+      if (path.contains('room')) {
+        return Icon(Icons.meeting_room, size: size, color: color);
+      } else if (path.contains('home')) {
+        return Icon(Icons.home, size: size, color: color);
+      } else if (path.contains('loads')) {
+        return Icon(Icons.lightbulb_outline, size: size, color: color);
+      } else if (path.contains('scene')) {
+        return Icon(Icons.auto_awesome, size: size, color: color);
+      }
+      return Icon(Icons.circle, size: size, color: color);
+    }
   }
 
   // For SVG images (if using flutter_svg)

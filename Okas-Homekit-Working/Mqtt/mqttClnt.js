@@ -12,11 +12,15 @@ require("../KNX/actHdlr");
         SUB: {
             GT_LDS:  'loads/getLoads',
             SND_CMD: 'command/sndCmd',
-            MOB_ACK: 'status/mobAck'
+            MOB_ACK: 'status/mobAck',
+            GT_ROOMS: 'rooms/get',
+            ADD_ROOM: 'rooms/add',
+            DEL_ROOM: 'rooms/delete'
         },
         PUB: {
             ST_LDS:  'loads/setLoads',
-            CMD_ACK: 'command/cmdAck'
+            CMD_ACK: 'command/cmdAck',
+            ST_ROOMS: 'rooms/set'
         }
     };
 
@@ -39,6 +43,79 @@ require("../KNX/actHdlr");
             ldIdx[v.Nm] = i;
         });
         dbg.Inf('MQTT: Load index built — ' + Object.keys(ldIdx).length + ' loads mapped.');
+    };
+
+    // Room management - persistent storage
+    const fs = require('fs');
+    const path = require('path');
+    const ROOMS_FILE = path.join(__dirname, '..', 'Data', 'rooms.json');
+
+    global.rooms = [];
+    const loadRooms = () => {
+        try {
+            if (fs.existsSync(ROOMS_FILE)) {
+                global.rooms = JSON.parse(fs.readFileSync(ROOMS_FILE, 'utf8'));
+                dbg.Inf('MQTT: Loaded ' + global.rooms.length + ' rooms.');
+            }
+        } catch (e) {
+            dbg.Err('MQTT: Failed to load rooms: ' + e.message);
+            global.rooms = [];
+        }
+    };
+    loadRooms();
+
+    const saveRooms = () => {
+        try {
+            fs.writeFileSync(ROOMS_FILE, JSON.stringify(global.rooms, null, 2));
+            dbg.Inf('MQTT: Saved ' + global.rooms.length + ' rooms.');
+        } catch (e) {
+            dbg.Err('MQTT: Failed to save rooms: ' + e.message);
+        }
+    };
+
+    global.mqttGetRooms = (pld) => {
+        mqttPub(TPCS.PUB.ST_ROOMS, { rooms: global.rooms });
+    };
+
+    global.mqttDeleteRoom = (pld) => {
+        if (!pld || !pld.id) {
+            dbg.Err('MQTT: Invalid room delete payload');
+            return;
+        }
+        const idx = global.rooms.findIndex(r => r.id === pld.id);
+        if (idx >= 0) {
+            const removed = global.rooms.splice(idx, 1)[0];
+            dbg.Inf('MQTT: Deleted room: ' + removed.name);
+            saveRooms();
+        } else {
+            dbg.Wrn('MQTT: Delete room - id not found: ' + pld.id);
+        }
+        mqttPub(TPCS.PUB.ST_ROOMS, { rooms: global.rooms });
+    };
+
+    global.mqttAddRoom = (pld) => {
+        if (!pld || !pld.name) {
+            dbg.Err('MQTT: Invalid room data');
+            return;
+        }
+        const room = {
+            id: pld.id || Date.now().toString(),
+            name: pld.name,
+            imagePath: pld.imagePath || null,
+            loads: pld.loads || [],
+            createdAt: pld.createdAt || new Date().toISOString()
+        };
+        // Check if room exists, update if so
+        const existingIdx = global.rooms.findIndex(r => r.id === room.id);
+        if (existingIdx >= 0) {
+            global.rooms[existingIdx] = room;
+            dbg.Inf('MQTT: Updated room: ' + room.name);
+        } else {
+            global.rooms.push(room);
+            dbg.Inf('MQTT: Added room: ' + room.name);
+        }
+        saveRooms();
+        mqttPub(TPCS.PUB.ST_ROOMS, { rooms: global.rooms });
     };
 
     const getLdNm = (id) => {
@@ -246,6 +323,15 @@ require("../KNX/actHdlr");
                 break;
             case TPCS.SUB.MOB_ACK:
                 mqttRcvSts(pld);
+                break;
+            case TPCS.SUB.GT_ROOMS:
+                mqttGetRooms(pld);
+                break;
+            case TPCS.SUB.ADD_ROOM:
+                mqttAddRoom(pld);
+                break;
+            case TPCS.SUB.DEL_ROOM:
+                mqttDeleteRoom(pld);
                 break;
             default:
                 dbg.Wrn('MQTT: Unhandled Topic - ' + tp);
