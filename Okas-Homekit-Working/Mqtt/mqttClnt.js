@@ -437,8 +437,8 @@ require("../KNX/actHdlr");
                     on: vals.Sta ? true : false,
                     rTp: vals.Trm || 0,
                     spt: vals.Tsp || 0,
-                    fSp: vals.Fsv || vals.Fsc || 0,
-                    mod: vals.Tmv || vals.Tmc || 0
+                    fSp: vals.Fsv || 0,
+                    mod: vals.Tmv || 0
                 };
             case 'Fan':
                 return {
