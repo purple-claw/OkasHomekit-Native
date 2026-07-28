@@ -21,59 +21,88 @@ class LoadGridCard extends StatelessWidget {
     final deviceType = _deviceType(load['type'] ?? 'swt');
     final isOn = load['isOn'] ?? false;
     final deviceName = load['name'] ?? 'Device';
-    final color = _color(deviceType);
+    final color = SHColors.deviceAccent(deviceType);
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isOn ? color.withOpacity(0.5) : Colors.white.withOpacity(0.1),
-            width: 1,
-          ),
+        decoration: SHColors.glassDecoration(
+          active: isOn,
+          accent: color,
+          radius: SHColors.radiusLg,
         ),
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        padding: const EdgeInsets.fromLTRB(10, 12, 10, 10),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              width: 36,
-              height: 36,
-              child: _icon(deviceType, color),
+            Row(
+              children: [
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(isOn ? 0.2 : 0.1),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Center(child: _icon(deviceType, color)),
+                ),
+                const Spacer(),
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: isOn ? color : SHColors.hintColor,
+                    shape: BoxShape.circle,
+                    boxShadow: isOn
+                        ? [
+                            BoxShadow(
+                              color: color.withOpacity(0.55),
+                              blurRadius: 10,
+                            ),
+                          ]
+                        : null,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
+            const Spacer(),
             Text(
               _label(deviceType),
               style: const TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
+                color: SHColors.mutedText,
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 4),
             Text(
               deviceName,
               style: const TextStyle(color: Colors.white54, fontSize: 10),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             GestureDetector(
               onTap: () => onToggle(!isOn),
               child: Container(
-                width: 32,
-                height: 32,
+                width: double.infinity,
+                height: 34,
                 decoration: BoxDecoration(
-                  color: isOn ? Colors.green : Colors.red.withOpacity(0.85),
-                  shape: BoxShape.circle,
+                  color: isOn
+                      ? color.withOpacity(0.95)
+                      : Colors.white.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                    color: isOn
+                        ? Colors.transparent
+                        : Colors.white.withOpacity(0.12),
+                  ),
                 ),
                 child: Icon(
                   Icons.power_settings_new,
-                  color: Colors.white,
+                  color: isOn ? Colors.white : SHColors.hintColor,
                   size: 18,
                 ),
               ),
@@ -129,29 +158,6 @@ class LoadGridCard extends StatelessWidget {
     }
   }
 
-  Color _color(String type) {
-    switch (type) {
-      case 'Switch':
-        return Colors.green;
-      case 'Dimmer':
-        return Colors.orange;
-      case 'Tunable':
-        return Colors.purple;
-      case 'RGB':
-        return Colors.blue;
-      case 'HVAC':
-        return Colors.cyan;
-      case 'Scene':
-        return Colors.pink;
-      case 'Fan':
-        return Colors.teal;
-      case 'Curtain':
-        return Colors.brown;
-      default:
-        return SHColors.primary;
-    }
-  }
-
   Widget _icon(String type, Color color) {
     String asset;
     switch (type) {
@@ -184,14 +190,11 @@ class LoadGridCard extends StatelessWidget {
     }
     return Image.asset(
       asset,
-      width: 32,
-      height: 32,
+      width: 24,
+      height: 24,
       color: color,
-      errorBuilder: (_, __, ___) => Icon(
-        Icons.lightbulb_outline,
-        color: color,
-        size: 28,
-      ),
+      errorBuilder: (_, __, ___) =>
+          Icon(Icons.lightbulb_outline, color: color, size: 24),
     );
   }
 }

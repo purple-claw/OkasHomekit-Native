@@ -17,98 +17,115 @@ class SmHomeBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.7),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+    return SafeArea(
+      top: false,
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+        decoration: BoxDecoration(
+          color: SHColors.black.withOpacity(0.82),
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: Colors.white.withOpacity(0.12)),
+          boxShadow: SHColors.softShadow,
         ),
-      ),
-      child: BottomNavigationBar(
-        currentIndex: currentIndex,
-        onTap: onTabTapped,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: SHColors.primary,
-        unselectedItemColor: Colors.white54,
-        selectedLabelStyle: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(28),
+          child: BottomNavigationBar(
+            currentIndex: currentIndex,
+            onTap: onTabTapped,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            type: BottomNavigationBarType.fixed,
+            selectedItemColor: SHColors.primary,
+            unselectedItemColor: SHColors.hintColor,
+            selectedFontSize: 11,
+            unselectedFontSize: 11,
+            items: [
+              BottomNavigationBarItem(
+                icon: _buildIcon(
+                  'assets/icons/home.png',
+                  22,
+                  color: SHColors.hintColor,
+                ),
+                activeIcon: _activeIcon('assets/icons/home.png'),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: _buildIcon(
+                  'assets/icons/loads.png',
+                  22,
+                  color: SHColors.hintColor,
+                ),
+                activeIcon: _activeIcon('assets/icons/loads.png'),
+                label: 'Loads',
+              ),
+              BottomNavigationBarItem(
+                icon: _buildIcon(
+                  'assets/icons/room.png',
+                  22,
+                  color: SHColors.hintColor,
+                ),
+                activeIcon: _activeIcon('assets/icons/room.png'),
+                label: 'Rooms',
+              ),
+              BottomNavigationBarItem(
+                icon: _buildIcon(
+                  'assets/icons/scene.png',
+                  22,
+                  color: SHColors.hintColor,
+                ),
+                activeIcon: _activeIcon('assets/icons/scene.png'),
+                label: 'Scenes',
+              ),
+              BottomNavigationBarItem(
+                icon: const Icon(Icons.person_outline, size: 22),
+                activeIcon: _activeIcon(null, icon: Icons.person),
+                label: 'Profile',
+              ),
+            ],
+          ),
         ),
-        unselectedLabelStyle: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-        ),
-        items: [
-          BottomNavigationBarItem(
-            icon: _buildIcon('assets/icons/home.png', 24),
-            activeIcon: _buildIcon(
-              'assets/icons/home.png',
-              24,
-              color: SHColors.primary,
-            ),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: _buildIcon('assets/icons/loads.png', 24),
-            activeIcon: _buildIcon(
-              'assets/icons/loads.png',
-              24,
-              color: SHColors.primary,
-            ),
-            label: 'Loads',
-          ),
-          BottomNavigationBarItem(
-            icon: _buildIcon('assets/icons/room.png', 24),
-            activeIcon: _buildIcon(
-              'assets/icons/room.png',
-              24,
-              color: SHColors.primary,
-            ),
-            label: 'Rooms',
-          ),
-          BottomNavigationBarItem(
-            icon: _buildIcon('assets/icons/scene.png', 24),
-            activeIcon: _buildIcon(
-              'assets/icons/scene.png',
-              24,
-              color: SHColors.primary,
-            ),
-            label: 'Scenes',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline, size: 24),
-            activeIcon: Icon(Icons.person, size: 24),
-            label: 'Profile',
-          ),
-        ],
       ),
     );
   }
 
-  // For PNG/JPG images
-  Widget _buildIcon(String path, double size, {Color? color}) {
-    // Handle missing icons gracefully
-    try {
-      return Image.asset(path, width: size, height: size, color: color);
-    } catch (e) {
-      // Fallback to appropriate icon based on path
-      if (path.contains('room')) {
-        return Icon(Icons.meeting_room, size: size, color: color);
-      } else if (path.contains('home')) {
-        return Icon(Icons.home, size: size, color: color);
-      } else if (path.contains('loads')) {
-        return Icon(Icons.lightbulb_outline, size: size, color: color);
-      } else if (path.contains('scene')) {
-        return Icon(Icons.auto_awesome, size: size, color: color);
-      }
-      return Icon(Icons.circle, size: size, color: color);
-    }
+  Widget _activeIcon(String? path, {IconData? icon}) {
+    return Container(
+      width: 36,
+      height: 30,
+      decoration: BoxDecoration(
+        color: SHColors.primary.withOpacity(0.16),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: SHColors.primary.withOpacity(0.28)),
+      ),
+      child: Center(
+        child: path == null
+            ? Icon(icon, color: SHColors.primary, size: 22)
+            : _buildIcon(path, 22, color: SHColors.primary),
+      ),
+    );
   }
 
-  // For SVG images (if using flutter_svg)
+  Widget _buildIcon(String path, double size, {Color? color}) {
+    return Image.asset(
+      path,
+      width: size,
+      height: size,
+      color: color,
+      errorBuilder: (_, __, ___) {
+        if (path.contains('room')) {
+          return Icon(Icons.meeting_room, size: size, color: color);
+        } else if (path.contains('home')) {
+          return Icon(Icons.home, size: size, color: color);
+        } else if (path.contains('loads')) {
+          return Icon(Icons.lightbulb_outline, size: size, color: color);
+        } else if (path.contains('scene')) {
+          return Icon(Icons.auto_awesome, size: size, color: color);
+        }
+        return Icon(Icons.circle, size: size, color: color);
+      },
+    );
+  }
+
   Widget _buildSvgIcon(String path, double size, {Color? color}) {
     return SvgPicture.asset(
       path,

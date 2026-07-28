@@ -14,14 +14,18 @@ class LightedBackgound extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // Light effect overlay
           IgnorePointer(
-            child: Container(
+            child: DecoratedBox(
               decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: Alignment(0.3, -0.2),
-                  radius: 0.8,
-                  colors: [Colors.white.withOpacity(0.08), Colors.transparent],
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.white.withOpacity(0.08),
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.2),
+                  ],
+                  stops: const [0, 0.34, 1],
                 ),
               ),
             ),

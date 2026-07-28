@@ -40,13 +40,11 @@ class _RoomsTabState extends State<RoomsTab> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: rooms.isEmpty
-          ? _buildEmptyState()
-          : _buildRoomsList(rooms, loads),
+      body: rooms.isEmpty ? _buildEmptyState() : _buildRoomsList(rooms, loads),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _navigateToAddRoom(context),
         backgroundColor: SHColors.primary,
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add_rounded, color: Colors.white),
       ),
     );
   }
@@ -56,20 +54,24 @@ class _RoomsTabState extends State<RoomsTab> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.meeting_room_outlined, size: 80, color: Colors.grey[600]),
+          const Icon(
+            Icons.meeting_room_outlined,
+            size: 80,
+            color: SHColors.hintColor,
+          ),
           const SizedBox(height: 16),
           Text(
             'No Rooms Yet',
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 20,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w800,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             'Create rooms to organize your loads',
-            style: TextStyle(color: Colors.white54, fontSize: 14),
+            style: TextStyle(color: SHColors.mutedText, fontSize: 14),
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
@@ -89,7 +91,7 @@ class _RoomsTabState extends State<RoomsTab> {
 
   Widget _buildRoomsList(List<Room> rooms, List<Map<String, dynamic>> loads) {
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
       itemCount: rooms.length,
       itemBuilder: (context, index) {
         final room = rooms[index];
@@ -100,28 +102,26 @@ class _RoomsTabState extends State<RoomsTab> {
 
   Widget _buildRoomCard(Room room, List<Map<String, dynamic>> loads) {
     // Get loads for this room
-    final roomLoads = room.loadIds.map((id) {
-      try {
-        return loads.firstWhere((l) => l['id'].toString() == id);
-      } catch (e) {
-        return null;
-      }
-    }).whereType<Map<String, dynamic>>().toList();
+    final roomLoads = room.loadIds
+        .map((id) {
+          try {
+            return loads.firstWhere((l) => l['id'].toString() == id);
+          } catch (e) {
+            return null;
+          }
+        })
+        .whereType<Map<String, dynamic>>()
+        .toList();
 
     return GestureDetector(
       onTap: () => _showRoomDetail(room, roomLoads),
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              SHColors.primary.withOpacity(0.3),
-              SHColors.primary.withOpacity(0.1),
-            ],
-          ),
+          borderRadius: BorderRadius.circular(SHColors.radiusLg),
+          gradient: SHColors.cardGradient,
+          border: Border.all(color: Colors.white.withOpacity(0.14)),
+          boxShadow: SHColors.softShadow,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,12 +131,16 @@ class _RoomsTabState extends State<RoomsTab> {
               height: 120,
               width: double.infinity,
               decoration: BoxDecoration(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(SHColors.radiusLg),
+                ),
                 color: Colors.black26,
               ),
               child: room.imagePath != null
                   ? ClipRRect(
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(SHColors.radiusLg),
+                      ),
                       child: Image.file(
                         File(room.imagePath!),
                         fit: BoxFit.cover,
@@ -159,15 +163,14 @@ class _RoomsTabState extends State<RoomsTab> {
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       Text(
                         '${roomLoads.length} loads',
-                        style: TextStyle(
-                          color: Colors.white54,
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.white54, fontSize: 12),
                       ),
                     ],
                   ),
@@ -181,13 +184,15 @@ class _RoomsTabState extends State<RoomsTab> {
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
                           color: _getLoadTypeColor(type).withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         child: Image.asset(
                           _getLoadTypeIconAsset(type),
                           width: 16,
                           height: 16,
-                          errorBuilder: (_, __, ___) => const Icon(Icons.lightbulb_outline, size: 16),
+                          color: _getLoadTypeColor(type),
+                          errorBuilder: (_, __, ___) =>
+                              const Icon(Icons.lightbulb_outline, size: 16),
                         ),
                       );
                     }).toList(),
@@ -209,11 +214,8 @@ class _RoomsTabState extends State<RoomsTab> {
           'assets/icons/room.png',
           width: 48,
           height: 48,
-          errorBuilder: (_, __, ___) => Icon(
-            Icons.meeting_room,
-            size: 48,
-            color: Colors.white38,
-          ),
+          errorBuilder: (_, __, ___) =>
+              Icon(Icons.meeting_room, size: 48, color: SHColors.hintColor),
         ),
       ),
     );
@@ -230,9 +232,11 @@ class _RoomsTabState extends State<RoomsTab> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.grey[900],
+      backgroundColor: Colors.transparent,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(SHColors.radiusXl),
+        ),
       ),
       builder: (context) => DraggableScrollableSheet(
         initialChildSize: 0.6,
@@ -240,63 +244,73 @@ class _RoomsTabState extends State<RoomsTab> {
         maxChildSize: 0.9,
         expand: false,
         builder: (context, scrollController) {
-          return Column(
-            children: [
-              // Handle
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 12),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.white38,
-                  borderRadius: BorderRadius.circular(2),
-                ),
+          return Container(
+            decoration: BoxDecoration(
+              color: SHColors.elevatedCardColor,
+              gradient: SHColors.cardGradient,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(SHColors.radiusXl),
               ),
-              // Header
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      room.name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _showEditDeleteDialog(room);
-                      },
-                      icon: const Icon(Icons.more_vert, color: Colors.white),
-                    ),
-                  ],
+              border: Border.all(color: Colors.white.withOpacity(0.12)),
+            ),
+            child: Column(
+              children: [
+                // Handle
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 12),
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.white38,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
-              ),
-              const Divider(color: Colors.white24),
-              // Loads list
-              Expanded(
-                child: roomLoads.isEmpty
-                    ? Center(
-                        child: Text(
-                          'No loads in this room',
-                          style: TextStyle(color: Colors.white54),
+                // Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        room.name,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                      )
-                    : ListView.builder(
-                        controller: scrollController,
-                        padding: const EdgeInsets.all(16),
-                        itemCount: roomLoads.length,
-                        itemBuilder: (context, index) {
-                          final load = roomLoads[index];
-                          return _buildLoadTile(load);
-                        },
                       ),
-              ),
-            ],
+                      IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          _showEditDeleteDialog(room);
+                        },
+                        icon: const Icon(Icons.more_vert, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(color: Colors.white24),
+                // Loads list
+                Expanded(
+                  child: roomLoads.isEmpty
+                      ? Center(
+                          child: Text(
+                            'No loads in this room',
+                            style: TextStyle(color: Colors.white54),
+                          ),
+                        )
+                      : ListView.builder(
+                          controller: scrollController,
+                          padding: const EdgeInsets.all(16),
+                          itemCount: roomLoads.length,
+                          itemBuilder: (context, index) {
+                            final load = roomLoads[index];
+                            return _buildLoadTile(load);
+                          },
+                        ),
+                ),
+              ],
+            ),
           );
         },
       ),
@@ -311,30 +325,35 @@ class _RoomsTabState extends State<RoomsTab> {
           (l) => l['id']?.toString() == loadId,
           orElse: () => load,
         );
-        final name = currentLoad['name']?.toString() ?? load['name']?.toString() ?? 'Unknown';
-        final type = currentLoad['type']?.toString() ?? load['type']?.toString() ?? 'swt';
+        final name =
+            currentLoad['name']?.toString() ??
+            load['name']?.toString() ??
+            'Unknown';
+        final type =
+            currentLoad['type']?.toString() ??
+            load['type']?.toString() ??
+            'swt';
         final isOn = currentLoad['isOn'] as bool? ?? false;
 
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(12),
-          ),
+          decoration: SHColors.glassDecoration(radius: SHColors.radiusMd),
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: _getLoadTypeColor(type).withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Image.asset(
                   _getLoadTypeIconAsset(type),
                   width: 20,
                   height: 20,
-                  errorBuilder: (_, __, ___) => const Icon(Icons.lightbulb_outline, size: 20),
+                  color: _getLoadTypeColor(type),
+                  errorBuilder: (_, __, ___) =>
+                      const Icon(Icons.lightbulb_outline, size: 20),
                 ),
               ),
               const SizedBox(width: 16),
@@ -346,7 +365,7 @@ class _RoomsTabState extends State<RoomsTab> {
                       name,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     Text(
@@ -381,7 +400,10 @@ class _RoomsTabState extends State<RoomsTab> {
           children: [
             ListTile(
               leading: const Icon(Icons.edit, color: Colors.white),
-              title: const Text('Edit Room', style: TextStyle(color: Colors.white)),
+              title: const Text(
+                'Edit Room',
+                style: TextStyle(color: Colors.white),
+              ),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -401,7 +423,10 @@ class _RoomsTabState extends State<RoomsTab> {
             ),
             ListTile(
               leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text('Delete Room', style: TextStyle(color: Colors.red)),
+              title: const Text(
+                'Delete Room',
+                style: TextStyle(color: Colors.red),
+              ),
               onTap: () {
                 Navigator.pop(context);
                 _confirmDeleteRoom(room);
@@ -419,7 +444,10 @@ class _RoomsTabState extends State<RoomsTab> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.grey[900],
-        title: const Text('Delete Room?', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Delete Room?',
+          style: TextStyle(color: Colors.white),
+        ),
         content: Text(
           'Are you sure you want to delete "${room.name}"?',
           style: TextStyle(color: Colors.white70),
@@ -468,23 +496,23 @@ class _RoomsTabState extends State<RoomsTab> {
   Color _getLoadTypeColor(String type) {
     switch (type) {
       case 'swt':
-        return Colors.green;
+        return SHColors.green;
       case 'dim':
-        return Colors.orange;
+        return SHColors.amber;
       case 'rgb':
-        return Colors.purple;
+        return SHColors.blue;
       case 'tun':
-        return Colors.amber;
+        return SHColors.violet;
       case 'hvc':
-        return Colors.cyan;
+        return SHColors.cyan300;
       case 'fan':
-        return Colors.teal;
+        return SHColors.teal500;
       case 'cur':
-        return Colors.green;
+        return SHColors.green;
       case 'scn':
-        return Colors.pink;
+        return SHColors.rose;
       default:
-        return Colors.grey;
+        return SHColors.hintColor;
     }
   }
 }

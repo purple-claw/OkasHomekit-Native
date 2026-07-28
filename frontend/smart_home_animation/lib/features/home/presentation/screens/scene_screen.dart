@@ -169,24 +169,25 @@ class _SceneScreenState extends State<SceneScreen>
               padding: const EdgeInsets.all(16),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(16),
+                  color: SHColors.cardColor.withOpacity(0.56),
+                  borderRadius: BorderRadius.circular(SHColors.radiusMd),
                   border: Border.all(
                     color: _searchQuery.isNotEmpty
                         ? SHColors.primary.withOpacity(0.5)
-                        : Colors.transparent,
+                        : Colors.white.withOpacity(0.12),
                   ),
+                  boxShadow: SHColors.softShadow,
                 ),
                 child: TextField(
                   controller: _searchController,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     hintText: 'Search scenes...',
-                    hintStyle: TextStyle(color: Colors.grey[400]),
-                    prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
+                    hintStyle: TextStyle(color: SHColors.hintColor),
+                    prefixIcon: Icon(Icons.search, color: SHColors.hintColor),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
-                            icon: Icon(Icons.clear, color: Colors.grey[400]),
+                            icon: Icon(Icons.clear, color: SHColors.hintColor),
                             onPressed: () {
                               _searchController.clear();
                               setState(() {
@@ -212,10 +213,11 @@ class _SceneScreenState extends State<SceneScreen>
                 indicator: BoxDecoration(
                   color: SHColors.primary.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: SHColors.primary.withOpacity(0.35)),
                 ),
                 dividerColor: Colors.transparent,
                 labelColor: SHColors.primary,
-                unselectedLabelColor: Colors.grey,
+                unselectedLabelColor: SHColors.hintColor,
                 tabs: _categories.map((category) {
                   return Tab(
                     child: Container(
@@ -289,7 +291,7 @@ class _SceneScreenState extends State<SceneScreen>
             Icon(
               Icons.auto_awesome_outlined,
               size: 80,
-              color: Colors.grey[300],
+              color: SHColors.hintColor,
             ),
             const SizedBox(height: 16),
             Text(
@@ -298,7 +300,7 @@ class _SceneScreenState extends State<SceneScreen>
                   : 'No scenes found',
               style: TextStyle(
                 fontSize: 18,
-                color: Colors.grey[500],
+                color: SHColors.mutedText,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -306,13 +308,13 @@ class _SceneScreenState extends State<SceneScreen>
               const SizedBox(height: 8),
               Text(
                 'Try a different keyword',
-                style: TextStyle(fontSize: 14, color: Colors.grey[400]),
+                style: TextStyle(fontSize: 14, color: SHColors.hintColor),
               ),
             ] else ...[
               const SizedBox(height: 8),
               Text(
                 'Try a different category',
-                style: TextStyle(fontSize: 14, color: Colors.grey[400]),
+                style: TextStyle(fontSize: 14, color: SHColors.hintColor),
               ),
             ],
           ],
@@ -321,7 +323,7 @@ class _SceneScreenState extends State<SceneScreen>
     }
 
     return GridView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 0.9,
@@ -342,21 +344,16 @@ class _SceneScreenState extends State<SceneScreen>
       onLongPress: () => _toggleFavorite(scene),
       child: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              scene.color.withOpacity(0.2),
-              scene.color.withOpacity(0.05),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(20),
+          color: SHColors.cardColor.withOpacity(0.58),
+          gradient: SHColors.cardGradient,
+          borderRadius: BorderRadius.circular(SHColors.radiusLg),
           border: Border.all(
             color: scene.isFavorite
-                ? Colors.red.withOpacity(0.5)
+                ? SHColors.rose.withOpacity(0.5)
                 : scene.color.withOpacity(0.3),
             width: scene.isFavorite ? 2 : 1,
           ),
+          boxShadow: SHColors.softShadow,
         ),
         child: Stack(
           children: [
@@ -366,7 +363,7 @@ class _SceneScreenState extends State<SceneScreen>
               right: 8,
               child: Icon(
                 scene.isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: scene.isFavorite ? Colors.red : Colors.white54,
+                color: scene.isFavorite ? SHColors.rose : Colors.white54,
                 size: 20,
               ),
             ),
@@ -442,7 +439,7 @@ class _SceneScreenState extends State<SceneScreen>
                     scene.name,
                     style: const TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w800,
                       color: Colors.white,
                     ),
                     maxLines: 1,
@@ -454,7 +451,7 @@ class _SceneScreenState extends State<SceneScreen>
                   // Description
                   Text(
                     scene.description,
-                    style: TextStyle(fontSize: 11, color: Colors.grey[400]),
+                    style: TextStyle(fontSize: 11, color: SHColors.mutedText),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,

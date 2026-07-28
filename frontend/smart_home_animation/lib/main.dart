@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_animation/api/constants.dart';
 import 'package:smart_home_animation/core/app/app.dart';
-import 'package:smart_home_animation/core/theme/sh_colors.dart';
+import 'package:smart_home_animation/core/theme/sh_theme.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
 import 'package:smart_home_animation/services/token_auth_service.dart';
 
@@ -25,24 +25,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'OKAS Smart Home',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          brightness: Brightness.dark,
-          colorScheme: const ColorScheme.dark(
-            primary: SHColors.primary,
-            secondary: SHColors.secondary,
-            tertiary: SHColors.tertiary,
-            background: SHColors.black,
-            surface: SHColors.cardColor,
-            onPrimary: Colors.white,
-            onSecondary: Colors.white,
-            onBackground: Colors.white,
-            onSurface: Colors.white,
-            error: Colors.red,
-          ),
-          scaffoldBackgroundColor: Colors.transparent,
-          fontFamily: 'sans-serif',
-          useMaterial3: true,
-        ),
+        theme: SHTheme.dark,
         home: const SmartHomeApp(initialRoute: '/splash'),
       ),
     );

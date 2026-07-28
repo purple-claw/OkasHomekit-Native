@@ -1,0 +1,185 @@
+{
+  "source": {
+    "fileName": "KNX HomeKit Mobile App",
+    "exportedAt": "2026-07-28T05:40:23.950Z",
+    "figmaFolder": "/home/iris/Work/OKAS/Okas Updated/Okas-Homekit/Figma",
+    "inputs": [
+      "canvas.fig",
+      "meta.json",
+      "thumbnail.png",
+      "images/*"
+    ],
+    "notes": [
+      "meta.json contains export-level data only; visual metadata was inferred from thumbnail.png and exported bitmap assets.",
+      "canvas.fig is a compact binary export and was not directly readable as document JSON in this workspace."
+    ]
+  },
+  "canvas": {
+    "thumbnailSize": {
+      "width": 399,
+      "height": 58
+    },
+    "renderCoordinates": {
+      "x": 0,
+      "y": 0,
+      "width": 6236,
+      "height": 907
+    },
+    "artboardPattern": "Multiple tall mobile screens in a horizontal strip, designed around a dark smart-home control dashboard."
+  },
+  "assets": {
+    "logo": {
+      "files": [
+        "images/a11a557aff1f8ece736eaaeb0e21fcf61aa2fc2a",
+        "images/603fa2b4484f90b6cf6eeac60e75b01ffbc4383b"
+      ],
+      "usage": "OKAS wordmark in the app header and splash/auth branding."
+    },
+    "roomPhotography": {
+      "files": [
+        "images/696164a081cd996c982b74af5eac5818505ffcac",
+        "images/91e12bd1e2b69ecf00d692c383602a8bb6f216da",
+        "images/c15327a3d5208fc4d7ce5fafbd60b8dc071b0805",
+        "images/35ab10e03a20dba7b0a331fd92903125ed124c23",
+        "images/746fc40b5573c10edea4590cbb74fd697205bd2b"
+      ],
+      "usage": "Image-led room cards with dark overlay and rounded top corners."
+    },
+    "controlImagery": {
+      "files": [
+        "images/29939306c4d113c22f946f24adcbf9b28e4a5b48",
+        "images/d3510dc29eac111cb56625903c447dff4b7d1900",
+        "images/ac5c0e5e7ccefcf1be04818319d694913cbe511e",
+        "images/1c8854334ddfd45ec8492aa28a6e90970bed01b4"
+      ],
+      "usage": "RGB color wheel and speaker/product-like control references for bottom sheets."
+    }
+  },
+  "designTokens": {
+    "colors": {
+      "backgroundGradient": [
+        "#0D5965",
+        "#072E42",
+        "#031827",
+        "#02070D"
+      ],
+      "primary": "#2AC0D1",
+      "secondary": "#007380",
+      "tertiary": "#00375A",
+      "surface": "#12313B",
+      "surfaceRaised": "#173F4B",
+      "track": "#0B2731",
+      "text": "#E8F6F8",
+      "textMuted": "#A9C3C9",
+      "textHint": "#78949B",
+      "success": "#2DBE6A",
+      "warning": "#FFB84D",
+      "violet": "#AF7DFF",
+      "blue": "#4BA3FF",
+      "danger": "#FF6685"
+    },
+    "typography": {
+      "family": "Inter-style geometric sans via GoogleFonts.inter",
+      "screenTitle": {
+        "size": 26,
+        "weight": 800,
+        "lineHeight": 1.14
+      },
+      "sectionTitle": {
+        "size": 18,
+        "weight": 800
+      },
+      "body": {
+        "size": 14,
+        "weight": 500
+      },
+      "caption": {
+        "size": 12,
+        "weight": 600
+      },
+      "tileLabel": {
+        "size": 10,
+        "weight": 800,
+        "case": "uppercase"
+      }
+    },
+    "spacing": {
+      "pageHorizontal": 20,
+      "gridGap": 12,
+      "cardPadding": 16,
+      "tilePadding": 10,
+      "bottomSafePadding": 96
+    },
+    "radii": {
+      "small": 10,
+      "medium": 14,
+      "large": 20,
+      "sheet": 28,
+      "pill": 999
+    },
+    "elevation": {
+      "cardShadow": {
+        "color": "#000000",
+        "opacity": 0.28,
+        "blur": 22,
+        "offsetY": 12
+      },
+      "sheetShadow": {
+        "color": "#000000",
+        "opacity": 0.5,
+        "blur": 28,
+        "offsetY": -12
+      }
+    }
+  },
+  "layoutPatterns": {
+    "home": {
+      "header": "Compact brand row with OKAS logo, HomeKit label, and right-aligned connection pill.",
+      "hero": "Welcome text followed by a large Smart Home title and inline Add Room action.",
+      "rooms": "Horizontal image cards, 220px wide, 200px tall, rounded 20px, image top area about 110px.",
+      "activeLoads": "Horizontal stat cards, 88px wide, icon in tinted rounded square, label, count."
+    },
+    "loads": {
+      "filters": "Horizontal pill chips at 46px height. Selected chip uses cyan fill; unselected chips use translucent surface.",
+      "grid": "3-column grid, 12px gaps, 0.75 aspect ratio. Each tile contains icon, status dot, capability label, device name, and power pill."
+    },
+    "rooms": {
+      "list": "Vertical room cards with top image, load count, load icon chips, and glass surface styling.",
+      "detailSheet": "Draggable bottom sheet with large top radius, handle, title, and load tiles."
+    },
+    "controlSheets": {
+      "surface": "Raised dark teal glass sheet with 28px top radius.",
+      "header": "Title left and master power switch right.",
+      "actions": "Cancel and Save buttons in a 2-column row.",
+      "controls": "Large numeric value readout, white/cyan slider track, segmented mode controls where needed."
+    },
+    "profileGuestManagement": {
+      "preservation": "Profile tab and GuestManagementScreen remain functional.",
+      "visualTreatment": "Guest cards use the same raised dark surface, cyan active accents, amber revoke control, rose delete/revoked states."
+    }
+  },
+  "deviceAccents": {
+    "Switch": "#2DBE6A",
+    "Dimmer": "#FFB84D",
+    "Tunable": "#AF7DFF",
+    "RGB": "#4BA3FF",
+    "HVAC": "#75E8F0",
+    "Scene": "#FF6685",
+    "Fan": "#1DB6C3",
+    "Curtain": "#2DBE6A"
+  },
+  "implementationMapping": {
+    "theme": "frontend/smart_home_animation/lib/core/theme/sh_theme.dart",
+    "tokens": "frontend/smart_home_animation/lib/core/theme/sh_colors.dart",
+    "background": "frontend/smart_home_animation/lib/features/home/presentation/widgets/lighted_background.dart",
+    "navigation": "frontend/smart_home_animation/lib/features/home/presentation/widgets/sm_home_bottom_navigation.dart",
+    "loadTile": "frontend/smart_home_animation/lib/features/home/presentation/widgets/load_grid_card.dart",
+    "controlSheet": "frontend/smart_home_animation/lib/features/home/presentation/widgets/figma_load_sheets.dart",
+    "home": "frontend/smart_home_animation/lib/features/home/presentation/screens/home_screen.dart",
+    "loads": "frontend/smart_home_animation/lib/features/home/presentation/screens/lounge_screen.dart",
+    "rooms": "frontend/smart_home_animation/lib/features/home/presentation/screens/rooms_screen.dart",
+    "roomLoads": "frontend/smart_home_animation/lib/features/home/presentation/screens/room_loads_screen.dart",
+    "scenes": "frontend/smart_home_animation/lib/features/home/presentation/screens/scene_screen.dart",
+    "guestManagement": "frontend/smart_home_animation/lib/features/home/presentation/screens/guest_management_screen.dart"
+  }
+}

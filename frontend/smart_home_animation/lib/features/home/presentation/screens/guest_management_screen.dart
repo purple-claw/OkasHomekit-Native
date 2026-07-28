@@ -25,11 +25,16 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
   }
 
   Future<void> _loadGuests() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       _guests = await context.read<TokenAuthService>().listGuests();
     } catch (error) {
-      _error = error is AuthApiException ? error.message : 'Unable to load guests.';
+      _error = error is AuthApiException
+          ? error.message
+          : 'Unable to load guests.';
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -43,51 +48,80 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          backgroundColor: SHColors.cardColor,
-          title: Text(editing ? 'Update guest' : 'Add guest', style: const TextStyle(color: SHColors.textColor)),
-          content: Column(mainAxisSize: MainAxisSize.min, children: [
-            TextField(
-              controller: name,
-              style: const TextStyle(color: SHColors.textColor),
-              decoration: const InputDecoration(
-                labelText: 'Guest name',
-                labelStyle: TextStyle(color: Colors.white70),
-                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white38)),
-                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: SHColors.primary)),
-              ),
+          backgroundColor: SHColors.elevatedCardColor,
+          title: Text(
+            editing ? 'Update guest' : 'Add guest',
+            style: const TextStyle(
+              color: SHColors.textColor,
+              fontWeight: FontWeight.w800,
             ),
-            const SizedBox(height: 16),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.calendar_today_outlined, color: SHColors.primary),
-              title: const Text('Access valid until', style: TextStyle(color: SHColors.textColor)),
-              subtitle: Text(_formatDate(selectedDate), style: const TextStyle(color: Colors.white70)),
-              trailing: const Icon(Icons.chevron_right, color: Colors.white70),
-              onTap: () async {
-                final picked = await showDatePicker(
-                  context: context,
-                  initialDate: selectedDate,
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime.now().add(const Duration(days: 30)),
-                  builder: (context, child) => Theme(
-                    data: Theme.of(context).copyWith(
-                      colorScheme: const ColorScheme.dark(
-                        primary: SHColors.primary,
-                        surface: SHColors.cardColor,
-                        onSurface: SHColors.textColor,
-                      ),
-                    ),
-                    child: child!,
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: name,
+                style: const TextStyle(color: SHColors.textColor),
+                decoration: const InputDecoration(
+                  labelText: 'Guest name',
+                  labelStyle: TextStyle(color: Colors.white70),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white38),
                   ),
-                );
-                if (picked != null) setDialogState(() => selectedDate = picked);
-              },
-            ),
-          ]),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: SHColors.primary),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(
+                  Icons.calendar_today_outlined,
+                  color: SHColors.primary,
+                ),
+                title: const Text(
+                  'Access valid until',
+                  style: TextStyle(color: SHColors.textColor),
+                ),
+                subtitle: Text(
+                  _formatDate(selectedDate),
+                  style: const TextStyle(color: Colors.white70),
+                ),
+                trailing: const Icon(
+                  Icons.chevron_right,
+                  color: Colors.white70,
+                ),
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: selectedDate,
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(const Duration(days: 30)),
+                    builder: (context, child) => Theme(
+                      data: Theme.of(context).copyWith(
+                        colorScheme: const ColorScheme.dark(
+                          primary: SHColors.primary,
+                          surface: SHColors.cardColor,
+                          onSurface: SHColors.textColor,
+                        ),
+                      ),
+                      child: child!,
+                    ),
+                  );
+                  if (picked != null)
+                    setDialogState(() => selectedDate = picked);
+                },
+              ),
+            ],
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel', style: TextStyle(color: Colors.white70)),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.white70),
+              ),
             ),
             FilledButton(
               style: FilledButton.styleFrom(backgroundColor: SHColors.primary),
@@ -125,23 +159,55 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
       await showDialog<void>(
         context: context,
         builder: (context) => AlertDialog(
-          backgroundColor: SHColors.cardColor,
-          title: const Text('Share this guest token now', style: TextStyle(color: SHColors.textColor)),
-          content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('It is shown once and cannot be recovered later.', style: TextStyle(color: SHColors.textColor)),
-            const SizedBox(height: 12),
-            SelectableText(token, style: const TextStyle(color: SHColors.primary, fontSize: 22, fontWeight: FontWeight.bold)),
-          ]),
+          backgroundColor: SHColors.elevatedCardColor,
+          title: const Text(
+            'Share this guest token now',
+            style: TextStyle(
+              color: SHColors.textColor,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'It is shown once and cannot be recovered later.',
+                style: TextStyle(color: SHColors.textColor),
+              ),
+              const SizedBox(height: 12),
+              SelectableText(
+                token,
+                style: const TextStyle(
+                  color: SHColors.primary,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Done', style: TextStyle(color: Colors.white70)),
+              child: const Text(
+                'Done',
+                style: TextStyle(color: Colors.white70),
+              ),
             ),
           ],
         ),
       );
     } catch (error) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error is AuthApiException ? error.message : 'Could not save guest.')));
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              error is AuthApiException
+                  ? error.message
+                  : 'Could not save guest.',
+            ),
+          ),
+        );
     } finally {
       name.dispose();
     }
@@ -155,15 +221,26 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
         await context.read<TokenAuthService>().updateGuest(
           guestId: guest['id'] as String,
           label: guest['label'] as String? ?? 'Guest',
-          durationMinutes: 1440, 
+          durationMinutes: 1440,
         );
       } else {
         // Revoke guest
-        await context.read<TokenAuthService>().revokeGuest(guest['id'] as String);
+        await context.read<TokenAuthService>().revokeGuest(
+          guest['id'] as String,
+        );
       }
       await _loadGuests();
     } catch (error) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error is AuthApiException ? error.message : 'Could not update guest status.')));
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              error is AuthApiException
+                  ? error.message
+                  : 'Could not update guest status.',
+            ),
+          ),
+        );
     }
   }
 
@@ -171,17 +248,29 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: SHColors.cardColor,
-        title: const Text('Delete guest', style: TextStyle(color: SHColors.textColor)),
-        content: Text('Delete ${guest['label'] as String? ?? 'this guest'} access?', style: const TextStyle(color: SHColors.textColor)),
+        backgroundColor: SHColors.elevatedCardColor,
+        title: const Text(
+          'Delete guest',
+          style: TextStyle(color: SHColors.textColor),
+        ),
+        content: Text(
+          'Delete ${guest['label'] as String? ?? 'this guest'} access?',
+          style: const TextStyle(color: SHColors.textColor),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white70)),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: Colors.white70),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete', style: TextStyle(color: Colors.redAccent)),
+            child: const Text(
+              'Delete',
+              style: TextStyle(color: Colors.redAccent),
+            ),
           ),
         ],
       ),
@@ -221,7 +310,9 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: Colors.transparent,
-    appBar: widget.showAppBar ? AppBar(title: const Text('Guest access')) : null,
+    appBar: widget.showAppBar
+        ? AppBar(title: const Text('Guest access'))
+        : null,
     floatingActionButton: FloatingActionButton.extended(
       onPressed: () => _openGuestForm(),
       backgroundColor: SHColors.primary,
@@ -231,71 +322,116 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
     body: RefreshIndicator(
       onRefresh: _loadGuests,
       child: _loading
-        ? const Center(child: CircularProgressIndicator())
-        : _error != null
-          ? Center(child: Text(_error!, style: const TextStyle(color: Colors.redAccent)))
+          ? const Center(
+              child: CircularProgressIndicator(color: SHColors.primary),
+            )
+          : _error != null
+          ? Center(
+              child: Text(
+                _error!,
+                style: const TextStyle(color: Colors.redAccent),
+              ),
+            )
           : ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
               children: _guests.isEmpty
                   ? const [
                       SizedBox(height: 120),
-                      Icon(Icons.group_outlined, size: 56, color: Colors.white54),
+                      Icon(
+                        Icons.group_outlined,
+                        size: 56,
+                        color: Colors.white54,
+                      ),
                       SizedBox(height: 16),
-                      Center(child: Text('No guest access tokens yet.', style: TextStyle(color: Colors.white70))),
+                      Center(
+                        child: Text(
+                          'No guest access tokens yet.',
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                      ),
                     ]
                   : _guests.map((guest) {
-                final revoked = guest['revokedAt'] != null;
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  decoration: BoxDecoration(
-                    color: SHColors.cardColor,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.white.withOpacity(0.1)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: revoked ? Colors.redAccent.withOpacity(0.1) : SHColors.primary.withOpacity(0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(revoked ? Icons.person_off : Icons.person, color: revoked ? Colors.redAccent : SHColors.primary),
-                    ),
-                    title: Text(guest['label'] as String? ?? 'Guest', style: const TextStyle(color: SHColors.textColor, fontWeight: FontWeight.bold)),
-                    subtitle: Text(revoked ? 'Revoked' : 'Expires: ${_formatExpiry(guest['expiresAt'])}', style: const TextStyle(color: Colors.white70)),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            revoked ? Icons.check_circle_outline : Icons.block,
-                            color: revoked ? Colors.greenAccent : Colors.orangeAccent,
+                      final revoked = guest['revokedAt'] != null;
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                          color: SHColors.cardColor.withOpacity(0.58),
+                          gradient: SHColors.cardGradient,
+                          borderRadius: BorderRadius.circular(
+                            SHColors.radiusLg,
                           ),
-                          tooltip: revoked ? 'Enable guest' : 'Revoke guest',
-                          onPressed: () => _toggleGuestStatus(guest),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.12),
+                          ),
+                          boxShadow: SHColors.softShadow,
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.edit_outlined, color: SHColors.primary),
-                          tooltip: 'Update guest',
-                          onPressed: revoked ? null : () => _openGuestForm(guest: guest),
+                        child: ListTile(
+                          leading: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: revoked
+                                  ? SHColors.rose.withOpacity(0.14)
+                                  : SHColors.primary.withOpacity(0.14),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              revoked ? Icons.person_off : Icons.person,
+                              color: revoked ? SHColors.rose : SHColors.primary,
+                            ),
+                          ),
+                          title: Text(
+                            guest['label'] as String? ?? 'Guest',
+                            style: const TextStyle(
+                              color: SHColors.textColor,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          subtitle: Text(
+                            revoked
+                                ? 'Revoked'
+                                : 'Expires: ${_formatExpiry(guest['expiresAt'])}',
+                            style: const TextStyle(color: SHColors.mutedText),
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(
+                                  revoked
+                                      ? Icons.check_circle_outline
+                                      : Icons.block,
+                                  color: revoked
+                                      ? SHColors.green
+                                      : SHColors.amber,
+                                ),
+                                tooltip: revoked
+                                    ? 'Enable guest'
+                                    : 'Revoke guest',
+                                onPressed: () => _toggleGuestStatus(guest),
+                              ),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.edit_outlined,
+                                  color: SHColors.primary,
+                                ),
+                                tooltip: 'Update guest',
+                                onPressed: revoked
+                                    ? null
+                                    : () => _openGuestForm(guest: guest),
+                              ),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.delete_outline,
+                                  color: SHColors.rose,
+                                ),
+                                tooltip: 'Delete guest',
+                                onPressed: () => _deleteGuest(guest),
+                              ),
+                            ],
+                          ),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                          tooltip: 'Delete guest',
-                          onPressed: () => _deleteGuest(guest),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
+                      );
+                    }).toList(),
             ),
     ),
   );

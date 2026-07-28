@@ -1,0 +1,16 @@
+[Unit]
+Description=OKAS Service Watchdog - Auto-recovery for KNX and HomeKit
+After=network-online.target mosquitto.service
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/OhKnx/watchdog.py
+Restart=always
+RestartSec=10
+TimeoutStopSec=30
+User=root
+Type=simple
+WorkingDirectory=/home/OhKnx
+
+[Install]
+WantedBy=multi-user.target

@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/core.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
+import '../widgets/figma_load_sheets.dart';
 import '../widgets/load_grid_card.dart';
 
 class LoungeScreen extends StatefulWidget {
@@ -35,14 +36,14 @@ class _LoungeScreenState extends State<LoungeScreen> {
   /// Maps display-friendly category names to the internal type codes
   /// used by _getDeviceType / load['type'].
   static const Map<String, List<String>> _categoryTypeCodes = {
-    'All':     <String>[],
-    'Lights':  ['swt'],
+    'All': <String>[],
+    'Lights': ['swt'],
     'Dimmers': ['dim'],
     'Tunable': ['tun'],
-    'RGB':     ['rgb'],
-    'HVAC':    ['hvc'],
-    'Scene':   ['scn'],
-    'Fan':     ['fan'],
+    'RGB': ['rgb'],
+    'HVAC': ['hvc'],
+    'Scene': ['scn'],
+    'Fan': ['fan'],
     'Curtain': ['cur'],
   };
 
@@ -112,22 +113,10 @@ class _LoungeScreenState extends State<LoungeScreen> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 16),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                'Loads',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  fontSize: 28,
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
 
             SizedBox(
-              height: 50,
+              height: 46,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -145,13 +134,13 @@ class _LoungeScreenState extends State<LoungeScreen> {
                       ),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? SHColors.primary
-                            : Colors.white.withOpacity(0.1),
+                            ? SHColors.primary.withOpacity(0.95)
+                            : SHColors.cardColor.withOpacity(0.55),
                         borderRadius: BorderRadius.circular(25),
                         border: Border.all(
                           color: isSelected
                               ? SHColors.primary
-                              : Colors.white.withOpacity(0.2),
+                              : Colors.white.withOpacity(0.12),
                         ),
                       ),
                       child: Center(
@@ -160,8 +149,8 @@ class _LoungeScreenState extends State<LoungeScreen> {
                           style: TextStyle(
                             color: isSelected ? Colors.white : Colors.white70,
                             fontWeight: isSelected
-                                ? FontWeight.w600
-                                : FontWeight.normal,
+                                ? FontWeight.w800
+                                : FontWeight.w600,
                           ),
                         ),
                       ),
@@ -171,7 +160,7 @@ class _LoungeScreenState extends State<LoungeScreen> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 8),
 
             Expanded(child: _buildLoadsGrid(devicesToShow)),
           ],
@@ -209,7 +198,7 @@ class _LoungeScreenState extends State<LoungeScreen> {
     }
 
     return GridView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 96),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         childAspectRatio: 0.75,
@@ -248,531 +237,405 @@ class _LoungeScreenState extends State<LoungeScreen> {
 
   void _showControlBottomSheet(Map<String, dynamic> load, String deviceType) {
     final deviceName = load['name'] ?? 'Device';
+    final typeCode = _getDeviceTypeCode(deviceType);
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.grey[900],
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
-          return Container(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[600],
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(height: 20),
+      builder: (ctx) => _buildLoadSheet(ctx, load, deviceName, typeCode),
+    );
+  }
 
-                Text(
-                  deviceName,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
+  Widget _buildLoadSheet(
+    BuildContext ctx,
+    Map<String, dynamic> load,
+    String deviceName,
+    String typeCode,
+  ) {
+    final mqtt = Provider.of<DirectMQTTService>(ctx, listen: false);
+    final id = load['id']?.toString() ?? '';
 
-                Text(
-                  deviceType,
-                  style: TextStyle(color: Colors.white54, fontSize: 14),
-                ),
-                const SizedBox(height: 30),
+    switch (typeCode) {
+      case 'dim':
+        return _buildDimmerSheet(ctx, mqtt, id, deviceName);
+      case 'tun':
+        return _buildTunableSheet(ctx, mqtt, id, deviceName);
+      case 'rgb':
+        return _buildRGBSheet(ctx, mqtt, id, deviceName);
+      case 'fan':
+        return _buildFanSheet(ctx, mqtt, id, deviceName);
+      case 'cur':
+        return _buildCurtainSheet(ctx, mqtt, id, deviceName);
+      case 'hvc':
+        return _buildHVACSheet(ctx, mqtt, id, deviceName);
+      default:
+        return _buildDimmerSheet(ctx, mqtt, id, deviceName);
+    }
+  }
 
-                if (deviceType == 'RGB') _buildRGBBottomSheet(load, setState),
-                if (deviceType == 'Dimmer')
-                  _buildDimmerBottomSheet(load, setState),
-                if (deviceType == 'Fan') _buildFanBottomSheet(load, setState),
-                if (deviceType == 'Curtain')
-                  _buildCurtainBottomSheet(load, setState),
-                if (deviceType == 'HVAC') _buildHVACBottomSheet(load, setState),
-                if (deviceType == 'Tunable')
-                  _buildTunableBottomSheet(load, setState),
+  Widget _buildDimmerSheet(
+    BuildContext ctx,
+    DirectMQTTService mqtt,
+    String id,
+    String deviceName,
+  ) {
+    double brightness = (mqtt.loads[id]?['brightness'] ?? 50).toDouble();
 
-                const SizedBox(height: 30),
+    return StatefulBuilder(
+      builder: (ctx, setSt) => FigmaLoadSheet(
+        title: 'BRIGHTNESS',
+        isOn: mqtt.loads[id]?['isOn'] ?? false,
+        onToggle: (v) {
+          mqtt.sendCommand(id, v ? 'ON' : 'OFF');
+          setSt(() {});
+        },
+        body: BrightnessSlider(
+          value: brightness,
+          label: 'BRIGHTNESS',
+          onChanged: (v) {
+            brightness = v;
+            mqtt.sendBrightnessCommand(id, v.round());
+            setSt(() {});
+          },
+        ),
+      ),
+    );
+  }
 
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.pop(context),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          side: const BorderSide(color: Colors.red),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(color: Colors.red, fontSize: 16),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('$deviceName settings saved'),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          backgroundColor: SHColors.primary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'Save',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                      ),
-                    ),
+  Widget _buildTunableSheet(
+    BuildContext ctx,
+    DirectMQTTService mqtt,
+    String id,
+    String deviceName,
+  ) {
+    int raw = (mqtt.loads[id]?['cTp'] ?? 166) as int;
+    double kelvin = 2700 + ((raw.clamp(0, 255) / 255) * (6500 - 2700));
+
+    return StatefulBuilder(
+      builder: (ctx, setSt) => FigmaLoadSheet(
+        title: 'TUNING',
+        isOn: mqtt.loads[id]?['isOn'] ?? false,
+        onToggle: (v) {
+          mqtt.sendCommand(id, v ? 'ON' : 'OFF');
+          setSt(() {});
+        },
+        body: Column(
+          children: [
+            Text(
+              '${kelvin.round()}K',
+              style: const TextStyle(
+                color: SHColors.primary,
+                fontSize: 34,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              height: 36,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [
+                    Color(0xFFFFB84D),
+                    Color(0xFFFFE7B5),
+                    Color(0xFFE8F6F8),
+                    Color(0xFFAFD6FF),
+                    Color(0xFFAF7DFF),
                   ],
                 ),
-                const SizedBox(height: 8),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  // RGB Bottom Sheet
-  Widget _buildRGBBottomSheet(Map<String, dynamic> load, StateSetter setState) {
-    double red = (load['red'] ?? 255).toDouble();
-    double green = (load['green'] ?? 255).toDouble();
-    double blue = (load['blue'] ?? 255).toDouble();
-
-    return Column(
-      children: [
-        const Text(
-          'RGB',
-          style: TextStyle(
-            color: Colors.white70,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 20),
-
-        Container(
-          height: 60,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Color.fromRGBO(red.toInt(), green.toInt(), blue.toInt(), 1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-
-        const SizedBox(height: 20),
-
-        _buildColorSlider('R', red, Colors.red, (value) {
-          setState(() => red = value);
-          _sendRGBCommand(
-            load['id'],
-            value.toInt(),
-            green.toInt(),
-            blue.toInt(),
-          );
-        }),
-        const SizedBox(height: 8),
-        _buildColorSlider('G', green, Colors.green, (value) {
-          setState(() => green = value);
-          _sendRGBCommand(load['id'], red.toInt(), value.toInt(), blue.toInt());
-        }),
-        const SizedBox(height: 8),
-        _buildColorSlider('B', blue, Colors.blue, (value) {
-          setState(() => blue = value);
-          _sendRGBCommand(
-            load['id'],
-            red.toInt(),
-            green.toInt(),
-            value.toInt(),
-          );
-        }),
-      ],
-    );
-  }
-
-  Widget _buildColorSlider(
-    String label,
-    double value,
-    Color color,
-    Function(double) onChanged,
-  ) {
-    return Row(
-      children: [
-        SizedBox(
-          width: 30,
-          child: Text(
-            label,
-            style: TextStyle(color: color, fontWeight: FontWeight.bold),
-          ),
-        ),
-        Expanded(
-          child: Slider(
-            value: value,
-            min: 0,
-            max: 255,
-            divisions: 255,
-            onChanged: onChanged,
-            activeColor: color,
-          ),
-        ),
-        SizedBox(
-          width: 40,
-          child: Text(
-            '${value.toInt()}',
-            style: const TextStyle(color: Colors.white54),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // Dimmer Bottom Sheet
-  Widget _buildDimmerBottomSheet(
-    Map<String, dynamic> load,
-    StateSetter setState,
-  ) {
-    double brightness = (load['brightness'] ?? 0).toDouble();
-
-    return Column(
-      children: [
-        const Text(
-          'BRIGHTNESS',
-          style: TextStyle(
-            color: Colors.white70,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 20),
-        Center(
-          child: Text(
-            '${brightness.toInt()}%',
-            style: const TextStyle(
-              color: SHColors.primary,
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        const SizedBox(height: 30),
-        Slider(
-          value: brightness,
-          min: 0,
-          max: 100,
-          divisions: 100,
-          onChanged: (value) {
-            setState(() => brightness = value);
-            _sendBrightnessCommand(load['id'], value.toInt());
-          },
-          activeColor: SHColors.primary,
-        ),
-      ],
-    );
-  }
-
-  // Fan Bottom Sheet
-  Widget _buildFanBottomSheet(Map<String, dynamic> load, StateSetter setState) {
-    double speed = (load['fanSpeed'] ?? load['fSp'] ?? 0).toDouble();
-    double speedPercent = (speed / 250 * 100);
-
-    return Column(
-      children: [
-        const Text(
-          'FAN SPEED',
-          style: TextStyle(
-            color: Colors.white70,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 20),
-        Center(
-          child: Text(
-            '${speedPercent.round()}%',
-            style: const TextStyle(
-              color: SHColors.primary,
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        const SizedBox(height: 30),
-        Slider(
-          value: speed,
-          min: 0,
-          max: 250,
-          divisions: 10,
-          onChanged: (value) {
-            setState(() => speed = value);
-            _sendFanSpeedCommand(load['id'], value.toInt());
-          },
-          activeColor: SHColors.primary,
-        ),
-      ],
-    );
-  }
-
-  // Curtain Bottom Sheet
-  Widget _buildCurtainBottomSheet(
-    Map<String, dynamic> load,
-    StateSetter setState,
-  ) {
-    double position = (load['tPs'] ?? load['cPs'] ?? load['pos'] ?? 0).toDouble();
-
-    return Column(
-      children: [
-        const Text(
-          'CURTAIN MOVEMENT',
-          style: TextStyle(
-            color: Colors.white70,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildCurtainButtonSheet('Open', 0, position.toInt(), (value) {
-              setState(() => position = value.toDouble());
-              _sendCurtainCommand(load['id'], value);
-            }),
-            _buildCurtainButtonSheet('Stop', -1, position.toInt(), (value) {
-              _sendCurtainCommand(load['id'], value);
-            }),
-            _buildCurtainButtonSheet('Close', 100, position.toInt(), (value) {
-              setState(() => position = value.toDouble());
-              _sendCurtainCommand(load['id'], value);
-            }),
-          ],
-        ),
-        const SizedBox(height: 20),
-        Center(
-          child: Text(
-            position.toInt() == 0
-                ? 'Fully Open'
-                : position.toInt() == 100
-                ? 'Fully Closed'
-                : '${position.toInt()}%',
-            style: const TextStyle(
-              color: SHColors.primary,
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        const SizedBox(height: 20),
-        Slider(
-          value: position,
-          min: 0,
-          max: 100,
-          divisions: 100,
-          onChanged: (value) {
-            setState(() => position = value);
-            _sendCurtainCommand(load['id'], value.toInt());
-          },
-          activeColor: SHColors.primary,
-        ),
-      ],
-    );
-  }
-
-  // HVAC Bottom Sheet
-  Widget _buildHVACBottomSheet(
-    Map<String, dynamic> load,
-    StateSetter setState,
-  ) {
-    double temperature = (load['temp'] ?? 25).toDouble();
-    String mode = load['hvacMode'] ?? 'Cool';
-    List<String> modes = ['Cool', 'Heat', 'Auto', 'Dry'];
-
-    return Column(
-      children: [
-        const Text(
-          'ROOM TEMPERATURE',
-          style: TextStyle(
-            color: Colors.white70,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          '${temperature.toInt()} °C',
-          style: const TextStyle(
-            color: SHColors.primary,
-            fontSize: 36,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: modes.map((m) {
-            final isSelected = mode == m;
-            return GestureDetector(
-              onTap: () {
-                setState(() => mode = m);
-                _sendHVACModeCommand(load['id'], m);
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? SHColors.primary
-                      : Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  m,
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.white70,
-                    fontWeight: isSelected
-                        ? FontWeight.bold
-                        : FontWeight.normal,
-                  ),
-                ),
+                borderRadius: BorderRadius.circular(SHColors.radiusMd),
               ),
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 24),
-        const Text(
-          'TEMPERATURE',
-          style: TextStyle(
-            color: Colors.white70,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Center(
-          child: Text(
-            '${temperature.toInt()}°C',
-            style: const TextStyle(
-              color: SHColors.primary,
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
             ),
-          ),
-        ),
-        const SizedBox(height: 20),
-        Slider(
-          value: temperature,
-          min: 16,
-          max: 32,
-          divisions: 16,
-          onChanged: (value) {
-            setState(() => temperature = value);
-            _sendTemperatureCommand(load['id'], value.toInt());
-          },
-          activeColor: SHColors.primary,
-        ),
-      ],
-    );
-  }
-
-  // Tunable Bottom Sheet
-  Widget _buildTunableBottomSheet(
-    Map<String, dynamic> load,
-    StateSetter setState,
-  ) {
-    double colorTempKelvin = _convertToKelvin(load['cTp'] ?? 166).toDouble();
-
-    return Column(
-      children: [
-        const Text(
-          'TUNNING',
-          style: TextStyle(
-            color: Colors.white70,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 20),
-        Center(
-          child: Text(
-            '${colorTempKelvin.toInt()}K',
-            style: const TextStyle(
-              color: SHColors.primary,
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        const SizedBox(height: 30),
-        Row(
-          children: [
-            const Text('Warm', style: TextStyle(color: Colors.white54)),
-            Expanded(
+            const SizedBox(height: 12),
+            SliderTheme(
+              data: SliderTheme.of(ctx).copyWith(
+                activeTrackColor: Colors.white,
+                inactiveTrackColor: SHColors.trackColor,
+                thumbColor: Colors.white,
+                overlayColor: SHColors.primary.withOpacity(0.16),
+              ),
               child: Slider(
-                value: colorTempKelvin,
+                value: kelvin,
                 min: 2700,
                 max: 6500,
                 divisions: 100,
-                onChanged: (value) {
-                  setState(() => colorTempKelvin = value);
-                  int convertedBack = _convertFromKelvin(value.toInt());
-                  _sendColorTempCommand(load['id'], convertedBack);
+                onChanged: (v) {
+                  kelvin = v;
+                  int converted = ((v - 2700) / (6500 - 2700) * 255)
+                      .round()
+                      .clamp(0, 255);
+                  mqtt.sendColorTempCommand(id, converted);
+                  setSt(() {});
                 },
-                activeColor: SHColors.primary,
               ),
             ),
-            const Text('Cool', style: TextStyle(color: Colors.white54)),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: const [
+                Text(
+                  'Warm',
+                  style: TextStyle(color: SHColors.mutedText, fontSize: 12),
+                ),
+                Text(
+                  'Cool',
+                  style: TextStyle(color: SHColors.mutedText, fontSize: 12),
+                ),
+              ],
+            ),
           ],
         ),
-      ],
+      ),
     );
   }
 
-  Widget _buildCurtainButtonSheet(
-    String label,
-    int targetPos,
-    int currentPos,
-    Function(int) onTap,
+  Widget _buildRGBSheet(
+    BuildContext ctx,
+    DirectMQTTService mqtt,
+    String id,
+    String deviceName,
   ) {
-    final isActive = targetPos != -1 && currentPos == targetPos;
+    final cur = mqtt.loads[id] ?? {};
+    int r = ((cur['red'] ?? 255) as num).round().clamp(0, 255);
+    int g = ((cur['green'] ?? 255) as num).round().clamp(0, 255);
+    int b = ((cur['blue'] ?? 255) as num).round().clamp(0, 255);
+
+    return StatefulBuilder(
+      builder: (ctx, setSt) => FigmaLoadSheet(
+        title: 'COLOR',
+        isOn: mqtt.loads[id]?['isOn'] ?? false,
+        onToggle: (v) {
+          mqtt.sendCommand(id, v ? 'ON' : 'OFF');
+          setSt(() {});
+        },
+        body: RgbGamutPicker(
+          red: r.toDouble(),
+          green: g.toDouble(),
+          blue: b.toDouble(),
+          onChanged: (nr, ng, nb) {
+            r = nr;
+            g = ng;
+            b = nb;
+            mqtt.sendRGBCommand(id, nr, ng, nb);
+            setSt(() {});
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFanSheet(
+    BuildContext ctx,
+    DirectMQTTService mqtt,
+    String id,
+    String deviceName,
+  ) {
+    double speed =
+        ((mqtt.loads[id]?['fanSpeed'] ?? mqtt.loads[id]?['fSp'] ?? 0) as num)
+            .toDouble();
+
+    return StatefulBuilder(
+      builder: (ctx, setSt) => FigmaLoadSheet(
+        title: 'FAN SPEED',
+        isOn: mqtt.loads[id]?['isOn'] ?? false,
+        onToggle: (v) {
+          mqtt.sendCommand(id, v ? 'ON' : 'OFF');
+          setSt(() {});
+        },
+        body: BrightnessSlider(
+          value: (speed / 250 * 100).clamp(0, 100),
+          label: 'SPEED',
+          onChanged: (v) {
+            speed = v * 2.5;
+            mqtt.sendFanSpeedCommand(id, speed.round().clamp(0, 250));
+            setSt(() {});
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCurtainSheet(
+    BuildContext ctx,
+    DirectMQTTService mqtt,
+    String id,
+    String deviceName,
+  ) {
+    double pos =
+        ((mqtt.loads[id]?['tPs'] ?? mqtt.loads[id]?['cPs'] ?? 0) as num)
+            .toDouble();
+
+    return StatefulBuilder(
+      builder: (ctx, setSt) => FigmaLoadSheet(
+        title: 'MOVEMENT',
+        isOn: pos > 0,
+        onToggle: (v) {
+          pos = v ? 0 : 100;
+          mqtt.sendCurtainPositionCommand(id, pos.round());
+          setSt(() {});
+        },
+        body: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _curtainBtn('Open', 0, pos, (v) {
+                  pos = v.toDouble();
+                  mqtt.sendCurtainPositionCommand(id, v);
+                  setSt(() {});
+                }),
+                _curtainBtn('Stop', -1, pos, (v) {
+                  mqtt.sendCurtainPositionCommand(id, 50);
+                  setSt(() {});
+                }),
+                _curtainBtn('Close', 100, pos, (v) {
+                  pos = v.toDouble();
+                  mqtt.sendCurtainPositionCommand(id, v);
+                  setSt(() {});
+                }),
+              ],
+            ),
+            const SizedBox(height: 18),
+            Text(
+              pos == 0
+                  ? 'Fully Open'
+                  : pos == 100
+                  ? 'Fully Closed'
+                  : '${pos.round()}%',
+              style: const TextStyle(
+                color: SHColors.primary,
+                fontSize: 26,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 8),
+            SliderTheme(
+              data: SliderTheme.of(ctx).copyWith(
+                activeTrackColor: Colors.white,
+                inactiveTrackColor: SHColors.trackColor,
+                thumbColor: Colors.white,
+                overlayColor: SHColors.primary.withOpacity(0.16),
+              ),
+              child: Slider(
+                value: pos.clamp(0, 100),
+                min: 0,
+                max: 100,
+                divisions: 100,
+                onChanged: (v) {
+                  pos = v;
+                  mqtt.sendCurtainPositionCommand(id, v.round());
+                  setSt(() {});
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHVACSheet(
+    BuildContext ctx,
+    DirectMQTTService mqtt,
+    String id,
+    String deviceName,
+  ) {
+    final cur = mqtt.loads[id] ?? {};
+    double temp = ((cur['temp'] ?? 25) as num).toDouble();
+    String mode = (cur['hvacMode'] ?? 'Cool').toString();
+    const modes = ['Cool', 'Heat', 'Auto', 'Dry'];
+
+    return StatefulBuilder(
+      builder: (ctx, setSt) => FigmaLoadSheet(
+        title: 'TEMPERATURE',
+        isOn: cur['isOn'] ?? false,
+        onToggle: (v) {
+          mqtt.sendCommand(id, v ? 'ON' : 'OFF');
+          setSt(() {});
+        },
+        body: Column(
+          children: [
+            Text(
+              '${temp.round()}°C',
+              style: const TextStyle(
+                color: SHColors.primary,
+                fontSize: 34,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'ROOM TEMPERATURE',
+              style: TextStyle(
+                color: SHColors.mutedText,
+                fontSize: 12,
+                letterSpacing: 2,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 16),
+            FigmaSegmentedOptions<String>(
+              options: modes,
+              selected: mode,
+              labelBuilder: (m) => m.toUpperCase(),
+              onSelected: (m) {
+                mode = m;
+                mqtt.sendHVACModeCommand(id, m);
+                setSt(() {});
+              },
+            ),
+            const SizedBox(height: 20),
+            SliderTheme(
+              data: SliderTheme.of(ctx).copyWith(
+                activeTrackColor: Colors.white,
+                inactiveTrackColor: SHColors.trackColor,
+                thumbColor: Colors.white,
+                overlayColor: SHColors.primary.withOpacity(0.16),
+              ),
+              child: Slider(
+                value: temp.clamp(16, 32),
+                min: 16,
+                max: 32,
+                divisions: 32,
+                onChanged: (v) {
+                  temp = v;
+                  mqtt.sendTemperatureCommand(id, v.round());
+                  setSt(() {});
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _curtainBtn(
+    String label,
+    int target,
+    double cur,
+    ValueChanged<int> onTap,
+  ) {
+    final active = target != -1 && cur == target;
     return Expanded(
       child: GestureDetector(
-        onTap: () => onTap(targetPos),
+        onTap: () => onTap(target),
         child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 6),
+          margin: const EdgeInsets.symmetric(horizontal: 4),
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: isActive ? SHColors.primary : Colors.white.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
+            color: active ? SHColors.primary : Colors.white.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(SHColors.radiusMd),
+            border: Border.all(
+              color: active ? SHColors.primary : Colors.white.withOpacity(0.16),
+            ),
           ),
           child: Center(
             child: Text(
               label,
               style: TextStyle(
-                color: isActive ? Colors.white : Colors.white70,
-                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                color: active ? Colors.white : SHColors.mutedText,
+                fontWeight: active ? FontWeight.w800 : FontWeight.w600,
               ),
             ),
           ),
@@ -781,12 +644,23 @@ class _LoungeScreenState extends State<LoungeScreen> {
     );
   }
 
-  double _convertToKelvin(int rawValue) {
-    return 2700 + ((rawValue / 255) * (6500 - 2700));
-  }
-
-  int _convertFromKelvin(int kelvin) {
-    return ((kelvin - 2700) / (6500 - 2700) * 255).round().clamp(0, 255);
+  String _getDeviceTypeCode(String deviceType) {
+    switch (deviceType) {
+      case 'Dimmer':
+        return 'dim';
+      case 'Tunable':
+        return 'tun';
+      case 'RGB':
+        return 'rgb';
+      case 'HVAC':
+        return 'hvc';
+      case 'Fan':
+        return 'fan';
+      case 'Curtain':
+        return 'cur';
+      default:
+        return 'swt';
+    }
   }
 
   // Command sending methods
@@ -886,26 +760,7 @@ class _LoungeScreenState extends State<LoungeScreen> {
   }
 
   Color _getLoadColor(String type) {
-    switch (type) {
-      case 'Switch':
-        return Colors.green;
-      case 'Dimmer':
-        return Colors.orange;
-      case 'Tunable':
-        return Colors.purple;
-      case 'RGB':
-        return Colors.blue;
-      case 'HVAC':
-        return Colors.cyan;
-      case 'Scene':
-        return Colors.pink;
-      case 'Fan':
-        return Colors.teal;
-      case 'Curtain':
-        return Colors.brown;
-      default:
-        return SHColors.primary;
-    }
+    return SHColors.deviceAccent(type);
   }
 
   // For PNG/JPG images - Fixed size

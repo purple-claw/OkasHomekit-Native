@@ -31,7 +31,9 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
     final mqtt = Provider.of<DirectMQTTService>(context);
     final allLoads = mqtt.loads.values.toList();
     final roomLoadIds = widget.room.loadIds;
-    final roomLoads = allLoads.where((l) => roomLoadIds.contains(l['id']?.toString())).toList();
+    final roomLoads = allLoads
+        .where((l) => roomLoadIds.contains(l['id']?.toString()))
+        .toList();
 
     return Container(
       decoration: const BoxDecoration(gradient: SHColors.backgroundColor),
@@ -46,13 +48,17 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
           ),
           title: Text(
             widget.room.name,
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
           ),
           centerTitle: true,
         ),
         body: Column(
           children: [
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             SizedBox(
               height: 44,
               child: ListView.builder(
@@ -67,18 +73,29 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
                     child: GestureDetector(
                       onTap: () => setState(() => _selectedCategory = cat),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
-                          color: sel ? SHColors.primary : Colors.white.withValues(alpha: 0.1),
+                          color: sel
+                              ? SHColors.primary.withOpacity(0.95)
+                              : SHColors.cardColor.withOpacity(0.55),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: sel ? SHColors.primary : Colors.white24),
+                          border: Border.all(
+                            color: sel
+                                ? SHColors.primary
+                                : Colors.white.withOpacity(0.12),
+                          ),
                         ),
                         child: Center(
                           child: Text(
                             cat,
                             style: TextStyle(
                               color: sel ? Colors.white : Colors.white70,
-                              fontWeight: sel ? FontWeight.w600 : FontWeight.normal,
+                              fontWeight: sel
+                                  ? FontWeight.w800
+                                  : FontWeight.w600,
                             ),
                           ),
                         ),
@@ -100,13 +117,20 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
     List<Map<String, dynamic>> filtered = allLoads;
     if (_selectedCategory != 'All') {
       final codes = _categoryTypeCodes[_selectedCategory] ?? [];
-      filtered = allLoads.where((l) => codes.contains(l['type'] ?? 'swt')).toList();
+      filtered = allLoads
+          .where((l) => codes.contains(l['type'] ?? 'swt'))
+          .toList();
     }
     if (filtered.isEmpty) {
-      return const Center(child: Text('No loads in this room', style: TextStyle(color: Colors.white54)));
+      return const Center(
+        child: Text(
+          'No loads in this room',
+          style: TextStyle(color: Colors.white54),
+        ),
+      );
     }
     return GridView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         childAspectRatio: 0.75,
@@ -146,7 +170,8 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
   void _showDimSheet(BuildContext ctx, Map<String, dynamic> load, String type) {
     final mqtt = Provider.of<DirectMQTTService>(ctx, listen: false);
     final id = load['id']?.toString() ?? '';
-    double brightness = ((mqtt.loads[id]?['brightness'] ?? 50) as num).toDouble();
+    double brightness = ((mqtt.loads[id]?['brightness'] ?? 50) as num)
+        .toDouble();
 
     showModalBottomSheet(
       context: ctx,
@@ -154,26 +179,132 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
       isScrollControlled: true,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSt) => FigmaLoadSheet(
-          title: type == 'tun' ? 'TUNNING' : 'BRIGHTNESS',
+          title: type == 'tun' ? 'TUNING' : 'BRIGHTNESS',
           isOn: (mqtt.loads[id]?['isOn'] ?? false),
-          onToggle: (v) { mqtt.sendCommand(id, v ? 'ON' : 'OFF'); setSt(() {}); },
-          body: BrightnessSlider(
-            value: brightness,
-            label: type == 'tun' ? 'COLOR TEMP' : 'BRIGHTNESS',
-            onChanged: (v) { brightness = v; mqtt.sendBrightnessCommand(id, v.round()); setSt(() {}); },
-          ),
+          onToggle: (v) {
+            mqtt.sendCommand(id, v ? 'ON' : 'OFF');
+            setSt(() {});
+          },
+          body: type == 'tun'
+              ? _buildTunableBody(ctx, load, setSt)
+              : BrightnessSlider(
+                  value: brightness,
+                  label: 'BRIGHTNESS',
+                  onChanged: (v) {
+                    brightness = v;
+                    mqtt.sendBrightnessCommand(id, v.round());
+                    setSt(() {});
+                  },
+                ),
         ),
       ),
     );
+  }
+
+  Widget _buildTunableBody(
+    BuildContext ctx,
+    Map<String, dynamic> load,
+    StateSetter setSt,
+  ) {
+    final mqtt = Provider.of<DirectMQTTService>(ctx, listen: false);
+    final id = load['id']?.toString() ?? '';
+    int raw = (load['cTp'] ?? 166) as int;
+    double kelvin = 2700 + ((raw.clamp(0, 255) / 255) * (6500 - 2700));
+    final previewColor = _kelvinPreview(kelvin);
+
+    return Column(
+      children: [
+        Text(
+          '${kelvin.round()}K',
+          style: const TextStyle(
+            color: SHColors.primary,
+            fontSize: 34,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          height: 36,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: const [
+                Color(0xFFFFB84D),
+                Color(0xFFFFE7B5),
+                Color(0xFFE8F6F8),
+                Color(0xFFAFD6FF),
+                Color(0xFFAF7DFF),
+              ],
+              stops: const [0, 0.28, 0.5, 0.75, 1],
+            ),
+            borderRadius: BorderRadius.circular(SHColors.radiusMd),
+            border: Border.all(color: Colors.white.withOpacity(0.18)),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          height: 24,
+          decoration: BoxDecoration(
+            color: previewColor,
+            borderRadius: BorderRadius.circular(SHColors.radiusSm),
+            border: Border.all(color: Colors.white.withOpacity(0.18)),
+          ),
+        ),
+        const SizedBox(height: 12),
+        SliderTheme(
+          data: SliderTheme.of(ctx).copyWith(
+            activeTrackColor: Colors.white,
+            inactiveTrackColor: SHColors.trackColor,
+            thumbColor: Colors.white,
+            overlayColor: SHColors.primary.withOpacity(0.16),
+            trackHeight: 4,
+          ),
+          child: Slider(
+            value: kelvin,
+            min: 2700,
+            max: 6500,
+            divisions: 100,
+            onChanged: (v) {
+              kelvin = v;
+              int converted = ((v - 2700) / (6500 - 2700) * 255).round().clamp(
+                0,
+                255,
+              );
+              mqtt.sendColorTempCommand(id, converted);
+              setSt(() {});
+            },
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: const [
+            Text(
+              'Warm',
+              style: TextStyle(color: SHColors.mutedText, fontSize: 12),
+            ),
+            Text(
+              'Cool',
+              style: TextStyle(color: SHColors.mutedText, fontSize: 12),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Color _kelvinPreview(double kelvin) {
+    final t = ((kelvin - 2700) / (6500 - 2700)).clamp(0.0, 1.0);
+    return Color.lerp(const Color(0xFFFFB36B), const Color(0xFFB5D6FF), t) ??
+        const Color(0xFFFFE7B5);
   }
 
   void _showRGBSheet(BuildContext ctx, Map<String, dynamic> load) {
     final mqtt = Provider.of<DirectMQTTService>(ctx, listen: false);
     final id = load['id']?.toString() ?? '';
     final cur = mqtt.loads[id] ?? load;
-    double r = (cur['red'] ?? 255).toDouble();
-    double g = (cur['green'] ?? 255).toDouble();
-    double b = (cur['blue'] ?? 255).toDouble();
+    int r = ((cur['red'] ?? 255) as num).round().clamp(0, 255);
+    int g = ((cur['green'] ?? 255) as num).round().clamp(0, 255);
+    int b = ((cur['blue'] ?? 255) as num).round().clamp(0, 255);
 
     showModalBottomSheet(
       context: ctx,
@@ -183,53 +314,33 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
         builder: (ctx, setSt) => FigmaLoadSheet(
           title: 'COLOR',
           isOn: (mqtt.loads[id]?['isOn'] ?? false),
-          onToggle: (v) { mqtt.sendCommand(id, v ? 'ON' : 'OFF'); setSt(() {}); },
-          body: Column(
-            children: [
-              Container(
-                height: 60,
-                decoration: BoxDecoration(
-                  color: Color.fromRGBO(r.round(), g.round(), b.round(), 1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              const SizedBox(height: 16),
-              _colorSlider('R', r, Colors.red, (v) {
-                r = v;
-                mqtt.sendRGBCommand(id, v.round(), g.round(), b.round());
-                setSt(() {});
-              }),
-              _colorSlider('G', g, Colors.green, (v) {
-                g = v;
-                mqtt.sendRGBCommand(id, r.round(), v.round(), b.round());
-                setSt(() {});
-              }),
-              _colorSlider('B', b, Colors.blue, (v) {
-                b = v;
-                mqtt.sendRGBCommand(id, r.round(), g.round(), v.round());
-                setSt(() {});
-              }),
-            ],
+          onToggle: (v) {
+            mqtt.sendCommand(id, v ? 'ON' : 'OFF');
+            setSt(() {});
+          },
+          body: RgbGamutPicker(
+            red: r.toDouble(),
+            green: g.toDouble(),
+            blue: b.toDouble(),
+            onChanged: (nr, ng, nb) {
+              r = nr;
+              g = ng;
+              b = nb;
+              mqtt.sendRGBCommand(id, nr, ng, nb);
+              setSt(() {});
+            },
           ),
         ),
       ),
     );
   }
 
-  Widget _colorSlider(String label, double val, Color c, ValueChanged<double> onChanged) {
-    return Row(
-      children: [
-        SizedBox(width: 30, child: Text(label, style: TextStyle(color: c, fontWeight: FontWeight.bold))),
-        Expanded(child: Slider(value: val, min: 0, max: 255, activeColor: c, onChanged: onChanged)),
-        SizedBox(width: 40, child: Text('${val.round()}', style: const TextStyle(color: Colors.white54))),
-      ],
-    );
-  }
-
   void _showFanSheet(BuildContext ctx, Map<String, dynamic> load) {
     final mqtt = Provider.of<DirectMQTTService>(ctx, listen: false);
     final id = load['id']?.toString() ?? '';
-    double speed = ((mqtt.loads[id]?['fanSpeed'] ?? mqtt.loads[id]?['fSp'] ?? 0) as num).toDouble();
+    double speed =
+        ((mqtt.loads[id]?['fanSpeed'] ?? mqtt.loads[id]?['fSp'] ?? 0) as num)
+            .toDouble();
 
     showModalBottomSheet(
       context: ctx,
@@ -239,13 +350,16 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
         builder: (ctx, setSt) => FigmaLoadSheet(
           title: 'FAN SPEED',
           isOn: (mqtt.loads[id]?['isOn'] ?? false),
-          onToggle: (v) { mqtt.sendCommand(id, v ? 'ON' : 'OFF'); setSt(() {}); },
+          onToggle: (v) {
+            mqtt.sendCommand(id, v ? 'ON' : 'OFF');
+            setSt(() {});
+          },
           body: BrightnessSlider(
-            value: speed / 250 * 100,
+            value: (speed / 250 * 100).clamp(0, 100),
             label: 'SPEED',
             onChanged: (v) {
               speed = v * 2.5;
-              mqtt.sendFanSpeedCommand(id, speed.round());
+              mqtt.sendFanSpeedCommand(id, speed.round().clamp(0, 250));
               setSt(() {});
             },
           ),
@@ -257,7 +371,9 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
   void _showCurtainSheet(BuildContext ctx, Map<String, dynamic> load) {
     final mqtt = Provider.of<DirectMQTTService>(ctx, listen: false);
     final id = load['id']?.toString() ?? '';
-    double pos = ((mqtt.loads[id]?['tPs'] ?? mqtt.loads[id]?['cPs'] ?? 0) as num).toDouble();
+    double pos =
+        ((mqtt.loads[id]?['tPs'] ?? mqtt.loads[id]?['cPs'] ?? 0) as num)
+            .toDouble();
 
     showModalBottomSheet(
       context: ctx,
@@ -267,27 +383,65 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
         builder: (ctx, setSt) => FigmaLoadSheet(
           title: 'MOVEMENT',
           isOn: pos > 0,
-          onToggle: (v) { mqtt.sendCurtainPositionCommand(id, v ? 0 : 100); setSt(() {}); },
+          onToggle: (v) {
+            pos = v ? 0 : 100;
+            mqtt.sendCurtainPositionCommand(id, pos.round());
+            setSt(() {});
+          },
           body: Column(
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _curtainBtn('Open', 0, pos, (v) { mqtt.sendCurtainPositionCommand(id, v); setSt(() {}); }),
-                  _curtainBtn('Stop', -1, pos, (v) { mqtt.sendCurtainPositionCommand(id, 50); setSt(() {}); }),
-                  _curtainBtn('Close', 100, pos, (v) { mqtt.sendCurtainPositionCommand(id, v); setSt(() {}); }),
+                  _curtainBtn('Open', 0, pos, (v) {
+                    pos = v.toDouble();
+                    mqtt.sendCurtainPositionCommand(id, v);
+                    setSt(() {});
+                  }),
+                  _curtainBtn('Stop', -1, pos, (v) {
+                    mqtt.sendCurtainPositionCommand(id, 50);
+                    setSt(() {});
+                  }),
+                  _curtainBtn('Close', 100, pos, (v) {
+                    pos = v.toDouble();
+                    mqtt.sendCurtainPositionCommand(id, v);
+                    setSt(() {});
+                  }),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 18),
               Text(
-                pos == 0 ? 'Fully Open' : pos == 100 ? 'Fully Closed' : '${pos.round()}%',
-                style: const TextStyle(color: SHColors.primary, fontSize: 24, fontWeight: FontWeight.bold),
+                pos == 0
+                    ? 'Fully Open'
+                    : pos == 100
+                    ? 'Fully Closed'
+                    : '${pos.round()}%',
+                style: const TextStyle(
+                  color: SHColors.primary,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
-              Slider(
-                value: pos,
-                min: 0,
-                max: 100,
-                onChanged: (v) { mqtt.sendCurtainPositionCommand(id, v.round()); setSt(() {}); },
+              const SizedBox(height: 8),
+              SliderTheme(
+                data: SliderTheme.of(ctx).copyWith(
+                  activeTrackColor: Colors.white,
+                  inactiveTrackColor: SHColors.trackColor,
+                  thumbColor: Colors.white,
+                  overlayColor: SHColors.primary.withOpacity(0.16),
+                  trackHeight: 4,
+                ),
+                child: Slider(
+                  value: pos.clamp(0, 100),
+                  min: 0,
+                  max: 100,
+                  divisions: 100,
+                  onChanged: (v) {
+                    pos = v;
+                    mqtt.sendCurtainPositionCommand(id, v.round());
+                    setSt(() {});
+                  },
+                ),
               ),
             ],
           ),
@@ -296,7 +450,12 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
     );
   }
 
-  Widget _curtainBtn(String label, int target, double cur, ValueChanged<int> onTap) {
+  Widget _curtainBtn(
+    String label,
+    int target,
+    double cur,
+    ValueChanged<int> onTap,
+  ) {
     final active = target != -1 && cur == target;
     return Expanded(
       child: GestureDetector(
@@ -305,15 +464,18 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
           margin: const EdgeInsets.symmetric(horizontal: 4),
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: active ? SHColors.primary : Colors.white.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
+            color: active ? SHColors.primary : Colors.white.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(SHColors.radiusMd),
+            border: Border.all(
+              color: active ? SHColors.primary : Colors.white.withOpacity(0.16),
+            ),
           ),
           child: Center(
             child: Text(
               label,
               style: TextStyle(
-                color: active ? Colors.white : Colors.white70,
-                fontWeight: active ? FontWeight.bold : FontWeight.normal,
+                color: active ? Colors.white : SHColors.mutedText,
+                fontWeight: active ? FontWeight.w800 : FontWeight.w600,
               ),
             ),
           ),
@@ -326,9 +488,9 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
     final mqtt = Provider.of<DirectMQTTService>(ctx, listen: false);
     final id = load['id']?.toString() ?? '';
     final cur = mqtt.loads[id] ?? load;
-    double temp = (cur['temp'] ?? 25).toDouble();
-    String mode = cur['hvacMode'] ?? 'Cool';
-    final modes = ['Cool', 'Heat', 'Auto', 'Dry'];
+    double temp = ((cur['temp'] ?? 25) as num).toDouble();
+    String mode = (cur['hvacMode'] ?? 'Cool').toString();
+    final modes = const ['Cool', 'Heat', 'Auto', 'Dry'];
 
     showModalBottomSheet(
       context: ctx,
@@ -338,43 +500,61 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
         builder: (ctx, setSt) => FigmaLoadSheet(
           title: 'TEMPERATURE',
           isOn: (cur['isOn'] ?? false),
-          onToggle: (v) { mqtt.sendCommand(id, v ? 'ON' : 'OFF'); setSt(() {}); },
+          onToggle: (v) {
+            mqtt.sendCommand(id, v ? 'ON' : 'OFF');
+            setSt(() {});
+          },
           body: Column(
             children: [
               Text(
                 '${temp.round()}°C',
-                style: const TextStyle(color: SHColors.primary, fontSize: 32, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  color: SHColors.primary,
+                  fontSize: 34,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
               const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: modes.map((m) {
-                  final sel = mode == m;
-                  return GestureDetector(
-                    onTap: () { mqtt.sendHVACModeCommand(id, m); setSt(() {}); },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: sel ? SHColors.primary : Colors.white.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        m,
-                        style: TextStyle(
-                          color: sel ? Colors.white : Colors.white70,
-                          fontWeight: sel ? FontWeight.bold : FontWeight.normal,
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
+              const Text(
+                'ROOM TEMPERATURE',
+                style: TextStyle(
+                  color: SHColors.mutedText,
+                  fontSize: 12,
+                  letterSpacing: 2,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const SizedBox(height: 16),
-              Slider(
-                value: temp,
-                min: 16,
-                max: 32,
-                onChanged: (v) { mqtt.sendTemperatureCommand(id, v.round()); setSt(() {}); },
+              FigmaSegmentedOptions<String>(
+                options: modes,
+                selected: mode,
+                labelBuilder: (m) => m.toUpperCase(),
+                onSelected: (m) {
+                  mode = m;
+                  mqtt.sendHVACModeCommand(id, m);
+                  setSt(() {});
+                },
+              ),
+              const SizedBox(height: 20),
+              SliderTheme(
+                data: SliderTheme.of(ctx).copyWith(
+                  activeTrackColor: Colors.white,
+                  inactiveTrackColor: SHColors.trackColor,
+                  thumbColor: Colors.white,
+                  overlayColor: SHColors.primary.withOpacity(0.16),
+                  trackHeight: 4,
+                ),
+                child: Slider(
+                  value: temp.clamp(16, 32),
+                  min: 16,
+                  max: 32,
+                  divisions: 32,
+                  onChanged: (v) {
+                    temp = v;
+                    mqtt.sendTemperatureCommand(id, v.round());
+                    setSt(() {});
+                  },
+                ),
               ),
             ],
           ),

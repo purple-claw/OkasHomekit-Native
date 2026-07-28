@@ -15,12 +15,14 @@ require("../KNX/actHdlr");
             MOB_ACK: 'status/mobAck',
             GT_ROOMS: 'rooms/get',
             ADD_ROOM: 'rooms/add',
-            DEL_ROOM: 'rooms/delete'
+            DEL_ROOM: 'rooms/delete',
+            WATCHDOG_CMD: 'okas/watchdog/cmd'
         },
         PUB: {
             ST_LDS:  'loads/setLoads',
             CMD_ACK: 'command/cmdAck',
-            ST_ROOMS: 'rooms/set'
+            ST_ROOMS: 'rooms/set',
+            WATCHDOG_STATUS: 'okas/watchdog/status'
         }
     };
 
@@ -332,6 +334,25 @@ require("../KNX/actHdlr");
                 break;
             case TPCS.SUB.DEL_ROOM:
                 mqttDeleteRoom(pld);
+                break;
+            case TPCS.SUB.WATCHDOG_CMD:
+                // Handle watchdog commands: {cmd: 'restart', reason: '...'}
+                if (pld.cmd === 'restart') {
+                    dbg.Inf('Watchdog: Remote restart requested - ' + (pld.reason || 'unknown'));
+                    // Publish to local watchdog topic or trigger via shell
+                    const { exec } = require('child_process');
+                    // Restart services in sequence
+                    exec('systemctl restart OhKnxKnx.service', (err) => {
+                        if (err) dbg.Err('Watchdog: Failed to restart OhKnxKnx - ' + err.message);
+                        setTimeout(() => {
+                            exec('systemctl restart HkBStartUp.service', (err2) => {
+                                if (err2) dbg.Err('Watchdog: Failed to restart HkBStartUp - ' + err2.message);
+                                else dbg.Inf('Watchdog: Services restarted successfully');
+                            });
+                        }, 3000);
+                    });
+                }
+                mqttPub(TPCS.PUB.WATCHDOG_STATUS, { status: 'ok', timestamp: new Date().toISOString() });
                 break;
             default:
                 dbg.Wrn('MQTT: Unhandled Topic - ' + tp);

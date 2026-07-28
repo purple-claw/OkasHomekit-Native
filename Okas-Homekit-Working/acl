@@ -14,6 +14,9 @@ topic readwrite status/+
 # Room management topics
 topic readwrite rooms/+
 
+# Watchdog topics (auto-recovery)
+topic readwrite okas/watchdog/#
+
 # =============================
 # Internal KNX Bridge (Python xknx <-> Node.js)
 # Accessed via localhost (secured by binding)
@@ -40,4 +43,8 @@ topic write status/mobAck
 topic write rooms/get
 topic read rooms/set
 topic write rooms/add
+topic write rooms/delete
+
+# Watchdog topics (auto-recovery)
+topic readwrite okas/watchdog/#
 

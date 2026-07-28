@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart' hide RefreshIndicator;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -97,9 +98,13 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     if (_okasServiceListener != null) {
       try {
-        Provider.of<DirectMQTTService>(context, listen: false)
-            .removeListener(_okasServiceListener!);
-      } catch (_) { /* context may be unmounted */ }
+        Provider.of<DirectMQTTService>(
+          context,
+          listen: false,
+        ).removeListener(_okasServiceListener!);
+      } catch (_) {
+        /* context may be unmounted */
+      }
     }
     if (_roomServiceListener != null) {
       RoomService.instance.removeListener(_roomServiceListener!);
@@ -295,18 +300,44 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: Colors.transparent,
           appBar: _selectedIndex == 0
               ? AppBar(
-                  title: const Text(
-                    'OKAS Homekit',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  title: Row(
+                    children: [
+                      SvgPicture.asset(
+                        'assets/svg/okas-logo.svg',
+                        width: 72,
+                        height: 22,
+                      ),
+                      const SizedBox(width: 10),
+                      const Text(
+                        'HomeKit',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
                   ),
                   backgroundColor: Colors.transparent,
                   elevation: 0,
                   actions: [
                     Container(
                       margin: const EdgeInsets.only(right: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 7,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                          color:
+                              (okasService.isConnected
+                                      ? SHColors.green
+                                      : SHColors.rose)
+                                  .withOpacity(0.42),
+                        ),
+                      ),
                       child: Row(
                         children: [
                           Icon(
@@ -314,18 +345,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ? Icons.wifi
                                 : Icons.wifi_off,
                             color: okasService.isConnected
-                                ? Colors.green
-                                : Colors.red,
-                            size: 20,
+                                ? SHColors.green
+                                : SHColors.rose,
+                            size: 16,
                           ),
-                          const SizedBox(width: 4),
+                          const SizedBox(width: 6),
                           Text(
                             okasService.isConnected ? 'Connected' : 'Offline',
-                            style: TextStyle(
-                              color: okasService.isConnected
-                                  ? Colors.white
-                                  : Colors.white,
-                              fontSize: 12,
+                            style: const TextStyle(
+                              color: SHColors.textColor,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ],
@@ -340,10 +370,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     _selectedIndex == 1
                         ? 'Loads'
                         : _selectedIndex == 2
-                            ? 'Rooms'
-                            : _selectedIndex == 3
-                                ? 'Scenes'
-                                : 'Guest Access',
+                        ? 'Rooms'
+                        : _selectedIndex == 3
+                        ? 'Scenes'
+                        : 'Profile',
                     style: context.titleLarge.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -409,52 +439,64 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    final userName = " ";
-
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                "Welcome to Smart Home.",
-                style: const TextStyle(color: Colors.white70, fontSize: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Welcome back",
+                      style: TextStyle(
+                        color: SHColors.mutedText,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "Smart Home",
+                      style: Theme.of(context).textTheme.displaySmall,
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(width: 8),
-              Text(
-                "$userName!",
-                style: const TextStyle(color: Colors.white70, fontSize: 16),
-              ),
+              _buildAddRoomButton(),
             ],
           ),
 
-          const SizedBox(height: 16),
-          Align(alignment: Alignment.centerRight, child: _buildAddRoomButton()),
-
+          const SizedBox(height: 22),
           if (_rooms.isNotEmpty) _buildRoomCard(),
           if (_rooms.isEmpty) _buildEmptyState(),
 
           const SizedBox(height: 24),
 
-          // Active Loads Section - Now shows current room's loads
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 'Active Loads',
                 style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
               if (_rooms.isNotEmpty)
                 Text(
                   'Room ${_currentRoomIndex + 1}/${_rooms.length}',
-                  style: TextStyle(color: Colors.white54, fontSize: 12),
+                  style: TextStyle(
+                    color: SHColors.mutedText,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
             ],
           ),
@@ -472,9 +514,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     'assets/icons/switch.png',
                     width: 24,
                     height: 24,
-                    color: Colors.green,
+                    color: SHColors.green,
                   ),
-                  Colors.green,
+                  SHColors.green,
                 ),
                 const SizedBox(width: 12),
                 _buildActiveLoadCard(
@@ -484,9 +526,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     'assets/icons/dimmer.png',
                     width: 24,
                     height: 24,
-                    color: Colors.orange,
+                    color: SHColors.amber,
                   ),
-                  Colors.orange,
+                  SHColors.amber,
                 ),
                 const SizedBox(width: 12),
                 _buildActiveLoadCard(
@@ -496,9 +538,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     'assets/icons/tunable.png',
                     width: 24,
                     height: 24,
-                    color: Colors.purple,
+                    color: SHColors.violet,
                   ),
-                  Colors.purple,
+                  SHColors.violet,
                 ),
                 const SizedBox(width: 12),
                 _buildActiveLoadCard(
@@ -508,9 +550,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     'assets/icons/rgb.png',
                     width: 24,
                     height: 24,
-                    color: Colors.blue,
+                    color: SHColors.blue,
                   ),
-                  Colors.blue,
+                  SHColors.blue,
                 ),
               ],
             ),
@@ -531,7 +573,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w800,
             ),
           ),
         ),
@@ -570,31 +612,25 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Container(
         width: 220,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              SHColors.primary.withOpacity(0.3),
-              SHColors.primary.withOpacity(0.1),
-            ],
-          ),
-          border: Border.all(
-            color: SHColors.primary.withOpacity(0.3),
-            width: 1,
-          ),
+          borderRadius: BorderRadius.circular(SHColors.radiusLg),
+          gradient: SHColors.cardGradient,
+          border: Border.all(color: Colors.white.withOpacity(0.14), width: 1),
+          boxShadow: SHColors.softShadow,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
               borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(20),
+                top: Radius.circular(SHColors.radiusLg),
               ),
               child: SizedBox(
                 height: 110,
                 width: double.infinity,
-                child: imagePath != null && imagePath.isNotEmpty && File(imagePath).existsSync()
+                child:
+                    imagePath != null &&
+                        imagePath.isNotEmpty &&
+                        File(imagePath).existsSync()
                     ? Image.file(File(imagePath), fit: BoxFit.cover)
                     : Container(
                         color: Colors.black26,
@@ -602,11 +638,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: const EdgeInsets.all(20),
                           child: Image.asset(
                             'assets/icons/room.png',
-                            color: Colors.white70,
+                            color: SHColors.primary,
                             errorBuilder: (_, __, ___) => const Icon(
                               Icons.meeting_room,
                               size: 48,
-                              color: Colors.white38,
+                              color: SHColors.hintColor,
                             ),
                           ),
                         ),
@@ -625,16 +661,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '${(serviceRoom?.loadIds.length ?? 0)} loads',
-                    style: const TextStyle(
-                      color: Colors.white54,
-                      fontSize: 12,
-                    ),
+                    style: const TextStyle(color: Colors.white54, fontSize: 12),
                   ),
                 ],
               ),
@@ -652,11 +685,12 @@ class _HomeScreenState extends State<HomeScreen> {
     Color color,
   ) {
     return Container(
-      width: 85,
+      width: 88,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(12),
+        color: SHColors.cardColor.withOpacity(0.58),
+        borderRadius: BorderRadius.circular(SHColors.radiusMd),
         border: Border.all(color: color.withOpacity(0.3), width: 1),
+        boxShadow: SHColors.softShadow,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -665,7 +699,7 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: color.withOpacity(0.2),
-              shape: BoxShape.circle,
+              borderRadius: BorderRadius.circular(14),
             ),
             child: icon,
           ),
@@ -675,7 +709,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: TextStyle(
               color: Colors.white70,
               fontSize: 12,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 2),
@@ -684,7 +718,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: TextStyle(
               color: color,
               fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w800,
             ),
           ),
         ],
@@ -697,16 +731,16 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         children: [
           const SizedBox(height: 40),
-          Icon(Icons.home_work_outlined, size: 64, color: Colors.grey),
+          Icon(Icons.home_work_outlined, size: 64, color: SHColors.hintColor),
           const SizedBox(height: 16),
           const Text(
             'No rooms added yet',
-            style: TextStyle(color: Colors.grey),
+            style: TextStyle(color: SHColors.mutedText),
           ),
           const SizedBox(height: 8),
           const Text(
             'Tap + button to add a room',
-            style: TextStyle(color: Colors.grey),
+            style: TextStyle(color: SHColors.hintColor),
           ),
         ],
       ),
@@ -728,8 +762,8 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
+          color: SHColors.primary.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(18),
           border: Border.all(
             color: SHColors.primary.withOpacity(0.5),
             width: 1,

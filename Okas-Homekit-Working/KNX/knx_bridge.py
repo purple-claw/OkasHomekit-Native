@@ -145,9 +145,7 @@ class KnxBridge:
 
     # - MQTT ---
     def start_mqtt(self):
-        self.mqtt = mqtt.Client(
-            mqtt.CallbackAPIVersion.VERSION2, client_id=MQTT_CLIENT_ID, clean_session=True
-        )
+        self.mqtt = mqtt.Client(client_id=MQTT_CLIENT_ID, clean_session=True)
         # Retained 'offline' link status; overwritten once KNX connects.
         self.mqtt.will_set(TPC_CONN, json.dumps({"connected": False}), qos=1, retain=True)
         self.mqtt.on_connect = self._on_mqtt_connect
@@ -157,7 +155,7 @@ class KnxBridge:
         self.mqtt.connect_async(MQTT_HOST, MQTT_PORT, keepalive=30)
         self.mqtt.loop_start()
 
-    def _on_mqtt_connect(self, client, userdata, flags, reason_code, properties=None):
+    def _on_mqtt_connect(self, client, userdata, flags, reason_code):
         if reason_code != 0:
             log.warning("MQTT: connect failed (%s)", reason_code)
             return
