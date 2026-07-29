@@ -126,70 +126,121 @@ class _RoomsTabState extends State<RoomsTab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Room image or placeholder
-            Container(
-              height: 120,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(SHColors.radiusLg),
+            // Figma spec: image-led room cards with dark gradient overlay
+            // sitting under the room name so white text remains legible.
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(SHColors.radiusLg),
+                  ),
+                  child: SizedBox(
+                    height: 140,
+                    width: double.infinity,
+                    child: room.imagePath != null &&
+                            File(room.imagePath!).existsSync()
+                        ? Image.file(
+                            File(room.imagePath!),
+                            fit: BoxFit.cover,
+                            // Cache at the device pixel ratio so the image
+                            // stays sharp when the card is rebuilt — without
+                            // this Flutter re-decodes the file at every
+                            // rebuild and the user sees a brief blur.
+                            cacheWidth: 800,
+                            filterQuality: FilterQuality.high,
+                            errorBuilder: (_, __, ___) =>
+                                _buildRoomPlaceholder(),
+                          )
+                        : _buildRoomPlaceholder(),
+                  ),
                 ),
-                color: Colors.black26,
-              ),
-              child: room.imagePath != null
-                  ? ClipRRect(
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(SHColors.radiusLg),
+                if (room.imagePath != null)
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(SHColors.radiusLg),
+                          ),
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withOpacity(0.65),
+                            ],
+                          ),
+                        ),
                       ),
-                      child: Image.file(
-                        File(room.imagePath!),
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => _buildRoomPlaceholder(),
+                    ),
+                  ),
+                Positioned(
+                  left: 14,
+                  right: 14,
+                  bottom: 10,
+                  child: Text(
+                    room.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  right: 12,
+                  top: 12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.55),
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.18),
                       ),
-                    )
-                  : _buildRoomPlaceholder(),
+                    ),
+                    child: Text(
+                      '${roomLoads.length} loads',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            // Room info
+            // Figma spec: load-type chips row.
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        room.name,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        '${roomLoads.length} loads',
-                        style: TextStyle(color: Colors.white54, fontSize: 12),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  // Load icons
                   Wrap(
                     spacing: 8,
+                    runSpacing: 8,
                     children: roomLoads.map((load) {
-                      final type = load!['type']?.toString() ?? 'swt';
+                      final type = load['type']?.toString() ?? 'swt';
                       return Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: _getLoadTypeColor(type).withOpacity(0.2),
+                          color: _getLoadTypeColor(type).withOpacity(0.18),
                           borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: _getLoadTypeColor(type).withOpacity(0.35),
+                          ),
                         ),
                         child: Image.asset(
                           _getLoadTypeIconAsset(type),
-                          width: 16,
-                          height: 16,
+                          width: 18,
+                          height: 18,
                           color: _getLoadTypeColor(type),
                           errorBuilder: (_, __, ___) =>
                               const Icon(Icons.lightbulb_outline, size: 16),
@@ -205,6 +256,7 @@ class _RoomsTabState extends State<RoomsTab> {
       ),
     );
   }
+
 
   Widget _buildRoomPlaceholder() {
     return Center(
@@ -247,7 +299,10 @@ class _RoomsTabState extends State<RoomsTab> {
           return Container(
             decoration: BoxDecoration(
               color: SHColors.elevatedCardColor,
-              gradient: SHColors.cardGradient,
+              // Use the opaque sheet gradient here — this sheet floats above
+              // the rooms list and would otherwise let the room cards bleed
+              // through. Tiles and inline cards keep `cardGradient`.
+              gradient: SHColors.sheetGradient,
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(SHColors.radiusXl),
               ),

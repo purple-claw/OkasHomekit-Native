@@ -280,26 +280,41 @@ class _LoungeScreenState extends State<LoungeScreen> {
     String id,
     String deviceName,
   ) {
-    double brightness = (mqtt.loads[id]?['brightness'] ?? 50).toDouble();
+    // The dimmer's "on" state is derived from brightness > 0 so the slider
+    // position and the master toggle stay in lock-step.
+    final liveLoad = mqtt.loads[id] ?? <String, dynamic>{};
+    double liveBrightness =
+        ((liveLoad['brightness'] ?? 50) as num).toDouble();
+    if (liveBrightness <= 0 && (liveLoad['isOn'] ?? false) == true) {
+      liveBrightness = 50; // avoid a blank slider when on but no value yet
+    }
+    final liveIsOn = liveBrightness > 0;
 
     return StatefulBuilder(
-      builder: (ctx, setSt) => FigmaLoadSheet(
-        title: 'BRIGHTNESS',
-        isOn: mqtt.loads[id]?['isOn'] ?? false,
-        onToggle: (v) {
-          mqtt.sendCommand(id, v ? 'ON' : 'OFF');
-          setSt(() {});
-        },
-        body: BrightnessSlider(
-          value: brightness,
-          label: 'BRIGHTNESS',
-          onChanged: (v) {
-            brightness = v;
-            mqtt.sendBrightnessCommand(id, v.round());
+      builder: (ctx, setSt) {
+        final cur = mqtt.loads[id] ?? <String, dynamic>{};
+        final curBrightness = ((cur['brightness'] ?? 0) as num).toDouble();
+        final curIsOn = curBrightness > 0 || (cur['isOn'] == true && curBrightness > 0);
+        final sliderPct = curBrightness > 0
+            ? curBrightness.clamp(0, 100).toDouble()
+            : liveBrightness.clamp(0, 100).toDouble();
+        return FigmaLoadSheet(
+          title: 'BRIGHTNESS',
+          isOn: curIsOn,
+          onToggle: (v) {
+            mqtt.sendCommand(id, v ? 'ON' : 'OFF');
             setSt(() {});
           },
-        ),
-      ),
+          body: BrightnessSlider(
+            value: sliderPct,
+            label: curIsOn ? 'BRIGHTNESS' : 'TAP OR SLIDE TO TURN ON',
+            onChanged: (v) {
+              mqtt.sendBrightnessCommand(id, v.round());
+              setSt(() {});
+            },
+          ),
+        );
+      },
     );
   }
 
@@ -309,8 +324,18 @@ class _LoungeScreenState extends State<LoungeScreen> {
     String id,
     String deviceName,
   ) {
-    int raw = (mqtt.loads[id]?['cTp'] ?? 166) as int;
-    double kelvin = 2700 + ((raw.clamp(0, 255) / 255) * (6500 - 2700));
+    // Board publishes cTp as Mired (1_000_000 / Kelvin) on Tuv feedback.
+    // Convert to Kelvin for the UI; clamp to the supported range.
+    final rawCtpDynamic = mqtt.loads[id]?['cTp'];
+    final int rawCtp = rawCtpDynamic is int
+        ? rawCtpDynamic
+        : int.tryParse('$rawCtpDynamic') ?? 370;
+    final int mired = rawCtp < 154
+        ? 154
+        : rawCtp > 500
+            ? 500
+            : rawCtp;
+    double kelvin = (1000000 / mired).clamp(2700, 6500).toDouble();
 
     return StatefulBuilder(
       builder: (ctx, setSt) => FigmaLoadSheet(
@@ -354,10 +379,9 @@ class _LoungeScreenState extends State<LoungeScreen> {
               divisions: 100,
               onChanged: (v) {
                 kelvin = v;
-                int converted = ((v - 2700) / (6500 - 2700) * 255)
-                    .round()
-                    .clamp(0, 255);
-                mqtt.sendColorTempCommand(id, converted);
+                // The board's Tun action expects Kelvin directly (it
+                // converts to Mired internally for the bus write).
+                mqtt.sendColorTempCommand(id, v.round());
                 setSt(() {});
               },
             ),

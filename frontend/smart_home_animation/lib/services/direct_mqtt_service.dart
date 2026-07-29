@@ -17,6 +17,12 @@ import 'package:smart_home_animation/services/room_service.dart';
 // Note: We're not using multicast_dns due to API issues
 // Instead, we'll use network scanning and hostname resolution
 
+class _Hsv {
+  final double hue;
+  final double sat;
+  const _Hsv(this.hue, this.sat);
+}
+
 class DirectMQTTService extends ChangeNotifier {
   MqttServerClient? _client;
   bool _isConnected = false;
@@ -200,17 +206,30 @@ class DirectMQTTService extends ChangeNotifier {
       final ldId = load['ldId'] as int? ?? int.tryParse(deviceId) ?? 1;
       final loadType = load['type'] as String? ?? 'dim';
 
+      final clamped = brightness.clamp(0, 100);
+      // Off/on logic for dimmers: sliding up from 0% must turn the load on,
+      // and sliding to 0% must turn it off — the bus relay cannot be left
+      // out of sync with the slider. We pair bri with swt so the load's
+      // on/off state always matches the slider position.
+      final isOn = clamped > 0;
+      final cmd = <String, dynamic>{
+        'bri': clamped,
+        'swt': isOn,
+      };
+
       final message = json.encode({
         'ldId': ldId,
         'typ': loadType,
-        'cmd': {'bri': brightness.clamp(0, 100)},
+        'cmd': cmd,
       });
 
       publish('command/sndCmd', message);
 
       if (_loads.containsKey(deviceId)) {
-        _loads[deviceId]!['brightness'] = brightness;
-        _devices[deviceId]!['brightness'] = brightness;
+        _loads[deviceId]!['brightness'] = clamped;
+        _loads[deviceId]!['isOn'] = isOn;
+        _devices[deviceId]!['brightness'] = clamped;
+        _devices[deviceId]!['isOn'] = isOn;
         notifyListeners();
       }
     }
@@ -224,17 +243,33 @@ class DirectMQTTService extends ChangeNotifier {
       final ldId = load['ldId'] as int? ?? int.tryParse(deviceId) ?? 1;
       final loadType = load['type'] as String? ?? 'tun';
 
+      // Tunable colour temperature is expressed in Kelvin on the wire —
+      // the board's Tun action converts to Mired for the DPT7.600 bus write.
+      final clamped = colorTemp.clamp(2000, 6500);
+      // Pair colour-temp writes with swt=true so the load turns on when
+      // the user actively tunes it. The user is interacting with the slider,
+      // so leaving the relay in the previous state would be wrong.
+      final cmd = <String, dynamic>{
+        'cTp': clamped,
+        'swt': clamped > 2700,
+      };
+
       final message = json.encode({
         'ldId': ldId,
         'typ': loadType,
-        'cmd': {'cTp': colorTemp.clamp(2700, 6500)},
+        'cmd': cmd,
       });
 
       publish('command/sndCmd', message);
 
       if (_loads.containsKey(deviceId)) {
-        _loads[deviceId]!['cTp'] = colorTemp;
-        _devices[deviceId]!['cTp'] = colorTemp;
+        // Cache the value as Mired (1_000_000 / K) so reads stay consistent
+        // with what the board publishes on status/+.
+        final mired = clamped > 0 ? (1000000 / clamped).round() : 0;
+        _loads[deviceId]!['cTp'] = mired;
+        _loads[deviceId]!['isOn'] = clamped > 2700;
+        _devices[deviceId]!['cTp'] = mired;
+        _devices[deviceId]!['isOn'] = clamped > 2700;
         notifyListeners();
       }
     }
@@ -249,28 +284,67 @@ class DirectMQTTService extends ChangeNotifier {
       final ldId = load['ldId'] as int? ?? int.tryParse(deviceId) ?? 1;
       final loadType = load['type'] as String? ?? 'rgb';
 
+      final r = red.clamp(0, 255);
+      final g = green.clamp(0, 255);
+      final b = blue.clamp(0, 255);
+      // The board's PAR_MAP expects HSV (Hue 0-360, Sat 0-100) for RGB
+      // loads, not raw r/g/b. Without this conversion the bus write goes
+      // through the unknown-parameter path and silently fails.
+      final hsv = _rgbToHsv(r, g, b);
+      final cmd = <String, dynamic>{
+        'hue': hsv.hue,
+        'sat': hsv.sat,
+        'swt': true,
+      };
+
       final message = json.encode({
         'ldId': ldId,
         'typ': loadType,
-        'cmd': {
-          'r': red.clamp(0, 255),
-          'g': green.clamp(0, 255),
-          'b': blue.clamp(0, 255),
-        },
+        'cmd': cmd,
       });
 
       publish('command/sndCmd', message);
 
       if (_loads.containsKey(deviceId)) {
-        _loads[deviceId]!['red'] = red;
-        _loads[deviceId]!['green'] = green;
-        _loads[deviceId]!['blue'] = blue;
-        _devices[deviceId]!['red'] = red;
-        _devices[deviceId]!['green'] = green;
-        _devices[deviceId]!['blue'] = blue;
+        _loads[deviceId]!['red'] = r;
+        _loads[deviceId]!['green'] = g;
+        _loads[deviceId]!['blue'] = b;
+        _loads[deviceId]!['hue'] = hsv.hue;
+        _loads[deviceId]!['sat'] = hsv.sat;
+        _loads[deviceId]!['isOn'] = true;
+        _devices[deviceId]!['red'] = r;
+        _devices[deviceId]!['green'] = g;
+        _devices[deviceId]!['blue'] = b;
+        _devices[deviceId]!['hue'] = hsv.hue;
+        _devices[deviceId]!['sat'] = hsv.sat;
+        _devices[deviceId]!['isOn'] = true;
         notifyListeners();
       }
     }
+  }
+
+  /// RGB (0-255) -> HSV with hue in degrees (0-360) and saturation as a
+  /// 0-100 percentage, matching what the board's `Hue`/`Sat` actions expect.
+  _Hsv _rgbToHsv(int r, int g, int b) {
+    final rn = r / 255.0;
+    final gn = g / 255.0;
+    final bn = b / 255.0;
+    final maxC = [rn, gn, bn].reduce((a, b) => a > b ? a : b);
+    final minC = [rn, gn, bn].reduce((a, b) => a < b ? a : b);
+    final delta = maxC - minC;
+    double hue = 0;
+    if (delta != 0) {
+      if (maxC == rn) {
+        hue = 60 * (((gn - bn) / delta) % 6);
+      } else if (maxC == gn) {
+        hue = 60 * (((bn - rn) / delta) + 2);
+      } else {
+        hue = 60 * (((rn - gn) / delta) + 4);
+      }
+    }
+    if (hue < 0) hue += 360;
+    final double sat = maxC == 0 ? 0 : (delta / maxC) * 100;
+    return _Hsv(hue, sat);
   }
 
   // HVAC Mode Control
@@ -805,27 +879,64 @@ class DirectMQTTService extends ChangeNotifier {
             colorTemp = int.tryParse(cTpValue) ?? 2700;
           }
 
-          // RGB values
-          final red = sta?['r'] as int? ?? 255;
-          final green = sta?['g'] as int? ?? 255;
-          final blue = sta?['b'] as int? ?? 255;
+          // RGB values — the board publishes HSV (hue/sat) for RGB loads,
+          // not raw r/g/b. Fall back to r/g/b if present (older firmware or
+          // edge devices), otherwise convert hue/sat to RGB at full value.
+          int red = (sta?['r'] as int?) ?? -1;
+          int green = (sta?['g'] as int?) ?? -1;
+          int blue = (sta?['b'] as int?) ?? -1;
+          if (red < 0 || green < 0 || blue < 0) {
+            final hue = (sta?['hue'] as num?)?.toDouble() ?? 0.0;
+            final sat = (sta?['sat'] as num?)?.toDouble() ?? 0.0;
+            // HSV -> RGB at value=1.0 (brightness is sent separately as bri).
+            final h = hue % 360;
+            final s = sat.clamp(0.0, 1.0);
+            final c = 1.0 * s;
+            final x = c * (1 - (((h / 60) % 2) - 1).abs());
+            final m = 1.0 - c;
+            double rp = 0, gp = 0, bp = 0;
+            if (h < 60) {
+              rp = c;
+              gp = x;
+            } else if (h < 120) {
+              rp = x;
+              gp = c;
+            } else if (h < 180) {
+              gp = c;
+              bp = x;
+            } else if (h < 240) {
+              gp = x;
+              bp = c;
+            } else if (h < 300) {
+              rp = x;
+              bp = c;
+            } else {
+              rp = c;
+              bp = x;
+            }
+            red = ((rp + m) * 255).round().clamp(0, 255);
+            green = ((gp + m) * 255).round().clamp(0, 255);
+            blue = ((bp + m) * 255).round().clamp(0, 255);
+          }
 
-          // HVAC values
+          // HVAC values. Bus uses HomeKit TargetHeatingCoolingState values:
+          // 0=OFF, 1=HEAT, 2=COOL, 3=AUTO. DRY (no HomeKit equivalent) is
+          // mapped to COOL on the board, so case 2 covers both.
           String hvacMode = 'Cool';
           final modValue = sta?['mod'];
           if (modValue is int) {
             switch (modValue) {
               case 0:
-                hvacMode = 'Cool';
+                hvacMode = 'Off';
                 break;
               case 1:
                 hvacMode = 'Heat';
                 break;
               case 2:
-                hvacMode = 'Auto';
+                hvacMode = 'Cool';
                 break;
               case 3:
-                hvacMode = 'Dry';
+                hvacMode = 'Auto';
                 break;
               default:
                 hvacMode = 'Cool';
@@ -947,25 +1058,67 @@ class DirectMQTTService extends ChangeNotifier {
               load['cTp'] = int.tryParse(cTpValue) ?? load['cTp'];
             }
 
-            load['red'] = sta['r'] ?? load['red'];
-            load['green'] = sta['g'] ?? load['green'];
-            load['blue'] = sta['b'] ?? load['blue'];
+            // RGB: board sends HSV (hue/sat) — fall back to r/g/b when
+            // available, otherwise derive RGB from HSV at full value so the
+            // picker stays in sync with the live bus state.
+            int? nr = sta['r'] as int?;
+            int? ng = sta['g'] as int?;
+            int? nb = sta['b'] as int?;
+            if (nr == null || ng == null || nb == null) {
+              final hue = (sta['hue'] as num?)?.toDouble();
+              final sat = (sta['sat'] as num?)?.toDouble();
+              if (hue != null && sat != null) {
+                final h = hue % 360;
+                final s = sat.clamp(0.0, 1.0);
+                final c = 1.0 * s;
+                final x = c * (1 - (((h / 60) % 2) - 1).abs());
+                final m = 1.0 - c;
+                double rp = 0, gp = 0, bp = 0;
+                if (h < 60) {
+                  rp = c;
+                  gp = x;
+                } else if (h < 120) {
+                  rp = x;
+                  gp = c;
+                } else if (h < 180) {
+                  gp = c;
+                  bp = x;
+                } else if (h < 240) {
+                  gp = x;
+                  bp = c;
+                } else if (h < 300) {
+                  rp = x;
+                  bp = c;
+                } else {
+                  rp = c;
+                  bp = x;
+                }
+                nr = ((rp + m) * 255).round().clamp(0, 255);
+                ng = ((gp + m) * 255).round().clamp(0, 255);
+                nb = ((bp + m) * 255).round().clamp(0, 255);
+              }
+            }
+            if (nr != null) load['red'] = nr;
+            if (ng != null) load['green'] = ng;
+            if (nb != null) load['blue'] = nb;
 
-            // Handle HVAC mode
+            // Handle HVAC mode. The bus uses HomeKit
+            // TargetHeatingCoolingState values: 0=OFF, 1=HEAT, 2=COOL, 3=AUTO.
+            // DRY has no HomeKit equivalent — the board maps it to COOL (2).
             final modValue = sta['mod'];
             if (modValue is int) {
               switch (modValue) {
                 case 0:
-                  load['hvacMode'] = 'Cool';
+                  load['hvacMode'] = 'Off';
                   break;
                 case 1:
                   load['hvacMode'] = 'Heat';
                   break;
                 case 2:
-                  load['hvacMode'] = 'Auto';
+                  load['hvacMode'] = 'Cool';
                   break;
                 case 3:
-                  load['hvacMode'] = 'Dry';
+                  load['hvacMode'] = 'Auto';
                   break;
                 default:
                   load['hvacMode'] = 'Cool';

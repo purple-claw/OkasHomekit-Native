@@ -63,10 +63,24 @@ require('./knxBridge');
             }
             knxLod[lNm].Val.Swt = val;
             knxLod[lNm].Val.Sta = val;
-            // For HVAC, when turned off, also clear the mode to 0 (OFF)
-            if (knxLod[lNm].Typ === 'HVAC' && val === 0) {
-                knxLod[lNm].Val.Tmc = 0;
-                knxLod[lNm].Val.Tmv = 0;
+            if (knxLod[lNm].Typ === 'HVAC') {
+                if (val === 0) {
+                    // For HVAC, turning off also clears the mode to 0 (OFF).
+                    knxLod[lNm].Val.Tmc = 0;
+                    knxLod[lNm].Val.Tmv = 0;
+                } else if (knxLod[lNm].Val.Tmc === 0) {
+                    // Turning the HVAC back on without a mode set would leave
+                    // the relay latched but no Cool/Heat/Auto command on the
+                    // bus, so the unit never actually runs. Re-apply the last
+                    // known mode (falling back to COOL) so the AC starts
+                    // running immediately when toggled on via the Fanv2.On
+                    // tile or the mobile app.
+                    const resumeMode = knxLod[lNm].Val.Tmc || 1; // 1 = COOL
+                    dbg.Inf(`HVAC toggle-on without mode - resuming ${resumeMode}`);
+                    await knxCmd(lNm, 'Tmc', resumeMode);
+                    knxLod[lNm].Val.Tmc = resumeMode;
+                    knxLod[lNm].Val.Tmv = resumeMode;
+                }
             }
             dbg.Inf(`Turn-${val ? 'On' : 'Off'} sent to ${lNm}.`);
             // Push state to HomeKit + MQTT immediately so the Home app and
@@ -226,10 +240,13 @@ require('./knxBridge');
 
     Tmd = async (lNm, val) => {
         try {
-            // Convert string mode to numeric if needed
+            // Convert string mode to numeric if needed. Values follow the
+            // HomeKit TargetHeatingCoolingState enum so the bus representation
+            // matches what HomeKit writes back: 0=OFF, 1=HEAT, 2=COOL, 3=AUTO.
+            // (DRY has no HomeKit equivalent, so we keep the bus at COOL.)
             if (typeof val === 'string') {
-                const modeMap = { 'cool': 1, 'heat': 2, 'auto': 3, 'dry': 1 };
-                val = modeMap[val.toLowerCase()] ?? 1;
+                const modeMap = { 'cool': 2, 'heat': 1, 'auto': 3, 'dry': 2 };
+                val = modeMap[val.toLowerCase()] ?? 2;
             }
             // HomeKit TargetHeatingCoolingState: 0=OFF, 1=COOL, 2=HEAT, 3=AUTO
             // When OFF is selected, also turn off the HVAC switch
@@ -240,6 +257,16 @@ require('./knxBridge');
                 knxLod[lNm].Val.Tmc = 0;
                 knxLod[lNm].Val.Tmv = 0;
             } else {
+                // Picking a Cool/Heat/Auto mode implicitly means "turn the AC
+                // on". Without this Swt(lNm, 1) call the Tmc write would
+                // change the bus mode but leave the relay off, so the AC
+                // never actually starts — HomeKit shows the mode change but
+                // the unit stays off (and the mobile app sees isOn=false).
+                const wasOff = !knxLod[lNm].Val.Sta;
+                if (wasOff) {
+                    dbg.Inf(`HVAC mode ${val} - turning on ${lNm} relay`);
+                    await Swt(lNm, 1);
+                }
                 let res = knxCmd(lNm, 'Tmc', val);
                 if (!res.ok) {
                     dbg.Err(`Unable to send Temperature Mode command to ${lNm}: ${res.err}.`);

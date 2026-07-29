@@ -80,15 +80,22 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
       img.Image? image = img.decodeImage(imageBytes);
       if (image == null) return null;
 
-      final maxSize = 500;
+      // Cap the long edge at 1600px which is plenty for a phone display at
+      // @3x (the source-of-truth 220dp room card tops out around 660px).
+      // Down-scaling below 1000px is what causes the pixelation users see
+      // when the source is a high-res camera shot.
+      const maxEdge = 1600;
       img.Image resizedImage;
-      if (image.width > image.height) {
-        resizedImage = img.copyResize(image, width: maxSize);
+      if (image.width >= image.height && image.width > maxEdge) {
+        resizedImage = img.copyResize(image, width: maxEdge);
+      } else if (image.height > maxEdge) {
+        resizedImage = img.copyResize(image, height: maxEdge);
       } else {
-        resizedImage = img.copyResize(image, height: maxSize);
+        // Source is already small enough — do not downscale.
+        resizedImage = image;
       }
 
-      final compressedBytes = img.encodeJpg(resizedImage, quality: 70);
+      final compressedBytes = img.encodeJpg(resizedImage, quality: 92);
       final appDir = await getApplicationDocumentsDirectory();
       final fileName = 'room_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final compressedFile = File('${appDir.path}/$fileName');
@@ -108,9 +115,10 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
       final picker = ImagePicker();
       final XFile? pickedImage = await picker.pickImage(
         source: source,
-        maxWidth: 1200,
-        maxHeight: 1200,
-        imageQuality: 85,
+        // No maxWidth/maxHeight so the picker hands back the full-resolution
+        // source — the resize step in _compressAndSaveImage is the single
+        // place where we normalise the image, and it keeps aspect ratio.
+        imageQuality: 100,
       );
 
       if (pickedImage != null) {

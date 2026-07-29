@@ -41,8 +41,10 @@ abstract class SHColors {
 
   /// Figma-style radial gradient overlay from the curtain/sheet artboard:
   /// radial cyan -> teal -> dark blue -> black, rotated 7.454deg.
-  /// Used for raised sheet surfaces so they pick up the same light source
-  /// as the background canvas.
+  /// Used for raised surfaces that float above other content. The outer
+  /// stop fades to fully transparent so the curtain picks up the canvas
+  /// glow — sheets that need to block the canvas entirely should use
+  /// [curtainSheetRadialGradient] instead.
   static Gradient curtainRadialGradient = const RadialGradient(
     center: Alignment(-0.16, -0.55),
     radius: 1.4,
@@ -50,7 +52,22 @@ abstract class SHColors {
       Color(0xFF2AC0D1),
       Color(0xFF007380),
       Color(0xFF00375A),
-      Color(0xFF000000),
+      Color(0x00000000),
+    ],
+    stops: [0.0, 0.277, 0.548, 0.957],
+  );
+
+  /// Opaque variant of [curtainRadialGradient] for overlay sheets (curtain
+  /// sheet, fan sheet, etc.). The fully-opaque outer stop stops the load
+  /// grid behind the sheet from bleeding through.
+  static Gradient curtainSheetRadialGradient = const RadialGradient(
+    center: Alignment(-0.16, -0.55),
+    radius: 1.4,
+    colors: [
+      Color(0xFF2AC0D1),
+      Color(0xFF007380),
+      Color(0xFF00375A),
+      Color(0xFF02070D),
     ],
     stops: [0.0, 0.277, 0.548, 0.957],
   );
@@ -58,18 +75,31 @@ abstract class SHColors {
   static const Gradient cardGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    // Alpha values bumped so that the load-grid cards behind a bottom sheet
-    // can no longer bleed through and visually merge with the slider/controls
-    // inside the sheet. The previous 0x17 / 0x10 stops were ~9% / ~6% — far
-    // too transparent for a sheet that overlays a busy load grid.
-    colors: [Color(0xCCFFFFFF), Color(0xE61DB6C3), Color(0xF302070D)],
+    // Original Figma glass gradient — kept translucent so the load tiles
+    // and room cards still pick up the background canvas colour. The
+    // fully-opaque variant used by overlay sheets (FigmaLoadSheet,
+    // RoomDetailSheet, etc.) lives in `sheetGradient` below.
+    colors: [Color(0x3DFFFFFF), Color(0x171DB6C3), Color(0x1002070D)],
     stops: [0, 0.52, 1],
   );
 
   static const Gradient activeCardGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xCC2AC0D1), Color(0xE61DBEAE), Color(0xF302070D)],
+    colors: [Color(0x552AC0D1), Color(0x221DBEAE), Color(0x1402070D)],
+  );
+
+  /// Opaque variant of [cardGradient] for surfaces that float above other
+  /// content (bottom sheets, dialogs, draggable sheets). The translucent
+  /// card gradient would let the load grid behind the sheet bleed through
+  /// and visually merge with the slider/controls inside the sheet, so any
+  /// surface that needs to read as a raised panel uses this gradient
+  /// instead. Card surfaces (tiles, room cards) keep using `cardGradient`.
+  static const Gradient sheetGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xCCFFFFFF), Color(0xE61DB6C3), Color(0xF302070D)],
+    stops: [0, 0.52, 1],
   );
 
   static const List<Color> cardColors = [

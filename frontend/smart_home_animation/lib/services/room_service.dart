@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:smart_home_animation/core/shared/domain/entities/device.dart';
 
 class Room {
   final String id;

@@ -170,33 +170,45 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
   void _showDimSheet(BuildContext ctx, Map<String, dynamic> load, String type) {
     final mqtt = Provider.of<DirectMQTTService>(ctx, listen: false);
     final id = load['id']?.toString() ?? '';
-    double brightness = ((mqtt.loads[id]?['brightness'] ?? 50) as num)
-        .toDouble();
+    double fallbackBrightness =
+        ((mqtt.loads[id]?['brightness'] ?? 50) as num).toDouble();
+    if (fallbackBrightness <= 0 && (mqtt.loads[id]?['isOn'] ?? false) == true) {
+      fallbackBrightness = 50;
+    }
 
     showModalBottomSheet(
       context: ctx,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSt) => FigmaLoadSheet(
-          title: type == 'tun' ? 'TUNING' : 'BRIGHTNESS',
-          isOn: (mqtt.loads[id]?['isOn'] ?? false),
-          onToggle: (v) {
-            mqtt.sendCommand(id, v ? 'ON' : 'OFF');
-            setSt(() {});
-          },
-          body: type == 'tun'
-              ? _buildTunableBody(ctx, load, setSt)
-              : BrightnessSlider(
-                  value: brightness,
-                  label: 'BRIGHTNESS',
-                  onChanged: (v) {
-                    brightness = v;
-                    mqtt.sendBrightnessCommand(id, v.round());
-                    setSt(() {});
-                  },
-                ),
-        ),
+        builder: (ctx, setSt) {
+          final cur = mqtt.loads[id] ?? load;
+          final curBrightness = ((cur['brightness'] ?? 0) as num).toDouble();
+          final curIsOn =
+              curBrightness > 0 ||
+              (cur['isOn'] == true && curBrightness > 0);
+          final sliderPct = curBrightness > 0
+              ? curBrightness.clamp(0, 100).toDouble()
+              : fallbackBrightness.clamp(0, 100).toDouble();
+          return FigmaLoadSheet(
+            title: type == 'tun' ? 'TUNING' : 'BRIGHTNESS',
+            isOn: curIsOn,
+            onToggle: (v) {
+              mqtt.sendCommand(id, v ? 'ON' : 'OFF');
+              setSt(() {});
+            },
+            body: type == 'tun'
+                ? _buildTunableBody(ctx, load, setSt)
+                : BrightnessSlider(
+                    value: sliderPct,
+                    label: curIsOn ? 'BRIGHTNESS' : 'TAP OR SLIDE TO TURN ON',
+                    onChanged: (v) {
+                      mqtt.sendBrightnessCommand(id, v.round());
+                      setSt(() {});
+                    },
+                  ),
+          );
+        },
       ),
     );
   }
@@ -208,8 +220,19 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
   ) {
     final mqtt = Provider.of<DirectMQTTService>(ctx, listen: false);
     final id = load['id']?.toString() ?? '';
-    int raw = (load['cTp'] ?? 166) as int;
-    double kelvin = 2700 + ((raw.clamp(0, 255) / 255) * (6500 - 2700));
+    final mqttLoad = mqtt.loads[id] ?? load;
+    // Board publishes cTp as Mired (1_000_000 / Kelvin) on Tuv feedback.
+    // Convert back to Kelvin for the slider; clamp to the UI range.
+    final rawCtpDynamic = mqttLoad['cTp'];
+    final int rawCtp = rawCtpDynamic is int
+        ? rawCtpDynamic
+        : int.tryParse('$rawCtpDynamic') ?? 370;
+    final int mired = rawCtp < 154
+        ? 154
+        : rawCtp > 500
+            ? 500
+            : rawCtp;
+    double kelvin = (1000000 / mired).clamp(2700, 6500).toDouble();
     final previewColor = _kelvinPreview(kelvin);
 
     return Column(
@@ -257,11 +280,10 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
           divisions: 100,
           onChanged: (v) {
             kelvin = v;
-            int converted = ((v - 2700) / (6500 - 2700) * 255).round().clamp(
-              0,
-              255,
-            );
-            mqtt.sendColorTempCommand(id, converted);
+            // Board expects Kelvin directly (it converts to Mired for the
+            // bus write). The previous byte conversion was wrong and the
+            // Tun action rejected the value as out-of-range.
+            mqtt.sendColorTempCommand(id, v.round());
             setSt(() {});
           },
         ),

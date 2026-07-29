@@ -34,13 +34,16 @@ class FigmaLoadSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        // Solid base color sits beneath the gradient so the grid of load
-        // cards underneath the sheet can never bleed through and visually
-        // merge with the slider/control widgets inside.
+        // Overlay sheets must use the opaque sheet gradients
+        // (`sheetGradient` / `curtainSheetRadialGradient`) — the regular
+        // card gradient is intentionally translucent so load tiles and
+        // room cards pick up the background canvas, but that same
+        // translucency lets the load grid bleed through this sheet and
+        // visually merge with the slider/controls inside.
         color: SHColors.elevatedCardColor,
         gradient: useRadialGradient
-            ? SHColors.curtainRadialGradient
-            : SHColors.cardGradient,
+            ? SHColors.curtainSheetRadialGradient
+            : SHColors.sheetGradient,
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(SHColors.radiusXl),
         ),
@@ -172,25 +175,12 @@ class BrightnessSlider extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        Container(
-          // Solid pill behind the slider so the empty space above/below the
-          // 6dp track does not let the load-grid cards behind the sheet
-          // bleed through and visually merge with the slider thumb.
-          height: 36,
-          width: SHColors.figmaSliderWidth,
-          decoration: BoxDecoration(
-            color: SHColors.trackColor.withOpacity(0.85),
-            borderRadius: BorderRadius.circular(SHColors.radiusSm),
-            border: Border.all(color: Colors.white.withOpacity(0.08)),
-          ),
-          alignment: Alignment.center,
-          child: FigmaSlider(
-            value: value,
-            min: 0,
-            max: 100,
-            divisions: 100,
-            onChanged: onChanged,
-          ),
+        FigmaSlider(
+          value: value,
+          min: 0,
+          max: 100,
+          divisions: 100,
+          onChanged: onChanged,
         ),
       ],
     );
@@ -228,11 +218,8 @@ class FigmaSlider extends StatelessWidget {
       child: SliderTheme(
         data: SliderTheme.of(context).copyWith(
           trackHeight: 6,
-          // Fully opaque track colours so the load cards behind the sheet
-          // never show through the slider's inactive portion.
           activeTrackColor: Colors.white,
-          inactiveTrackColor:
-              inactiveColor ?? SHColors.trackColor.withOpacity(0.95),
+          inactiveTrackColor: inactiveColor ?? SHColors.trackColor,
           thumbColor: Colors.white,
           thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
           overlayColor: activeColor.withOpacity(0.16),

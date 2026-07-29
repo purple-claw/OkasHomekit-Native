@@ -131,8 +131,20 @@ class _DeviceControlPopupState extends State<DeviceControlPopup> {
                 max: 100,
                 divisions: 100,
                 label: '${_localBrightness.toInt()}%',
-                onChanged: (value) => setState(() => _localBrightness = value),
-                onChangeEnd: (value) => _sendCommand({'bri': value.toInt()}),
+                onChanged: (value) {
+                  setState(() {
+                    _localBrightness = value;
+                    // Slider position drives the on/off state: leaving 0%
+                    // is OFF, anything above 0% is ON. The bridge's
+                    // sendBrightnessCommand also pairs bri with swt so the
+                    // relay stays in sync with the slider.
+                    if (value > 0) _device.isOn = true;
+                  });
+                },
+                onChangeEnd: (value) => _sendCommand({
+                  'bri': value.toInt(),
+                  'swt': value > 0,
+                }),
               ),
             ),
             const Icon(Icons.brightness_high),
@@ -162,8 +174,16 @@ class _DeviceControlPopupState extends State<DeviceControlPopup> {
                 max: 6500,
                 divisions: 45,
                 label: '${_localColorTemp.toInt()}K',
-                onChanged: (value) => setState(() => _localColorTemp = value),
-                onChangeEnd: (value) => _sendCommand({'cTp': value.toInt()}),
+                onChanged: (value) => setState(() {
+                  _localColorTemp = value;
+                  // Actively tuning colour temperature implies the user
+                  // wants the load on.
+                  if (value > 2700) _device.isOn = true;
+                }),
+                onChangeEnd: (value) => _sendCommand({
+                  'cTp': value.toInt(),
+                  'swt': value > 2700,
+                }),
               ),
             ),
             const Icon(Icons.wb_sunny),
@@ -180,6 +200,8 @@ class _DeviceControlPopupState extends State<DeviceControlPopup> {
   }
 
   Widget _buildFanSpeedControl() {
+    // Speed 0 is the "OFF" preset. Tapping it (or any other speed) drives
+    // both fSp and swt on the bus so the relay matches the chosen speed.
     return Column(
       children: [
         const SizedBox(height: 20),
@@ -187,14 +209,17 @@ class _DeviceControlPopupState extends State<DeviceControlPopup> {
         const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: List.generate(5, (index) {
-            final speed = index + 1;
-            return _buildSpeedButton(
-              speed,
-              speed.toString(),
-              _localFanSpeed == speed,
-            );
-          }),
+          children: [
+            _buildSpeedButton(0, 'OFF', _localFanSpeed == 0),
+            ...List.generate(5, (index) {
+              final speed = index + 1;
+              return _buildSpeedButton(
+                speed,
+                speed.toString(),
+                _localFanSpeed == speed,
+              );
+            }),
+          ],
         ),
       ],
     );
@@ -203,8 +228,11 @@ class _DeviceControlPopupState extends State<DeviceControlPopup> {
   Widget _buildSpeedButton(int speed, String label, bool isSelected) {
     return ElevatedButton(
       onPressed: () {
-        _sendCommand({'fSp': speed});
-        setState(() => _localFanSpeed = speed);
+        _sendCommand({'fSp': speed, 'swt': speed > 0});
+        setState(() {
+          _localFanSpeed = speed;
+          _device.isOn = speed > 0;
+        });
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: isSelected ? Colors.blue : Colors.grey[800],
