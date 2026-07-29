@@ -727,8 +727,12 @@ class DirectMQTTService extends ChangeNotifier {
       final ldId = load['ldId'] as int? ?? int.tryParse(deviceId) ?? 1;
       final loadType = load['type'] as String? ?? 'fan';
 
-      // Convert UI speed (0-250) back to OKAS range (0-255)
-      final okasSpeed = (speed / 250 * 255).round();
+      // Accept bus-speed (0..255) directly. The Fan sheet scales 0..100 to
+      // 0..250 and then to 0..255; the HVAC sheet already produces 0..255
+      // because the load's Smx tells the slider how many discrete steps to
+      // expose. Clamping the input keeps both call sites safe regardless of
+      // which range they happened to use.
+      final okasSpeed = speed.clamp(0, 255);
 
       // Off/on logic for the fan: sliding all the way down to 0 must turn
       // the relay off, and sliding up from 0 must turn it on. The bus does
@@ -752,7 +756,7 @@ class DirectMQTTService extends ChangeNotifier {
 
       // Update local state immediately
       if (_loads.containsKey(deviceId)) {
-        _loads[deviceId]!['fanSpeed'] = speed;
+        _loads[deviceId]!['fanSpeed'] = okasSpeed;
         _loads[deviceId]!['fSp'] = okasSpeed;
         _loads[deviceId]!['isOn'] = isOn;
         _devices[deviceId]!['fanSpeed'] = speed;
@@ -952,6 +956,15 @@ class DirectMQTTService extends ChangeNotifier {
           final displaySpeed = fanSpeed > 0
               ? (fanSpeed / 255 * 250).round()
               : 0;
+          // Fan-speed configuration comes from loadData.json (`Smx` = max
+          // speed, `Fst` = step). Fall back to the Figma spec defaults
+          // (5 speeds, step 1) when the load doesn't carry them, so a
+          // board running an older config still gets a working slider.
+          int fanSpeedMax = (load['Smx'] as int?) ?? 5;
+          int fanSpeedStep = (load['Fst'] as int?) ?? 1;
+          if (fanSpeedMax < 1) fanSpeedMax = 5;
+          if (fanSpeedStep < 1) fanSpeedStep = 1;
+          if (fanSpeedStep > fanSpeedMax) fanSpeedStep = fanSpeedMax;
 
           // Curtain position. The backend (mqttClnt.js gtLdSt) publishes
           // { cPs: current, tPs: target } for curtain loads. Earlier code
@@ -977,6 +990,8 @@ class DirectMQTTService extends ChangeNotifier {
             'temp': temperature,
             'fanSpeed': displaySpeed,
             'fSp': fanSpeed,
+            'fanSpeedMax': fanSpeedMax,
+            'fanSpeedStep': fanSpeedStep,
             'cPs': curtainPos,
             'pos': curtainPos,
             'originalData': load,
@@ -999,6 +1014,8 @@ class DirectMQTTService extends ChangeNotifier {
             'temp': temperature,
             'fanSpeed': displaySpeed,
             'fSp': fanSpeed,
+            'fanSpeedMax': fanSpeedMax,
+            'fanSpeedStep': fanSpeedStep,
             'cPs': curtainPos,
             'pos': curtainPos,
           };

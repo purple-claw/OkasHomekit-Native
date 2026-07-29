@@ -528,65 +528,122 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
     double temp = ((cur['temp'] ?? 25) as num).toDouble();
     String mode = (cur['hvacMode'] ?? 'Cool').toString();
     final modes = const ['Cool', 'Heat', 'Auto', 'Dry'];
+    // HVAC fan speed range. Defaults match the Figma spec (5 speeds);
+    // overloads via Smx / Fst on the load config adapt the slider.
+    final double fanMax = ((cur['fanSpeedMax'] ?? cur['Smx'] ?? 5) as num)
+        .toDouble()
+        .clamp(1, 5)
+        .toDouble();
+    final double fanStep = ((cur['fanSpeedStep'] ?? cur['Fst'] ?? 1) as num)
+        .toDouble()
+        .clamp(1, fanMax)
+        .toDouble();
 
     showModalBottomSheet(
       context: ctx,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSt) => FigmaLoadSheet(
-          title: 'TEMPERATURE',
-          isOn: (cur['isOn'] ?? false),
-          onToggle: (v) {
-            mqtt.sendCommand(id, v ? 'ON' : 'OFF');
-            setSt(() {});
-          },
-          body: Column(
-            children: [
-              Text(
-                '${temp.round()}°C',
-                style: const TextStyle(
-                  color: SHColors.primary,
-                  fontSize: 34,
-                  fontWeight: FontWeight.w800,
+        builder: (ctx, setSt) {
+          final live = mqtt.loads[id] ?? cur;
+          final liveTemp = ((live['temp'] ?? temp) as num).toDouble();
+          final liveMode = (live['hvacMode'] ?? mode).toString();
+          final liveFan =
+              ((live['fanSpeed'] ?? live['fSp'] ?? 0) as num).toDouble();
+          // Bus fan speed is 0..255; the Figma slider works in
+          // 0..fanMax scale so users can pick discrete steps instead of
+          // dragging across a 255-step range.
+          final fanPct = fanMax > 0
+              ? (liveFan * fanMax / 255).clamp(0, fanMax).toDouble()
+              : 0.0;
+          return FigmaLoadSheet(
+            title: 'TEMPERATURE',
+            isOn: (live['isOn'] ?? false),
+            onToggle: (v) {
+              mqtt.sendCommand(id, v ? 'ON' : 'OFF');
+              setSt(() {});
+            },
+            body: Column(
+              children: [
+                Text(
+                  '${liveTemp.round()}°C',
+                  style: const TextStyle(
+                    color: SHColors.primary,
+                    fontSize: 34,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'ROOM TEMPERATURE',
-                style: TextStyle(
-                  color: SHColors.mutedText,
-                  fontSize: 12,
-                  letterSpacing: 2,
-                  fontWeight: FontWeight.w700,
+                const SizedBox(height: 8),
+                const Text(
+                  'ROOM TEMPERATURE',
+                  style: TextStyle(
+                    color: SHColors.mutedText,
+                    fontSize: 12,
+                    letterSpacing: 2,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              FigmaSegmentedOptions<String>(
-                options: modes,
-                selected: mode,
-                labelBuilder: (m) => m.toUpperCase(),
-                onSelected: (m) {
-                  mode = m;
-                  mqtt.sendHVACModeCommand(id, m);
-                  setSt(() {});
-                },
-              ),
-              const SizedBox(height: 20),
-              FigmaSlider(
-                value: temp.clamp(16, 32),
-                min: 16,
-                max: 32,
-                divisions: 32,
-                onChanged: (v) {
-                  temp = v;
-                  mqtt.sendTemperatureCommand(id, v.round());
-                  setSt(() {});
-                },
-              ),
-            ],
-          ),
-        ),
+                const SizedBox(height: 16),
+                FigmaSegmentedOptions<String>(
+                  options: modes,
+                  selected: liveMode,
+                  labelBuilder: (m) => m.toUpperCase(),
+                  onSelected: (m) {
+                    mqtt.sendHVACModeCommand(id, m);
+                    setSt(() {});
+                  },
+                ),
+                const SizedBox(height: 20),
+                FigmaSlider(
+                  value: liveTemp.clamp(16, 32),
+                  min: 16,
+                  max: 32,
+                  divisions: 32,
+                  onChanged: (v) {
+                    mqtt.sendTemperatureCommand(id, v.round());
+                    setSt(() {});
+                  },
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  fanPct <= 0
+                      ? 'TAP OR SLIDE TO TURN ON FAN'
+                      : 'FAN SPEED',
+                  style: const TextStyle(
+                    color: SHColors.mutedText,
+                    fontSize: 12,
+                    letterSpacing: 2,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '${fanPct.round()} / ${fanMax.round()}',
+                  style: const TextStyle(
+                    color: SHColors.primary,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                FigmaSlider(
+                  value: fanPct,
+                  min: 0,
+                  max: fanMax,
+                  divisions: (fanMax / fanStep).round(),
+                  onChanged: (v) {
+                    // Scale UI step (0..fanMax) to bus speed (0..255).
+                    final busSpeed = fanMax > 0
+                        ? (v / fanMax * 255).round().clamp(0, 255)
+                        : 0;
+                    mqtt.sendFanSpeedCommand(id, busSpeed);
+                    setSt(() {});
+                  },
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
