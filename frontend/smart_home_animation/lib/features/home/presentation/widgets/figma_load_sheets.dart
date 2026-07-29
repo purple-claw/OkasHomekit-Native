@@ -17,6 +17,7 @@ class FigmaLoadSheet extends StatelessWidget {
     required this.isOn,
     required this.onToggle,
     required this.body,
+    this.useRadialGradient = false,
     super.key,
   });
 
@@ -25,12 +26,21 @@ class FigmaLoadSheet extends StatelessWidget {
   final ValueChanged<bool> onToggle;
   final Widget body;
 
+  /// When true, the sheet uses the Figma curtain radial gradient
+  /// (cyan -> teal -> dark blue -> black) instead of the glass card gradient.
+  final bool useRadialGradient;
+
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
+        // Solid base color sits beneath the gradient so the grid of load
+        // cards underneath the sheet can never bleed through and visually
+        // merge with the slider/control widgets inside.
         color: SHColors.elevatedCardColor,
-        gradient: SHColors.cardGradient,
+        gradient: useRadialGradient
+            ? SHColors.curtainRadialGradient
+            : SHColors.cardGradient,
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(SHColors.radiusXl),
         ),
@@ -162,15 +172,19 @@ class BrightnessSlider extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        SliderTheme(
-          data: SliderTheme.of(context).copyWith(
-            activeTrackColor: Colors.white,
-            inactiveTrackColor: SHColors.trackColor,
-            thumbColor: Colors.white,
-            overlayColor: SHColors.primary.withOpacity(0.16),
-            trackHeight: 4,
+        Container(
+          // Solid pill behind the slider so the empty space above/below the
+          // 6dp track does not let the load-grid cards behind the sheet
+          // bleed through and visually merge with the slider thumb.
+          height: 36,
+          width: SHColors.figmaSliderWidth,
+          decoration: BoxDecoration(
+            color: SHColors.trackColor.withOpacity(0.85),
+            borderRadius: BorderRadius.circular(SHColors.radiusSm),
+            border: Border.all(color: Colors.white.withOpacity(0.08)),
           ),
-          child: Slider(
+          alignment: Alignment.center,
+          child: FigmaSlider(
             value: value,
             min: 0,
             max: 100,
@@ -179,6 +193,159 @@ class BrightnessSlider extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Figma-spec slider (frame_10000.xml): 280dp wide, 24dp tall.
+/// Renders the active progress on the right with a cyan-white fill and
+/// an inactive track in SHColors.trackColor.
+class FigmaSlider extends StatelessWidget {
+  const FigmaSlider({
+    required this.value,
+    required this.onChanged,
+    this.min = 0,
+    this.max = 100,
+    this.divisions,
+    this.activeColor = SHColors.primary,
+    this.inactiveColor,
+    super.key,
+  });
+
+  final double value;
+  final ValueChanged<double> onChanged;
+  final double min;
+  final double max;
+  final int? divisions;
+  final Color activeColor;
+  final Color? inactiveColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: SHColors.figmaSliderWidth,
+      height: SHColors.figmaSliderHeight,
+      child: SliderTheme(
+        data: SliderTheme.of(context).copyWith(
+          trackHeight: 6,
+          // Fully opaque track colours so the load cards behind the sheet
+          // never show through the slider's inactive portion.
+          activeTrackColor: Colors.white,
+          inactiveTrackColor:
+              inactiveColor ?? SHColors.trackColor.withOpacity(0.95),
+          thumbColor: Colors.white,
+          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
+          overlayColor: activeColor.withOpacity(0.16),
+          overlayShape: const RoundSliderOverlayShape(overlayRadius: 18),
+        ),
+        child: Slider(
+          value: value.clamp(min, max),
+          min: min,
+          max: max,
+          divisions: divisions,
+          onChanged: onChanged,
+        ),
+      ),
+    );
+  }
+}
+
+/// Figma-style curtain visualization: two panels that slide toward the
+/// centre as the curtain closes. position 0 = fully open, 1 = fully closed.
+class CurtainVisualization extends StatelessWidget {
+  const CurtainVisualization({
+    required this.position,
+    this.height = 96,
+    super.key,
+  });
+
+  final double position;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    final closeFactor = position.clamp(0.0, 1.0);
+    return SizedBox(
+      width: SHColors.figmaSliderWidth,
+      height: height,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(SHColors.radiusMd),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFFAFD6FF),
+                    Color(0xFF75E8F0),
+                    Color(0xFF2AC0D1),
+                  ],
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: FractionallySizedBox(
+                widthFactor: 0.5 + closeFactor * 0.5,
+                heightFactor: 1,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.55),
+                    border: Border(
+                      right: BorderSide(
+                        color: SHColors.primary.withOpacity(0.7),
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: FractionallySizedBox(
+                widthFactor: 0.5 + closeFactor * 0.5,
+                heightFactor: 1,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.55),
+                    border: Border(
+                      left: BorderSide(
+                        color: SHColors.primary.withOpacity(0.7),
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned.fill(
+              child: Center(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 220),
+                  child: Text(
+                    closeFactor == 0
+                        ? 'OPEN'
+                        : closeFactor == 1
+                        ? 'CLOSED'
+                        : '${(100 - closeFactor * 100).round()}%',
+                    key: ValueKey(closeFactor.round()),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

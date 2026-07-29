@@ -250,29 +250,20 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        SliderTheme(
-          data: SliderTheme.of(ctx).copyWith(
-            activeTrackColor: Colors.white,
-            inactiveTrackColor: SHColors.trackColor,
-            thumbColor: Colors.white,
-            overlayColor: SHColors.primary.withOpacity(0.16),
-            trackHeight: 4,
-          ),
-          child: Slider(
-            value: kelvin,
-            min: 2700,
-            max: 6500,
-            divisions: 100,
-            onChanged: (v) {
-              kelvin = v;
-              int converted = ((v - 2700) / (6500 - 2700) * 255).round().clamp(
-                0,
-                255,
-              );
-              mqtt.sendColorTempCommand(id, converted);
-              setSt(() {});
-            },
-          ),
+        FigmaSlider(
+          value: kelvin,
+          min: 2700,
+          max: 6500,
+          divisions: 100,
+          onChanged: (v) {
+            kelvin = v;
+            int converted = ((v - 2700) / (6500 - 2700) * 255).round().clamp(
+              0,
+              255,
+            );
+            mqtt.sendColorTempCommand(id, converted);
+            setSt(() {});
+          },
         ),
         const SizedBox(height: 8),
         Row(
@@ -338,32 +329,52 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
   void _showFanSheet(BuildContext ctx, Map<String, dynamic> load) {
     final mqtt = Provider.of<DirectMQTTService>(ctx, listen: false);
     final id = load['id']?.toString() ?? '';
-    double speed =
+    // The fan's "on" state is derived from speed > 0 so the slider position
+    // and the master toggle stay perfectly in sync (0% -> OFF, >0% -> ON).
+    double rawSpeed =
         ((mqtt.loads[id]?['fanSpeed'] ?? mqtt.loads[id]?['fSp'] ?? 0) as num)
             .toDouble();
+    if (rawSpeed <= 0 && (mqtt.loads[id]?['isOn'] ?? false) == true) {
+      rawSpeed = 50; // fallback so a stale ON without a speed still shows a slider
+    }
 
     showModalBottomSheet(
       context: ctx,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSt) => FigmaLoadSheet(
-          title: 'FAN SPEED',
-          isOn: (mqtt.loads[id]?['isOn'] ?? false),
-          onToggle: (v) {
-            mqtt.sendCommand(id, v ? 'ON' : 'OFF');
-            setSt(() {});
-          },
-          body: BrightnessSlider(
-            value: (speed / 250 * 100).clamp(0, 100),
-            label: 'SPEED',
-            onChanged: (v) {
-              speed = v * 2.5;
-              mqtt.sendFanSpeedCommand(id, speed.round().clamp(0, 250));
+        builder: (ctx, setSt) {
+          final liveLoad = mqtt.loads[id] ?? load;
+          final liveSpeed =
+              ((liveLoad['fanSpeed'] ?? liveLoad['fSp'] ?? 0) as num)
+                  .toDouble();
+          final liveIsOn = (liveSpeed > 0) ||
+              (liveLoad['isOn'] == true && liveSpeed > 0);
+          final sliderPct = (liveSpeed > 0 ? liveSpeed : rawSpeed) / 250 * 100;
+          return FigmaLoadSheet(
+            title: 'FAN SPEED',
+            isOn: liveIsOn,
+            onToggle: (v) {
+              // Toggling the master switch drives the bus command but the
+              // underlying on/off is mirrored to fSp=0 (off) or fSp=128 (on)
+              // so the slider remains the source of truth for the speed.
+              mqtt.sendCommand(id, v ? 'ON' : 'OFF');
               setSt(() {});
             },
-          ),
-        ),
+            body: BrightnessSlider(
+              value: sliderPct.clamp(0, 100).toDouble(),
+              label: liveIsOn ? 'SPEED' : 'TAP OR SLIDE TO TURN ON',
+              onChanged: (v) {
+                final newSpeed = v * 2.5;
+                mqtt.sendFanSpeedCommand(
+                  id,
+                  newSpeed.round().clamp(0, 250),
+                );
+                setSt(() {});
+              },
+            ),
+          );
+        },
       ),
     );
   }
@@ -383,6 +394,7 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
         builder: (ctx, setSt) => FigmaLoadSheet(
           title: 'MOVEMENT',
           isOn: pos > 0,
+          useRadialGradient: true,
           onToggle: (v) {
             pos = v ? 0 : 100;
             mqtt.sendCurtainPositionCommand(id, pos.round());
@@ -390,6 +402,43 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
           },
           body: Column(
             children: [
+              CurtainVisualization(position: pos.clamp(0, 100) / 100),
+              const SizedBox(height: 14),
+              Text(
+                pos == 0
+                    ? 'Fully Open'
+                    : pos == 100
+                    ? 'Fully Closed'
+                    : '${pos.round()}%',
+                style: const TextStyle(
+                  color: SHColors.primary,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'CURTAIN MOVEMENT',
+                style: TextStyle(
+                  color: SHColors.mutedText,
+                  fontSize: 12,
+                  letterSpacing: 2,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 14),
+              FigmaSlider(
+                value: pos.clamp(0, 100),
+                min: 0,
+                max: 100,
+                divisions: 100,
+                onChanged: (v) {
+                  pos = v;
+                  mqtt.sendCurtainPositionCommand(id, v.round());
+                  setSt(() {});
+                },
+              ),
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -408,40 +457,6 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
                     setSt(() {});
                   }),
                 ],
-              ),
-              const SizedBox(height: 18),
-              Text(
-                pos == 0
-                    ? 'Fully Open'
-                    : pos == 100
-                    ? 'Fully Closed'
-                    : '${pos.round()}%',
-                style: const TextStyle(
-                  color: SHColors.primary,
-                  fontSize: 26,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 8),
-              SliderTheme(
-                data: SliderTheme.of(ctx).copyWith(
-                  activeTrackColor: Colors.white,
-                  inactiveTrackColor: SHColors.trackColor,
-                  thumbColor: Colors.white,
-                  overlayColor: SHColors.primary.withOpacity(0.16),
-                  trackHeight: 4,
-                ),
-                child: Slider(
-                  value: pos.clamp(0, 100),
-                  min: 0,
-                  max: 100,
-                  divisions: 100,
-                  onChanged: (v) {
-                    pos = v;
-                    mqtt.sendCurtainPositionCommand(id, v.round());
-                    setSt(() {});
-                  },
-                ),
               ),
             ],
           ),
@@ -536,25 +551,16 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
                 },
               ),
               const SizedBox(height: 20),
-              SliderTheme(
-                data: SliderTheme.of(ctx).copyWith(
-                  activeTrackColor: Colors.white,
-                  inactiveTrackColor: SHColors.trackColor,
-                  thumbColor: Colors.white,
-                  overlayColor: SHColors.primary.withOpacity(0.16),
-                  trackHeight: 4,
-                ),
-                child: Slider(
-                  value: temp.clamp(16, 32),
-                  min: 16,
-                  max: 32,
-                  divisions: 32,
-                  onChanged: (v) {
-                    temp = v;
-                    mqtt.sendTemperatureCommand(id, v.round());
-                    setSt(() {});
-                  },
-                ),
+              FigmaSlider(
+                value: temp.clamp(16, 32),
+                min: 16,
+                max: 32,
+                divisions: 32,
+                onChanged: (v) {
+                  temp = v;
+                  mqtt.sendTemperatureCommand(id, v.round());
+                  setSt(() {});
+                },
               ),
             ],
           ),

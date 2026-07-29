@@ -109,6 +109,22 @@ class RoomService {
     _notifyListeners();
   }
 
+  /// Wipes the local cache and persistent storage. Used when the app
+  /// reconnects to the MQTT broker so we don't briefly show rooms that
+  /// belong to a previous board. The board will repopulate via `rooms/set`.
+  Future<void> clearRooms() async {
+    if (_rooms.isEmpty) {
+      // Still ensure persisted storage is empty in case it diverged.
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('saved_rooms');
+      return;
+    }
+    _rooms.clear();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('saved_rooms');
+    _notifyListeners();
+  }
+
   Future<void> replaceRooms(List<Room> newRooms) async {
     _rooms
       ..clear()

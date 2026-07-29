@@ -584,7 +584,13 @@ class DirectMQTTService extends ChangeNotifier {
         _brokerAttempts.add('Connected to MQTT $host:$port');
         notifyListeners();
         _subscribeToTopics();
+        // Clear stale cached rooms from any previous board so the UI does not
+        // briefly show ghost rooms while we wait for the new board's response.
+        // The board is the source of truth — its `rooms/set` reply will
+        // populate the real list via `replaceRooms`.
+        RoomService.instance.clearRooms();
         _requestAllLoads();
+        _requestAllRooms();
       };
 
       _client!.onDisconnected = () {
@@ -611,6 +617,7 @@ class DirectMQTTService extends ChangeNotifier {
         _brokerAttempts.add('Reconnected to MQTT $host:$port');
         notifyListeners();
         _requestAllLoads();
+        _requestAllRooms();
       };
 
       print('Connecting to OKAS at $host:$port...');
@@ -649,10 +656,21 @@ class DirectMQTTService extends ChangeNotifier {
       // Convert UI speed (0-250) back to OKAS range (0-255)
       final okasSpeed = (speed / 250 * 255).round();
 
+      // Off/on logic for the fan: sliding all the way down to 0 must turn
+      // the relay off, and sliding up from 0 must turn it on. The bus does
+      // not infer the switch state from fSp alone, so we pair the speed
+      // change with an explicit swt write so the load's on/off state stays
+      // in sync with the slider position.
+      final isOn = okasSpeed > 0;
+      final cmd = <String, dynamic>{
+        'fSp': okasSpeed,
+        'swt': isOn,
+      };
+
       final message = json.encode({
         'ldId': ldId,
         'typ': loadType,
-        'cmd': {'fSp': okasSpeed},
+        'cmd': cmd,
       });
 
       print('Publishing fan command: $message');
@@ -662,8 +680,10 @@ class DirectMQTTService extends ChangeNotifier {
       if (_loads.containsKey(deviceId)) {
         _loads[deviceId]!['fanSpeed'] = speed;
         _loads[deviceId]!['fSp'] = okasSpeed;
+        _loads[deviceId]!['isOn'] = isOn;
         _devices[deviceId]!['fanSpeed'] = speed;
         _devices[deviceId]!['fSp'] = okasSpeed;
+        _devices[deviceId]!['isOn'] = isOn;
         notifyListeners();
       }
     }
@@ -1100,6 +1120,14 @@ class DirectMQTTService extends ChangeNotifier {
 
   void _requestAllLoads() {
     publish('loads/getLoads', '{}');
+  }
+
+  /// Ask the board for its current rooms list. The board replies on
+  /// `rooms/set` which we handle in `_handleMessage`. This is what makes the
+  /// Rooms tab reflect the actual board state instead of any stale cache
+  /// from a previously-configured board.
+  void _requestAllRooms() {
+    publish('rooms/get', '{}');
   }
 
   void _loadDemoData() {

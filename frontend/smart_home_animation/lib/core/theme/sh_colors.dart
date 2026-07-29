@@ -39,17 +39,37 @@ abstract class SHColors {
     stops: [0.0, 0.28, 0.67, 1.0],
   );
 
+  /// Figma-style radial gradient overlay from the curtain/sheet artboard:
+  /// radial cyan -> teal -> dark blue -> black, rotated 7.454deg.
+  /// Used for raised sheet surfaces so they pick up the same light source
+  /// as the background canvas.
+  static Gradient curtainRadialGradient = const RadialGradient(
+    center: Alignment(-0.16, -0.55),
+    radius: 1.4,
+    colors: [
+      Color(0xFF2AC0D1),
+      Color(0xFF007380),
+      Color(0xFF00375A),
+      Color(0xFF000000),
+    ],
+    stops: [0.0, 0.277, 0.548, 0.957],
+  );
+
   static const Gradient cardGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0x3DFFFFFF), Color(0x171DB6C3), Color(0x1002070D)],
+    // Alpha values bumped so that the load-grid cards behind a bottom sheet
+    // can no longer bleed through and visually merge with the slider/controls
+    // inside the sheet. The previous 0x17 / 0x10 stops were ~9% / ~6% — far
+    // too transparent for a sheet that overlays a busy load grid.
+    colors: [Color(0xCCFFFFFF), Color(0xE61DB6C3), Color(0xF302070D)],
     stops: [0, 0.52, 1],
   );
 
   static const Gradient activeCardGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0x552AC0D1), Color(0x221DBEAE), Color(0x1402070D)],
+    colors: [Color(0xCC2AC0D1), Color(0xE61DBEAE), Color(0xF302070D)],
   );
 
   static const List<Color> cardColors = [
@@ -68,6 +88,10 @@ abstract class SHColors {
   static const double radiusMd = 14;
   static const double radiusLg = 20;
   static const double radiusXl = 28;
+
+  // Figma slider geometry (frame_10000.xml: 280dp wide, 24dp tall).
+  static const double figmaSliderWidth = 280;
+  static const double figmaSliderHeight = 24;
 
   static List<BoxShadow> get softShadow => [
     BoxShadow(
