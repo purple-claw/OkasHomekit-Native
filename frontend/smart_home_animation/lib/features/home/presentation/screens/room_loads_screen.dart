@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/core.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/liquid_glass_scrim.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
 import 'package:smart_home_animation/services/room_service.dart';
 import '../widgets/load_grid_card.dart';
@@ -176,9 +177,8 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
       fallbackBrightness = 50;
     }
 
-    showModalBottomSheet(
+    showLiquidGlassModalBottomSheet(
       context: ctx,
-      backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSt) {
@@ -319,9 +319,8 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
     int g = ((cur['green'] ?? 255) as num).round().clamp(0, 255);
     int b = ((cur['blue'] ?? 255) as num).round().clamp(0, 255);
 
-    showModalBottomSheet(
+    showLiquidGlassModalBottomSheet(
       context: ctx,
-      backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSt) => FigmaLoadSheet(
@@ -360,9 +359,8 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
       rawSpeed = 50; // fallback so a stale ON without a speed still shows a slider
     }
 
-    showModalBottomSheet(
+    showLiquidGlassModalBottomSheet(
       context: ctx,
-      backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSt) {
@@ -408,9 +406,8 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
         ((mqtt.loads[id]?['tPs'] ?? mqtt.loads[id]?['cPs'] ?? 0) as num)
             .toDouble();
 
-    showModalBottomSheet(
+    showLiquidGlassModalBottomSheet(
       context: ctx,
-      backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSt) => FigmaLoadSheet(
@@ -539,9 +536,8 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
         .clamp(1, fanMax)
         .toDouble();
 
-    showModalBottomSheet(
+    showLiquidGlassModalBottomSheet(
       context: ctx,
-      backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSt) {

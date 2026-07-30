@@ -121,7 +121,6 @@
     }
 
     hsv2RGB = async (h, s, v) => {
-        // h /= 60;
         s /= 100;
         v /= 100;
         let c = v * s;
@@ -183,7 +182,6 @@
                                 ldArr = s2O(data);
                                 if ((Array.isArray(ldArr)) && ldArr.length > 1) {
                                     dbg.Inf('Content exists in Data File.');
-                                    // console.log(ldArr);
                                     resolve(true);
                                 } else {
                                     dbg.Err('There is NO Content in Data File. Waiting for File content.');

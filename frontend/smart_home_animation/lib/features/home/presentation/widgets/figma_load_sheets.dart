@@ -34,16 +34,14 @@ class FigmaLoadSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        // Overlay sheets must use the opaque sheet gradients
-        // (`sheetGradient` / `curtainSheetRadialGradient`) — the regular
-        // card gradient is intentionally translucent so load tiles and
-        // room cards pick up the background canvas, but that same
-        // translucency lets the load grid bleed through this sheet and
-        // visually merge with the slider/controls inside.
+        // Restore the translucent Figma glass / curtain gradient. The
+        // caller is expected to wrap this sheet in a LiquidGlassSheet so
+        // the load grid behind the sheet is blurred and the controls stay
+        // legible without needing a heavy opaque backdrop.
         color: SHColors.elevatedCardColor,
         gradient: useRadialGradient
-            ? SHColors.curtainSheetRadialGradient
-            : SHColors.sheetGradient,
+            ? SHColors.curtainRadialGradient
+            : SHColors.cardGradient,
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(SHColors.radiusXl),
         ),

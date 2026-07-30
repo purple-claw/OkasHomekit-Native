@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/core.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/liquid_glass_scrim.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
 import '../widgets/figma_load_sheets.dart';
 import '../widgets/load_grid_card.dart';
@@ -239,9 +240,8 @@ class _LoungeScreenState extends State<LoungeScreen> {
     final deviceName = load['name'] ?? 'Device';
     final typeCode = _getDeviceTypeCode(deviceType);
 
-    showModalBottomSheet(
+    showLiquidGlassModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (ctx) => _buildLoadSheet(ctx, load, deviceName, typeCode),
     );

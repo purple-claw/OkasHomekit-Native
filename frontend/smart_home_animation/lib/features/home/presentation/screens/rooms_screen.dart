@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/core.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/liquid_glass_scrim.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
 import 'package:smart_home_animation/services/room_service.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/add_room_screen.dart';
@@ -281,33 +282,29 @@ class _RoomsTabState extends State<RoomsTab> {
   }
 
   void _showRoomDetail(Room room, List<Map<String, dynamic>> roomLoads) {
-    showModalBottomSheet(
+    showLiquidGlassModalBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(SHColors.radiusXl),
-        ),
-      ),
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.6,
-        minChildSize: 0.3,
-        maxChildSize: 0.9,
-        expand: false,
-        builder: (context, scrollController) {
-          return Container(
-            decoration: BoxDecoration(
-              color: SHColors.elevatedCardColor,
-              // Use the opaque sheet gradient here — this sheet floats above
-              // the rooms list and would otherwise let the room cards bleed
-              // through. Tiles and inline cards keep `cardGradient`.
-              gradient: SHColors.sheetGradient,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(SHColors.radiusXl),
+      builder: (context) => LiquidGlassSheet(
+        body: DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.3,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: BoxDecoration(
+                // Translucent Figma glass gradient — the screen behind the
+                // sheet is blurred by LiquidGlassScrim so the room list
+                // underneath reads as soft glass instead of crisp text and
+                // shapes. That lets the sheet stay glassy without losing
+                // the "raised panel" feel.
+                color: SHColors.elevatedCardColor,
+                gradient: SHColors.cardGradient,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(SHColors.radiusXl),
+                ),
+                border: Border.all(color: Colors.white.withOpacity(0.12)),
               ),
-              border: Border.all(color: Colors.white.withOpacity(0.12)),
-            ),
             child: Column(
               children: [
                 // Handle
@@ -365,9 +362,10 @@ class _RoomsTabState extends State<RoomsTab> {
                         ),
                 ),
               ],
-            ),
-          );
-        },
+              ),
+            );
+          },
+        ),
       ),
     );
   }
