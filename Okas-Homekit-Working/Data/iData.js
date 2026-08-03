@@ -217,7 +217,7 @@
                 };
                 for (k in v.GA) {
                     ga2Ld[v.GA[k]] = [v.Nm, k, dptObj[k]];
-                    // ga2Ld['0/0/0'] ['Load', 'Swt', 'DPT0.000']
+                    // ga2Ld['0/0/0'] ['Load', 'Swt', 'DPT0.000']  #NP
                 }
             });
             if ((Object.keys(ga2Ld)).length >= 1) {

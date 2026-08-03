@@ -31,6 +31,38 @@ const path = require('path');
         });
     };
 
+    // Selective reset: only remove the AccessoryInfo files (which hold the
+    // long-term SRP keys), NOT the IdentifierCache files (which iOS relies
+    // on to re-discover the bridge after a soft reset). Wiping the entire
+    // persist folder on every transient disconnect used to leave iOS in
+    // an inconsistent state — it still had the bridge cached but the
+    // bridge had no keys to respond with, so every re-add failed until
+    // the user manually forgot the bridge in the Home app and rebooted
+    // the board. Keeping IdentifierCache around preserves the bridge's
+    // identity across restarts.
+    const rmPairingOnly = async () => {
+        return new Promise((resolve) => {
+            if (!fs.existsSync(prstPth)) { resolve(false); return; }
+            try {
+                const files = fs.readdirSync(prstPth);
+                let removed = 0;
+                for (const f of files) {
+                    if (f.startsWith('AccessoryInfo')) {
+                        fs.unlinkSync(path.join(prstPth, f));
+                        removed++;
+                    }
+                }
+                if (removed > 0) {
+                    dbg.Inf(`Cleared ${removed} pairing file(s); IdentifierCache preserved.`);
+                }
+                resolve(removed > 0);
+            } catch (e) {
+                dbg.Err(`rmPairingOnly failed: ${e.message}`);
+                resolve(false);
+            }
+        });
+    };
+
     const hsPrngs = () => { // Check if device has existing pairings
         try {
             const fls = fs.readdirSync(prstPth).filter(f => f.startsWith('AccessoryInfo'));
@@ -73,13 +105,15 @@ const path = require('path');
 
                 if (loadData.length > 0 && loadData[0]) {
                     if (loadData[0].pinCode && loadData[0].pinCode !== pinCode) {
-                        dbg.Inf('PIN code changed - clearing old pairing data...');
-                        rmFldr();
+                        dbg.Inf('PIN code changed - clearing pairing keys (identity preserved).');
+                        // Keep IdentifierCache around so iOS still recognises
+                        // the bridge after a PIN change.
+                        rmPairingOnly();
                     }
                     loadData[0].pinCode = pinCode;
                     loadData[0].authToken = authToken;
                 } else {
-                    rmFldr();
+                    rmPairingOnly();
                     loadData[0] = { pinCode, authToken };
                 }
 
@@ -117,17 +151,32 @@ const path = require('path');
         return new Promise(async (r) => {
             PINcode = getPC((ldArr[0].prjNm).replace(/[^a-zA-Z0-9]/g, '').toUpperCase());
             PINcode = `${PINcode.slice(0, 3)}-${PINcode.slice(3, 5)}-${PINcode.slice(5)}`;
-            let mac = ((ldArr[0].mac).replace(":", "").toUpperCase()).substr(-6);
+            // HAP spec requires the SerialNumber to contain only letters and
+            // digits. The previous value `OhKnx-c8:63:14:73:d4:26` carried
+            // colons, which caused some iOS builds to silently drop the
+            // bridge during the "Add Accessory" flow. Strip the separators
+            // so the serial is purely alphanumeric and globally unique.
+            const cleanMac = ((ldArr[0].mac).replace(/[^a-fA-F0-9]/g, '')).toUpperCase();
+            let mac = cleanMac.substr(-6);
 
             const AUTH_TOKEN = genAuthToken(ldArr[0].mac);
             ldArr[0].authToken = AUTH_TOKEN;
+
+            // The HAP SetupID is a 4-character alphanumeric identifier
+            // embedded in the QR code. Derive it deterministically from
+            // the MAC so the QR stays stable across restarts (iOS caches
+            // it) and unique per board (so two boards in range don't
+            // collide on the default "9P7F" that hap-nodejs falls back to).
+            const setupID = cleanMac.slice(-4)
+                .replace(/[^A-Z0-9]/g, 'X')
+                .padEnd(4, 'X');
 
             bridge
                 .getService(Service.AccessoryInformation)
                 .setCharacteristic(Characteristic.Manufacturer, 'Vyom.ai')
                 .setCharacteristic(Characteristic.Model, 'OKAS HomeKit')
                 .setCharacteristic(Characteristic.FirmwareRevision, '1.0.0')
-                .setCharacteristic(Characteristic.SerialNumber, (`OhKnx-${ldArr[0].mac}`));
+                .setCharacteristic(Characteristic.SerialNumber, `OHKNX${cleanMac}`);
 
             // Save PIN code and auth token to loadData.json
             saveAuthToConfig(PINcode, AUTH_TOKEN).then(() => {
@@ -150,10 +199,20 @@ const path = require('path');
             });
 
             bridge.on('unpaired', async () => {
-                dbg.Inf('HomeKit device unpaired - auto-clearing pairing data...');
+                // iOS Home fires "unpaired" not just when the user explicitly
+                // removes the bridge but also when the pairing session times
+                // out or after a network blip during add. Wiping the entire
+                // persist folder on those transient events used to leave iOS
+                // in a state where it still remembered the bridge identity
+                // (SetupID+MAC cached in IdentifierCache) but the bridge had
+                // discarded its SRP keys — every re-add failed until the user
+                // manually forgot the bridge in Home and rebooted the board.
+                // Clear only the AccessoryInfo (keys) and let iOS keep the
+                // cached identity so the next add goes through cleanly.
+                dbg.Inf('HomeKit device unpaired - clearing pairing keys (identity preserved).');
                 clntCnctd = false;
-                await rmFldr();
-                dbg.Inf('Pairing data cleared. Ready for new pairing.');
+                await rmPairingOnly();
+                dbg.Inf('Ready for new pairing.');
             });
 
             bridge.on('characteristic-warning', () => {
@@ -169,6 +228,13 @@ const path = require('path');
                 pincode: PINcode,
                 port: 62648,
                 category: Categories.BRIDGE,
+                // Derive the SetupID from the MAC so each board has a
+                // unique, stable QR-code identifier. The default that
+                // hap-nodejs picks ("9P7F") is shared with thousands of
+                // other HAP devices in iOS's mDNS cache, which is one of
+                // the reasons iOS Home sometimes refuses to "Add Accessory"
+                // and the user has to reset the board.
+                setupID: setupID,
             });
             
             dbg.Inf('Accessory is running... with PIN: ' + PINcode);
