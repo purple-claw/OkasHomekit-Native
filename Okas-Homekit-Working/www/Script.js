@@ -7,16 +7,30 @@ let editIndex = -1;
 // every mutation and rehydrate on script init so the user can move freely
 // between tabs while editing.
 const KNX_SESSION_KEY = "okas_knx_session_v1";
+// Per-type Group Address definitions. The order in each list IS the
+// on-bus schema — `gAdd[i]` is persisted at index i and mapped to the
+// fixed GA key by makFile.php (e.g. HVAC: [Swt, Sta, Trm, Tsp, Fsc,
+// Fsv, Tmc, Tmv]). Changing the order here would silently swap bus
+// addresses on existing configs, so DO NOT reorder.
 let lTyp2GA = {
-    Switch: ["Swt: Control", "Swt: Status"],
-    Dimmer: ["Swt: Control", "Swt: Status", "Dimming", "Bri: Control", "Bri: Value"],
-    RGB: ["Swt: Control", "Swt: Status", "Dimming", "Bri: Control", "Bri: Value", "RGB Control", "RGB Value"],
-    Tunable: ["Swt: Control", "Swt: Status", "Dimming", "Bri: Control", "Bri: Value", "Temperature Control", "Temperature Value"],
-    HVAC: ["Swt: Control", "Swt: Status", "Room Temperature", "Setpoint Temperature", "Fan Speed Control", "Fan Speed Value", "Mode Control", "Mode Feedback"],
-    Scene: ["Scene"],
-    Fan: ["Swt: Control", "Swt: Status", "Speed Control", "Speed Value"],
-    Curtain: ["Movement", "Movement Value", "Stop", "Position Control", "Position Value"],
-}
+    Switch:   ["Swt: Control", "Swt: Status"],
+    Dimmer:   ["Swt: Control", "Swt: Status", "Dimming", "Bri: Control", "Bri: Value"],
+    RGB:      ["Swt: Control", "Swt: Status", "Dimming", "Bri: Control", "Bri: Value", "RGB Control", "RGB Value"],
+    Tunable:  ["Swt: Control", "Swt: Status", "Dimming", "Bri: Control", "Bri: Value", "Temperature Control", "Temperature Value"],
+    HVAC:     ["Swt: Control", "Swt: Status", "Room Temperature", "Setpoint Temperature", "Fan Speed Control", "Fan Speed Value", "Mode Control", "Mode Feedback"],
+    Scene:    ["Scene"],
+    Fan:      ["Swt: Control", "Swt: Status", "Speed Control", "Speed Value"],
+    Curtain:  ["Movement", "Movement Value", "Stop", "Position Control", "Position Value"],
+};
+
+// Visual split between the Group Address panel and the Additional Settings
+// panel, keyed by GA label. Labels listed here are rendered under
+// "Additional Settings"; everything else stays under "Group Addresses".
+// The persisted `gAdd` array order is unchanged — this split is purely UI.
+let lTyp2GAExtra = {
+    HVAC:    { "Room Temperature": true },
+    Curtain: { "Movement Value": true, "Position Control": true, "Position Value": true },
+};
 let loadTypeOrder = ["Switch", "Dimmer", "Tunable", "RGB", "Fan", "Curtain", "Scene", "HVAC"];
 let expandedLoadTypes = {
     Switch: true,
@@ -109,8 +123,25 @@ function valGA(lt, id) {
     }
 }
 
-function isGA(fnc, ga) {
+// Decide whether the field at the given GA index is optional based on the
+// current load type's `lTyp2GAExtra` split. Used to suppress the required-
+// field toast when the user leaves an Additional Settings field blank.
+function isOptionalGA(ldTyp, idx) {
+    const list = lTyp2GA[ldTyp] || [];
+    const extras = lTyp2GAExtra[ldTyp] || {};
+    return !!extras[list[idx]];
+}
+
+function isGA(fnc, ga, optional = false) {
     return new Promise((res) => {
+        // Optional fields may be left blank — the load is still valid with
+        // an empty group address; the bridge just won't act on that slot.
+        // The on-bus schema (gAdd[i] index -> GA key via makFile.php) is
+        // preserved because the input id (ga${i}) is still positional.
+        if (optional && (ga == null || ga.trim() === "")) {
+            res("cnt");
+            return;
+        }
         const regX = /^(3[01]|[12]?\d)\/([0-7])\/(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/;
         let chk = ga.match(regX);
         var [a, b, c] = ga.split("/").map(Number);
@@ -305,17 +336,37 @@ function updFields(id) {
     if (id == undefined || id < 0) id = -1;
     let ldTyp = document.getElementById("loadType").value || "Switch";
     let load = id >= 0 ? KNXdata.loads[id] : {};
-    let gaFields = lTyp2GA[ldTyp].map((v, i) => ({
-        id: `ga${i}`,
-        label: v,
-        placeholder: v,
-        value: load.gAdd ? load.gAdd[i] : "",
-        tabindex: id >= 0 ? 1 : 3,
-        maxlength: 8,
-        onblur: `valGA('${v}', '${i}')`
-    }));
+    let gaList = lTyp2GA[ldTyp] || [];
+    let extraGaSet = lTyp2GAExtra[ldTyp] || {};
 
-    let fieldsHtml = `<div class="modal-field-group"><label class="group-label">${escHtml(ldTyp)}: Group Address(es)</label>${makeFieldRows(gaFields)}</div>`;
+    // Build the GA inputs and partition them into the Group Addresses panel
+    // and the Additional Settings panel. The input id (`ga${idx}`) keeps
+    // its original index in `gaList` so the persisted `gAdd` array order
+    // matches what makFile.php expects — the visual split is purely UI.
+    let primaryFields = [];
+    let extraGaFields = [];
+    gaList.forEach((v, i) => {
+        const f = {
+            id: `ga${i}`,
+            label: v,
+            placeholder: v,
+            value: load.gAdd ? load.gAdd[i] : "",
+            tabindex: id >= 0 ? 1 : 3,
+            maxlength: 8,
+            onblur: `valGA('${v}', '${i}')`
+        };
+        if (extraGaSet[v]) {
+            extraGaFields.push(f);
+        } else {
+            primaryFields.push(f);
+        }
+    });
+
+    let fieldsHtml = "";
+    if (primaryFields.length > 0) {
+        fieldsHtml += `<div class="modal-field-group"><label class="group-label">${escHtml(ldTyp)}: Group Address(es)</label>${makeFieldRows(primaryFields)}</div>`;
+    }
+
     let extraFields = [];
 
     switch (ldTyp) {
@@ -346,8 +397,15 @@ function updFields(id) {
             break;
     }
 
-    if (extraFields.length > 0) {
-        fieldsHtml += `<div class="modal-field-group"><label class="group-label">Additional Settings</label>${makeFieldRows(extraFields)}</div>`;
+    if (extraGaFields.length > 0 || extraFields.length > 0) {
+        let extrasHtml = "";
+        if (extraGaFields.length > 0) {
+            extrasHtml += `<label class="group-label" style="margin-top:8px;">Additional Group Address(es)</label>${makeFieldRows(extraGaFields)}`;
+        }
+        if (extraFields.length > 0) {
+            extrasHtml += `<label class="group-label" style="margin-top:8px;">Additional Settings</label>${makeFieldRows(extraFields)}`;
+        }
+        fieldsHtml += `<div class="modal-field-group">${extrasHtml}</div>`;
     }
 
     document.getElementById("dynamicFields").innerHTML = fieldsHtml;
@@ -413,12 +471,18 @@ async function saveLoad(more) {
         return;
     }
     let ldTyp = document.getElementById("loadType").value;
+    // GA inputs split into "primary" (Group Addresses panel — must be
+    // filled) and "extra" (Additional Settings panel — may be left
+    // blank). The persisted gAdd array still uses the original positional
+    // index so the on-bus schema (lTyp2GA[ldTyp][i] -> GA key) is
+    // unchanged regardless of which panel the input lives in.
+    let extraGaSet = lTyp2GAExtra[ldTyp] || {};
     let grpArr = [];
-    for (let v of lTyp2GA[ldTyp]) {
-        let i = lTyp2GA[ldTyp].indexOf(v);
+    for (let i = 0; i < lTyp2GA[ldTyp].length; i++) {
+        let v = lTyp2GA[ldTyp][i];
         let tID = `ga${i}`;
         let tVal = document.getElementById(tID).value;
-        let tSta = await isGA(v, tVal);
+        let tSta = await isGA(v, tVal, !!extraGaSet[v]);
         if (tSta == "edt") {
             document.getElementById(tID).value = "";
             document.getElementById(tID).focus();
@@ -427,15 +491,16 @@ async function saveLoad(more) {
             bootstrap.Modal.getInstance(document.getElementById("loadModal")).hide();
             break;
         } else if (tSta == "cnt") {
-            grpArr.push(tVal);
+            // Optional fields round-trip as empty strings — the PHP
+            // schema still maps gAdd[i] to the same key, so leaving
+            // an extra blank just means "no group address for this slot".
+            grpArr.push(extraGaSet[v] ? tVal : tVal);
             continue;
         }
-        //delete i, tSta, tID, tVal;
     }
     if (lTyp2GA[ldTyp].length == grpArr.length) {
         updLoad(grpArr, more)
     };
-    //delete ldTyp, grpArr;
 }
 
 function selectLoad(id) {

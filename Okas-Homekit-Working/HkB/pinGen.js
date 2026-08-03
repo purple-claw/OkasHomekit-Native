@@ -3,6 +3,21 @@ const AES_KEY = Buffer.from('OKAS_AUTH_2025_C', 'utf8');
 const CTR_IV = Buffer.alloc(16);
 
 (module.exports = () => {
+    // HAP-R2 setup-code check digit (HomeKit Accessory Protocol spec).
+    // Apple's Home app rejects any 8-digit PIN whose 8th digit does not
+    // match this formula — a QR or manual entry with a bad check digit
+    // fails with "Unable to Add Accessory" / "Incorrect PIN". The first
+    // 7 digits are the raw value; the 8th is derived:
+    //   sum = d1*3 + d2*1 + d3*3 + d4*1 + d5*3 + d6*1 + d7*3
+    //   check = (10 - (sum % 10)) % 10
+    const addCheckDigit = (pin) => {
+        const digits = pin.split('').map(Number);
+        const sum = digits[0] * 3 + digits[1] * 1 + digits[2] * 3 +
+            digits[3] * 1 + digits[4] * 3 + digits[5] * 1 + digits[6] * 3;
+        const check = (10 - (sum % 10)) % 10;
+        return pin.slice(0, 7) + check;
+    };
+
     getPC = input => {
         input += 'CE807A14D114EDBB7C2D1FA80BF016A3ACF780E4A0ABAFCD886CE2F04E7EE051';
         const hash = crypto
@@ -11,7 +26,9 @@ const CTR_IV = Buffer.alloc(16);
             .digest('hex');
         const num = parseInt(hash.slice(0, 16), 16);
         const result = num % 100000000;
-        return result.toString().padStart(8, '0');
+        // Replace the last digit with the HAP check digit so the PIN is
+        // accepted by Apple's Home app.
+        return addCheckDigit(result.toString().padStart(8, '0'));
     };
 
     const normMac = (mac) => Buffer.from(mac.toLowerCase().replace(/[^a-f0-9]/g, ''), 'hex');
