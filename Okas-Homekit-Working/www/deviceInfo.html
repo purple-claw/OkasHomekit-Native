@@ -68,6 +68,16 @@
               <div class="info-label">Auth Token</div>
               <div id="authToken" class="info-value info-value-token">Loading...</div>
             </div>
+
+            <div class="info-row loading" role="listitem">
+              <div class="info-label">HomeKit QR Code</div>
+              <div class="info-value info-value-qr" id="qrCell">
+                <div class="qr-wrap">
+                  <canvas id="hkQr" width="240" height="240" aria-label="HomeKit setup QR code"></canvas>
+                  <div class="qr-hint">Scan with the Home app</div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       </main>
@@ -102,6 +112,7 @@
     </div>
 
     <script src="./assets/bootstrap.bundle.min.js"></script>
+    <script src="./qrcode.js?v=20260803"></script>
     <script src="./dialog.js?v=20260528"></script>
 
     <script>
@@ -127,10 +138,11 @@
             const deviceConfig = deviceData[0];
             const pinCode = deviceConfig.pinCode;
             const authToken = deviceConfig.authToken;
+            const macAddr = deviceConfig.mac;
 
             updateInfoItem("prjNm", deviceConfig.prjNm || "Not found");
             updateInfoItem("totLds", deviceData.length - 1 || "0");
-            updateInfoItem("macAddr", deviceConfig.mac ? deviceConfig.mac.toUpperCase() : "Not found");
+            updateInfoItem("macAddr", macAddr ? macAddr.toUpperCase() : "Not found");
             updateInfoItem("knxIp", deviceConfig.gwIP || deviceConfig.knxIp || "Not found");
             updateInfoItem("devIp", deviceConfig.ip || "Not found");
 
@@ -141,16 +153,25 @@
               showInfo("PIN code will be generated when the bridge starts running. Please check if HKB.js is running.");
             }
 
+            // SetupID is derived from the last 4 alphanumeric chars of the
+            // MAC (must match HkB.js). Used in the QR payload.
+            const cleanMac = (macAddr || "").replace(/[^a-fA-F0-9]/g, "").toUpperCase();
+            const setupID = cleanMac.slice(-4).replace(/[^A-Z0-9]/g, "X").padEnd(4, "X");
+
             if (authToken) {
               updateInfoItem("authToken", authToken, true);
             } else {
               updateInfoItem("authToken", "Generating...", true, "error");
             }
 
+            // Build + draw the HomeKit setup QR code.
+            // Payload: X-HM://<base32(deviceid+category+flags)> + setupID
+            renderHomeKitQr({ setupID: setupID, pinCode: pinCode });
+
             return {
               projectName: deviceConfig.prjNm,
               totLds: deviceData.length - 1,
-              macAddr: deviceConfig.mac,
+              macAddr: macAddr,
               ipAddr: deviceConfig.ip,
               knxIp: deviceConfig.gwIP || deviceConfig.knxIp,
               pinNo: pinCode,
@@ -195,6 +216,74 @@
         if (parentItem) {
           parentItem.className = "info-row";
           if (className) parentItem.classList.add(className);
+        }
+      }
+
+      // ---- HomeKit Setup QR ----
+      // HomeKit's setup payload (mirrors hap-nodejs `Accessory#setupURI`):
+      //   X-HM://<base36(pin + flags + category)><setupID(4)>
+      //   - value_low  = 8-digit PIN int, with bit 28 set (Supports IP)
+      //   - value_high = category >> 1
+      //   - encoded    = base36(value_high * 0x100000000 + value_low),
+      //                  zero-padded to 9 chars, uppercased
+      // The setupID is the 4-char alphanumeric code embedded in the QR and
+      // advertised over mDNS. We derive the same value HkB.js computes
+      // (last 4 alnum chars of the MAC).
+      function renderHomeKitQr({ setupID, pinCode }) {
+        const canvas = document.getElementById("hkQr");
+        if (!canvas || !window.QRCode) {
+          return;
+        }
+        try {
+          const pinDigits = (pinCode || "").replace(/-/g, "").replace(/\D/g, "");
+          if (pinDigits.length !== 8) {
+            throw new Error("PIN not available yet (" + (pinCode || "none") + ")");
+          }
+          let valueLow = parseInt(pinDigits, 10);
+          valueLow |= 1 << 28; // Supports IP flag
+          const category = 2;  // Bridge
+          const valueHigh = category >> 1; // 1
+          let encodedPayload = (valueHigh * 0x100000000 + valueLow)
+            .toString(36)
+            .toUpperCase();
+          while (encodedPayload.length < 9) encodedPayload = "0" + encodedPayload;
+          const setupURI = "X-HM://" + encodedPayload + setupID;
+
+          const qr = window.QRCode(0, "M");
+          qr.addData(setupURI, "Byte");
+          qr.make();
+          canvas.width = 240;
+          canvas.height = 240;
+          const ctx = canvas.getContext("2d");
+          const moduleCount = qr.getModuleCount();
+          const cellSize = 240 / (moduleCount + 8);
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, 240, 240);
+          ctx.fillStyle = "#07121e";
+          for (let row = 0; row < moduleCount; row++) {
+            for (let col = 0; col < moduleCount; col++) {
+              if (qr.isDark(row, col)) {
+                ctx.fillRect(
+                  (col + 4) * cellSize,
+                  (row + 4) * cellSize,
+                  Math.ceil(cellSize),
+                  Math.ceil(cellSize)
+                );
+              }
+            }
+          }
+          // Make the whole row visible once QR is drawn.
+          const qrRow = canvas.closest(".info-row");
+          if (qrRow) qrRow.classList.remove("loading");
+          const hint = document.querySelector(".qr-hint");
+          if (hint) {
+            hint.textContent =
+              "Scan with the Home app";
+          }
+        } catch (e) {
+          console.error("QR render failed:", e);
+          const hint = document.querySelector(".qr-hint");
+          if (hint) hint.textContent = "QR unavailable: " + e.message;
         }
       }
 
