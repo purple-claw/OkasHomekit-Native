@@ -1,3 +1,5 @@
+// lib/core/theme/sh_theme.dart
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -27,18 +29,21 @@ abstract class SHTheme {
           fontWeight: FontWeight.w800,
           color: SHColors.textColor,
           height: 1.05,
+          letterSpacing: -0.5,
         ),
         displayMedium: TextStyle(
           fontSize: 32,
           fontWeight: FontWeight.w800,
           color: SHColors.textColor,
           height: 1.1,
+          letterSpacing: -0.4,
         ),
         displaySmall: TextStyle(
           fontSize: 26,
           fontWeight: FontWeight.w800,
           color: SHColors.textColor,
           height: 1.14,
+          letterSpacing: -0.2,
         ),
         headlineMedium: TextStyle(
           fontSize: 22,
@@ -83,6 +88,12 @@ abstract class SHTheme {
           fontWeight: FontWeight.w700,
           color: SHColors.mutedText,
         ),
+        labelSmall: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
+          color: SHColors.mutedText,
+          letterSpacing: 0.8,
+        ),
       ),
     ),
     appBarTheme: const AppBarTheme(
@@ -90,6 +101,12 @@ abstract class SHTheme {
       backgroundColor: Colors.transparent,
       foregroundColor: SHColors.textColor,
       centerTitle: false,
+      titleTextStyle: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w800,
+        color: SHColors.textColor,
+        letterSpacing: 0.2,
+      ),
     ),
     iconTheme: const IconThemeData(color: SHColors.textColor),
     dialogTheme: DialogThemeData(
@@ -130,6 +147,16 @@ abstract class SHTheme {
         ),
       ),
     ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: SHColors.textColor,
+        side: BorderSide(color: Colors.white.withOpacity(0.18)),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(SHColors.radiusMd),
+        ),
+      ),
+    ),
     sliderTheme: const SliderThemeData(
       activeTrackColor: SHColors.primary,
       inactiveTrackColor: SHColors.trackColor,
@@ -148,6 +175,20 @@ abstract class SHTheme {
       backgroundColor: SHColors.primary,
       foregroundColor: Colors.white,
       elevation: 4,
+    ),
+    snackBarTheme: SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: SHColors.elevatedCardColor,
+      contentTextStyle: GoogleFonts.inter(color: SHColors.textColor),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(SHColors.radiusMd),
+      ),
+    ),
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: <TargetPlatform, PageTransitionsBuilder>{
+        TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+      },
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: Colors.transparent,

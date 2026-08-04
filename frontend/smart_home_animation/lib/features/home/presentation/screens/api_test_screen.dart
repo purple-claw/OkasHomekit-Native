@@ -14,11 +14,9 @@ class APITestScreen extends StatefulWidget {
 
 class _APITestScreenState extends State<APITestScreen> {
   String _result = "Testing...";
-  bool _loading = false;
 
   Future<void> testAPI() async {
     setState(() {
-      _loading = true;
       _result = "Testing connection...";
     });
 
@@ -61,7 +59,7 @@ class _APITestScreenState extends State<APITestScreen> {
       _result += "Error: $e";
     } finally {
       setState(() {
-        _loading = false;
+        _result += "\nDone.";
       });
     }
   }

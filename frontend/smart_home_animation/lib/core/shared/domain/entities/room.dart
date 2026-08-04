@@ -7,6 +7,7 @@ class Room {
   final String? wallpaperUrl;
   final List<Device> devices;
   final DateTime createdAt;
+  final bool isFavorite;
 
   Room({
     required this.id,
@@ -14,6 +15,7 @@ class Room {
     this.wallpaperUrl,
     required this.devices,
     required this.createdAt,
+    this.isFavorite = false,
   });
 
   Map<String, dynamic> toJson() => {
@@ -22,6 +24,7 @@ class Room {
     'wallpaperUrl': wallpaperUrl,
     'devices': devices.map((d) => d.toJson()).toList(),
     'createdAt': createdAt.toIso8601String(),
+    'isFavorite': isFavorite,
   };
 
   factory Room.fromJson(Map<String, dynamic> json) => Room(
@@ -30,5 +33,6 @@ class Room {
     wallpaperUrl: json['wallpaperUrl'],
     devices: (json['devices'] as List).map((d) => Device.fromJson(d)).toList(),
     createdAt: DateTime.parse(json['createdAt']),
+    isFavorite: json['isFavorite'] == true,
   );
 }

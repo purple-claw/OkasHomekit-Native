@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OKAS User Management</title>
+  <link rel="icon" type="image/png" href="./assets/Config.png" />
+  <link href="./assets/bootstrap.min.css" rel="stylesheet" />
+  <link href="./style.css?v=20260804" rel="stylesheet" />
+</head>
+
+<body>
+  <div class="app">
+    <header class="app-header">
+      <div class="logo-container">
+        <a href="index.html" aria-label="OKAS Home">
+          <img src="./assets/Okas Logo.png" alt="OKAS" class="app-logo" />
+        </a>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Primary">
+      <a class="tab" href="index.html">Configuration</a>
+      <a class="tab" href="users.html">User Management</a>
+      <a class="tab" href="logMgr.html">Log Manager</a>
+      <a class="tab" href="deviceInfo.html">Device Information</a>
+    </nav>
+
+    <main class="tab-content">
+      <div class="users-page">
+        <!-- Programmer-only page. Two states: a brand-new board shows the
+             registration form; an existing board shows the owner profile
+             and lets the programmer change the owner email or reset the
+             owner password. Guest accounts are managed exclusively from
+             the owner's mobile app session — never from this page. -->
+        <section id="setupSection" class="config-section" hidden>
+          <h2>First-time setup</h2>
+          <p class="config-helper">
+            Create the OKAS owner account. The owner uses this email and
+            password in the mobile app. The password is stored salted and
+            scrypt-hashed on the board &mdash; the actual value never leaves
+            the device.
+          </p>
+          <form id="setupForm" class="config-form" autocomplete="on">
+            <div class="config-field">
+              <label for="setupEmail">Owner email</label>
+              <input type="email" id="setupEmail" name="email" required
+                     placeholder="you@example.com" maxlength="120" />
+            </div>
+            <div class="config-field">
+              <label for="setupPassword">Password</label>
+              <input type="password" id="setupPassword" name="password" required
+                     minlength="8" maxlength="128" autocomplete="new-password"
+                     placeholder="At least 8 characters, 3 of: lower / upper / digit / symbol" />
+              <small class="config-helper">
+                Must be 8&ndash;128 characters with at least 3 of: lowercase,
+                uppercase, digit, symbol.
+              </small>
+            </div>
+            <div class="config-field">
+              <label for="setupLabel">Display name (optional)</label>
+              <input type="text" id="setupLabel" name="label" maxlength="80"
+                     placeholder="House Owner" />
+            </div>
+            <div class="config-actions">
+              <button type="submit" class="btn-save" id="setupSave">
+                Create owner account
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <section id="adminSection" class="config-section" hidden>
+          <h2>Owner account</h2>
+
+          <p class="config-helper">
+            This page is for the programmer only. Changes are authenticated
+            with the physical board access token stored on the device
+            &mdash; no owner password is required or requested. Guests are
+            managed by the owner from the mobile app.
+          </p>
+
+          <h3 class="section-subtitle">Change owner name</h3>
+          <form id="labelForm" class="config-form" autocomplete="off">
+            <div class="config-field">
+              <label for="ownerLabel">Display name</label>
+              <input type="text" id="ownerLabel" required maxlength="80"
+                     placeholder="House Owner" />
+              <small class="config-helper">
+                Shown in the app home as: <strong>Hi, <span id="labelPreview">&hellip;</span></strong>
+              </small>
+            </div>
+            <div class="config-actions">
+              <button type="submit" class="btn-save" id="labelSave">
+                Update name
+              </button>
+            </div>
+          </form>
+
+          <h3 class="section-subtitle">Change owner email</h3>
+          <form id="emailForm" class="config-form" autocomplete="off">
+            <div class="config-field">
+              <label for="ownerEmail">New email</label>
+              <input type="email" id="ownerEmail" required maxlength="120"
+                     placeholder="new@example.com" />
+            </div>
+            <div class="config-actions">
+              <button type="submit" class="btn-save" id="emailSave">
+                Update email
+              </button>
+            </div>
+          </form>
+
+          <h3 class="section-subtitle">Reset owner password</h3>
+          <p class="config-helper">
+            Use this when the owner forgets the password. They'll sign in
+            with the new password on their next app visit.
+          </p>
+          <form id="resetPasswordForm" class="config-form" autocomplete="off">
+            <div class="config-field">
+              <label for="resetNewPassword">New password</label>
+              <input type="password" id="resetNewPassword" required minlength="8"
+                     maxlength="128" autocomplete="new-password" />
+            </div>
+            <div class="config-field">
+              <label for="resetConfirmPassword">Confirm new password</label>
+              <input type="password" id="resetConfirmPassword" required minlength="8"
+                     maxlength="128" autocomplete="new-password" />
+            </div>
+            <div class="config-actions">
+              <button type="submit" class="btn-save" id="resetPasswordSave">
+                Reset password
+              </button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <footer class="app-footer">
+    &copy; Miantic AV Distribution Pvt. Ltd.
+  </footer>
+
+  <div class="modal fade" id="genModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="gmTitle">Notice</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center" id="eModTxt"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn-save" data-bs-dismiss="modal" id="cYESbtn">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./assets/bootstrap.bundle.min.js"></script>
+  <script src="./dialog.js?v=20260528"></script>
+  <script src="./users.js?v=20260804"></script>
+</body>
+</html>

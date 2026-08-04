@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/device.dart';
-import 'package:smart_home_animation/services/mqtt_command_service.dart';
 
 class DeviceCard extends StatelessWidget {
   final Device device;

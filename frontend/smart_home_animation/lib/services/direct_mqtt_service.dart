@@ -27,6 +27,14 @@ class DirectMQTTService extends ChangeNotifier {
   MqttServerClient? _client;
   bool _isConnected = false;
   bool _isConnecting = false;
+  // True after the first rooms/set has been received from the board in
+  // this session. The board publishes rooms/set with retain=true so the
+  // broker delivers the last known list immediately on subscribe, so
+  // priming normally completes within a few hundred ms of MQTT connect.
+  // Until primed, RoomService is treated as untrusted cache and a "create
+  // room" only publishes the rooms/add — the local list is overwritten
+  // by the board's reply when priming finishes.
+  bool _roomsPrimed = false;
   String? _currentHost;
   int _currentPort = 1884;
   List<String> _brokerAttempts = [];
@@ -48,6 +56,11 @@ class DirectMQTTService extends ChangeNotifier {
   Map<String, Map<String, dynamic>> get loads => _loads;
   bool get isConnected => _isConnected;
   bool get isConnecting => _isConnecting;
+  /// True when the room list has been primed from the board at least
+  /// once in this session. While false, the local cache may be stale or
+  /// empty even though the board has data — useful for showing a
+  /// loading state.
+  bool get roomsPrimed => _roomsPrimed;
   List<String> get brokerAttempts => _brokerAttempts;
   String? get lastError => _lastError;
 
@@ -83,8 +96,17 @@ class DirectMQTTService extends ChangeNotifier {
           notifyListeners();
           return false;
         }
+        // When the MQTT credentials expire, request a fresh session instead
+        // of silently disconnecting forever. The UI keeps working; the only
+        // difference is a brief reconnect. (TokenAuthService.checkAutoLogin
+        // re-exchanges the owner/guest token on next launch.)
         _credentialExpiryTimer = Timer(delay, () {
-          disconnect();
+          print('MQTT credentials expired - requesting reconnection');
+          _isConnected = false;
+          _lastError = 'MQTT credentials expired. Reconnecting...';
+          notifyListeners();
+          _requestAllLoads();
+          _requestAllRooms();
         });
       }
     }
@@ -631,20 +653,27 @@ class DirectMQTTService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final clientId = 'okas_app_${DateTime.now().millisecondsSinceEpoch}';
-
+      // Use a STABLE client id (not a fresh timestamp one). After a
+      // force-close, the broker may still hold the old TCP session; a
+      // persistent id lets the new connection replace it immediately
+      // instead of failing with "client already connected" and forcing a
+      // keepalive-timeout wait (~30s). This is the main reason reconnection
+      // after force-close took several seconds.
+      const clientId = 'okas_app_stable';
+      // Fresh connect params but keep the socket timeout short so a
+      // dead connection is detected quickly.
       _client = MqttServerClient(host, clientId);
       _client!.port = port;
       _client!.secure = tls;
-      _client!.keepAlivePeriod = 30;
-      _client!.disconnectOnNoResponsePeriod = 20;
+      _client!.keepAlivePeriod = 15;
+      _client!.disconnectOnNoResponsePeriod = 8;
       _client!.setProtocolV311();
       _client!.autoReconnect = true;
       _client!.resubscribeOnAutoReconnect = true;
 
       final connectMessage = MqttConnectMessage()
           .withClientIdentifier(clientId)
-          .keepAliveFor(30)
+          .keepAliveFor(15)
           .startClean()
           .authenticateAs(username, password);
 
@@ -660,9 +689,11 @@ class DirectMQTTService extends ChangeNotifier {
         _subscribeToTopics();
         // Clear stale cached rooms from any previous board so the UI does not
         // briefly show ghost rooms while we wait for the new board's response.
-        // The board is the source of truth — its `rooms/set` reply will
-        // populate the real list via `replaceRooms`.
+        // The board is the source of truth — its `rooms/set` reply (now
+        // published with retain=true so the broker delivers it immediately
+        // on subscribe) will populate the real list via `replaceRooms`.
         RoomService.instance.clearRooms();
+        _roomsPrimed = false;
         _requestAllLoads();
         _requestAllRooms();
       };
@@ -781,6 +812,20 @@ class DirectMQTTService extends ChangeNotifier {
 
   void getRooms() {
     publish('rooms/get', '{}');
+  }
+
+  /// Syncs a room's favorite flag to the board so every device sees the
+  /// same favorite room. The board replies on rooms/set with the full list.
+  void setFavoriteRoom(String roomId, bool favorite) {
+    publish(
+      'rooms/add',
+      json.encode({
+        'id': roomId,
+        'name': RoomService.instance.getRoomById(roomId)?.name ?? 'Room',
+        'loads': RoomService.instance.getRoomById(roomId)?.loadIds ?? <String>[],
+        'isFavorite': favorite,
+      }),
+    );
   }
 
   List<Map<String, dynamic>> getLoadsList() {
@@ -1047,11 +1092,13 @@ class DirectMQTTService extends ChangeNotifier {
             ),
             createdAt: DateTime.tryParse(roomJson['createdAt'] ?? '') ??
                 DateTime.now(),
+            isFavorite: roomJson['isFavorite'] == true,
           );
           newRooms.add(room);
         }
         // Replace entire rooms list to avoid duplicates
         RoomService.instance.replaceRooms(newRooms);
+        _roomsPrimed = true;
         print('✅ Loaded ${newRooms.length} rooms from OKAS');
       }
 

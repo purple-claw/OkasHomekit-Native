@@ -33,6 +33,7 @@ class TokenAuthService extends ChangeNotifier {
   bool get isAdmin => role == 'admin';
   Map<String, dynamic>? get mqttCredentials => _session?['mqtt'] as Map<String, dynamic>?;
   String? get commandToken => _session?['commandToken'] as String?;
+  String? get displayName => _session?['principal']?['label'] as String?;
 
   TokenAuthService() {
     _loadSavedCredentials();
@@ -119,6 +120,107 @@ class TokenAuthService extends ChangeNotifier {
     await _storage.write(key: _sessionKey, value: jsonEncode(session));
     notifyListeners();
     return true;
+  }
+
+  /// Admin email+password login. Discovers the board, POSTs to
+  /// /api/auth/login, and stores the returned session (commandToken + MQTT
+  /// credentials + accessToken for the guest-management APIs).
+  Future<bool> authenticateWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    _discoveredIp = null;
+    _discoveryLogs = [];
+    notifyListeners();
+
+    try {
+      _discoveryLogs.add('Searching for OKAS board…');
+      final boardIp = await _discoverBoardIp();
+      if (boardIp == null) {
+        _error = 'No OKAS board found on this network.';
+        return false;
+      }
+      _discoveredIp = boardIp;
+      _configureBoard(boardIp);
+      _discoveryLogs.add('Verifying credentials…');
+      final session = await _loginWithPassword(email, password, boardIp);
+      if (session == null) return false;
+
+      // The board returns the raw admin token as accessToken; the guests
+      // APIs authenticate with it over the Bearer header.
+      _token = session['accessToken'] as String? ??
+          session['commandToken'] as String? ??
+          _token;
+      _session = session;
+      _isAuthenticated = true;
+      if (_token != null) Constants.setAuthToken(_token!);
+      if (_token != null) await _storage.write(key: _tokenKey, value: _token!);
+      await _storage.write(key: _sessionKey, value: jsonEncode(session));
+      _discoveryLogs.add('Access granted.');
+      return true;
+    } on SocketException {
+      _error = 'Cannot reach the OKAS board. Check your network connection.';
+      return false;
+    } on TimeoutException {
+      _error = 'Connection timed out. Please try again.';
+      return false;
+    } catch (_) {
+      _error ??= 'Unable to authenticate with this board.';
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Changes the admin password. Requires the current commandToken (the
+  /// board re-issues one with the new credentials).
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    _requireAdmin();
+    final response = await http
+        .post(
+          _apiUri('/api/auth/change-password'),
+          headers: _authHeaders(),
+          body: jsonEncode({
+            'currentPassword': currentPassword,
+            'newPassword': newPassword,
+            'commandToken': commandToken ?? '',
+          }),
+        )
+        .timeout(const Duration(seconds: 10));
+    _decodeResponse(response);
+  }
+
+  /// Zero-cost password recovery: reset the admin password using the owner
+  /// access token (the board token, printed on the device / configured by
+  /// the programmer). No email service is required.
+  Future<void> resetPassword({
+    required String ownerToken,
+    required String newPassword,
+  }) async {
+    final boardIp = await _discoverBoardIp();
+    if (boardIp == null) {
+      throw const AuthApiException('No OKAS board found on this network.');
+    }
+    _discoveredIp = boardIp;
+    _configureBoard(boardIp);
+    final response = await http
+        .post(
+          Uri(
+            scheme: Constants.apiScheme,
+            host: boardIp,
+            path: '/api/auth/reset-password',
+          ),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'token': ownerToken, 'newPassword': newPassword}),
+        )
+        .timeout(const Duration(seconds: 10));
+    _decodeResponse(response);
   }
 
   Future<List<Map<String, dynamic>>> listGuests() async {
@@ -235,6 +337,28 @@ class TokenAuthService extends ChangeNotifier {
       final data = _decodeResponse(response);
       if (data['success'] == true) return data;
       _error = data['message'] as String? ?? 'Token verification failed.';
+    } on AuthApiException catch (error) {
+      _error = error.message;
+    }
+    return null;
+  }
+
+  Future<Map<String, dynamic>?> _loginWithPassword(
+    String email,
+    String password,
+    String ip,
+  ) async {
+    try {
+      final response = await http
+          .post(
+            Uri(scheme: Constants.apiScheme, host: ip, path: '/api/auth/login'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'email': email, 'password': password}),
+          )
+          .timeout(const Duration(seconds: 10));
+      final data = _decodeResponse(response);
+      if (data['success'] == true) return data;
+      _error = data['message'] as String? ?? 'Login failed.';
     } on AuthApiException catch (error) {
       _error = error.message;
     }

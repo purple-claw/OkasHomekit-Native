@@ -1,12 +1,13 @@
 // lib/features/home/presentation/screens/rooms_screen.dart
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/core.dart';
-import 'package:smart_home_animation/core/shared/presentation/widgets/liquid_glass_scrim.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/room_image.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
 import 'package:smart_home_animation/services/room_service.dart';
+import 'package:smart_home_animation/services/token_auth_service.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/add_room_screen.dart';
+import 'package:smart_home_animation/features/home/presentation/screens/room_loads_screen.dart';
 
 class RoomsTab extends StatefulWidget {
   const RoomsTab();
@@ -38,19 +39,24 @@ class _RoomsTabState extends State<RoomsTab> {
     final rooms = RoomService.instance.rooms;
     final mqttService = Provider.of<DirectMQTTService>(context);
     final loads = mqttService.getLoadsList();
+    // Guests can view rooms but only the owner can add/edit/delete them.
+    final isAdmin = context.watch<TokenAuthService>().isAdmin;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: rooms.isEmpty ? _buildEmptyState() : _buildRoomsList(rooms, loads),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _navigateToAddRoom(context),
-        backgroundColor: SHColors.primary,
-        child: const Icon(Icons.add_rounded, color: Colors.white),
-      ),
+      floatingActionButton: isAdmin
+          ? FloatingActionButton(
+              onPressed: () => _navigateToAddRoom(context),
+              backgroundColor: SHColors.primary,
+              child: const Icon(Icons.add_rounded, color: Colors.white),
+            )
+          : null,
     );
   }
 
   Widget _buildEmptyState() {
+    final isAdmin = context.watch<TokenAuthService>().isAdmin;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -71,13 +77,16 @@ class _RoomsTabState extends State<RoomsTab> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Create rooms to organize your loads',
+            isAdmin
+                ? 'Create rooms to organize your loads'
+                : 'Rooms will appear here when the owner creates them',
             style: TextStyle(color: SHColors.mutedText, fontSize: 14),
           ),
           const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: () => _navigateToAddRoom(context),
-            icon: const Icon(Icons.add),
+          if (isAdmin)
+            ElevatedButton.icon(
+              onPressed: () => _navigateToAddRoom(context),
+              icon: const Icon(Icons.add),
             label: const Text('Add Room'),
             style: ElevatedButton.styleFrom(
               backgroundColor: SHColors.primary,
@@ -115,7 +124,7 @@ class _RoomsTabState extends State<RoomsTab> {
         .toList();
 
     return GestureDetector(
-      onTap: () => _showRoomDetail(room, roomLoads),
+      onTap: () => _openRoomLoads(room, roomLoads),
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
@@ -138,21 +147,10 @@ class _RoomsTabState extends State<RoomsTab> {
                   child: SizedBox(
                     height: 140,
                     width: double.infinity,
-                    child: room.imagePath != null &&
-                            File(room.imagePath!).existsSync()
-                        ? Image.file(
-                            File(room.imagePath!),
-                            fit: BoxFit.cover,
-                            // Cache at the device pixel ratio so the image
-                            // stays sharp when the card is rebuilt — without
-                            // this Flutter re-decodes the file at every
-                            // rebuild and the user sees a brief blur.
-                            cacheWidth: 800,
-                            filterQuality: FilterQuality.high,
-                            errorBuilder: (_, __, ___) =>
-                                _buildRoomPlaceholder(),
-                          )
-                        : _buildRoomPlaceholder(),
+                    child: RoomImage(
+                      imagePath: room.imagePath,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 if (room.imagePath != null)
@@ -194,26 +192,93 @@ class _RoomsTabState extends State<RoomsTab> {
                 Positioned(
                   right: 12,
                   top: 12,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.55),
-                      borderRadius: BorderRadius.circular(999),
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.18),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Admin-only edit/delete menu — room management is
+                      // restricted to the owner (guests only view/control).
+                      if (context.watch<TokenAuthService>().isAdmin)
+                        GestureDetector(
+                          onTap: () => _showEditDeleteDialog(room),
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.55),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.18),
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.more_vert,
+                              color: Colors.white70,
+                              size: 16,
+                            ),
+                          ),
+                        ),
+                      if (context.watch<TokenAuthService>().isAdmin)
+                        const SizedBox(width: 6),
+                      // Favorite star toggle — sets this room as the
+                      // favorite room across all devices via the board.
+                      GestureDetector(
+                        onTap: () {
+                          final mqtt =
+                              Provider.of<DirectMQTTService>(
+                                context,
+                                listen: false,
+                              );
+                          final next = !room.isFavorite;
+                          RoomService.instance.setFavorite(
+                            room.id,
+                            next,
+                          );
+                          mqtt.setFavoriteRoom(room.id, next);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.55),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: room.isFavorite
+                                  ? SHColors.amber.withOpacity(0.9)
+                                  : Colors.white.withOpacity(0.18),
+                            ),
+                          ),
+                          child: Icon(
+                            room.isFavorite
+                                ? Icons.star_rounded
+                                : Icons.star_border_rounded,
+                            color: room.isFavorite
+                                ? SHColors.amber
+                                : Colors.white70,
+                            size: 16,
+                          ),
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      '${roomLoads.length} loads',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.55),
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.18),
+                          ),
+                        ),
+                        child: Text(
+                          '${roomLoads.length} loads',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
               ],
@@ -259,21 +324,6 @@ class _RoomsTabState extends State<RoomsTab> {
   }
 
 
-  Widget _buildRoomPlaceholder() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Image.asset(
-          'assets/icons/room.png',
-          width: 48,
-          height: 48,
-          errorBuilder: (_, __, ___) =>
-              Icon(Icons.meeting_room, size: 48, color: SHColors.hintColor),
-        ),
-      ),
-    );
-  }
-
   void _navigateToAddRoom(BuildContext context) {
     Navigator.push(
       context,
@@ -281,164 +331,14 @@ class _RoomsTabState extends State<RoomsTab> {
     );
   }
 
-  void _showRoomDetail(Room room, List<Map<String, dynamic>> roomLoads) {
-    showLiquidGlassModalBottomSheet(
-      context: context,
-      builder: (context) => LiquidGlassSheet(
-        body: DraggableScrollableSheet(
-          initialChildSize: 0.6,
-          minChildSize: 0.3,
-          maxChildSize: 0.9,
-          expand: false,
-          builder: (context, scrollController) {
-            return Container(
-              decoration: BoxDecoration(
-                // Translucent Figma glass gradient — the screen behind the
-                // sheet is blurred by LiquidGlassScrim so the room list
-                // underneath reads as soft glass instead of crisp text and
-                // shapes. That lets the sheet stay glassy without losing
-                // the "raised panel" feel.
-                color: SHColors.elevatedCardColor,
-                gradient: SHColors.cardGradient,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(SHColors.radiusXl),
-                ),
-                border: Border.all(color: Colors.white.withOpacity(0.12)),
-              ),
-            child: Column(
-              children: [
-                // Handle
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 12),
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.white38,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                // Header
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        room.name,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          _showEditDeleteDialog(room);
-                        },
-                        icon: const Icon(Icons.more_vert, color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
-                const Divider(color: Colors.white24),
-                // Loads list
-                Expanded(
-                  child: roomLoads.isEmpty
-                      ? Center(
-                          child: Text(
-                            'No loads in this room',
-                            style: TextStyle(color: Colors.white54),
-                          ),
-                        )
-                      : ListView.builder(
-                          controller: scrollController,
-                          padding: const EdgeInsets.all(16),
-                          itemCount: roomLoads.length,
-                          itemBuilder: (context, index) {
-                            final load = roomLoads[index];
-                            return _buildLoadTile(load);
-                          },
-                        ),
-                ),
-              ],
-              ),
-            );
-          },
-        ),
+  /// Opens the same room-loads page the home screen uses, so every room
+  /// entry point shares the identical "Your Room" interface.
+  void _openRoomLoads(Room room, List<Map<String, dynamic>> roomLoads) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RoomLoadsScreen(room: room),
       ),
-    );
-  }
-
-  Widget _buildLoadTile(Map<String, dynamic> load) {
-    return Consumer<DirectMQTTService>(
-      builder: (context, mqttService, child) {
-        final loadId = load['id']?.toString() ?? '0';
-        final currentLoad = mqttService.getLoadsList().firstWhere(
-          (l) => l['id']?.toString() == loadId,
-          orElse: () => load,
-        );
-        final name =
-            currentLoad['name']?.toString() ??
-            load['name']?.toString() ??
-            'Unknown';
-        final type =
-            currentLoad['type']?.toString() ??
-            load['type']?.toString() ??
-            'swt';
-        final isOn = currentLoad['isOn'] as bool? ?? false;
-
-        return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(16),
-          decoration: SHColors.glassDecoration(radius: SHColors.radiusMd),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: _getLoadTypeColor(type).withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Image.asset(
-                  _getLoadTypeIconAsset(type),
-                  width: 20,
-                  height: 20,
-                  color: _getLoadTypeColor(type),
-                  errorBuilder: (_, __, ___) =>
-                      const Icon(Icons.lightbulb_outline, size: 20),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    Text(
-                      type.toUpperCase(),
-                      style: TextStyle(color: Colors.white54, fontSize: 12),
-                    ),
-                  ],
-                ),
-              ),
-              Switch(
-                value: isOn,
-                onChanged: (value) {
-                  mqttService.sendCommand(loadId, value ? 'ON' : 'OFF');
-                },
-                activeColor: _getLoadTypeColor(type),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 

@@ -1,11 +1,10 @@
 // Update the RoomSectionWidget to show room images
 // lib/features/home/presentation/widgets/room_section_widget.dart
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:smart_home_animation/core/core.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/room.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/room_image.dart';
 import 'package:ui_common/ui_common.dart';
 
 class RoomSectionWidget extends StatelessWidget {
@@ -76,23 +75,11 @@ class RoomSectionWidget extends StatelessWidget {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: imagePath != null && File(imagePath).existsSync()
-                            ? Image.file(File(imagePath), fit: BoxFit.cover)
-                            : Container(
-                                color: Colors.white.withOpacity(0.05),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12),
-                                  child: Image.asset(
-                                    _getRoomIconAsset(),
-                                    color: SHColors.primary,
-                                    errorBuilder: (_, __, ___) => Icon(
-                                      _getRoomIcon(),
-                                      color: SHColors.primary,
-                                      size: 30,
-                                    ),
-                                  ),
-                                ),
-                              ),
+                        child: RoomImage(
+                          imagePath: imagePath,
+                          width: 60,
+                          height: 60,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -239,39 +226,5 @@ class RoomSectionWidget extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  IconData _getRoomIcon() {
-    final roomName = room.name.toLowerCase();
-    if (roomName.contains('living') || roomName.contains('lounge')) {
-      return Icons.weekend;
-    } else if (roomName.contains('bedroom')) {
-      return Icons.bed;
-    } else if (roomName.contains('kitchen')) {
-      return Icons.kitchen;
-    } else if (roomName.contains('bathroom')) {
-      return Icons.bathtub;
-    } else if (roomName.contains('office')) {
-      return Icons.work;
-    } else {
-      return Icons.home;
-    }
-  }
-
-  String _getRoomIconAsset() {
-    final roomName = room.name.toLowerCase();
-    if (roomName.contains('living') || roomName.contains('lounge')) {
-      return 'assets/icons/room.png';
-    } else if (roomName.contains('bedroom')) {
-      return 'assets/icons/room.png';
-    } else if (roomName.contains('kitchen')) {
-      return 'assets/icons/room.png';
-    } else if (roomName.contains('bathroom')) {
-      return 'assets/icons/room.png';
-    } else if (roomName.contains('office')) {
-      return 'assets/icons/room.png';
-    } else {
-      return 'assets/icons/room.png';
-    }
   }
 }

@@ -4,8 +4,10 @@ import 'package:smart_home_animation/core/core.dart';
 import 'package:smart_home_animation/core/shared/presentation/widgets/liquid_glass_scrim.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
 import 'package:smart_home_animation/services/room_service.dart';
+import 'package:smart_home_animation/services/token_auth_service.dart';
 import '../widgets/load_grid_card.dart';
 import '../widgets/figma_load_sheets.dart';
+import 'add_room_screen.dart';
 
 class RoomLoadsScreen extends StatefulWidget {
   const RoomLoadsScreen({required this.room, super.key});
@@ -18,13 +20,27 @@ class RoomLoadsScreen extends StatefulWidget {
 class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
   String _selectedCategory = 'All';
 
-  static const _categories = ['All', 'Lights', 'Dimmers', 'Tunable', 'RGB'];
+  // "Lights" combines every lighting type (on/off switches, dimmers,
+  // tunable whites, RGB) into one section with All ON/OFF controls.
+  static const _categories = [
+    'All',
+    'Lights',
+    'Dimmers',
+    'Tunable',
+    'RGB',
+    'Fans',
+    'Curtains',
+    'Scenes',
+  ];
   static const _categoryTypeCodes = {
     'All': <String>[],
-    'Lights': ['swt'],
+    'Lights': ['swt', 'dim', 'tun', 'rgb'],
     'Dimmers': ['dim'],
     'Tunable': ['tun'],
     'RGB': ['rgb'],
+    'Fans': ['fan'],
+    'Curtains': ['cur'],
+    'Scenes': ['scn'],
   };
 
   @override
@@ -56,6 +72,13 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
             ),
           ),
           centerTitle: true,
+          actions: [
+            if (context.watch<TokenAuthService>().isAdmin)
+              IconButton(
+                icon: const Icon(Icons.more_vert, color: Colors.white),
+                onPressed: () => _showRoomEditMenu(context),
+              ),
+          ],
         ),
         body: Column(
           children: [
@@ -107,10 +130,127 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            Expanded(child: _buildGrid(roomLoads)),
+            Expanded(
+              child: Column(
+                children: [
+                  // All ON / All OFF control — shown for the combined
+                  // Lights section based on the room's lighting config.
+                  if (_selectedCategory == 'Lights')
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                      child: _buildAllLightsBar(roomLoads),
+                    ),
+                  Expanded(child: _buildGrid(roomLoads)),
+                ],
+              ),
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  /// Combined "All Lights" control: turns every lighting load in the room
+  /// on or off with one tap. Buttons only appear when the room actually
+  /// has lighting loads.
+  Widget _buildAllLightsBar(List<Map<String, dynamic>> roomLoads) {
+    final lightLoads = roomLoads
+        .where((l) => const ['swt', 'dim', 'tun', 'rgb'].contains(l['type']))
+        .toList();
+    if (lightLoads.isEmpty) return const SizedBox.shrink();
+
+    final mqtt = Provider.of<DirectMQTTService>(context, listen: false);
+    final allOn = lightLoads.every((l) => l['isOn'] == true);
+    final someOn = lightLoads.any((l) => l['isOn'] == true);
+
+    return Row(
+      children: [
+        Expanded(
+          child: GestureDetector(
+            onTap: () {
+              for (final l in lightLoads) {
+                mqtt.sendCommand(l['id'].toString(), 'ON');
+              }
+            },
+            child: Container(
+              height: 44,
+              decoration: BoxDecoration(
+                color: allOn
+                    ? SHColors.primary.withOpacity(0.9)
+                    : Colors.white.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(SHColors.radiusMd),
+                border: Border.all(
+                  color: allOn
+                      ? SHColors.primary
+                      : Colors.white.withOpacity(0.14),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.lightbulb,
+                    size: 18,
+                    color: allOn ? Colors.white : SHColors.mutedText,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'All ON',
+                    style: TextStyle(
+                      color: allOn ? Colors.white : SHColors.mutedText,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: GestureDetector(
+            onTap: () {
+              for (final l in lightLoads) {
+                mqtt.sendCommand(l['id'].toString(), 'OFF');
+              }
+            },
+            child: Container(
+              height: 44,
+              decoration: BoxDecoration(
+                color: !someOn
+                    ? SHColors.rose.withOpacity(0.9)
+                    : Colors.white.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(SHColors.radiusMd),
+                border: Border.all(
+                  color: !someOn
+                      ? SHColors.rose
+                      : Colors.white.withOpacity(0.14),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.lightbulb_outline,
+                    size: 18,
+                    color: !someOn ? Colors.white : SHColors.mutedText,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'All OFF',
+                    style: TextStyle(
+                      color: !someOn ? Colors.white : SHColors.mutedText,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -640,6 +780,92 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  void _showRoomEditMenu(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: SHColors.elevatedCardColor,
+        title: Text(
+          widget.room.name,
+          style: const TextStyle(color: Colors.white),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit, color: Colors.white),
+              title: const Text(
+                'Edit Room',
+                style: TextStyle(color: Colors.white),
+              ),
+              onTap: () {
+                Navigator.pop(ctx);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AddRoomScreen(
+                      roomToEdit: {
+                        'id': widget.room.id,
+                        'name': widget.room.name,
+                        'imagePath': widget.room.imagePath,
+                        'loads': widget.room.loadIds,
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text(
+                'Delete Room',
+                style: TextStyle(color: Colors.red),
+              ),
+              onTap: () {
+                Navigator.pop(ctx);
+                _confirmDeleteRoom();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _confirmDeleteRoom() {
+    final mqttService =
+        Provider.of<DirectMQTTService>(context, listen: false);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: SHColors.elevatedCardColor,
+        title: const Text(
+          'Delete Room?',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          'Are you sure you want to delete "${widget.room.name}"?',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              RoomService.instance.deleteRoom(widget.room.id);
+              mqttService.deleteRoom(widget.room.id);
+              Navigator.pop(context);
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
       ),
     );
   }

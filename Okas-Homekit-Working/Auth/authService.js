@@ -15,10 +15,38 @@ const MIN_GUEST_DURATION_MINUTES = 5;
 const COMMAND_SESSION_TTL_MS = 12 * 60 * 60 * 1000;
 const TOKEN_LENGTH = 8;
 const TOKEN_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+// Password hashing parameters — scrypt is built into Node, no extra deps,
+// and tuned to be slow enough to resist brute force on a small device.
+const SCRYPT_KEYLEN = 32;
+const SCRYPT_OPTS = { N: 16384, r: 8, p: 1 };
+const MIN_PASSWORD_LENGTH = 8;
+const MAX_PASSWORD_LENGTH = 128;
 
 function now() { return new Date().toISOString(); }
 function tokenHash(token, salt) {
-    return crypto.scryptSync(token, salt, 32, { N: 16384, r: 8, p: 1 }).toString('base64url');
+    return crypto.scryptSync(token, salt, TOKEN_LENGTH, SCRYPT_OPTS).toString('base64url');
+}
+function passwordHash(password, salt) {
+    // scrypt provides built-in memory-hardness for password hashing —
+    // no external deps, and the salt + cost are stored alongside the
+    // principal so a future upgrade can re-derive the same key.
+    return crypto.scryptSync(password, salt, SCRYPT_KEYLEN, SCRYPT_OPTS).toString('base64url');
+}
+function isStrongPassword(password) {
+    if (typeof password !== 'string') return false;
+    if (password.length < MIN_PASSWORD_LENGTH || password.length > MAX_PASSWORD_LENGTH) return false;
+    // Require at least 3 of 4 character classes — a sane default that
+    // still keeps passwords usable.
+    const has = {
+        lower: /[a-z]/.test(password),
+        upper: /[A-Z]/.test(password),
+        digit: /\d/.test(password),
+        symbol: /[^A-Za-z0-9]/.test(password),
+    };
+    return Object.values(has).filter(Boolean).length >= 3;
+}
+function isValidEmail(email) {
+    return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
 }
 function randomToken() {
     let result = '';
@@ -56,6 +84,7 @@ function publicPrincipal(principal) {
         id: principal.id,
         role: principal.role,
         label: principal.label,
+        email: principal.email || null,
         createdAt: principal.createdAt,
         expiresAt: principal.expiresAt,
         revokedAt: principal.revokedAt || null,
@@ -86,7 +115,7 @@ class AuthService {
 
     createStore(ownerToken) {
         return {
-            version: 1,
+            version: 2,
             signingKey: crypto.randomBytes(32).toString('base64url'),
             principals: [this.makePrincipal({ role: 'admin', label: 'Owner', token: ownerToken })],
         };
@@ -111,7 +140,11 @@ class AuthService {
     readStore() {
         try {
             const parsed = JSON.parse(fs.readFileSync(STORE_PATH, 'utf8'));
-            if (parsed && parsed.version === 1 && Array.isArray(parsed.principals)) return parsed;
+            if (parsed && [1, 2].includes(parsed.version) && Array.isArray(parsed.principals)) {
+                // Upgrade older v1 stores to v2 (adds email/password slots).
+                if (parsed.version === 1) parsed.version = 2;
+                return parsed;
+            }
         } catch (error) {
             if (error.code !== 'ENOENT') this.logger.error(`AUTH: Could not read auth store: ${error.message}`);
         }
@@ -132,10 +165,10 @@ class AuthService {
         return ownerToken;
     }
 
-    makePrincipal({ role, label, token, expiresAt = null }) {
+    makePrincipal({ role, label, token, expiresAt = null, email = null, passwordHash = null, passwordSalt = null }) {
         const salt = crypto.randomBytes(16).toString('base64url');
         const id = crypto.randomUUID();
-        return {
+        const principal = {
             id,
             role,
             label,
@@ -144,6 +177,197 @@ class AuthService {
             createdAt: now(),
             expiresAt,
             revokedAt: null,
+        };
+        // Admin principals carry email + password credentials in addition
+        // to the legacy token. Either path can authenticate — the mobile
+        // app uses email+password; the web User Management page can use
+        // either, and existing token-based admin logins keep working.
+        if (role === 'admin') {
+            principal.email = email;
+            principal.passwordHash = passwordHash;
+            principal.passwordSalt = passwordSalt;
+        }
+        return principal;
+    }
+
+    /// Returns true if the board has an admin principal with email+password
+    /// credentials configured. The mobile app and the User Management page
+    /// use this to decide whether to show the registration form or the
+    /// login form.
+    hasAdminAccount() {
+        if (!this.store) return false;
+        const admin = this.store.principals.find((p) => p.role === 'admin' && !p.revokedAt);
+        return !!(admin && admin.email && admin.passwordHash);
+    }
+
+    /// First-time admin registration. Allowed only when no admin with
+    /// email+password credentials exists yet. Returns the created admin
+    /// principal (without secrets).
+    registerAdmin({ email, password, label }) {
+        this.expirePrincipals();
+        if (this.hasAdminAccount()) {
+            throw this.httpError(409, 'An admin account already exists. Use the login form.');
+        }
+        if (!isValidEmail(email)) throw this.httpError(400, 'A valid email is required.');
+        if (!isStrongPassword(password)) {
+            throw this.httpError(400, `Password must be ${MIN_PASSWORD_LENGTH}-${MAX_PASSWORD_LENGTH} characters with at least 3 of: lowercase, uppercase, digit, symbol.`);
+        }
+        // Reuse the first admin principal — there is exactly one admin.
+        let admin = this.store.principals.find((p) => p.role === 'admin' && !p.revokedAt);
+        if (!admin) {
+            // Generate a placeholder token; the admin is authenticated by
+            // email+password from now on, the token is kept for back-compat.
+            const token = randomToken();
+            admin = this.makePrincipal({
+                role: 'admin',
+                label: (label || email.split('@')[0]).trim().slice(0, 80),
+                token,
+            });
+            this.store.principals.push(admin);
+        }
+        admin.email = email.toLowerCase().trim();
+        const salt = crypto.randomBytes(16).toString('base64url');
+        admin.passwordSalt = salt;
+        admin.passwordHash = passwordHash(password, salt);
+        this.saveStore();
+        this.logger.log(`AUTH: Admin registered with email ${admin.email}`);
+        return publicPrincipal(admin);
+    }
+
+    /// Email+password login. The body of the request carries the email and
+    /// password; we look up the admin principal by email and verify the
+    /// scrypt hash.
+    loginWithPassword({ email, password }) {
+        this.expirePrincipals();
+        if (typeof email !== 'string' || typeof password !== 'string') {
+            throw this.httpError(400, 'Email and password are required.');
+        }
+        const admin = this.store.principals.find(
+            (p) => p.role === 'admin' && !p.revokedAt && p.email && p.email === email.toLowerCase().trim()
+        );
+        if (!admin || !admin.passwordHash) {
+            // Always run scrypt to keep timing constant — this prevents an
+            // attacker from detecting which email is registered.
+            crypto.scryptSync(password, 'fallback-salt', SCRYPT_KEYLEN, SCRYPT_OPTS);
+            throw this.httpError(401, 'Invalid email or password.');
+        }
+        const candidate = passwordHash(password, admin.passwordSalt);
+        if (!safeEqual(candidate, admin.passwordHash)) {
+            throw this.httpError(401, 'Invalid email or password.');
+        }
+        return this.issueSession(admin);
+    }
+
+    /// Change the admin password. Requires the current password. The
+    /// current command token is also re-issued with the new credentials.
+    changePassword({ currentPassword, newPassword, commandToken }) {
+        this.expirePrincipals();
+        const admin = this.findAdminByCommandToken(commandToken);
+        if (!admin) throw this.httpError(401, 'Session expired. Sign in again.');
+        if (!admin.passwordHash) {
+            throw this.httpError(409, 'Email-based login is not configured for this admin yet.');
+        }
+        if (!isStrongPassword(newPassword)) {
+            throw this.httpError(400, `Password must be ${MIN_PASSWORD_LENGTH}-${MAX_PASSWORD_LENGTH} characters with at least 3 of: lowercase, uppercase, digit, symbol.`);
+        }
+        const candidate = passwordHash(currentPassword, admin.passwordSalt);
+        if (!safeEqual(candidate, admin.passwordHash)) {
+            throw this.httpError(401, 'Current password is incorrect.');
+        }
+        const salt = crypto.randomBytes(16).toString('base64url');
+        admin.passwordSalt = salt;
+        admin.passwordHash = passwordHash(newPassword, salt);
+        this.saveStore();
+        this.logger.log(`AUTH: Admin ${admin.email} changed password`);
+        return publicPrincipal(admin);
+    }
+
+    /// Find the admin that issued the supplied command token (used to
+    /// gate change-password and other admin-only operations).
+    findAdminByCommandToken(commandToken) {
+        const principal = this.verifyCommandToken(commandToken);
+        if (!principal || principal.role !== 'admin' || principal.revokedAt) return null;
+        return principal;
+    }
+
+    /// Zero-cost password recovery: the board owner resets the admin
+    /// password by presenting the owner access token (the token stored in
+    /// loadData.json). No mail server required — the "email" step is the
+    /// physical access token the programmer configured.
+    resetPassword({ token, newPassword }) {
+        const admin = this.validPrincipalForToken(token);
+        if (!admin || admin.role !== 'admin') {
+            throw this.httpError(401, 'Invalid owner token.');
+        }
+        if (!isStrongPassword(newPassword)) {
+            throw this.httpError(400, `Password must be ${MIN_PASSWORD_LENGTH}-${MAX_PASSWORD_LENGTH} characters with at least 3 of: lowercase, uppercase, digit, symbol.`);
+        }
+        const salt = crypto.randomBytes(16).toString('base64url');
+        admin.passwordSalt = salt;
+        admin.passwordHash = passwordHash(newPassword, salt);
+        this.saveStore();
+        this.logger.log(`AUTH: Admin ${admin.email} password reset by owner token`);
+        return publicPrincipal(admin);
+    }
+
+    /// Change the admin email. Programmer-only operation, gated by the
+    /// owner access token (the same physical token used for password
+    /// resets). The email is just an identifier — no mail server involved.
+    changeEmail({ token, email }) {
+        const admin = this.validPrincipalForToken(token);
+        if (!admin || admin.role !== 'admin') {
+            throw this.httpError(401, 'Invalid owner token.');
+        }
+        if (!isValidEmail(email)) throw this.httpError(400, 'A valid email is required.');
+        admin.email = email.toLowerCase().trim();
+        this.saveStore();
+        this.logger.log(`AUTH: Admin email changed to ${admin.email} by owner token`);
+        return publicPrincipal(admin);
+    }
+
+    /// Change the admin display name (shown in the mobile app home
+    /// greeting, e.g. "Hi, Alex"). Programmer-only, owner token gated.
+    changeLabel({ token, label }) {
+        const admin = this.validPrincipalForToken(token);
+        if (!admin || admin.role !== 'admin') {
+            throw this.httpError(401, 'Invalid owner token.');
+        }
+        const name = (label || '').trim();
+        if (!name || name.length > 80) {
+            throw this.httpError(400, 'Display name must be 1-80 characters.');
+        }
+        admin.label = name;
+        this.saveStore();
+        this.logger.log(`AUTH: Admin label changed to ${admin.label} by owner token`);
+        return publicPrincipal(admin);
+    }
+
+    /// Issue a fresh session for an admin (commandToken + mqtt creds).
+    /// Used by both `exchange` (legacy token) and `loginWithPassword`.
+    issueSession(principal) {
+        const session = {
+            success: true,
+            principal: publicPrincipal(principal),
+            commandToken: this.issueCommandToken(principal),
+            mqtt: this.mqttCredentials(principal),
+        };
+        // The board never yields the raw admin token back after an
+        // email+password login, but the guest-management APIs require an
+        // admin access token in the Bearer header. Surface the owner token
+        // (the admin's access token) so an email-logged-in session can
+        // still manage guests.
+        if (principal.role === 'admin') session.accessToken = this.getOwnerToken();
+        return session;
+    }
+
+    mqttCredentials(principal) {
+        return {
+            host: null,
+            port: Number(process.env.OKAS_MQTT_PORT || 1884),
+            username: process.env.OKAS_MQTT_USERNAME || 'okasapi',
+            password: process.env.OKAS_MQTT_PASSWORD || 'okas1234',
+            expiresAt: principal.expiresAt,
+            tls: process.env.OKAS_MQTT_TLS === 'true',
         };
     }
 
@@ -255,19 +479,7 @@ class AuthService {
         this.expirePrincipals();
         const principal = this.validPrincipalForToken(token);
         if (!principal) throw this.httpError(401, 'Invalid, expired, or revoked token.');
-        return {
-            success: true,
-            principal: publicPrincipal(principal),
-            commandToken: this.issueCommandToken(principal),
-            mqtt: {
-                host: null,
-                port: Number(process.env.OKAS_MQTT_PORT || 1884),
-                username: process.env.OKAS_MQTT_USERNAME || 'okasapi',
-                password: process.env.OKAS_MQTT_PASSWORD || 'okas1234',
-                expiresAt: principal.expiresAt,
-                tls: process.env.OKAS_MQTT_TLS === 'true',
-            },
-        };
+        return this.issueSession(principal);
     }
 
     expirePrincipals() {
@@ -334,7 +546,16 @@ class AuthService {
             if (request.method === 'OPTIONS') return this.respond(response, 204, null);
             const url = new URL(request.url, 'http://localhost');
             if (request.method === 'GET' && url.pathname === '/api/health') return this.respond(response, 200, { success: true });
-            if (request.method === 'POST' && ['/api/auth/verify', '/api/auth/exchange'].includes(url.pathname)) {
+            // Status endpoint lets the mobile app and the User Management
+            // page decide whether to show registration or the login form.
+            // No secrets returned.
+            if (request.method === 'GET' && url.pathname === '/api/auth/status') {
+                return this.respond(response, 200, {
+                    success: true,
+                    hasAdmin: this.hasAdminAccount(),
+                });
+            }
+            if (request.method === 'POST' && ['/api/auth/verify', '/api/auth/exchange', '/api/auth/login'].includes(url.pathname)) {
                 const forwardedFor = request.headers['x-forwarded-for'];
                 const clientAddress = typeof forwardedFor === 'string'
                     ? forwardedFor.split(',')[0].trim()
@@ -349,6 +570,30 @@ class AuthService {
                 return this.respond(response, 200, { success: true, principal: publicPrincipal(principal) });
             }
             if (request.method === 'POST' && url.pathname === '/api/auth/exchange') return this.respond(response, 200, this.exchange(token));
+            // Email + password flow (admin).
+            if (request.method === 'POST' && url.pathname === '/api/auth/login') {
+                return this.respond(response, 200, this.loginWithPassword(body));
+            }
+            // First-time admin registration.
+            if (request.method === 'POST' && url.pathname === '/api/auth/admin/setup') {
+                return this.respond(response, 201, { success: true, admin: this.registerAdmin(body) });
+            }
+            // Admin changes their own password (current commandToken required).
+            if (request.method === 'POST' && url.pathname === '/api/auth/change-password') {
+                return this.respond(response, 200, { success: true, admin: this.changePassword(body) });
+            }
+            // Zero-cost password recovery via the owner access token.
+            if (request.method === 'POST' && url.pathname === '/api/auth/reset-password') {
+                return this.respond(response, 200, { success: true, admin: this.resetPassword(body) });
+            }
+            // Change the admin email (programmer-only, owner token required).
+            if (request.method === 'POST' && url.pathname === '/api/auth/admin/email') {
+                return this.respond(response, 200, { success: true, admin: this.changeEmail(body) });
+            }
+            // Change the admin display name (programmer-only, owner token required).
+            if (request.method === 'POST' && url.pathname === '/api/auth/admin/label') {
+                return this.respond(response, 200, { success: true, admin: this.changeLabel(body) });
+            }
             if (request.method === 'GET' && url.pathname === '/api/auth/guests') return this.respond(response, 200, { success: true, guests: this.listGuests(token) });
             if (request.method === 'POST' && url.pathname === '/api/auth/guests') return this.respond(response, 201, { success: true, ...this.createGuest(token, body) });
             const revokeMatch = url.pathname.match(/^\/api\/auth\/guests\/([0-9a-f-]{36})\/revoke$/i);

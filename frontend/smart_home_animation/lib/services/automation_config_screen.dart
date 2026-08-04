@@ -173,7 +173,7 @@ class _AutomationConfigScreenState extends State<AutomationConfigScreen> {
                       value: 'set_temperature',
                       child: Text('Set Temperature'),
                     ),
-                ].where((item) => item != null).toList(),
+                ].toList(),
                 onChanged: (value) => setState(() {
                   _selectedAction = value;
                   _actionValue = null;

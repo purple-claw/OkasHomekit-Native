@@ -1,0 +1,5 @@
+# Config pages must always revalidate — otherwise browsers heuristically
+# cache the tab bar and miss newly added pages (e.g. users.html).
+<FilesMatch "\.(html?|php)$">
+  Header set Cache-Control "no-cache, must-revalidate"
+</FilesMatch>

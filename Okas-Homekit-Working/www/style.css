@@ -1491,3 +1491,115 @@ h2 {
   font-weight: 700;
   letter-spacing: 0.04em;
 }
+
+/* ===== User Management page ===== */
+.users-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: min(100%, 920px);
+  margin: 0 auto;
+}
+
+.users-page h2 {
+  margin: 0 0 14px 0;
+  color: var(--okas-navy);
+  font-size: clamp(24px, 2.4vw, 30px);
+  line-height: 1.15;
+}
+
+.users-page h3.section-subtitle {
+  margin: 28px 0 12px 0;
+  color: var(--okas-navy);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.users-page .config-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.users-page .config-helper {
+  color: #5b6e76;
+  font-size: 12px;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.users-page .config-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.users-page .admin-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.78);
+  border-radius: 18px;
+  border: 1px solid rgba(0, 55, 90, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 55, 90, 0.05);
+}
+
+@media (max-width: 720px) {
+  .users-page .admin-summary { grid-template-columns: 1fr; }
+}
+
+.users-page .config-section {
+  width: min(100%, 640px);
+  margin: 0 auto;
+}
+
+.users-page .row-flex {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.users-page .row-flex input { flex: 1; }
+
+.guest-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.guest-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.82);
+  border-radius: 14px;
+  border: 1px solid rgba(0, 55, 90, 0.08);
+}
+
+.guest-info { flex: 1; min-width: 0; }
+.guest-name {
+  font-weight: 700;
+  color: var(--okas-navy);
+}
+.guest-meta {
+  font-size: 12px;
+  color: #5b6e76;
+  margin-top: 2px;
+}
+
+.empty-state {
+  padding: 16px;
+  text-align: center;
+  color: #5b6e76;
+  font-size: 13px;
+  background: rgba(255, 255, 255, 0.62);
+  border-radius: 14px;
+  border: 1px dashed rgba(0, 55, 90, 0.18);
+}
+.empty-state.error { color: #b8302a; border-color: rgba(184, 48, 42, 0.3); }

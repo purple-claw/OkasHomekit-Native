@@ -76,7 +76,12 @@ require("../KNX/actHdlr");
     };
 
     global.mqttGetRooms = (pld) => {
-        mqttPub(TPCS.PUB.ST_ROOMS, { rooms: global.rooms });
+        // rooms/set is published with retain=true so that a brand-new
+        // mobile app that subscribes receives the last-known room list
+        // immediately without first sending rooms/get. Without this the
+        // new client had to wait for a round-trip — and any room create
+        // during that window would be wiped by the late rooms/set reply.
+        mqttPub(TPCS.PUB.ST_ROOMS, { rooms: global.rooms }, true);
     };
 
     global.mqttDeleteRoom = (pld) => {
@@ -92,7 +97,9 @@ require("../KNX/actHdlr");
         } else {
             dbg.Wrn('MQTT: Delete room - id not found: ' + pld.id);
         }
-        mqttPub(TPCS.PUB.ST_ROOMS, { rooms: global.rooms });
+        // Update the retained rooms/set cache so new subscribers get the
+        // latest list immediately and no orphan rooms linger.
+        mqttPub(TPCS.PUB.ST_ROOMS, { rooms: global.rooms }, true);
     };
 
     global.mqttAddRoom = (pld) => {
@@ -100,15 +107,21 @@ require("../KNX/actHdlr");
             dbg.Err('MQTT: Invalid room data');
             return;
         }
+        // Merge partial updates (e.g. a favorite-only toggle) over any
+        // existing room instead of replacing it wholesale, so fields the
+        // client did not send (imagePath, createdAt, loads) are preserved.
+        const existingIdx = global.rooms.findIndex(r => r.id === (pld.id || ''));
+        const existing = existingIdx >= 0 ? global.rooms[existingIdx] : null;
         const room = {
             id: pld.id || Date.now().toString(),
             name: pld.name,
-            imagePath: pld.imagePath || null,
-            loads: pld.loads || [],
-            createdAt: pld.createdAt || new Date().toISOString()
+            imagePath: pld.imagePath !== undefined ? pld.imagePath : (existing ? existing.imagePath : null),
+            loads: pld.loads !== undefined ? pld.loads : (existing ? existing.loads : []),
+            createdAt: pld.createdAt || (existing ? existing.createdAt : new Date().toISOString()),
+            isFavorite: pld.isFavorite !== undefined
+                ? (pld.isFavorite === true || pld.isFavorite === 'true')
+                : (existing ? existing.isFavorite === true : false)
         };
-        // Check if room exists, update if so
-        const existingIdx = global.rooms.findIndex(r => r.id === room.id);
         if (existingIdx >= 0) {
             global.rooms[existingIdx] = room;
             dbg.Inf('MQTT: Updated room: ' + room.name);
@@ -117,7 +130,10 @@ require("../KNX/actHdlr");
             dbg.Inf('MQTT: Added room: ' + room.name);
         }
         saveRooms();
-        mqttPub(TPCS.PUB.ST_ROOMS, { rooms: global.rooms });
+        // Retain so a brand-new subscriber gets the updated list instantly
+        // — without retain, a new app session that subscribes between
+        // delete+add windows would not see the new room.
+        mqttPub(TPCS.PUB.ST_ROOMS, { rooms: global.rooms }, true);
     };
 
     const getLdNm = (id) => {
@@ -313,6 +329,24 @@ require("../KNX/actHdlr");
                     ts: Date.now()
                 });
                 dbg.Wrn('MQTT: Rejected unauthorized request on ' + tp);
+                return;
+            }
+        }
+        // Room mutation (add/delete) is admin-only. Guests may view the
+        // room list (rooms/get) and control loads, but must not be able to
+        // restructure the home. `authorizeMqttPayload` returns the
+        // principal; only role === 'admin' may pass here.
+        if ([TPCS.SUB.ADD_ROOM, TPCS.SUB.DEL_ROOM].includes(tp)) {
+            const principal = typeof global.authorizeMqttPayload === 'function'
+                ? global.authorizeMqttPayload(pld)
+                : null;
+            if (!principal || principal.role !== 'admin') {
+                mqttPub(TPCS.PUB.CMD_ACK, {
+                    sts: 'error',
+                    err: 'Only the owner can manage rooms.',
+                    ts: Date.now()
+                });
+                dbg.Wrn('MQTT: Rejected non-admin room mutation on ' + tp);
                 return;
             }
         }

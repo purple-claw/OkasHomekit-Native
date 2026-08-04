@@ -14,7 +14,47 @@ class TokenEntryScreen extends StatefulWidget {
 
 class _TokenEntryScreenState extends State<TokenEntryScreen> {
   final TextEditingController _tokenController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool _obscureToken = true;
+  bool _obscurePassword = true;
+  bool _isAdminLogin = true;
+
+  @override
+  void dispose() {
+    _tokenController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Widget _modeButton(String label, bool isAdminMode) {
+    final selected = _isAdminLogin == isAdminMode;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _isAdminLogin = isAdminMode),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: selected
+                ? SHColors.primary.withOpacity(0.9)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: selected ? Colors.white : Colors.white70,
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,50 +96,140 @@ class _TokenEntryScreenState extends State<TokenEntryScreen> {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Enter your authentication token',
+                  'Sign in as Admin or Guest',
                   style: TextStyle(color: Colors.white70, fontSize: 14),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 24),
 
-                // Token Field
-                TextField(
-                  controller: _tokenController,
-                  obscureText: _obscureToken,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    labelText: 'Authentication Token',
-                    labelStyle: const TextStyle(color: Colors.white70),
-                    hintText: 'Enter your Auth token',
-                    hintStyle: const TextStyle(color: Colors.white38),
-                    prefixIcon: const Icon(
-                      Icons.vpn_key,
-                      color: Colors.white54,
-                    ),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureToken ? Icons.visibility_off : Icons.visibility,
-                        color: Colors.white54,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscureToken = !_obscureToken;
-                        });
-                      },
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.white24),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.white24),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: SHColors.primary),
-                    ),
+                // Admin / Guest toggle
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Row(
+                    children: [
+                      _modeButton('Admin', true),
+                      _modeButton('Guest', false),
+                    ],
                   ),
                 ),
+                const SizedBox(height: 28),
+
+                if (_isAdminLogin) ...[
+                  // Email Field
+                  TextField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    autocorrect: false,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      labelStyle: const TextStyle(color: Colors.white70),
+                      hintText: 'admin@okas.local',
+                      hintStyle: const TextStyle(color: Colors.white38),
+                      prefixIcon: const Icon(
+                        Icons.mail_outline,
+                        color: Colors.white54,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Colors.white24),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Colors.white24),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: SHColors.primary),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Password Field
+                  TextField(
+                    controller: _passwordController,
+                    obscureText: _obscurePassword,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      labelStyle: const TextStyle(color: Colors.white70),
+                      prefixIcon: const Icon(
+                        Icons.lock_outline,
+                        color: Colors.white54,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: Colors.white54,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Colors.white24),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Colors.white24),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: SHColors.primary),
+                      ),
+                    ),
+                    onSubmitted: (_) => _handleProceed(context, authService),
+                  ),
+                ] else ...[
+                  // Token Field
+                  TextField(
+                    controller: _tokenController,
+                    obscureText: _obscureToken,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      labelText: 'Authentication Token',
+                      labelStyle: const TextStyle(color: Colors.white70),
+                      hintText: 'Enter your guest token',
+                      hintStyle: const TextStyle(color: Colors.white38),
+                      prefixIcon: const Icon(
+                        Icons.vpn_key,
+                        color: Colors.white54,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureToken ? Icons.visibility_off : Icons.visibility,
+                          color: Colors.white54,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureToken = !_obscureToken;
+                          });
+                        },
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Colors.white24),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Colors.white24),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: SHColors.primary),
+                      ),
+                    ),
+                    onSubmitted: (_) => _handleProceed(context, authService),
+                  ),
+                ],
                 const SizedBox(height: 16),
 
                 // Discovery Logs
@@ -258,6 +388,14 @@ class _TokenEntryScreenState extends State<TokenEntryScreen> {
                 const SizedBox(height: 16),
 
                 // Help Text
+                if (_isAdminLogin)
+                  TextButton(
+                    onPressed: () => _showForgotPasswordDialog(context),
+                    child: const Text(
+                      'Forgot password?',
+                      style: TextStyle(color: Colors.white70, fontSize: 12),
+                    ),
+                  ),
                 TextButton(
                   onPressed: () {
                     _showHelpDialog(context);
@@ -279,16 +417,31 @@ class _TokenEntryScreenState extends State<TokenEntryScreen> {
     BuildContext context,
     TokenAuthService authService,
   ) async {
-    final token = _tokenController.text.trim();
-
-    if (token.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter the authentication token')),
+    final bool success;
+    if (_isAdminLogin) {
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
+      if (email.isEmpty || password.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter your email and password')),
+        );
+        return;
+      }
+      success = await authService.authenticateWithEmail(
+        email: email,
+        password: password,
       );
-      return;
+    } else {
+      final token = _tokenController.text.trim();
+      if (token.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter the guest token')),
+        );
+        return;
+      }
+      success = await authService.authenticateWithToken(token);
     }
 
-    final success = await authService.authenticateWithToken(token);
     if (success && mounted) {
       final mqtt = authService.mqttCredentials;
       if (mqtt == null || authService.discoveredIp == null) {
@@ -362,6 +515,134 @@ class _TokenEntryScreenState extends State<TokenEntryScreen> {
             child: const Text('Try Again'),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showForgotPasswordDialog(BuildContext context) {
+    final ownerTokenController = TextEditingController();
+    final newPasswordController = TextEditingController();
+    final confirmController = TextEditingController();
+    var saving = false;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          backgroundColor: SHColors.elevatedCardColor,
+          title: const Text(
+            'Reset Password',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Enter the board owner token (printed on the device / '
+                  'configured by your distributor) and a new password.',
+                  style: TextStyle(color: Colors.white70, fontSize: 13),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: ownerTokenController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
+                    labelText: 'Owner token',
+                    labelStyle: TextStyle(color: Colors.white70),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white38),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: newPasswordController,
+                  obscureText: true,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
+                    labelText: 'New password',
+                    labelStyle: TextStyle(color: Colors.white70),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white38),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: confirmController,
+                  obscureText: true,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
+                    labelText: 'Confirm new password',
+                    labelStyle: TextStyle(color: Colors.white70),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white38),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.white70),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: saving
+                  ? null
+                  : () async {
+                      final ownerToken = ownerTokenController.text.trim();
+                      final next = newPasswordController.text;
+                      final confirm = confirmController.text;
+                      if (next != confirm) {
+                        ScaffoldMessenger.of(ctx).showSnackBar(
+                          const SnackBar(
+                            content: Text('Passwords do not match.'),
+                          ),
+                        );
+                        return;
+                      }
+                      setDialogState(() => saving = true);
+                      try {
+                        await context
+                            .read<TokenAuthService>()
+                            .resetPassword(
+                              ownerToken: ownerToken,
+                              newPassword: next,
+                            );
+                        if (ctx.mounted) {
+                          Navigator.pop(ctx);
+                          ScaffoldMessenger.of(ctx).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Password reset. Sign in with the new password.',
+                              ),
+                              backgroundColor: SHColors.green,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        if (ctx.mounted) {
+                          setDialogState(() => saving = false);
+                          ScaffoldMessenger.of(ctx).showSnackBar(
+                            SnackBar(content: Text('$e')),
+                          );
+                        }
+                      }
+                    },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: SHColors.primary,
+              ),
+              child: Text(saving ? 'Resetting…' : 'Reset'),
+            ),
+          ],
+        ),
       ),
     );
   }

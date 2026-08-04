@@ -7,6 +7,7 @@ class Room {
   final String? imagePath;
   final List<String> loadIds;
   final DateTime createdAt;
+  final bool isFavorite;
 
   Room({
     required this.id,
@@ -14,6 +15,7 @@ class Room {
     this.imagePath,
     required this.loadIds,
     required this.createdAt,
+    this.isFavorite = false,
   });
 
   Map<String, dynamic> toJson() => {
@@ -22,6 +24,7 @@ class Room {
     'imagePath': imagePath,
     'loads': loadIds,
     'createdAt': createdAt.toIso8601String(),
+    'isFavorite': isFavorite,
   };
 
   factory Room.fromJson(Map<String, dynamic> json) => Room(
@@ -30,6 +33,23 @@ class Room {
     imagePath: json['imagePath'],
     loadIds: List<String>.from(json['loads'] ?? []),
     createdAt: DateTime.parse(json['createdAt']),
+    isFavorite: json['isFavorite'] == true,
+  );
+
+  Room copyWith({
+    String? id,
+    String? name,
+    String? imagePath,
+    List<String>? loadIds,
+    DateTime? createdAt,
+    bool? isFavorite,
+  }) => Room(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    imagePath: imagePath ?? this.imagePath,
+    loadIds: loadIds ?? this.loadIds,
+    createdAt: createdAt ?? this.createdAt,
+    isFavorite: isFavorite ?? this.isFavorite,
   );
 }
 
@@ -130,6 +150,24 @@ class RoomService {
       ..addAll(newRooms);
     await saveRooms();
     _notifyListeners();
+  }
+
+  /// Marks a room as favorite (or not). The flag is persisted locally and
+  /// synced to the board so all devices see the same favorite room.
+  Future<void> setFavorite(String roomId, bool favorite) async {
+    final index = _rooms.indexWhere((r) => r.id == roomId);
+    if (index >= 0) {
+      _rooms[index] = _rooms[index].copyWith(isFavorite: favorite);
+      await saveRooms();
+      _notifyListeners();
+    }
+  }
+
+  Room? get favoriteRoom {
+    for (final room in _rooms) {
+      if (room.isFavorite) return room;
+    }
+    return null;
   }
 
   Future<void> addLoadToRoom(String roomId, String loadId) async {

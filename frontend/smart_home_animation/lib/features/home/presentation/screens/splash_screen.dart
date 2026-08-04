@@ -82,9 +82,13 @@ class _SplashScreenState extends State<SplashScreen>
           );
         }
         if (!mqttConnected) {
-          await authService.logout();
+          // Do NOT wipe the session here — the token is still valid and the
+          // MQTT failure is usually transient (board reboot, network blip).
+          // Going to token-entry forces a full re-auth, which is what the
+          // user perceives as "random logout". Instead, surface the retry
+          // state on the home screen (DirectMQTTService.isConnected=false).
           if (!mounted) return;
-          Navigator.pushReplacementNamed(context, '/token-entry');
+          Navigator.pushReplacementNamed(context, '/home');
           return;
         }
         Navigator.pushReplacementNamed(context, '/home');

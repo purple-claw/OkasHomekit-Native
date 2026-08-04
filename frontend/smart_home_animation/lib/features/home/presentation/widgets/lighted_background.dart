@@ -14,6 +14,16 @@ class LightedBackgound extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
+          // Brand radial highlight (top-left cyan glow) — gives the
+          // background the same "premium glass" feel as the Keus app
+          // without competing with content.
+          IgnorePointer(
+            child: DecoratedBox(
+              decoration: BoxDecoration(gradient: SHColors.brandRadialGlow),
+            ),
+          ),
+          // Subtle vertical wash — slightly brighter at top, dims to
+          // black at bottom for contrast against the bottom nav.
           IgnorePointer(
             child: DecoratedBox(
               decoration: BoxDecoration(
@@ -21,11 +31,11 @@ class LightedBackgound extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.white.withOpacity(0.08),
+                    Colors.white.withOpacity(0.06),
                     Colors.transparent,
-                    Colors.black.withOpacity(0.2),
+                    Colors.black.withOpacity(0.22),
                   ],
-                  stops: const [0, 0.34, 1],
+                  stops: const [0, 0.4, 1],
                 ),
               ),
             ),

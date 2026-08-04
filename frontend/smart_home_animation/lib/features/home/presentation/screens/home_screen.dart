@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_home_animation/core/core.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/device.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/room.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/room_image.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/add_room_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/lounge_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/profile_screen.dart';
@@ -22,6 +23,7 @@ import 'package:smart_home_animation/features/home/presentation/widgets/page_ind
 import 'package:smart_home_animation/features/home/presentation/widgets/smart_room_page_view.dart';
 import 'package:smart_home_animation/services/device_provider_wrapper.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
+import 'package:smart_home_animation/services/house_name_service.dart';
 import 'package:smart_home_animation/services/room_service.dart' hide Room;
 import 'package:smart_home_animation/services/token_auth_service.dart';
 import 'package:ui_common/ui_common.dart' hide DeviceType;
@@ -90,6 +92,13 @@ class _HomeScreenState extends State<HomeScreen> {
     };
     RoomService.instance.addListener(_roomServiceListener!);
     _loadAllRooms();
+    // House name: refresh from the board and reflect the show/hide pref.
+    HouseNameService.instance.init().then((_) {
+      if (mounted) setState(() {});
+      HouseNameService.instance.refreshFromBoard().then((_) {
+        if (mounted) setState(() {});
+      });
+    });
   }
 
   VoidCallback? _roomServiceListener;
@@ -144,6 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
         wallpaperUrl: r.imagePath,
         devices: [],
         createdAt: r.createdAt,
+        isFavorite: r.isFavorite,
       );
     }
     setState(() {
@@ -452,8 +462,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Welcome back",
+                    Text(
+                      // Greet the owner by their display name (set by the
+                      // programmer on the web User Management page).
+                      context.watch<TokenAuthService>().displayName != null
+                          ? 'Hi, ${context.watch<TokenAuthService>().displayName}'
+                          : 'Welcome back',
                       style: TextStyle(
                         color: SHColors.mutedText,
                         fontSize: 13,
@@ -462,7 +476,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "Smart Home",
+                      // House name from the board when the option is enabled;
+                      // falls back to the generic brand title.
+                      HouseNameService.instance.showHouseName
+                          ? HouseNameService.instance.houseName
+                          : "Smart Home",
                       style: Theme.of(context).textTheme.displaySmall,
                     ),
                   ],
@@ -585,7 +603,14 @@ class _HomeScreenState extends State<HomeScreen> {
             itemCount: _rooms.length,
             separatorBuilder: (_, __) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
-              final room = _rooms[index];
+              // Sort so the favorite room appears first (star badge on card).
+              final rooms = [..._rooms]
+                ..sort((a, b) {
+                  final fa = a.isFavorite ? 0 : 1;
+                  final fb = b.isFavorite ? 0 : 1;
+                  return fa.compareTo(fb);
+                });
+              final room = rooms[index];
               return _buildHorizontalRoomCard(context, room);
             },
           ),
@@ -627,26 +652,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: SizedBox(
                 height: 110,
                 width: double.infinity,
-                child:
-                    imagePath != null &&
-                        imagePath.isNotEmpty &&
-                        File(imagePath).existsSync()
-                    ? Image.file(File(imagePath), fit: BoxFit.cover)
-                    : Container(
-                        color: Colors.black26,
-                        child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Image.asset(
-                            'assets/icons/room.png',
-                            color: SHColors.primary,
-                            errorBuilder: (_, __, ___) => const Icon(
-                              Icons.meeting_room,
-                              size: 48,
-                              color: SHColors.hintColor,
-                            ),
-                          ),
-                        ),
-                      ),
+                child: RoomImage(imagePath: imagePath),
               ),
             ),
             Padding(
@@ -654,15 +660,27 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    room.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          room.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                      if (room.isFavorite)
+                        const Icon(
+                          Icons.star_rounded,
+                          color: SHColors.amber,
+                          size: 18,
+                        ),
+                    ],
                   ),
                   const SizedBox(height: 4),
                   Text(

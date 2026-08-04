@@ -1,4 +1,6 @@
 // screens/scene_screen.dart
+// Scene management: Global Scenes + Room-Based Scenes, with a creation
+// flow (previously scene creation was not available where expected).
 // ignore_for_file: unused_element, prefer_final_fields
 
 import 'package:flutter/material.dart';
@@ -19,20 +21,62 @@ class _SceneScreenState extends State<SceneScreen>
 
   final List<SceneCategory> _categories = [
     SceneCategory(name: 'All', icon: Icons.apps),
+    SceneCategory(name: 'Global', icon: Icons.public),
+    SceneCategory(name: 'Rooms', icon: Icons.meeting_room_outlined),
     SceneCategory(name: 'Favorites', icon: Icons.favorite),
-    SceneCategory(name: 'Morning', icon: Icons.wb_sunny),
-    SceneCategory(name: 'Evening', icon: Icons.nightlight),
-    SceneCategory(name: 'Sleep', icon: Icons.bed),
-    SceneCategory(name: 'Away', icon: Icons.lock_outline),
   ];
 
+  // 4 standard + 6 custom scenes, split by scope.
   List<SmartScene> _scenes = [];
+  final List<SmartScene> _standardScenes = [
+    SmartScene(
+      id: 'std_morning',
+      name: 'Morning',
+      description: 'Gentle wake-up lighting',
+      icon: Icons.wb_sunny_outlined,
+      color: SHColors.amber,
+      deviceCount: 4,
+      isFavorite: false,
+      scope: 'Global',
+    ),
+    SmartScene(
+      id: 'std_evening',
+      name: 'Evening',
+      description: 'Warm dimmed ambience',
+      icon: Icons.nightlight_outlined,
+      color: SHColors.violet,
+      deviceCount: 3,
+      isFavorite: false,
+      scope: 'Global',
+    ),
+    SmartScene(
+      id: 'std_movie',
+      name: 'Movie',
+      description: 'Cinema dim lighting',
+      icon: Icons.movie_outlined,
+      color: SHColors.blue,
+      deviceCount: 5,
+      isFavorite: false,
+      scope: 'Global',
+    ),
+    SmartScene(
+      id: 'std_away',
+      name: 'Away',
+      description: 'All loads off',
+      icon: Icons.lock_outline,
+      color: SHColors.rose,
+      deviceCount: 6,
+      isFavorite: false,
+      scope: 'Global',
+    ),
+  ];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: _categories.length, vsync: this);
     _searchController.addListener(_onSearchChanged);
+    _scenes = List.of(_standardScenes);
   }
 
   @override
@@ -53,24 +97,25 @@ class _SceneScreenState extends State<SceneScreen>
     setState(() {
       final index = _scenes.indexWhere((s) => s.id == scene.id);
       if (index != -1) {
+        final s = _scenes[index];
         _scenes[index] = SmartScene(
-          id: _scenes[index].id,
-          name: _scenes[index].name,
-          description: _scenes[index].description,
-          icon: _scenes[index].icon,
-          color: _scenes[index].color,
-          deviceCount: _scenes[index].deviceCount,
-          isFavorite: !_scenes[index].isFavorite,
-          timeOfDay: _scenes[index].timeOfDay,
+          id: s.id,
+          name: s.name,
+          description: s.description,
+          icon: s.icon,
+          color: s.color,
+          deviceCount: s.deviceCount,
+          isFavorite: !s.isFavorite,
+          timeOfDay: s.timeOfDay,
+          scope: s.scope,
         );
 
-        // Show feedback
         final isNowFavorite = _scenes[index].isFavorite;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
               isNowFavorite
-                  ? '${scene.name} added to favorites ❤️'
+                  ? '${scene.name} added to favorites'
                   : '${scene.name} removed from favorites',
             ),
             backgroundColor: isNowFavorite ? Colors.green : Colors.grey,
@@ -79,6 +124,237 @@ class _SceneScreenState extends State<SceneScreen>
         );
       }
     });
+  }
+
+  /// Opens the scene creation dialog. New scenes are added as custom
+  /// Room-Based scenes by default (user picks the scope in the dialog).
+  Future<void> _openCreateScene() async {
+    final nameController = TextEditingController();
+    var selectedIcon = Icons.auto_awesome;
+    var selectedColor = SHColors.primary;
+    var scope = 'Room';
+
+    final result = await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          backgroundColor: SHColors.elevatedCardColor,
+          title: const Text(
+            'Create Scene',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  autofocus: true,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
+                    labelText: 'Scene name',
+                    labelStyle: TextStyle(color: Colors.white70),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white38),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: SHColors.primary),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Scope: Global or Room-based.
+                Row(
+                  children: [
+                    const Text(
+                      'Scope:',
+                      style: TextStyle(color: Colors.white70, fontSize: 13),
+                    ),
+                    const SizedBox(width: 12),
+                    ChoiceChip(
+                      label: const Text('Global'),
+                      selected: scope == 'Global',
+                      onSelected: (_) =>
+                          setDialogState(() => scope = 'Global'),
+                      selectedColor: SHColors.primary,
+                      labelStyle: const TextStyle(color: Colors.white),
+                    ),
+                    const SizedBox(width: 8),
+                    ChoiceChip(
+                      label: const Text('Room'),
+                      selected: scope == 'Room',
+                      onSelected: (_) => setDialogState(() => scope = 'Room'),
+                      selectedColor: SHColors.violet,
+                      labelStyle: const TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                // Icon picker.
+                SizedBox(
+                  height: 44,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      _iconOption(ctx, setDialogState, Icons.wb_sunny_outlined,
+                          (i) => selectedIcon = i, selectedIcon),
+                      _iconOption(ctx, setDialogState, Icons.nightlight_outlined,
+                          (i) => selectedIcon = i, selectedIcon),
+                      _iconOption(ctx, setDialogState, Icons.movie_outlined,
+                          (i) => selectedIcon = i, selectedIcon),
+                      _iconOption(ctx, setDialogState, Icons.lock_outline,
+                          (i) => selectedIcon = i, selectedIcon),
+                      _iconOption(ctx, setDialogState, Icons.favorite_outline,
+                          (i) => selectedIcon = i, selectedIcon),
+                      _iconOption(ctx, setDialogState, Icons.auto_awesome,
+                          (i) => selectedIcon = i, selectedIcon),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Color picker.
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _colorDot(ctx, setDialogState, SHColors.primary,
+                        (c) => selectedColor = c, selectedColor),
+                    _colorDot(ctx, setDialogState, SHColors.amber,
+                        (c) => selectedColor = c, selectedColor),
+                    _colorDot(ctx, setDialogState, SHColors.violet,
+                        (c) => selectedColor = c, selectedColor),
+                    _colorDot(ctx, setDialogState, SHColors.blue,
+                        (c) => selectedColor = c, selectedColor),
+                    _colorDot(ctx, setDialogState, SHColors.rose,
+                        (c) => selectedColor = c, selectedColor),
+                    _colorDot(ctx, setDialogState, SHColors.green,
+                        (c) => selectedColor = c, selectedColor),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.white70),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final name = nameController.text.trim();
+                if (name.isEmpty) {
+                  ScaffoldMessenger.of(ctx).showSnackBar(
+                    const SnackBar(
+                      content: Text('Scene name is required'),
+                      duration: Duration(seconds: 1),
+                    ),
+                  );
+                  return;
+                }
+                Navigator.pop(ctx, {
+                  'name': name,
+                  'icon': selectedIcon,
+                  'color': selectedColor,
+                  'scope': scope,
+                });
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: SHColors.primary,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Create'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (result != null && mounted) {
+      setState(() {
+        _scenes.insert(
+          0,
+          SmartScene(
+            id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
+            name: result['name'] as String,
+            description:
+                '${result['scope']} scene • created by you',
+            icon: result['icon'] as IconData,
+            color: result['color'] as Color,
+            deviceCount: 0,
+            isFavorite: false,
+            scope: result['scope'] as String,
+          ),
+        );
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Scene "${result['name']}" created!'),
+          backgroundColor: SHColors.green,
+          duration: const Duration(seconds: 1),
+        ),
+      );
+    }
+  }
+
+  Widget _iconOption(
+    BuildContext ctx,
+    StateSetter setDialogState,
+    IconData icon,
+    ValueChanged<IconData> onPick,
+    IconData current,
+  ) {
+    final active = current == icon;
+    return GestureDetector(
+      onTap: () => setDialogState(() => onPick(icon)),
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: active
+              ? SHColors.primary.withOpacity(0.25)
+              : Colors.white.withOpacity(0.06),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: active ? SHColors.primary : Colors.white.withOpacity(0.1),
+          ),
+        ),
+        child: Icon(icon, color: active ? SHColors.primary : Colors.white54),
+      ),
+    );
+  }
+
+  Widget _colorDot(
+    BuildContext ctx,
+    StateSetter setDialogState,
+    Color color,
+    ValueChanged<Color> onPick,
+    Color current,
+  ) {
+    final active = current == color;
+    return GestureDetector(
+      onTap: () => setDialogState(() => onPick(color)),
+      child: Container(
+        width: 30,
+        height: 30,
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: active ? Colors.white : Colors.transparent,
+            width: 2,
+          ),
+          boxShadow: active
+              ? [BoxShadow(color: color.withOpacity(0.6), blurRadius: 8)]
+              : null,
+        ),
+      ),
+    );
   }
 
   void _showPinDialog(String sceneName) {
@@ -117,10 +393,6 @@ class _SceneScreenState extends State<SceneScreen>
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(color: SHColors.primary),
-                ),
-                prefixIcon: const Icon(
-                  Icons.lock_outline,
-                  color: Colors.white54,
                 ),
               ),
             ),
@@ -164,6 +436,53 @@ class _SceneScreenState extends State<SceneScreen>
         backgroundColor: Colors.transparent,
         body: Column(
           children: [
+            // Header row: title + Add Scene (admin or all users can create
+            // scenes — scenes are per-device customization).
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Scenes',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: _openCreateScene,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: SHColors.primary,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.add, color: Colors.white, size: 18),
+                          SizedBox(width: 6),
+                          Text(
+                            'Add Scene',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             // Search Bar with clear button
             Padding(
               padding: const EdgeInsets.all(16),
@@ -267,20 +586,20 @@ class _SceneScreenState extends State<SceneScreen>
     }
 
     // Apply category filter
-    if (category.name != 'All') {
-      if (category.name == 'Favorites') {
-        filteredScenes = filteredScenes
-            .where((scene) => scene.isFavorite)
-            .toList();
-      } else {
-        filteredScenes = filteredScenes
-            .where(
-              (scene) =>
-                  scene.name.contains(category.name) ||
-                  scene.description.contains(category.name),
-            )
-            .toList();
-      }
+    if (category.name == 'All') {
+      // All: show everything.
+    } else if (category.name == 'Favorites') {
+      filteredScenes = filteredScenes
+          .where((scene) => scene.isFavorite)
+          .toList();
+    } else if (category.name == 'Global') {
+      filteredScenes = filteredScenes
+          .where((scene) => scene.scope == 'Global')
+          .toList();
+    } else if (category.name == 'Rooms') {
+      filteredScenes = filteredScenes
+          .where((scene) => scene.scope == 'Room')
+          .toList();
     }
 
     if (filteredScenes.isEmpty) {
@@ -313,7 +632,7 @@ class _SceneScreenState extends State<SceneScreen>
             ] else ...[
               const SizedBox(height: 8),
               Text(
-                'Try a different category',
+                'Tap "Add Scene" to create one',
                 style: TextStyle(fontSize: 14, color: SHColors.hintColor),
               ),
             ],
@@ -340,7 +659,7 @@ class _SceneScreenState extends State<SceneScreen>
 
   Widget _buildSceneCard(SmartScene scene) {
     return GestureDetector(
-      // onTap: () => _showPinDialog(scene.name),
+      onTap: () => _showPinDialog(scene.name),
       onLongPress: () => _toggleFavorite(scene),
       child: Container(
         decoration: BoxDecoration(
@@ -368,51 +687,30 @@ class _SceneScreenState extends State<SceneScreen>
               ),
             ),
 
-            // Time indicator (if available)
-            if (scene.timeOfDay != null)
-              Positioned(
-                top: 8,
-                left: 8,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    scene.timeOfDay!,
-                    style: const TextStyle(fontSize: 10, color: Colors.white70),
-                  ),
-                ),
-              ),
-
-            // Long press indicator
+            // Scope badge
             Positioned(
-              bottom: 8,
-              right: 8,
+              top: 8,
+              left: 8,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 2,
+                ),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
+                  color: scene.scope == 'Global'
+                      ? SHColors.primary.withOpacity(0.25)
+                      : SHColors.violet.withOpacity(0.25),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.favorite_outline,
-                      color: Colors.white54,
-                      size: 10,
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      'Long press to favorite',
-                      style: TextStyle(fontSize: 8, color: Colors.white54),
-                    ),
-                  ],
+                child: Text(
+                  scene.scope,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: scene.scope == 'Global'
+                        ? SHColors.primary
+                        : SHColors.violet,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
@@ -505,6 +803,7 @@ class SmartScene {
   final int deviceCount;
   final bool isFavorite;
   final String? timeOfDay;
+  final String scope;
 
   SmartScene({
     required this.id,
@@ -515,5 +814,6 @@ class SmartScene {
     required this.deviceCount,
     required this.isFavorite,
     this.timeOfDay,
+    this.scope = 'Global',
   });
 }

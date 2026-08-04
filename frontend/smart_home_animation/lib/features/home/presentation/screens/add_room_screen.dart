@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/core.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
-import 'package:smart_home_animation/services/room_service.dart';
+import 'package:smart_home_animation/services/room_image_sync_service.dart';
 
 class AddRoomScreen extends StatefulWidget {
   final Map<String, dynamic>? roomToEdit;
@@ -252,30 +252,29 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
       roomId = DateTime.now().millisecondsSinceEpoch.toString();
     }
     
+    // If a local image was picked, upload it to the board first so every
+    // device on the network can see it (the board URL replaces the local
+    // path and syncs via MQTT rooms/set).
+    final syncedImagePath =
+        await RoomImageSyncService.instance.syncImageToBoard(_roomImagePath);
+
     final roomData = {
       'id': roomId,
       'name': roomName,
-      'imagePath': _roomImagePath,
+      'imagePath': syncedImagePath,
       'loads': _selectedLoadIds.toList(),
       'createdAt': _isEditing ? widget.roomToEdit!['createdAt'] ?? DateTime.now().toIso8601String() : DateTime.now().toIso8601String(),
     };
 
-    // Save locally using RoomService
-    final room = Room(
-      id: roomId,
-      name: roomName,
-      imagePath: _roomImagePath,
-      loadIds: _selectedLoadIds.toList(),
-      createdAt: _isEditing ? (widget.roomToEdit!['createdAt'] != null ? DateTime.parse(widget.roomToEdit!['createdAt']) : DateTime.now()) : DateTime.now(),
-    );
-    
-    if (_isEditing) {
-      await RoomService.instance.updateRoom(room);
-    } else {
-      await RoomService.instance.addRoom(room);
-    }
-
-    // Send to OKAS board via MQTT
+    // Push the new room straight to the board. We deliberately do NOT
+    // add it to the local RoomService cache here — the board's `rooms/set`
+    // reply (retained on the broker so it arrives immediately on a fresh
+    // subscription) is the single source of truth and populates the
+    // local list via replaceRooms. Adding locally and then having the
+    // board's reply overwrite it was the root cause of the "deleted
+    // rooms reappear when I create a new room" bug: a previous version
+    // of the local cache would briefly reappear if the rooms/set response
+    // raced the local add. Skipping the local add eliminates the race.
     final mqttService = Provider.of<DirectMQTTService>(context, listen: false);
     mqttService.publish('rooms/add', json.encode(roomData));
 

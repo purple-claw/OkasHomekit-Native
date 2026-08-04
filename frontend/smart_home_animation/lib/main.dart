@@ -1,7 +1,6 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:smart_home_animation/api/constants.dart';
 import 'package:smart_home_animation/core/app/app.dart';
 import 'package:smart_home_animation/core/theme/sh_theme.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';

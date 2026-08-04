@@ -60,7 +60,7 @@ class HTTPDeviceService implements IDeviceService {
         body: json.encode({
           'command': command.command,
           'value': command.value,
-          'roomId': command.parameters?['roomId'] ?? '1',
+          'roomId': command.parameters['roomId'] ?? '1',
         }),
       );
       debugPrint('Command sent: ${response.statusCode}');
