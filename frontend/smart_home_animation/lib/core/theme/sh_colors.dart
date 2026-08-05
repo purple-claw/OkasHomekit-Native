@@ -84,6 +84,22 @@ abstract class SHColors {
     stops: [0.0, 0.277, 0.548, 0.957],
   );
 
+  /// Figma Frame1 splash background: radial teal-to-black glow centred at
+  /// the top-right (350/414, 90/896), radius ~750px. The full-canvas
+  /// wash that sets the dark teal "premium glass" tone before the home
+  /// screen takes over.
+  static const Gradient splashBackgroundGradient = RadialGradient(
+    center: Alignment(0.69, -0.80),
+    radius: 1.5,
+    colors: [
+      Color(0xFF0E8D91),
+      Color(0xFF084D5D),
+      Color(0xFF032136),
+      Color(0xFF010A14),
+    ],
+    stops: [0.0, 0.35, 0.70, 1.0],
+  );
+
   // ---- Card / surface gradients ----
   static const Gradient cardGradient = LinearGradient(
     begin: Alignment.topLeft,

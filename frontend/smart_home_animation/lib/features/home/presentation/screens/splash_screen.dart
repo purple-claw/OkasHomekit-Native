@@ -21,6 +21,16 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> _scaleAnimation;
   late Animation<Offset> _slideAnimation;
 
+  // Figma Frame1 geometry (414x896 artboard), scaled by screen size.
+  static const double _logoWidthRatio = 84 / 414; // 0.203
+  static const double _logoAspectRatio = 345 / 84; // 4.107
+  static const double _logoTopRatio = 240 / 896; // logo top edge y=240
+  static const double _taglineTopRatio = 642 / 896; // tagline top edge y=642
+  static const double _loadingTopRatio = 700 / 896; // spinner below tagline
+
+  // ponytail: temp dev hold so the splash stays on screen for review; set false for APK
+  static const bool _devHoldSplash = false;
+
   @override
   void initState() {
     super.initState();
@@ -60,6 +70,7 @@ class _SplashScreenState extends State<SplashScreen>
     await Future.delayed(const Duration(seconds: 2));
 
     if (!mounted) return;
+    if (_devHoldSplash) return; // ponytail: hold splash for review
 
     final authService = Provider.of<TokenAuthService>(context, listen: false);
     final isAuthenticated = await authService.checkAutoLogin();
@@ -113,74 +124,106 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
 
+    final Size screenSize = MediaQuery.of(context).size;
+    final double logoWidth = screenSize.width * _logoWidthRatio;
+    final double logoHeight = logoWidth * _logoAspectRatio;
+    final double logoTop = screenSize.height * _logoTopRatio;
+    final double taglineTop = screenSize.height * _taglineTopRatio;
+    final double loadingTop = screenSize.height * _loadingTopRatio;
+
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(gradient: SHColors.backgroundColor),
+        decoration: const BoxDecoration(
+          gradient: SHColors.splashBackgroundGradient,
+        ),
         child: SafeArea(
           child: Stack(
+            fit: StackFit.expand,
             children: [
-              ..._buildBackgroundCircles(),
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: ScaleTransition(
-                        scale: _scaleAnimation,
-                        child: Container(
-                          width: 120,
-                          height: 120,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.15),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: SvgPicture.asset(
-                              "assets/svg/okas-logo.svg",
-                              width: 60,
-                              height: 60,
-                              fit: BoxFit.scaleDown,
-                            ),
-                          ),
+              // Figma Frame1: logo top edge at y=240, centered horizontally.
+              Positioned(
+                top: logoTop,
+                left: (screenSize.width - logoWidth) / 2,
+                child: FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: ScaleTransition(
+                    scale: _scaleAnimation,
+                    child: SvgPicture.asset(
+                      "assets/svg/okas-logo.svg",
+                      width: logoWidth,
+                      height: logoHeight,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+              ),
+              // Tagline: top edge at y=642, centered horizontally.
+              Positioned(
+                top: taglineTop,
+                left: 0,
+                right: 0,
+                child: SlideTransition(
+                  position: _slideAnimation,
+                  child: Column(
+                    children: [
+                      Text(
+                        'Control',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: const Color(0xFFE2EDF0),
+                          letterSpacing: 0.5,
+                          fontWeight: FontWeight.w300,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 30),
-                    SlideTransition(
-                      position: _slideAnimation,
-                      child: Column(
-                        children: [
-                          Text(
-                            'Control Your World',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.white70,
-                              letterSpacing: 1,
-                              fontWeight: FontWeight.w300,
+                      const SizedBox(height: 2),
+                      Text.rich(
+                        TextSpan(
+                          children: const [
+                            TextSpan(
+                              text: 'Your ',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                                letterSpacing: 0.5,
+                                fontWeight: FontWeight.w300,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 60),
-                    FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: const Column(
-                        children: [
-                          CircularProgressIndicator(color: Colors.white54),
-                          SizedBox(height: 16),
-                          Text(
-                            'Loading..',
-                            style: TextStyle(
-                              color: Colors.white54,
-                              fontSize: 12,
+                            TextSpan(
+                              text: 'World',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                                letterSpacing: 0.5,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                ),
+              ),
+              // Loading indicator below the tagline.
+              Positioned(
+                top: loadingTop,
+                left: 0,
+                right: 0,
+                child: FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: const Column(
+                    children: [
+                      CircularProgressIndicator(color: Colors.white54),
+                      SizedBox(height: 16),
+                      Text(
+                        'Loading..',
+                        style: TextStyle(
+                          color: Colors.white54,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const Positioned(
@@ -199,46 +242,5 @@ class _SplashScreenState extends State<SplashScreen>
         ),
       ),
     );
-  }
-
-  List<Widget> _buildBackgroundCircles() {
-    return [
-      Positioned(
-        top: -50,
-        right: -30,
-        child: Container(
-          width: 150,
-          height: 150,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: SHColors.primary.withOpacity(0.1),
-          ),
-        ),
-      ),
-      Positioned(
-        bottom: -40,
-        left: -20,
-        child: Container(
-          width: 120,
-          height: 120,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: SHColors.secondary.withOpacity(0.1),
-          ),
-        ),
-      ),
-      Positioned(
-        top: MediaQuery.of(context).size.height * 0.3,
-        right: 20,
-        child: Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: SHColors.tertiary.withOpacity(0.1),
-          ),
-        ),
-      ),
-    ];
   }
 }

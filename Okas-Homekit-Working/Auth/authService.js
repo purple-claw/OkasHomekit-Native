@@ -15,28 +15,27 @@ const MIN_GUEST_DURATION_MINUTES = 5;
 const COMMAND_SESSION_TTL_MS = 12 * 60 * 60 * 1000;
 const TOKEN_LENGTH = 8;
 const TOKEN_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-// Password hashing parameters — scrypt is built into Node, no extra deps,
-// and tuned to be slow enough to resist brute force on a small device.
 const SCRYPT_KEYLEN = 32;
 const SCRYPT_OPTS = { N: 16384, r: 8, p: 1 };
 const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 128;
 
 function now() { return new Date().toISOString(); }
+
 function tokenHash(token, salt) {
     return crypto.scryptSync(token, salt, TOKEN_LENGTH, SCRYPT_OPTS).toString('base64url');
 }
+
 function passwordHash(password, salt) {
     // scrypt provides built-in memory-hardness for password hashing —
     // no external deps, and the salt + cost are stored alongside the
     // principal so a future upgrade can re-derive the same key.
     return crypto.scryptSync(password, salt, SCRYPT_KEYLEN, SCRYPT_OPTS).toString('base64url');
 }
+
 function isStrongPassword(password) {
     if (typeof password !== 'string') return false;
     if (password.length < MIN_PASSWORD_LENGTH || password.length > MAX_PASSWORD_LENGTH) return false;
-    // Require at least 3 of 4 character classes — a sane default that
-    // still keeps passwords usable.
     const has = {
         lower: /[a-z]/.test(password),
         upper: /[A-Z]/.test(password),
@@ -45,9 +44,11 @@ function isStrongPassword(password) {
     };
     return Object.values(has).filter(Boolean).length >= 3;
 }
+
 function isValidEmail(email) {
     return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
 }
+
 function randomToken() {
     let result = '';
     while (result.length < TOKEN_LENGTH) {
@@ -59,6 +60,7 @@ function randomToken() {
     }
     return result;
 }
+
 function macToken(mac) {
     const normalized = String(mac || '').toLowerCase().replace(/[^a-f0-9]/g, '');
     if (normalized.length !== 12) return null;
@@ -71,14 +73,17 @@ function macToken(mac) {
     }
     return null;
 }
+
 function safeEqual(a, b) {
     const aa = Buffer.from(a);
     const bb = Buffer.from(b);
     return aa.length === bb.length && crypto.timingSafeEqual(aa, bb);
 }
+
 function isExpired(principal, at = Date.now()) {
     return principal.expiresAt != null && Date.parse(principal.expiresAt) <= at;
 }
+
 function publicPrincipal(principal) {
     return {
         id: principal.id,
