@@ -26,7 +26,6 @@ class _SplashScreenState extends State<SplashScreen>
   static const double _logoAspectRatio = 345 / 84; // 4.107
   static const double _logoTopRatio = 240 / 896; // logo top edge y=240
   static const double _taglineTopRatio = 642 / 896; // tagline top edge y=642
-  static const double _loadingTopRatio = 700 / 896; // spinner below tagline
 
   // ponytail: temp dev hold so the splash stays on screen for review; set false for APK
   static const bool _devHoldSplash = false;
@@ -129,7 +128,6 @@ class _SplashScreenState extends State<SplashScreen>
     final double logoHeight = logoWidth * _logoAspectRatio;
     final double logoTop = screenSize.height * _logoTopRatio;
     final double taglineTop = screenSize.height * _taglineTopRatio;
-    final double loadingTop = screenSize.height * _loadingTopRatio;
 
     return Scaffold(
       body: Container(
@@ -198,28 +196,6 @@ class _SplashScreenState extends State<SplashScreen>
                               ),
                             ),
                           ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              // Loading indicator below the tagline.
-              Positioned(
-                top: loadingTop,
-                left: 0,
-                right: 0,
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: const Column(
-                    children: [
-                      CircularProgressIndicator(color: Colors.white54),
-                      SizedBox(height: 16),
-                      Text(
-                        'Loading..',
-                        style: TextStyle(
-                          color: Colors.white54,
-                          fontSize: 12,
                         ),
                       ),
                     ],
