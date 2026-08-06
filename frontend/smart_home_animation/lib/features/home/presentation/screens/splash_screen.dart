@@ -72,7 +72,16 @@ class _SplashScreenState extends State<SplashScreen>
     if (_devHoldSplash) return; // ponytail: hold splash for review
 
     final authService = Provider.of<TokenAuthService>(context, listen: false);
-    final isAuthenticated = await authService.checkAutoLogin();
+    var isAuthenticated = await authService.checkAutoLogin();
+
+    // The board may be mid-reboot or the WiFi just reconnected. Retry once
+    // when the failure was transient — checkAutoLogin keeps the stored
+    // session in that case (it only wipes on a definitive token rejection).
+    if (!isAuthenticated && authService.hasStoredCredentials) {
+      await Future.delayed(const Duration(seconds: 2));
+      if (!mounted) return;
+      isAuthenticated = await authService.checkAutoLogin();
+    }
 
     if (mounted) {
       if (isAuthenticated) {

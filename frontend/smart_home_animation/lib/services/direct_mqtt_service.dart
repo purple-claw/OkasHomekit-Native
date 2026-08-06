@@ -23,7 +23,7 @@ class _Hsv {
   const _Hsv(this.hue, this.sat);
 }
 
-class DirectMQTTService extends ChangeNotifier {
+class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
   MqttServerClient? _client;
   bool _isConnected = false;
   bool _isConnecting = false;
@@ -37,6 +37,9 @@ class DirectMQTTService extends ChangeNotifier {
   bool _roomsPrimed = false;
   String? _currentHost;
   int _currentPort = 1884;
+  String? _currentUsername;
+  String? _currentPassword;
+  bool _currentTls = false;
   List<String> _brokerAttempts = [];
   String? _lastError;
   String? _commandToken;
@@ -64,7 +67,35 @@ class DirectMQTTService extends ChangeNotifier {
   List<String> get brokerAttempts => _brokerAttempts;
   String? get lastError => _lastError;
 
-  DirectMQTTService();
+  DirectMQTTService() {
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  // App lifecycle: when the app is backgrounded, Android suspends the
+  // socket; the broker drops the session on keepalive timeout. On resume
+  // the mqtt_client auto-reconnect may be deadlocked (autoReconnectInProgress
+  // stuck true after one thrown connect()), so bypass it entirely and build
+  // a fresh client. Fast path: the broker accepts the stable client id
+  // immediately (no 30s keepalive-timeout wait).
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed &&
+        !_isConnected &&
+        _currentHost != null) {
+      print('App resumed - forcing fresh MQTT reconnect');
+      _isConnecting = false;
+      unawaited(() async {
+        await disconnect();
+        await _connectToBroker(
+          host: _currentHost!,
+          port: _currentPort,
+          username: _currentUsername ?? '',
+          password: _currentPassword ?? '',
+          tls: _currentTls,
+        );
+      }());
+    }
+  }
 
   /// Connect only after TokenAuthService has exchanged a valid board token.
   /// The broker account remains shared for backwards compatibility; each
@@ -84,6 +115,9 @@ class DirectMQTTService extends ChangeNotifier {
     _commandToken = commandToken;
     _currentHost = host;
     _currentPort = port;
+    _currentUsername = username;
+    _currentPassword = password;
+    _currentTls = tls;
     _brokerAttempts.add('Trying MQTT $host:$port');
     notifyListeners();
     _credentialExpiryTimer?.cancel();
@@ -1472,6 +1506,10 @@ class DirectMQTTService extends ChangeNotifier {
     await _updatesSubscription?.cancel();
     _updatesSubscription = null;
     if (_client != null) {
+      // Kill the auto-reconnect loop before tearing down. mqtt_client's
+      // disconnect() leaves autoReconnect=true, so the old client keeps
+      // reconnecting and fights a fresh client over the same client id.
+      _client!.autoReconnect = false;
       _client!.disconnect();
       _isConnected = false;
       _isConnecting = false;
@@ -1486,6 +1524,7 @@ class DirectMQTTService extends ChangeNotifier {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _credentialExpiryTimer?.cancel();
     disconnect();
     super.dispose();

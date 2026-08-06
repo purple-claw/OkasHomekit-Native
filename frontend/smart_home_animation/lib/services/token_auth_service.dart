@@ -16,6 +16,11 @@ class TokenAuthService extends ChangeNotifier {
   static const _storage = FlutterSecureStorage();
 
   bool _isAuthenticated = false;
+  // True when the board explicitly rejected the token during the last
+  // exchange (401/403 or success:false) — the only case where wiping the
+  // stored session is correct. Network errors and 5xx are transient and
+  // must keep the session.
+  bool _exchangeRejected = false;
   bool _isLoading = false;
   String? _token;
   Map<String, dynamic>? _session;
@@ -24,6 +29,9 @@ class TokenAuthService extends ChangeNotifier {
   List<String> _discoveryLogs = [];
 
   bool get isAuthenticated => _isAuthenticated;
+  /// True when a token/session is still stored on this device (i.e. the
+  /// last auth failure was transient, not a definitive rejection).
+  bool get hasStoredCredentials => _token != null;
   bool get isLoading => _isLoading;
   String? get error => _error;
   String? get discoveredIp => _discoveredIp;
@@ -111,7 +119,14 @@ class TokenAuthService extends ChangeNotifier {
     _configureBoard(boardIp);
     final session = await _exchangeToken(_token!, boardIp);
     if (session == null) {
-      await logout();
+      // Wipe the session only when the board explicitly rejected the
+      // token (expired/revoked). Transient network errors or a busy
+      // board (5xx) must not log the user out — that was the "random
+      // logout" bug. The splash screen retries checkAutoLogin when the
+      // session survived.
+      if (_exchangeRejected) {
+        await logout();
+      }
       return false;
     }
     _session = session;
@@ -326,6 +341,7 @@ class TokenAuthService extends ChangeNotifier {
   }
 
   Future<Map<String, dynamic>?> _exchangeToken(String token, String ip) async {
+    _exchangeRejected = false;
     try {
       final response = await http
           .post(
@@ -334,11 +350,24 @@ class TokenAuthService extends ChangeNotifier {
             body: jsonEncode({'token': token}),
           )
           .timeout(const Duration(seconds: 10));
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        // Definitive rejection — the board verified the token is bad.
+        _error = 'Session expired. Sign in again.';
+        _exchangeRejected = true;
+        return null;
+      }
       final data = _decodeResponse(response);
       if (data['success'] == true) return data;
       _error = data['message'] as String? ?? 'Token verification failed.';
+      _exchangeRejected = true;
     } on AuthApiException catch (error) {
+      // 5xx / malformed body: board busy or restarting, not a token
+      // problem. Keep the session.
       _error = error.message;
+    } on SocketException {
+      _error = 'Cannot reach the OKAS Homekit. Check your network connection.';
+    } on TimeoutException {
+      _error = 'Connection timed out. Please try again.';
     }
     return null;
   }

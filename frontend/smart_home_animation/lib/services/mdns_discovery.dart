@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:multicast_dns/multicast_dns.dart';
 import 'package:smart_home_animation/api/constants.dart';
 
@@ -11,6 +12,9 @@ class MDNSDiscovery {
   static const String homeKitServiceType = '_hap._tcp.local.';
   static const String hostname = 'okas-homekit.local.';
   static int get _apiPort => Constants.apiScheme == 'https' ? 443 : 80;
+
+  static const String _lastIpKey = 'okas_last_board_ip';
+  static const FlutterSecureStorage _storage = FlutterSecureStorage();
 
   final List<Map<String, dynamic>> _devices = [];
 
@@ -90,6 +94,24 @@ class MDNSDiscovery {
 
     print('🔍 Starting OKAS board discovery...');
 
+    // Fast path: the board's address from the last successful discovery.
+    // Home networks rarely reassign addresses, so skip the whole
+    // hostname/mDNS/IP-scan chain (which can take many seconds) when the
+    // saved address still answers. This is what made reconnecting after a
+    // force-close slow — every launch re-ran the full chain.
+    final savedIp = await _readLastIp();
+    if (savedIp != null) {
+      print('🔍 Trying last known IP: $savedIp');
+      if (await checkBoardAccessible(savedIp)) {
+        return await _registerDevice(
+          name: 'OKAS HomeKit',
+          host: savedIp,
+          macAddress: null,
+          source: 'saved',
+        );
+      }
+    }
+
     final hostResult = await _discoverHostname();
     if (hostResult != null) return hostResult;
 
@@ -115,6 +137,9 @@ class MDNSDiscovery {
         Constants.setCurrentIp(ip);
         Constants.setApiPort(_apiPort);
         _notifyListeners(ip);
+        try {
+          await _storage.write(key: _lastIpKey, value: ip);
+        } catch (_) {}
         print('✅ Found OKAS board at: $ip');
         return _devices;
       }
@@ -122,6 +147,14 @@ class MDNSDiscovery {
 
     print('❌ No OKAS board found on the network');
     return _devices;
+  }
+
+  Future<String?> _readLastIp() async {
+    try {
+      return await _storage.read(key: _lastIpKey);
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<List<Map<String, dynamic>>?> _discoverHostname() async {
@@ -134,7 +167,7 @@ class MDNSDiscovery {
       if (ip == null) continue;
       print('  🔍 Testing hostname $candidate resolved to: $ip');
       if (await checkBoardAccessible(ip)) {
-        return _registerDevice(
+        return await _registerDevice(
           name: 'OKAS HomeKit',
           host: ip,
           macAddress: null,
@@ -225,7 +258,7 @@ class MDNSDiscovery {
                 // TXT records may not be available on all services.
               }
 
-              final devices = _registerDevice(
+              final devices = await _registerDevice(
                 name: ptr.domainName,
                 host: ip,
                 macAddress: macAddress,
@@ -246,12 +279,12 @@ class MDNSDiscovery {
     return null;
   }
 
-  List<Map<String, dynamic>> _registerDevice({
+  Future<List<Map<String, dynamic>>> _registerDevice({
     required String name,
     required String host,
     required String source,
     String? macAddress,
-  }) {
+  }) async {
     if (macAddress != null && macAddress.isNotEmpty) {
       Constants.setMacAddress(macAddress);
       print('  📍 Board MAC: $macAddress');
@@ -272,6 +305,9 @@ class MDNSDiscovery {
     Constants.setCurrentIp(host);
     Constants.setApiPort(_apiPort);
     _notifyListeners(host);
+    try {
+      await _storage.write(key: _lastIpKey, value: host);
+    } catch (_) {}
     return _devices;
   }
 
