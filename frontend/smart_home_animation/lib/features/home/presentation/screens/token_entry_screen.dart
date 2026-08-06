@@ -322,7 +322,7 @@ class _TokenEntryScreenState extends State<TokenEntryScreen>
         children: [
           Expanded(
             child: _buildRoleOption(
-              label: 'Admin',
+              label: 'Owner',
               selected: _isAdminLogin,
               onTap: () => setState(() => _isAdminLogin = true),
             ),
