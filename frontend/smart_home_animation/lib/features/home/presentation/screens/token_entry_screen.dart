@@ -1,5 +1,4 @@
 // lib/features/auth/screens/token_entry_screen.dart
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -60,7 +59,9 @@ class _TokenEntryScreenState extends State<TokenEntryScreen>
         borderRadius: BorderRadius.circular(24),
         child: Stack(
           children: [
-            const Positioned.fill(child: _AuthBackground()),
+            const Positioned.fill(
+              child: RepaintBoundary(child: _AuthBackground()),
+            ),
             SafeArea(
               child: FadeTransition(
                 opacity: _fadeAnim,
@@ -115,28 +116,53 @@ class _TokenEntryScreenState extends State<TokenEntryScreen>
                               'Sign in as Owner or Guest',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 16,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                             const SizedBox(height: 22),
                             _buildSegmentedControl(),
                             const SizedBox(height: 39),
-                            AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 260),
-                              switchInCurve: Curves.easeOutCubic,
-                              switchOutCurve: Curves.easeInCubic,
-                              child: _isAdminLogin
-                                  ? _buildAdminFields(authService)
-                                  : _buildGuestField(authService),
+                            RepaintBoundary(
+                              child: AnimatedSize(
+                                duration: const Duration(milliseconds: 320),
+                                curve: Curves.easeOutCubic,
+                                alignment: Alignment.topCenter,
+                                child: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 300),
+                                  switchInCurve: Curves.easeOutCubic,
+                                  switchOutCurve: Curves.easeInCubic,
+                                  layoutBuilder: (currentChild,
+                                      previousChildren) {
+                                    return Stack(
+                                      alignment: Alignment.topCenter,
+                                      children: [
+                                        ...previousChildren,
+                                        if (currentChild != null)
+                                          currentChild,
+                                      ],
+                                    );
+                                  },
+                                  transitionBuilder: (child, animation) {
+                                    return FadeTransition(
+                                      opacity: CurvedAnimation(
+                                        parent: animation,
+                                        curve: Curves.easeOut,
+                                        reverseCurve: Curves.easeIn,
+                                      ),
+                                      child: child,
+                                    );
+                                  },
+                                  child: _isAdminLogin
+                                      ? _buildAdminFields(authService)
+                                      : _buildGuestField(authService),
+                                ),
+                              ),
                             ),
                             const SizedBox(height: 38),
-                            if (authService.discoveredIp != null)
-                              _buildDiscoveryStatus(authService),
                             if (authService.error != null)
                               _buildErrorBanner(authService),
                             if (authService.isLoading ||
-                                authService.discoveredIp != null ||
                                 authService.error != null)
                               const SizedBox(height: 16),
                             _buildLoginButton(authService),
@@ -170,36 +196,40 @@ class _TokenEntryScreenState extends State<TokenEntryScreen>
 
   Widget _buildAdminFields(TokenAuthService authService) {
     return Center(
+      key: const ValueKey('admin-fields'),
       child: SizedBox(
-        width: 288,
-        child: Column(
-          children: [
-            _buildInputField(
-              controller: _emailController,
-              hintText: 'Email',
-              prefixIcon: Icons.email_outlined,
-              keyboardType: TextInputType.emailAddress,
-              autofillHints: const [AutofillHints.email],
-              obscureText: false,
-              textInputAction: TextInputAction.next,
-            ),
-            const SizedBox(height: 22),
-            _buildInputField(
-              controller: _passwordController,
-              hintText: 'Password',
-              prefixIcon: Icons.lock_outline,
-              keyboardType: TextInputType.visiblePassword,
-              autofillHints: const [AutofillHints.password],
-              obscureText: _obscurePassword,
-              textInputAction: TextInputAction.done,
-              suffixIcon: _buildVisibilityButton(
-                visible: !_obscurePassword,
-                onPressed: () =>
-                    setState(() => _obscurePassword = !_obscurePassword),
+        width: 320,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 296),
+          child: Column(
+            children: [
+              _buildInputField(
+                controller: _emailController,
+                hintText: 'Email',
+                prefixIcon: Icons.email_outlined,
+                keyboardType: TextInputType.emailAddress,
+                autofillHints: const [AutofillHints.email],
+                obscureText: false,
+                textInputAction: TextInputAction.next,
               ),
-              onSubmitted: (_) => _handleProceed(context, authService),
-            ),
-          ],
+              const SizedBox(height: 20),
+              _buildInputField(
+                controller: _passwordController,
+                hintText: 'Password',
+                prefixIcon: Icons.lock_outline,
+                keyboardType: TextInputType.visiblePassword,
+                autofillHints: const [AutofillHints.password],
+                obscureText: _obscurePassword,
+                textInputAction: TextInputAction.done,
+                suffixIcon: _buildVisibilityButton(
+                  visible: !_obscurePassword,
+                  onPressed: () =>
+                      setState(() => _obscurePassword = !_obscurePassword),
+                ),
+                onSubmitted: (_) => _handleProceed(context, authService),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -209,20 +239,23 @@ class _TokenEntryScreenState extends State<TokenEntryScreen>
     return Center(
       key: const ValueKey('guest-field'),
       child: SizedBox(
-        width: 288,
-        child: _buildInputField(
-          controller: _tokenController,
-          hintText: 'Authentication Token',
-          prefixIcon: Icons.vpn_key_outlined,
-          keyboardType: TextInputType.text,
-          autofillHints: const [],
-          obscureText: _obscureToken,
-          textInputAction: TextInputAction.done,
-          suffixIcon: _buildVisibilityButton(
-            visible: !_obscureToken,
-            onPressed: () => setState(() => _obscureToken = !_obscureToken),
+        width: 280,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 296),
+          child: _buildInputField(
+            controller: _tokenController,
+            hintText: 'Guest Token',
+            prefixIcon: Icons.vpn_key_outlined,
+            keyboardType: TextInputType.text,
+            autofillHints: const [],
+            obscureText: _obscureToken,
+            textInputAction: TextInputAction.done,
+            suffixIcon: _buildVisibilityButton(
+              visible: !_obscureToken,
+              onPressed: () => setState(() => _obscureToken = !_obscureToken),
+            ),
+            onSubmitted: (_) => _handleProceed(context, authService),
           ),
-          onSubmitted: (_) => _handleProceed(context, authService),
         ),
       ),
     );
@@ -264,7 +297,7 @@ class _TokenEntryScreenState extends State<TokenEntryScreen>
         padding: EdgeInsets.zero,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         textStyle: TextStyle(
-          fontSize: prominent ? 16 : 15,
+          fontSize: prominent ? 14 : 13,
           fontWeight: FontWeight.w400,
         ),
       ),
@@ -366,74 +399,47 @@ class _TokenEntryScreenState extends State<TokenEntryScreen>
     Widget? suffixIcon,
     ValueChanged<String>? onSubmitted,
   }) {
-    return ClipRRect(
+    return TextField(
       key: key,
-      borderRadius: BorderRadius.circular(12),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.white.withValues(alpha: 0.10),
-                const Color(0xFF0B4560).withValues(alpha: 0.28),
-                Colors.black.withValues(alpha: 0.10),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF65D0D2).withValues(alpha: 0.08),
-                blurRadius: 18,
-                offset: const Offset(0, 7),
-              ),
-            ],
-          ),
-          child: TextField(
-            controller: controller,
-            keyboardType: keyboardType,
-            autofillHints: autofillHints,
-            textInputAction: textInputAction,
-            obscureText: obscureText,
-            onSubmitted: onSubmitted,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-            ),
-            cursorColor: const Color(0xFF63D4D5),
-            decoration: InputDecoration(
-              hintText: hintText,
-              hintStyle: const TextStyle(
-                color: Color(0xFFB1C8CC),
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-              ),
-              prefixIcon: Icon(
-                prefixIcon,
-                color: const Color(0xFF8AAAB3),
-                size: 20,
-              ),
-              prefixIconConstraints: const BoxConstraints(
-                minWidth: 48,
-                minHeight: 48,
-              ),
-              filled: true,
-              fillColor: Colors.transparent,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14),
-              suffixIcon: suffixIcon,
-              suffixIconConstraints: const BoxConstraints(
-                minWidth: 48,
-                minHeight: 48,
-              ),
-              enabledBorder: _inputBorder(const Color(0xFF6A9DAC)),
-              focusedBorder: _inputBorder(const Color(0xFF65D0D2), width: 1.4),
-              border: _inputBorder(const Color(0xFF6A9DAC)),
-            ),
-          ),
+      controller: controller,
+      keyboardType: keyboardType,
+      autofillHints: autofillHints,
+      textInputAction: textInputAction,
+      obscureText: obscureText,
+      onSubmitted: onSubmitted,
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+      ),
+      cursorColor: const Color(0xFF63D4D5),
+      decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: TextStyle(
+          color: const Color(0xFFB1C8CC).withValues(alpha: 0.55),
+          fontSize: 13,
+          fontWeight: FontWeight.w400,
         ),
+        prefixIcon: Icon(
+          prefixIcon,
+          color: const Color(0xFF8AAAB3),
+          size: 20,
+        ),
+        prefixIconConstraints: const BoxConstraints(
+          minWidth: 48,
+          minHeight: 48,
+        ),
+        filled: true,
+        fillColor: Colors.transparent,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14),
+        suffixIcon: suffixIcon,
+        suffixIconConstraints: const BoxConstraints(
+          minWidth: 48,
+          minHeight: 48,
+        ),
+        enabledBorder: _inputBorder(const Color(0xFF6A9DAC)),
+        focusedBorder: _inputBorder(const Color(0xFF65D0D2), width: 1.4),
+        border: _inputBorder(const Color(0xFF6A9DAC)),
       ),
     );
   }
@@ -516,28 +522,6 @@ class _TokenEntryScreenState extends State<TokenEntryScreen>
   }
 
   // ─── Status Banners ─────────────────────────────────────────────────
-  Widget _buildDiscoveryStatus(TokenAuthService authService) {
-    return _buildStatusShell(
-      accent: const Color(0xFF69D99A),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.check_circle_outline,
-            color: Color(0xFF69D99A),
-            size: 18,
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              'Connected to OKAS Homekit',
-              style: const TextStyle(color: Colors.white, fontSize: 13),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildErrorBanner(TokenAuthService authService) {
     return _buildStatusShell(
       accent: const Color(0xFFFF8585),
