@@ -373,39 +373,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final okasService = Provider.of<DirectMQTTService>(context);
 
     if (!okasService.isConnected) {
-      final lastAttempt = okasService.brokerAttempts.isNotEmpty
-          ? okasService.brokerAttempts.last
-          : 'Waiting for connection...';
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.wifi_off, size: 64, color: Colors.grey),
-            const SizedBox(height: 16),
-            const Text('Connecting to OKAS device...'),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
-              child: Text(
-                okasService.lastError ?? lastAttempt,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white70, fontSize: 12),
-              ),
-            ),
-            const SizedBox(height: 16),
-            const CircularProgressIndicator(),
-            const SizedBox(height: 24),
-            TextButton(
-              onPressed: () async {
-                await context.read<TokenAuthService>().logout();
-                if (!mounted) return;
-                Navigator.pushReplacementNamed(context, '/token-entry');
-              },
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
-      );
+      return const _MqttLoadingSkeleton();
     }
 
     return SingleChildScrollView(
@@ -724,6 +692,137 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _MqttLoadingSkeleton extends StatefulWidget {
+  const _MqttLoadingSkeleton();
+
+  @override
+  State<_MqttLoadingSkeleton> createState() => _MqttLoadingSkeletonState();
+}
+
+class _MqttLoadingSkeletonState extends State<_MqttLoadingSkeleton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _shimmerController;
+
+  @override
+  void initState() {
+    super.initState();
+    _shimmerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _shimmerController.dispose();
+    super.dispose();
+  }
+
+  Widget _bone({double? width, required double height, double radius = 16}) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: SHColors.cardColor,
+        borderRadius: BorderRadius.circular(radius),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+      ),
+    );
+  }
+
+  Widget _buildSkeletonContent() {
+    return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _bone(width: 128, height: 16, radius: 8),
+                    const SizedBox(height: 12),
+                    _bone(width: 218, height: 38, radius: 10),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 14),
+              _bone(width: 132, height: 54, radius: 28),
+            ],
+          ),
+          const SizedBox(height: 34),
+          _bone(width: 152, height: 24, radius: 8),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 280,
+            child: Row(
+              children: [
+                SizedBox(width: 52, child: _bone(height: 244, radius: 18)),
+                const SizedBox(width: 12),
+                Expanded(child: _bone(height: 280, radius: 18)),
+                const SizedBox(width: 12),
+                SizedBox(width: 52, child: _bone(height: 244, radius: 18)),
+              ],
+            ),
+          ),
+          const SizedBox(height: 30),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _bone(width: 178, height: 24, radius: 8),
+              _bone(width: 74, height: 18, radius: 8),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: List.generate(
+              4,
+              (index) => Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(right: index == 3 ? 0 : 10),
+                  child: _bone(height: 150, radius: 16),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _shimmerController,
+      builder: (context, child) {
+        final shimmerPosition = (_shimmerController.value * 2) - 1;
+
+        return ShaderMask(
+          blendMode: BlendMode.srcATop,
+          shaderCallback: (bounds) {
+            return LinearGradient(
+              begin: Alignment(-2 + shimmerPosition * 2, 0),
+              end: Alignment(-0.4 + shimmerPosition * 2, 0),
+              colors: const [
+                SHColors.cardColor,
+                SHColors.elevatedCardColor,
+                SHColors.cardColor,
+              ],
+              stops: const [0.35, 0.5, 0.65],
+            ).createShader(bounds);
+          },
+          child: child,
+        );
+      },
+      child: _buildSkeletonContent(),
     );
   }
 }
