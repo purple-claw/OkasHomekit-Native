@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -39,7 +40,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final controller = PageController(viewportFraction: 0.8);
+  final controller = PageController(viewportFraction: 0.68);
   final ValueNotifier<double> pageNotifier = ValueNotifier(0);
   final ValueNotifier<int> roomSelectorNotifier = ValueNotifier(-1);
   int _selectedIndex = 0;
@@ -330,48 +331,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   backgroundColor: Colors.transparent,
                   elevation: 0,
-                  actions: [
-                    Container(
-                      margin: const EdgeInsets.only(right: 16),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 7,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                          color:
-                              (okasService.isConnected
-                                      ? SHColors.green
-                                      : SHColors.rose)
-                                  .withOpacity(0.42),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            okasService.isConnected
-                                ? Icons.wifi
-                                : Icons.wifi_off,
-                            color: okasService.isConnected
-                                ? SHColors.green
-                                : SHColors.rose,
-                            size: 16,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            okasService.isConnected ? 'Connected' : 'Offline',
-                            style: const TextStyle(
-                              color: SHColors.textColor,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
                 )
               : AppBar(
                   backgroundColor: Colors.transparent,
@@ -581,11 +540,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildRoomCard() {
+    final rooms = [..._rooms]
+      ..sort((a, b) {
+        final favoriteOrder = (b.isFavorite ? 1 : 0) - (a.isFavorite ? 1 : 0);
+        return favoriteOrder;
+      });
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Padding(
-          padding: EdgeInsets.only(top: 16, bottom: 8),
+          padding: EdgeInsets.only(top: 16, bottom: 10),
           child: Text(
             'Your Rooms',
             style: TextStyle(
@@ -596,22 +561,15 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         SizedBox(
-          height: 200,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            itemCount: _rooms.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
+          height: 280,
+          child: PageView.builder(
+            controller: controller,
+            clipBehavior: Clip.none,
+            padEnds: true,
+            physics: const BouncingScrollPhysics(),
+            itemCount: rooms.length,
             itemBuilder: (context, index) {
-              // Sort so the favorite room appears first (star badge on card).
-              final rooms = [..._rooms]
-                ..sort((a, b) {
-                  final fa = a.isFavorite ? 0 : 1;
-                  final fb = b.isFavorite ? 0 : 1;
-                  return fa.compareTo(fb);
-                });
-              final room = rooms[index];
-              return _buildHorizontalRoomCard(context, room);
+              return _buildHorizontalRoomCard(context, rooms[index], index);
             },
           ),
         ),
@@ -619,80 +577,43 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildHorizontalRoomCard(BuildContext context, Room room) {
+  Widget _buildHorizontalRoomCard(BuildContext context, Room room, int index) {
     final serviceRoom = RoomService.instance.getRoomById(room.id);
     final imagePath = serviceRoom?.imagePath ?? room.wallpaperUrl;
 
-    return GestureDetector(
-      onTap: () {
-        if (serviceRoom != null) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => RoomLoadsScreen(room: serviceRoom),
-            ),
-          );
-        }
-      },
-      child: Container(
-        width: 220,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(SHColors.radiusLg),
-          gradient: SHColors.cardGradient,
-          border: Border.all(color: Colors.white.withOpacity(0.14), width: 1),
-          boxShadow: SHColors.softShadow,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(SHColors.radiusLg),
-              ),
-              child: SizedBox(
-                height: 110,
-                width: double.infinity,
-                child: RoomImage(imagePath: imagePath),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          room.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ),
-                      if (room.isFavorite)
-                        const Icon(
-                          Icons.star_rounded,
-                          color: SHColors.amber,
-                          size: 18,
-                        ),
-                    ],
+    return AnimatedBuilder(
+      animation: controller,
+      child: _RoomShowcaseCard(
+        key: ValueKey(room.id),
+        index: index,
+        imagePath: imagePath,
+        roomName: room.name,
+        loadCount: serviceRoom?.loadIds.length ?? 0,
+        isFavorite: room.isFavorite,
+        onTap: serviceRoom == null
+            ? null
+            : () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => RoomLoadsScreen(room: serviceRoom),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${(serviceRoom?.loadIds.length ?? 0)} loads',
-                    style: const TextStyle(color: Colors.white54, fontSize: 12),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+                );
+              },
       ),
+      builder: (context, child) {
+        final page = controller.hasClients && controller.page != null
+            ? controller.page!
+            : _currentRoomIndex.toDouble();
+        final distance = (page - index).abs().clamp(0.0, 1.0).toDouble();
+        final scale = 1 - (distance * 0.14);
+
+        return Transform.scale(
+          alignment: Alignment.center,
+          scale: scale,
+          child: child,
+        );
+      },
     );
   }
 
@@ -803,6 +724,219 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _RoomShowcaseCard extends StatefulWidget {
+  const _RoomShowcaseCard({
+    super.key,
+    required this.index,
+    required this.imagePath,
+    required this.roomName,
+    required this.loadCount,
+    required this.isFavorite,
+    required this.onTap,
+  });
+
+  final int index;
+  final String? imagePath;
+  final String roomName;
+  final int loadCount;
+  final bool isFavorite;
+  final VoidCallback? onTap;
+
+  @override
+  State<_RoomShowcaseCard> createState() => _RoomShowcaseCardState();
+}
+
+class _RoomShowcaseCardState extends State<_RoomShowcaseCard> {
+  bool _isPressed = false;
+
+  void _setPressed(bool value) {
+    if (mounted && _isPressed != value) {
+      setState(() => _isPressed = value);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final canOpen = widget.onTap != null;
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: Duration(milliseconds: 420 + (widget.index * 70)),
+      curve: Curves.easeOutCubic,
+      builder: (context, animationValue, child) {
+        return Opacity(
+          opacity: animationValue,
+          child: Transform.translate(
+            offset: Offset(0, 16 * (1 - animationValue)),
+            child: child,
+          ),
+        );
+      },
+      child: AnimatedScale(
+        scale: _isPressed ? 0.97 : 1,
+        duration: const Duration(milliseconds: 160),
+        curve: Curves.easeOutCubic,
+        child: Semantics(
+          button: canOpen,
+          label: '${widget.roomName} room',
+          child: GestureDetector(
+            onTap: widget.onTap,
+            onTapDown: canOpen ? (_) => _setPressed(true) : null,
+            onTapCancel: canOpen ? () => _setPressed(false) : null,
+            onTapUp: canOpen ? (_) => _setPressed(false) : null,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: BackdropFilter(
+                filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.06),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.13),
+                      width: 0.8,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.34),
+                        blurRadius: 24,
+                        offset: const Offset(0, 12),
+                      ),
+                    ],
+                  ),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      RoomImage(imagePath: widget.imagePath),
+                      DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withValues(alpha: 0.02),
+                              Colors.black.withValues(alpha: 0.06),
+                              Colors.black.withValues(alpha: 0.86),
+                            ],
+                            stops: const [0, 0.46, 1],
+                          ),
+                        ),
+                      ),
+                      if (widget.isFavorite)
+                        Positioned(
+                          top: 12,
+                          right: 12,
+                          child: _RoomGlassIcon(
+                            icon: Icons.star_rounded,
+                            color: SHColors.amber,
+                          ),
+                        ),
+                      Positioned(
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.vertical(
+                            bottom: Radius.circular(18),
+                          ),
+                          child: BackdropFilter(
+                            filter: ui.ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+                            child: Container(
+                              padding: const EdgeInsets.fromLTRB(
+                                16,
+                                13,
+                                12,
+                                14,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withValues(alpha: 0.24),
+                                border: Border(
+                                  top: BorderSide(
+                                    color: Colors.white.withValues(alpha: 0.16),
+                                  ),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          widget.roomName,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 3),
+                                        Text(
+                                          '${widget.loadCount} loads',
+                                          style: TextStyle(
+                                            color: Colors.white.withValues(
+                                              alpha: 0.68,
+                                            ),
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  _RoomGlassIcon(
+                                    icon: Icons.chevron_right_rounded,
+                                    color: Colors.white,
+                                    size: 22,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RoomGlassIcon extends StatelessWidget {
+  const _RoomGlassIcon({
+    required this.icon,
+    required this.color,
+    this.size = 18,
+  });
+
+  final IconData icon;
+  final Color color;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 34,
+      height: 34,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.12),
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+      ),
+      child: Icon(icon, color: color, size: size),
     );
   }
 }
