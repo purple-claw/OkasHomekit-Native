@@ -136,10 +136,10 @@ class TokenAuthService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _discoveryLogs.add('Searching for OKAS board…');
+      _discoveryLogs.add('Searching for OKAS Homekit...');
       final boardIp = await _discoverBoardIp();
       if (boardIp == null) {
-        _error = 'No OKAS board found on this network.';
+        _error = 'No OKAS Homekit Device found on this network.';
         return false;
       }
       _discoveredIp = boardIp;
@@ -161,13 +161,13 @@ class TokenAuthService extends ChangeNotifier {
       _discoveryLogs.add('Access granted.');
       return true;
     } on SocketException {
-      _error = 'Cannot reach the OKAS board. Check your network connection.';
+      _error = 'Cannot reach the OKAS Homekit. Check your network connection.';
       return false;
     } on TimeoutException {
       _error = 'Connection timed out. Please try again.';
       return false;
     } catch (_) {
-      _error ??= 'Unable to authenticate with this board.';
+      _error ??= 'Unable to authenticate with this Homekit.';
       return false;
     } finally {
       _isLoading = false;
@@ -205,7 +205,7 @@ class TokenAuthService extends ChangeNotifier {
   }) async {
     final boardIp = await _discoverBoardIp();
     if (boardIp == null) {
-      throw const AuthApiException('No OKAS board found on this network.');
+      throw const AuthApiException('No OKAS Homekit found on this network.');
     }
     _discoveredIp = boardIp;
     _configureBoard(boardIp);

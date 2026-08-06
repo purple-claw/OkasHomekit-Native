@@ -1,5 +1,7 @@
 // lib/features/auth/screens/token_entry_screen.dart
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/theme/sh_colors.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
@@ -12,48 +14,35 @@ class TokenEntryScreen extends StatefulWidget {
   State<TokenEntryScreen> createState() => _TokenEntryScreenState();
 }
 
-class _TokenEntryScreenState extends State<TokenEntryScreen> {
+class _TokenEntryScreenState extends State<TokenEntryScreen>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _tokenController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscureToken = true;
   bool _obscurePassword = true;
   bool _isAdminLogin = true;
+  late AnimationController _animController;
+  late Animation<double> _fadeAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
+    _animController.forward();
+  }
 
   @override
   void dispose() {
     _tokenController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _animController.dispose();
     super.dispose();
-  }
-
-  Widget _modeButton(String label, bool isAdminMode) {
-    final selected = _isAdminLogin == isAdminMode;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => setState(() => _isAdminLogin = isAdminMode),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            color: selected
-                ? SHColors.primary.withOpacity(0.9)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Center(
-            child: Text(
-              label,
-              style: TextStyle(
-                color: selected ? Colors.white : Colors.white70,
-                fontWeight: FontWeight.w700,
-                fontSize: 14,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   @override
@@ -61,358 +50,521 @@ class _TokenEntryScreenState extends State<TokenEntryScreen> {
     final authService = Provider.of<TokenAuthService>(context);
 
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(gradient: SHColors.backgroundColor),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Logo
-                Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.security,
-                    size: 50,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 30),
-
-                // Title
-                const Text(
-                  'OKAS Authentication',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Sign in as Admin or Guest',
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
-                ),
-                const SizedBox(height: 24),
-
-                // Admin / Guest toggle
-                Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Row(
-                    children: [
-                      _modeButton('Admin', true),
-                      _modeButton('Guest', false),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 28),
-
-                if (_isAdminLogin) ...[
-                  // Email Field
-                  TextField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    autocorrect: false,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      labelStyle: const TextStyle(color: Colors.white70),
-                      hintText: 'admin@okas.local',
-                      hintStyle: const TextStyle(color: Colors.white38),
-                      prefixIcon: const Icon(
-                        Icons.mail_outline,
-                        color: Colors.white54,
+      backgroundColor: const Color(0xFF01080D),
+      body: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Stack(
+          children: [
+            const Positioned.fill(child: _AuthBackground()),
+            SafeArea(
+              child: FadeTransition(
+                opacity: _fadeAnim,
+                child: LayoutBuilder(
+                  builder: (context, constraints) => SingleChildScrollView(
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
                       ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: Colors.white24),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: Colors.white24),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: SHColors.primary),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  // Password Field
-                  TextField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      labelStyle: const TextStyle(color: Colors.white70),
-                      prefixIcon: const Icon(
-                        Icons.lock_outline,
-                        color: Colors.white54,
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          color: Colors.white54,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: Colors.white24),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: Colors.white24),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: SHColors.primary),
-                      ),
-                    ),
-                    onSubmitted: (_) => _handleProceed(context, authService),
-                  ),
-                ] else ...[
-                  // Token Field
-                  TextField(
-                    controller: _tokenController,
-                    obscureText: _obscureToken,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      labelText: 'Authentication Token',
-                      labelStyle: const TextStyle(color: Colors.white70),
-                      hintText: 'Enter your guest token',
-                      hintStyle: const TextStyle(color: Colors.white38),
-                      prefixIcon: const Icon(
-                        Icons.vpn_key,
-                        color: Colors.white54,
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscureToken ? Icons.visibility_off : Icons.visibility,
-                          color: Colors.white54,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscureToken = !_obscureToken;
-                          });
-                        },
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: Colors.white24),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: Colors.white24),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: SHColors.primary),
-                      ),
-                    ),
-                    onSubmitted: (_) => _handleProceed(context, authService),
-                  ),
-                ],
-                const SizedBox(height: 16),
-
-                // Discovery Logs
-                if (authService.isLoading &&
-                    authService.discoveryLogs.isNotEmpty)
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.blue.withOpacity(0.3)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Row(
-                          children: [
-                            SizedBox(
-                              height: 16,
-                              width: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.blue,
-                              ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 136),
+                          const _OkasLogo(),
+                          const SizedBox(height: 17),
+                          const Text(
+                            'Control',
+                            style: TextStyle(
+                              color: Color(0xFFE4F0F2),
+                              fontSize: 18,
+                              fontWeight: FontWeight.w300,
+                              height: 1.1,
                             ),
-                            SizedBox(width: 12),
-                            Text(
-                              'Discovering...',
-                              style: TextStyle(color: Colors.white70),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        ...authService.discoveryLogs.map(
-                          (log) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2),
-                            child: Text(
-                              log,
+                          ),
+                          const Text.rich(
+                            TextSpan(
+                              text: 'Your ',
                               style: TextStyle(
-                                color: log.contains('✅')
-                                    ? Colors.green
-                                    : log.contains('❌')
-                                    ? Colors.red
-                                    : Colors.white54,
-                                fontSize: 11,
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w300,
+                                height: 1.1,
                               ),
+                              children: [
+                                TextSpan(
+                                  text: 'World',
+                                  style: TextStyle(fontWeight: FontWeight.w700),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                // Discovery Status
-                if (authService.discoveredIp != null)
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.green.withOpacity(0.3)),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.check_circle,
-                          color: Colors.green,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Board found at: ${authService.discoveredIp}',
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                              // if (authService.discoveredMac != null)
-                              //   Text(
-                              //     'MAC: ${authService.discoveredMac}',
-                              //     style: TextStyle(
-                              //       color: Colors.white54,
-                              //       fontSize: 12,
-                              //     ),
-                              //   ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                // Error Message
-                if (authService.error != null)
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.red.withOpacity(0.3)),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(
-                          Icons.error_outline,
-                          color: Colors.red,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            authService.error!,
-                            style: const TextStyle(color: Colors.red),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                const SizedBox(height: 24),
-
-                // Proceed Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: authService.isLoading
-                        ? null
-                        : () => _handleProceed(context, authService),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: SHColors.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: authService.isLoading
-                        ? const SizedBox(
-                            height: 24,
-                            width: 24,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Text(
-                            'Proceed',
+                          const SizedBox(height: 22),
+                          const Text(
+                            'Sign in as Owner or Guest',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Help Text
-                if (_isAdminLogin)
-                  TextButton(
-                    onPressed: () => _showForgotPasswordDialog(context),
-                    child: const Text(
-                      'Forgot password?',
-                      style: TextStyle(color: Colors.white70, fontSize: 12),
+                          const SizedBox(height: 22),
+                          _buildSegmentedControl(),
+                          const SizedBox(height: 39),
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 220),
+                            switchInCurve: Curves.easeOut,
+                            switchOutCurve: Curves.easeIn,
+                            child: _isAdminLogin
+                                ? _buildAdminFields(authService)
+                                : _buildGuestField(authService),
+                          ),
+                          const SizedBox(height: 38),
+                          if (authService.isLoading &&
+                              authService.discoveryLogs.isNotEmpty)
+                            _buildDiscoveryLogs(authService),
+                          if (authService.discoveredIp != null)
+                            _buildDiscoveryStatus(authService),
+                          if (authService.error != null)
+                            _buildErrorBanner(authService),
+                          if (authService.isLoading ||
+                              authService.discoveryLogs.isNotEmpty ||
+                              authService.discoveredIp != null ||
+                              authService.error != null)
+                            const SizedBox(height: 16),
+                          _buildLoginButton(authService),
+                          const SizedBox(height: 22),
+                          if (_isAdminLogin)
+                            _buildLinkButton(
+                              label: 'Forgot password?',
+                              onPressed: () =>
+                                  _showForgotPasswordDialog(context),
+                            ),
+                          const SizedBox(height: 16),
+                          _buildLinkButton(
+                            label: 'Need Help? Contact Okas Distributor',
+                            onPressed: () => _showHelpDialog(context),
+                            prominent: true,
+                          ),
+                          const SizedBox(height: 28),
+                        ],
+                      ),
                     ),
                   ),
-                TextButton(
-                  onPressed: () {
-                    _showHelpDialog(context);
-                  },
-                  child: const Text(
-                    'Need help? Contact OKAS Distributor',
-                    style: TextStyle(color: Colors.white54, fontSize: 12),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAdminFields(TokenAuthService authService) {
+    return Center(
+      key: const ValueKey('admin-fields'),
+      child: SizedBox(
+        width: 288,
+        child: Column(
+          children: [
+            _buildInputField(
+              controller: _emailController,
+              hintText: 'Email',
+              keyboardType: TextInputType.emailAddress,
+              obscureText: false,
+              textInputAction: TextInputAction.next,
+            ),
+            const SizedBox(height: 22),
+            _buildInputField(
+              controller: _passwordController,
+              hintText: 'Password',
+              keyboardType: TextInputType.visiblePassword,
+              obscureText: _obscurePassword,
+              textInputAction: TextInputAction.done,
+              suffixIcon: _buildVisibilityButton(
+                visible: !_obscurePassword,
+                onPressed: () =>
+                    setState(() => _obscurePassword = !_obscurePassword),
+              ),
+              onSubmitted: (_) => _handleProceed(context, authService),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGuestField(TokenAuthService authService) {
+    return Center(
+      child: SizedBox(
+        width: 288,
+        child: _buildInputField(
+          key: const ValueKey('guest-field'),
+          controller: _tokenController,
+          hintText: 'Authentication Token',
+          keyboardType: TextInputType.text,
+          obscureText: _obscureToken,
+          textInputAction: TextInputAction.done,
+          suffixIcon: _buildVisibilityButton(
+            visible: !_obscureToken,
+            onPressed: () => setState(() => _obscureToken = !_obscureToken),
+          ),
+          onSubmitted: (_) => _handleProceed(context, authService),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVisibilityButton({
+    required bool visible,
+    required VoidCallback onPressed,
+  }) {
+    return IconButton(
+      tooltip: visible ? 'Hide password' : 'Show password',
+      onPressed: onPressed,
+      icon: Icon(
+        visible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+        color: const Color(0xFF8AAAB3),
+        size: 20,
+      ),
+    );
+  }
+
+  Widget _buildLinkButton({
+    required String label,
+    required VoidCallback onPressed,
+    bool prominent = false,
+  }) {
+    return TextButton(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        foregroundColor: prominent
+            ? const Color(0xFFE2EFF1)
+            : const Color(0xFFC8DDE0),
+        minimumSize: Size.zero,
+        padding: EdgeInsets.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        textStyle: TextStyle(
+          fontSize: prominent ? 16 : 15,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+      child: Text(label),
+    );
+  }
+
+  // ─── Segmented Control ──────────────────────────────────────────────
+  Widget _buildSegmentedControl() {
+    return Container(
+      width: double.infinity,
+      constraints: const BoxConstraints(maxWidth: 296),
+      height: 44,
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: const Color(0xFF052B3A).withValues(alpha: 0.82),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: const Color(0xFF124A5A).withValues(alpha: 0.75),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => setState(() => _isAdminLogin = true),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                decoration: BoxDecoration(
+                  color: _isAdminLogin ? const Color(0xFF4BC2C7) : null,
+                  borderRadius: BorderRadius.circular(19),
+                  boxShadow: _isAdminLogin
+                      ? [
+                          BoxShadow(
+                            color: const Color(
+                              0xFF4BC2C7,
+                            ).withValues(alpha: 0.22),
+                            blurRadius: 12,
+                            offset: const Offset(0, 3),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Center(
+                  child: Text(
+                    'Admin',
+                    style: TextStyle(
+                      color: _isAdminLogin
+                          ? Colors.white
+                          : const Color(0xFF9CB4BA),
+                      fontWeight: _isAdminLogin
+                          ? FontWeight.w600
+                          : FontWeight.w400,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
-              ],
+              ),
             ),
+          ),
+          Expanded(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => setState(() => _isAdminLogin = false),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                decoration: BoxDecoration(
+                  color: !_isAdminLogin ? const Color(0xFF4BC2C7) : null,
+                  borderRadius: BorderRadius.circular(19),
+                  boxShadow: !_isAdminLogin
+                      ? [
+                          BoxShadow(
+                            color: const Color(
+                              0xFF4BC2C7,
+                            ).withValues(alpha: 0.22),
+                            blurRadius: 12,
+                            offset: const Offset(0, 3),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Center(
+                  child: Text(
+                    'Guest',
+                    style: TextStyle(
+                      color: !_isAdminLogin
+                          ? Colors.white
+                          : const Color(0xFF9CB4BA),
+                      fontWeight: !_isAdminLogin
+                          ? FontWeight.w600
+                          : FontWeight.w400,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── Input Field ────────────────────────────────────────────────────
+  Widget _buildInputField({
+    Key? key,
+    required TextEditingController controller,
+    required String hintText,
+    required TextInputType keyboardType,
+    required bool obscureText,
+    required TextInputAction textInputAction,
+    Widget? suffixIcon,
+    ValueChanged<String>? onSubmitted,
+  }) {
+    return ClipRRect(
+      key: key,
+      borderRadius: BorderRadius.circular(12),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+        child: TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          textInputAction: textInputAction,
+          obscureText: obscureText,
+          onSubmitted: onSubmitted,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+          ),
+          cursorColor: const Color(0xFF63D4D5),
+          decoration: InputDecoration(
+            hintText: hintText,
+            hintStyle: const TextStyle(
+              color: Color(0xFF89A5AC),
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
+            filled: true,
+            fillColor: const Color(0xFF06344A).withValues(alpha: 0.33),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 18),
+            suffixIcon: suffixIcon,
+            suffixIconConstraints: const BoxConstraints(
+              minWidth: 48,
+              minHeight: 48,
+            ),
+            enabledBorder: _inputBorder(const Color(0xFF5B8EA0)),
+            focusedBorder: _inputBorder(const Color(0xFF65D0D2), width: 1.4),
+            border: _inputBorder(const Color(0xFF5B8EA0)),
           ),
         ),
       ),
     );
   }
 
+  OutlineInputBorder _inputBorder(Color color, {double width = 1}) {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: color.withValues(alpha: 0.9), width: width),
+    );
+  }
+
+  // ─── Log In Button ──────────────────────────────────────────────────
+  Widget _buildLoginButton(TokenAuthService authService) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: const Color(0xFF4BC2C7),
+        borderRadius: BorderRadius.circular(21),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF4BC2C7).withValues(alpha: 0.28),
+            blurRadius: 18,
+            offset: const Offset(0, 7),
+          ),
+        ],
+      ),
+      child: SizedBox(
+        width: 176,
+        height: 42,
+        child: ElevatedButton(
+          onPressed: authService.isLoading
+              ? null
+              : () => _handleProceed(context, authService),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            disabledBackgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(21),
+            ),
+            padding: EdgeInsets.zero,
+          ),
+          child: authService.isLoading
+              ? const SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : const Text(
+                  'Log In',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusShell({required Widget child, required Color accent}) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: accent.withValues(alpha: 0.34)),
+      ),
+      child: child,
+    );
+  }
+
+  // ─── Status Banners ─────────────────────────────────────────────────
+  Widget _buildDiscoveryLogs(TokenAuthService authService) {
+    return _buildStatusShell(
+      accent: const Color(0xFF66B8FF),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              SizedBox(
+                height: 14,
+                width: 14,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Color(0xFF66B8FF),
+                ),
+              ),
+              SizedBox(width: 8),
+              Text(
+                'Discovering...',
+                style: TextStyle(color: Colors.white, fontSize: 13),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ...authService.discoveryLogs.map(
+            (log) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 1),
+              child: Text(
+                log,
+                style: TextStyle(
+                  color: log.contains('✅')
+                      ? const Color(0xFF7AE5A7)
+                      : log.contains('❌')
+                      ? const Color(0xFFFF9A9A)
+                      : const Color(0xFFB9D5DC),
+                  fontSize: 11,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDiscoveryStatus(TokenAuthService authService) {
+    return _buildStatusShell(
+      accent: const Color(0xFF69D99A),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.check_circle_outline,
+            color: Color(0xFF69D99A),
+            size: 18,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Board found at: ${authService.discoveredIp}',
+              style: const TextStyle(color: Colors.white, fontSize: 13),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorBanner(TokenAuthService authService) {
+    return _buildStatusShell(
+      accent: const Color(0xFFFF8585),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.error_outline, color: Color(0xFFFF8585), size: 18),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              authService.error!,
+              style: const TextStyle(color: Color(0xFFFFB3B3), fontSize: 13),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── Auth Logic ─────────────────────────────────────────────────────
   Future<void> _handleProceed(
     BuildContext context,
     TokenAuthService authService,
@@ -445,52 +597,64 @@ class _TokenEntryScreenState extends State<TokenEntryScreen> {
     if (success && mounted) {
       final mqtt = authService.mqttCredentials;
       if (mqtt == null || authService.discoveredIp == null) {
-        _showErrorDialog(context, 'The board did not return MQTT connection details.');
+        _showErrorDialog(
+          context,
+          'The board did not return MQTT connection details.',
+        );
         return;
       }
       final commandToken = authService.commandToken;
       if (commandToken == null || commandToken.isEmpty) {
-        _showErrorDialog(context, 'The board did not return a command session token.');
+        _showErrorDialog(
+          context,
+          'The board did not return a command session token.',
+        );
         return;
       }
-      final connected = await context.read<DirectMQTTService>().connectAuthenticated(
-        host: authService.discoveredIp!,
-        port: mqtt['port'] as int? ?? 1884,
-        username: mqtt['username'] as String? ?? '',
-        password: mqtt['password'] as String? ?? '',
-        commandToken: commandToken,
-        tls: mqtt['tls'] == true,
-        expiresAt: mqtt['expiresAt'] as String?,
-      );
+      final connected = await context
+          .read<DirectMQTTService>()
+          .connectAuthenticated(
+            host: authService.discoveredIp!,
+            port: mqtt['port'] as int? ?? 1884,
+            username: mqtt['username'] as String? ?? '',
+            password: mqtt['password'] as String? ?? '',
+            commandToken: commandToken,
+            tls: mqtt['tls'] == true,
+            expiresAt: mqtt['expiresAt'] as String?,
+          );
       if (!connected && mounted) {
-        _showErrorDialog(context, 'Authenticated, but unable to connect to MQTT.');
+        _showErrorDialog(
+          context,
+          'Authenticated, but unable to connect to MQTT.',
+        );
         return;
       }
       Navigator.pushReplacementNamed(context, '/home');
     } else if (mounted && authService.error != null) {
-      // Show the error dialog
       _showErrorDialog(context, authService.error!);
     }
   }
 
-  // ADD THIS METHOD - Error Dialog
   void _showErrorDialog(BuildContext context, String error) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey[900],
+        backgroundColor: const Color(0xFF173F4B),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text(
           'Authentication Failed',
           style: TextStyle(color: Colors.red),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Icon(Icons.error_outline, color: Colors.red, size: 48),
             const SizedBox(height: 16),
-            Text(error, style: const TextStyle(color: Colors.white70)),
+            Text(
+              error,
+              style: const TextStyle(color: Colors.white70, fontSize: 14),
+            ),
             const SizedBox(height: 16),
             const Text(
               'Please contact OKAS distributor for assistance.',
@@ -511,7 +675,12 @@ class _TokenEntryScreenState extends State<TokenEntryScreen> {
               Navigator.pop(context);
               _tokenController.clear();
             },
-            style: ElevatedButton.styleFrom(backgroundColor: SHColors.primary),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: SHColors.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
             child: const Text('Try Again'),
           ),
         ],
@@ -529,7 +698,10 @@ class _TokenEntryScreenState extends State<TokenEntryScreen> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          backgroundColor: SHColors.elevatedCardColor,
+          backgroundColor: const Color(0xFF173F4B),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: const Text(
             'Reset Password',
             style: TextStyle(color: Colors.white),
@@ -610,12 +782,10 @@ class _TokenEntryScreenState extends State<TokenEntryScreen> {
                       }
                       setDialogState(() => saving = true);
                       try {
-                        await context
-                            .read<TokenAuthService>()
-                            .resetPassword(
-                              ownerToken: ownerToken,
-                              newPassword: next,
-                            );
+                        await context.read<TokenAuthService>().resetPassword(
+                          ownerToken: ownerToken,
+                          newPassword: next,
+                        );
                         if (ctx.mounted) {
                           Navigator.pop(ctx);
                           ScaffoldMessenger.of(ctx).showSnackBar(
@@ -630,14 +800,17 @@ class _TokenEntryScreenState extends State<TokenEntryScreen> {
                       } catch (e) {
                         if (ctx.mounted) {
                           setDialogState(() => saving = false);
-                          ScaffoldMessenger.of(ctx).showSnackBar(
-                            SnackBar(content: Text('$e')),
-                          );
+                          ScaffoldMessenger.of(
+                            ctx,
+                          ).showSnackBar(SnackBar(content: Text('$e')));
                         }
                       }
                     },
               style: ElevatedButton.styleFrom(
                 backgroundColor: SHColors.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
               ),
               child: Text(saving ? 'Resetting…' : 'Reset'),
             ),
@@ -651,7 +824,8 @@ class _TokenEntryScreenState extends State<TokenEntryScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey[900],
+        backgroundColor: const Color(0xFF173F4B),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Need Help?', style: TextStyle(color: Colors.white)),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
@@ -689,6 +863,47 @@ class _TokenEntryScreenState extends State<TokenEntryScreen> {
             child: const Text('Close', style: TextStyle(color: Colors.white70)),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _AuthBackground extends StatelessWidget {
+  const _AuthBackground();
+
+  @override
+  Widget build(BuildContext context) {
+    return const DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: RadialGradient(
+          center: Alignment(0.94, -1.1),
+          radius: 1.55,
+          colors: [
+            Color(0xFF1595A3),
+            Color(0xFF087487),
+            Color(0xFF064E6B),
+            Color(0xFF032D46),
+            Color(0xFF01080D),
+          ],
+          stops: [0.0, 0.2, 0.42, 0.67, 1.0],
+        ),
+      ),
+    );
+  }
+}
+
+class _OkasLogo extends StatelessWidget {
+  const _OkasLogo();
+
+  @override
+  Widget build(BuildContext context) {
+    return RotatedBox(
+      quarterTurns: 3,
+      child: SvgPicture.asset(
+        'assets/svg/okas-logo.svg',
+        width: 48,
+        height: 194,
+        fit: BoxFit.contain,
       ),
     );
   }
