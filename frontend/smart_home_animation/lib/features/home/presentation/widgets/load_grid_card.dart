@@ -1,9 +1,16 @@
 // lib/features/home/presentation/widgets/load_grid_card.dart
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
 import 'package:smart_home_animation/core/core.dart';
 
 /// Figma-style load card used on the Loads screen and the per-room
-/// RoomLoadsScreen. 3-column grid: icon, label, type, round power button.
+/// RoomLoadsScreen. The glass surface is IDENTICAL for every load and
+/// every state — dark frosted glass, faint neutral rim, no shadows, no
+/// colored fill, no halo. The ON state is carried by accent details
+/// only (rim tint, icon, dot, name, power pill), so no load can ever
+/// break the glassmorphism.
+/// Rows: icon+dot, highlighted load name, load type label, power button.
 class LoadGridCard extends StatelessWidget {
   const LoadGridCard({
     required this.load,
@@ -25,113 +32,173 @@ class LoadGridCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        decoration: SHColors.glassDecoration(
-          active: isOn,
-          accent: color,
-          radius: SHColors.radiusLg,
-        ),
-        padding: const EdgeInsets.fromLTRB(10, 12, 10, 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(isOn ? 0.2 : 0.1),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Center(child: _icon(deviceType, color)),
-                ),
-                const Spacer(),
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: isOn ? color : SHColors.hintColor,
-                    shape: BoxShape.circle,
-                    boxShadow: isOn
-                        ? [
-                            BoxShadow(
-                              color: color.withOpacity(0.55),
-                              blurRadius: 10,
-                            ),
-                          ]
-                        : null,
-                  ),
-                ),
-              ],
-            ),
-            const Spacer(),
-            Text(
-              _label(deviceType),
-              style: const TextStyle(
-                color: SHColors.mutedText,
-                fontSize: 10,
-                fontWeight: FontWeight.w800,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              deviceName,
-              style: const TextStyle(color: Colors.white54, fontSize: 10),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 10),
-            GestureDetector(
-              onTap: () => onToggle(!isOn),
-              child: Container(
-                width: double.infinity,
-                height: 34,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(SHColors.radiusLg),
+        child: BackdropFilter(
+          // Frosted glass: a medium blur softens the backdrop into a
+          // subtle frost, keeping the card see-through and dark.
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Stack(
+            children: [
+              // Glass rim: faint neutral outline, slightly brighter on
+              // top, accent-tinted at the bottom when the load is ON.
+              Container(
                 decoration: BoxDecoration(
-                  color: isOn
-                      ? color.withOpacity(0.95)
-                      : Colors.white.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                    color: isOn
-                        ? Colors.transparent
-                        : Colors.white.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(SHColors.radiusLg),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.white.withOpacity(0.16),
+                      Colors.white.withOpacity(0.05),
+                      color.withOpacity(isOn ? 0.22 : 0.10),
+                    ],
                   ),
                 ),
-                child: Icon(
-                  Icons.power_settings_new,
-                  color: isOn ? Colors.white : SHColors.hintColor,
-                  size: 18,
+              ),
+              // Inner glass fill — a whisper of frost only, the same for
+              // every card. The glass never changes with state.
+              Container(
+                margin: const EdgeInsets.all(1.2),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.035),
+                  borderRadius: BorderRadius.circular(
+                    SHColors.radiusLg - 1.2,
+                  ),
                 ),
               ),
-            ),
-          ],
+              // Glass shading: the surface darkens toward the bottom-right
+              // — a grey-black gradient giving the glass weight and depth.
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        SHColors.radiusLg,
+                      ),
+                      gradient: LinearGradient(
+                        begin: const Alignment(-0.9, -1.1),
+                        end: const Alignment(0.85, 0.65),
+                        colors: [
+                          Colors.transparent,
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.05),
+                          Colors.black.withOpacity(0.12),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10, 12, 10, 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 38,
+                          height: 38,
+                          decoration: BoxDecoration(
+                            color: color.withOpacity(isOn ? 0.09 : 0.04),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: color.withOpacity(isOn ? 0.4 : 0.16),
+                            ),
+                          ),
+                          child: Center(child: _icon(deviceType, color)),
+                        ),
+                        const Spacer(),
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: isOn ? color : SHColors.hintColor,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    // Row 2: load name — highlighted.
+                    Text(
+                      deviceName,
+                      style: TextStyle(
+                        color: isOn ? color : Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 3),
+                    // Row 3: load type label.
+                    Text(
+                      _typeLabel(deviceType),
+                      style: const TextStyle(
+                        color: SHColors.mutedText,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 1.1,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 10),
+                    GestureDetector(
+                      onTap: () => onToggle(!isOn),
+                      child: Container(
+                        width: double.infinity,
+                        height: 34,
+                        decoration: BoxDecoration(
+                          color: isOn
+                              ? color.withOpacity(0.95)
+                              : Colors.white.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: isOn
+                                ? Colors.transparent
+                                : Colors.white.withOpacity(0.14),
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.power_settings_new,
+                          color: isOn ? Colors.white : SHColors.hintColor,
+                          size: 18,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  String _label(String type) {
+  String _typeLabel(String type) {
     switch (type) {
+      case 'Switch':
+        return 'LIGHT';
       case 'Dimmer':
-        return 'BRIGHTNESS';
+        return 'DIMMING';
       case 'Tunable':
-        return 'TUNNING';
+        return 'TUNABLE';
       case 'RGB':
-        return 'COLOR';
+        return 'RGB';
       case 'HVAC':
-        return 'TEMP';
+        return 'HVAC';
       case 'Fan':
-        return 'SPEED';
+        return 'FAN';
       case 'Curtain':
-        return 'MOVEMENT';
+        return 'CURTAIN';
       case 'Scene':
         return 'SCENE';
-      case 'Switch':
       default:
-        return 'ON/OFF';
+        return 'LIGHT';
     }
   }
 
