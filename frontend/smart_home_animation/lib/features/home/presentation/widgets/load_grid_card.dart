@@ -50,7 +50,7 @@ class LoadGridCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(SHColors.radiusLg),
                     border: Border.all(
                       color: isOn
-                          ? color.withValues(alpha: 0.24)
+                          ? color.withValues(alpha: 0.18)
                           : Colors.white.withValues(alpha: 0.13),
                       width: 1,
                     ),
@@ -125,8 +125,8 @@ class LoadGridCard extends StatelessWidget {
                             center: const Alignment(0, 0),
                             radius: 1.1,
                             colors: [
-                              color.withValues(alpha: 0.09),
-                              color.withValues(alpha: 0.04),
+                              color.withValues(alpha: 0.15),
+                              color.withValues(alpha: 0.06),
                               Colors.transparent,
                             ],
                             stops: const [0.0, 0.45, 1.0],
@@ -141,42 +141,20 @@ class LoadGridCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 38,
-                            height: 38,
-                            decoration: BoxDecoration(
-                              color: color.withValues(
-                                alpha: isOn ? 0.09 : 0.04,
-                              ),
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                color: color.withValues(
-                                  alpha: isOn ? 0.4 : 0.16,
-                                ),
-                              ),
-                            ),
-                            child: Center(child: _icon(deviceType, color)),
-                          ),
-                          const Spacer(),
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: isOn ? color : SHColors.hintColor,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                        ],
+                      SizedBox(
+                        width: double.infinity,
+                        height: 58,
+                        child: Center(child: _icon(deviceType, color)),
                       ),
                       const Spacer(),
                       // Row 2: load name — highlighted.
                       Text(
                         deviceName,
                         style: TextStyle(
-                          color: isOn ? color : Colors.white,
-                          fontSize: 13,
+                          color: isOn
+                              ? color.withValues(alpha: 0.88)
+                              : Colors.white,
+                          fontSize: 14,
                           fontWeight: FontWeight.w700,
                         ),
                         maxLines: 1,
@@ -188,7 +166,7 @@ class LoadGridCard extends StatelessWidget {
                         _typeLabel(deviceType),
                         style: const TextStyle(
                           color: SHColors.mutedText,
-                          fontSize: 10,
+                          fontSize: 11,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 1.1,
                         ),
@@ -198,19 +176,30 @@ class LoadGridCard extends StatelessWidget {
                       const SizedBox(height: 10),
                       GestureDetector(
                         onTap: () => onToggle(!isOn),
-                        child: Container(
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 260),
+                          curve: Curves.easeOutCubic,
                           width: double.infinity,
                           height: 34,
                           decoration: BoxDecoration(
                             color: isOn
-                                ? color.withValues(alpha: 0.95)
+                                ? color.withValues(alpha: 0.22)
                                 : Colors.white.withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(18),
                             border: Border.all(
                               color: isOn
-                                  ? Colors.transparent
+                                  ? color.withValues(alpha: 0.42)
                                   : Colors.white.withValues(alpha: 0.14),
                             ),
+                            boxShadow: isOn
+                                ? [
+                                    BoxShadow(
+                                      color: color.withValues(alpha: 0.20),
+                                      blurRadius: 12,
+                                      spreadRadius: -3,
+                                    ),
+                                  ]
+                                : null,
                           ),
                           child: Icon(
                             Icons.power_settings_new,
@@ -308,11 +297,11 @@ class LoadGridCard extends StatelessWidget {
     }
     return Image.asset(
       asset,
-      width: 24,
-      height: 24,
+      width: 40,
+      height: 40,
       color: color,
       errorBuilder: (_, __, ___) =>
-          Icon(Icons.lightbulb_outline, color: color, size: 24),
+          Icon(Icons.lightbulb_outline, color: color, size: 40),
     );
   }
 }

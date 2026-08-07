@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/core.dart';
 import 'package:smart_home_animation/core/shared/presentation/widgets/liquid_glass_scrim.dart';
@@ -274,7 +275,7 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
       physics: const BouncingScrollPhysics(
         parent: AlwaysScrollableScrollPhysics(),
       ),
-      scrollCacheExtent: 720,
+      scrollCacheExtent: ScrollCacheExtent.pixels(720),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         childAspectRatio: 0.75,

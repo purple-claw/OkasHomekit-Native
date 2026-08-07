@@ -2,6 +2,7 @@
 // ignore_for_file: unused_local_variable, unused_field, unused_element
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/core.dart';
@@ -203,7 +204,7 @@ class _LoungeScreenState extends State<LoungeScreen> {
       physics: const BouncingScrollPhysics(
         parent: AlwaysScrollableScrollPhysics(),
       ),
-      scrollCacheExtent: 720,
+      scrollCacheExtent: ScrollCacheExtent.pixels(720),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         childAspectRatio: 0.75,
