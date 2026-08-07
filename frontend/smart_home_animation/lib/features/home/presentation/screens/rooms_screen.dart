@@ -436,7 +436,7 @@ class _RoomsTabState extends State<RoomsTab> {
       case 'rgb':
         return SHColors.blue;
       case 'tun':
-        return SHColors.violet;
+        return SHColors.dimGrey;
       case 'hvc':
         return SHColors.cyan300;
       case 'fan':

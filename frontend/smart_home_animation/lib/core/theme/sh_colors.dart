@@ -14,15 +14,16 @@ abstract class SHColors {
   static const Color navy900 = Color(0xFF082231);
   static const Color navy800 = Color(0xFF0B3543);
   static const Color teal700 = Color(0xFF0C6D75);
-  static const Color teal500 = Color(0xFF1DB6C3);
-  static const Color cyan300 = Color(0xFF75E8F0);
+  static const Color teal500 = Color(0xFF15DFF2);
+  static const Color cyan300 = Color(0xFF81F3FB);
 
   // ---- Brand accents ----
-  static const Color green = Color(0xFF2DBE6A);
-  static const Color amber = Color(0xFFFFB84D);
-  static const Color violet = Color(0xFFAF7DFF);
-  static const Color blue = Color(0xFF4BA3FF);
-  static const Color rose = Color(0xFFFF6685);
+  static const Color green = Color(0xFF1EF62C);
+  static const Color amber = Color(0xFFFF7135);
+  static const Color dimGrey = Color(0xFFB4C5C4);
+  static const Color curtYlw = Color(0xFFFCF00F);
+  static const Color blue = Color(0xFF1B5AF9);
+  static const Color rose = Color(0xFFF4424B);
 
   // ---- Premium accent (Keus-inspired champagne for favorite rooms,
   // premium scenes, the house-name eyebrow). ----
@@ -221,28 +222,28 @@ abstract class SHColors {
     switch (type) {
       case 'Switch':
       case 'swt':
-        return green;
+        return curtYlw;
       case 'Dimmer':
       case 'dim':
-        return amber;
+        return cyan300;
       case 'Tunable':
       case 'tun':
-        return violet;
+        return amber;
       case 'RGB':
       case 'rgb':
-        return blue;
+        return rose;
       case 'HVAC':
       case 'hvc':
-        return cyan300;
+        return green;
       case 'Scene':
       case 'scn':
-        return rose;
+        return blue;
       case 'Fan':
       case 'fan':
         return teal500;
       case 'Curtain':
       case 'cur':
-        return green;
+        return dimGrey;
       default:
         return primary;
     }

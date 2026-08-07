@@ -470,8 +470,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 _buildActiveLoadCard(
                   'Tunable',
                   _totalTunableCount,
-                  const LoadIcon(type: 'tun', color: SHColors.violet, size: 24),
-                  SHColors.violet,
+                  const LoadIcon(type: 'tun', color: SHColors.dimGrey, size: 24),
+                  SHColors.dimGrey,
                 ),
                 const SizedBox(width: 12),
                 _buildActiveLoadCard(

@@ -45,7 +45,7 @@ class _SceneScreenState extends State<SceneScreen>
       name: 'Evening',
       description: 'Warm dimmed ambience',
       icon: Icons.nightlight_outlined,
-      color: SHColors.violet,
+      color: SHColors.dimGrey,
       deviceCount: 3,
       isFavorite: false,
       scope: 'Global',
@@ -188,7 +188,7 @@ class _SceneScreenState extends State<SceneScreen>
                       label: const Text('Room'),
                       selected: scope == 'Room',
                       onSelected: (_) => setDialogState(() => scope = 'Room'),
-                      selectedColor: SHColors.violet,
+                      selectedColor: SHColors.dimGrey,
                       labelStyle: const TextStyle(color: Colors.white),
                     ),
                   ],
@@ -224,7 +224,7 @@ class _SceneScreenState extends State<SceneScreen>
                         (c) => selectedColor = c, selectedColor),
                     _colorDot(ctx, setDialogState, SHColors.amber,
                         (c) => selectedColor = c, selectedColor),
-                    _colorDot(ctx, setDialogState, SHColors.violet,
+                    _colorDot(ctx, setDialogState, SHColors.dimGrey,
                         (c) => selectedColor = c, selectedColor),
                     _colorDot(ctx, setDialogState, SHColors.blue,
                         (c) => selectedColor = c, selectedColor),
@@ -699,7 +699,7 @@ class _SceneScreenState extends State<SceneScreen>
                 decoration: BoxDecoration(
                   color: scene.scope == 'Global'
                       ? SHColors.primary.withOpacity(0.25)
-                      : SHColors.violet.withOpacity(0.25),
+                      : SHColors.dimGrey.withOpacity(0.25),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -708,7 +708,7 @@ class _SceneScreenState extends State<SceneScreen>
                     fontSize: 10,
                     color: scene.scope == 'Global'
                         ? SHColors.primary
-                        : SHColors.violet,
+                        : SHColors.dimGrey,
                     fontWeight: FontWeight.w700,
                   ),
                 ),

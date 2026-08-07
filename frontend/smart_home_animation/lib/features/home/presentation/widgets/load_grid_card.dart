@@ -126,8 +126,8 @@ class LoadGridCard extends StatelessWidget {
                             center: const Alignment(0, 0),
                             radius: 1.1,
                             colors: [
-                              color.withValues(alpha: 0.15),
-                              color.withValues(alpha: 0.06),
+                              color.withValues(alpha: 0.25),
+                              color.withValues(alpha: 0.10),
                               Colors.transparent,
                             ],
                             stops: const [0.0, 0.45, 1.0],
@@ -150,7 +150,7 @@ class LoadGridCard extends StatelessWidget {
                             type: deviceType,
                             isOn: isOn,
                             color: color,
-                            size: 48,
+                            size: 45,
                           ),
                         ),
                       ),
@@ -159,10 +159,8 @@ class LoadGridCard extends StatelessWidget {
                       Text(
                         deviceName,
                         style: TextStyle(
-                          color: isOn
-                              ? color.withValues(alpha: 0.88)
-                              : Colors.white,
-                          fontSize: 15,
+                          color: Colors.white,
+                          fontSize: 14,
                           fontWeight: FontWeight.w700,
                         ),
                         maxLines: 1,

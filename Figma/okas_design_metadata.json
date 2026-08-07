@@ -74,7 +74,7 @@
       "textHint": "#78949B",
       "success": "#2DBE6A",
       "warning": "#FFB84D",
-      "violet": "#AF7DFF",
+      "dimGrey": "#AF7DFF",
       "blue": "#4BA3FF",
       "danger": "#FF6685"
     },
