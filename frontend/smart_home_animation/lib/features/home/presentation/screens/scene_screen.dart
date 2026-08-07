@@ -4,6 +4,7 @@
 // ignore_for_file: unused_element, prefer_final_fields
 
 import 'package:flutter/material.dart';
+import 'package:smart_home_animation/core/theme/aurora_background.dart';
 import 'package:smart_home_animation/core/theme/sh_colors.dart';
 
 class SceneScreen extends StatefulWidget {
@@ -430,8 +431,7 @@ class _SceneScreenState extends State<SceneScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(gradient: SHColors.backgroundColor),
+    return AuroraBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Column(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'sh_colors.dart';
+import 'aurora_background.dart';
 
 class GradientScaffold extends StatelessWidget {
   final Widget body;
@@ -24,12 +24,7 @@ class GradientScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: SHColors.backgroundColor, // Your gradient
-        ),
-        child: body,
-      ),
+      body: AuroraBackground(child: body),
       floatingActionButton: floatingActionButton,
       floatingActionButtonLocation: floatingActionButtonLocation,
       bottomNavigationBar: bottomNavigationBar,

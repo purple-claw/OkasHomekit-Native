@@ -1,6 +1,6 @@
 // lib/features/home/presentation/widgets/lighted_background.dart
 import 'package:flutter/material.dart';
-import 'package:smart_home_animation/core/theme/sh_colors.dart';
+import 'package:smart_home_animation/core/theme/aurora_background.dart';
 
 class LightedBackgound extends StatelessWidget {
   const LightedBackgound({super.key, required this.child});
@@ -9,19 +9,10 @@ class LightedBackgound extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(gradient: SHColors.backgroundColor),
+    return AuroraBackground(
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // Brand radial highlight (top-left cyan glow) — gives the
-          // background the same "premium glass" feel as the Keus app
-          // without competing with content.
-          IgnorePointer(
-            child: DecoratedBox(
-              decoration: BoxDecoration(gradient: SHColors.brandRadialGlow),
-            ),
-          ),
           // Subtle vertical wash — slightly brighter at top, dims to
           // black at bottom for contrast against the bottom nav.
           IgnorePointer(

@@ -82,8 +82,7 @@ class _LoungeScreenState extends State<LoungeScreen> {
     final okasService = Provider.of<DirectMQTTService>(context);
 
     if (!okasService.isConnected) {
-      return Container(
-        decoration: const BoxDecoration(gradient: SHColors.backgroundColor),
+      return AuroraBackground(
         child: const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -107,8 +106,7 @@ class _LoungeScreenState extends State<LoungeScreen> {
 
     final devicesToShow = allDevices.isNotEmpty ? allDevices : allLoads;
 
-    return Container(
-      decoration: const BoxDecoration(gradient: SHColors.backgroundColor),
+    return AuroraBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Column(

@@ -52,8 +52,7 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
         .where((l) => roomLoadIds.contains(l['id']?.toString()))
         .toList();
 
-    return Container(
-      decoration: const BoxDecoration(gradient: SHColors.backgroundColor),
+    return AuroraBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(

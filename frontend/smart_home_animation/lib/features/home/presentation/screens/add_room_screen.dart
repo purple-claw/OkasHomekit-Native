@@ -341,8 +341,7 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(gradient: SHColors.backgroundColor),
+    return AuroraBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
