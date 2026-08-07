@@ -3,6 +3,7 @@ import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 import 'package:smart_home_animation/core/core.dart';
+import 'load_icon.dart';
 
 /// Figma-style load card used on the Loads screen and the per-room
 /// RoomLoadsScreen. The glass surface is IDENTICAL for every load and
@@ -144,7 +145,14 @@ class LoadGridCard extends StatelessWidget {
                       SizedBox(
                         width: double.infinity,
                         height: 58,
-                        child: Center(child: _icon(deviceType, color)),
+                        child: Center(
+                          child: LoadIcon(
+                            type: deviceType,
+                            isOn: isOn,
+                            color: color,
+                            size: 48,
+                          ),
+                        ),
                       ),
                       const Spacer(),
                       // Row 2: load name — highlighted.
@@ -154,7 +162,7 @@ class LoadGridCard extends StatelessWidget {
                           color: isOn
                               ? color.withValues(alpha: 0.88)
                               : Colors.white,
-                          fontSize: 14,
+                          fontSize: 15,
                           fontWeight: FontWeight.w700,
                         ),
                         maxLines: 1,
@@ -263,45 +271,5 @@ class LoadGridCard extends StatelessWidget {
       default:
         return 'Switch';
     }
-  }
-
-  Widget _icon(String type, Color color) {
-    String asset;
-    switch (type) {
-      case 'Switch':
-        asset = 'assets/icons/switch.png';
-        break;
-      case 'Dimmer':
-        asset = 'assets/icons/dimmer.png';
-        break;
-      case 'Tunable':
-        asset = 'assets/icons/tunable.png';
-        break;
-      case 'RGB':
-        asset = 'assets/icons/rgb.png';
-        break;
-      case 'HVAC':
-        asset = 'assets/icons/hvac.png';
-        break;
-      case 'Scene':
-        asset = 'assets/icons/scene.png';
-        break;
-      case 'Fan':
-        asset = 'assets/icons/fan.png';
-        break;
-      case 'Curtain':
-        asset = 'assets/icons/curtain.png';
-        break;
-      default:
-        asset = 'assets/icons/light.png';
-    }
-    return Image.asset(
-      asset,
-      width: 40,
-      height: 40,
-      color: color,
-      errorBuilder: (_, __, ___) =>
-          Icon(Icons.lightbulb_outline, color: color, size: 40),
-    );
   }
 }

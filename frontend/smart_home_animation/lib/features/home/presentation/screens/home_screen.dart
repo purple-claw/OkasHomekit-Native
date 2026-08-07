@@ -30,6 +30,7 @@ import 'package:smart_home_animation/services/token_auth_service.dart';
 import 'package:ui_common/ui_common.dart' hide DeviceType;
 
 import '../widgets/lighted_background.dart';
+import '../widgets/load_icon.dart';
 import '../widgets/sm_home_bottom_navigation.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -455,48 +456,28 @@ class _HomeScreenState extends State<HomeScreen> {
                 _buildActiveLoadCard(
                   'Switch',
                   _totalSwitchCount,
-                  Image.asset(
-                    'assets/icons/switch.png',
-                    width: 24,
-                    height: 24,
-                    color: SHColors.green,
-                  ),
+                  const LoadIcon(type: 'swt', color: SHColors.green, size: 24),
                   SHColors.green,
                 ),
                 const SizedBox(width: 12),
                 _buildActiveLoadCard(
                   'Dimmer',
                   _totalDimmerCount,
-                  Image.asset(
-                    'assets/icons/dimmer.png',
-                    width: 24,
-                    height: 24,
-                    color: SHColors.amber,
-                  ),
+                  const LoadIcon(type: 'dim', color: SHColors.amber, size: 24),
                   SHColors.amber,
                 ),
                 const SizedBox(width: 12),
                 _buildActiveLoadCard(
                   'Tunable',
                   _totalTunableCount,
-                  Image.asset(
-                    'assets/icons/tunable.png',
-                    width: 24,
-                    height: 24,
-                    color: SHColors.violet,
-                  ),
+                  const LoadIcon(type: 'tun', color: SHColors.violet, size: 24),
                   SHColors.violet,
                 ),
                 const SizedBox(width: 12),
                 _buildActiveLoadCard(
                   'RGB',
                   _totalRgbCount,
-                  Image.asset(
-                    'assets/icons/rgb.png',
-                    width: 24,
-                    height: 24,
-                    color: SHColors.blue,
-                  ),
+                  const LoadIcon(type: 'rgb', color: SHColors.blue, size: 24),
                   SHColors.blue,
                 ),
               ],

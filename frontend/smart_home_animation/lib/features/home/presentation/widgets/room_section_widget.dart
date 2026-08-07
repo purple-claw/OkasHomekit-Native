@@ -6,6 +6,7 @@ import 'package:smart_home_animation/core/core.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/room.dart';
 import 'package:smart_home_animation/core/shared/presentation/widgets/room_image.dart';
 import 'package:ui_common/ui_common.dart';
+import 'load_icon.dart';
 
 class RoomSectionWidget extends StatelessWidget {
   final Room room;
@@ -128,7 +129,7 @@ class RoomSectionWidget extends StatelessWidget {
                         context,
                         'Switch',
                         switchCount,
-                        'assets/icons/switch.png',
+                        loadIconAssetPath('swt'),
                         Colors.green,
                       ),
                       const SizedBox(width: 16),
@@ -136,7 +137,7 @@ class RoomSectionWidget extends StatelessWidget {
                         context,
                         'Dimmer',
                         dimmerCount,
-                        'assets/icons/dimmer.png',
+                        loadIconAssetPath('dim'),
                         Colors.orange,
                       ),
                       const SizedBox(width: 16),
@@ -144,7 +145,7 @@ class RoomSectionWidget extends StatelessWidget {
                         context,
                         'Tunable',
                         tunableCount,
-                        'assets/icons/tunable.png',
+                        loadIconAssetPath('tun'),
                         Colors.purple,
                       ),
                       const SizedBox(width: 16),
@@ -152,7 +153,7 @@ class RoomSectionWidget extends StatelessWidget {
                         context,
                         'RGB',
                         rgbCount,
-                        'assets/icons/rgb.png',
+                        loadIconAssetPath('rgb'),
                         Colors.blue,
                       ),
                     ],
@@ -199,11 +200,8 @@ class RoomSectionWidget extends StatelessWidget {
               width: 20,
               height: 20,
               color: color,
-              errorBuilder: (_, __, ___) => Icon(
-                Icons.lightbulb_outline,
-                color: color,
-                size: 20,
-              ),
+              errorBuilder: (_, __, ___) =>
+                  Icon(Icons.lightbulb_outline, color: color, size: 20),
             ),
             const SizedBox(height: 4),
             Text(

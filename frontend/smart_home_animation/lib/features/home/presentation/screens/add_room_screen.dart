@@ -9,10 +9,11 @@ import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/core.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
 import 'package:smart_home_animation/services/room_image_sync_service.dart';
+import '../widgets/load_icon.dart';
 
 class AddRoomScreen extends StatefulWidget {
   final Map<String, dynamic>? roomToEdit;
-  
+
   const AddRoomScreen({super.key, this.roomToEdit});
 
   @override
@@ -64,7 +65,10 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
   @override
   void dispose() {
     try {
-      final mqttService = Provider.of<DirectMQTTService>(context, listen: false);
+      final mqttService = Provider.of<DirectMQTTService>(
+        context,
+        listen: false,
+      );
       mqttService.removeListener(_onLoadsUpdated);
     } catch (e) {
       // Widget may be unmounted
@@ -139,9 +143,9 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
       }
     } catch (e) {
       setState(() => _isImageLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error picking image: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error picking image: $e')));
     }
   }
 
@@ -239,31 +243,35 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
     final roomName = _nameController.text.trim();
 
     if (roomName.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a room name')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please enter a room name')));
       return;
     }
 
     final String roomId;
     if (_isEditing && widget.roomToEdit != null) {
-      roomId = widget.roomToEdit!['id']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString();
+      roomId =
+          widget.roomToEdit!['id']?.toString() ??
+          DateTime.now().millisecondsSinceEpoch.toString();
     } else {
       roomId = DateTime.now().millisecondsSinceEpoch.toString();
     }
-    
+
     // If a local image was picked, upload it to the board first so every
     // device on the network can see it (the board URL replaces the local
     // path and syncs via MQTT rooms/set).
-    final syncedImagePath =
-        await RoomImageSyncService.instance.syncImageToBoard(_roomImagePath);
+    final syncedImagePath = await RoomImageSyncService.instance
+        .syncImageToBoard(_roomImagePath);
 
     final roomData = {
       'id': roomId,
       'name': roomName,
       'imagePath': syncedImagePath,
       'loads': _selectedLoadIds.toList(),
-      'createdAt': _isEditing ? widget.roomToEdit!['createdAt'] ?? DateTime.now().toIso8601String() : DateTime.now().toIso8601String(),
+      'createdAt': _isEditing
+          ? widget.roomToEdit!['createdAt'] ?? DateTime.now().toIso8601String()
+          : DateTime.now().toIso8601String(),
     };
 
     // Push the new room straight to the board. We deliberately do NOT
@@ -281,7 +289,11 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(_isEditing ? 'Room "$roomName" updated!' : 'Room "$roomName" saved with ${_selectedLoadIds.length} loads!'),
+          content: Text(
+            _isEditing
+                ? 'Room "$roomName" updated!'
+                : 'Room "$roomName" saved with ${_selectedLoadIds.length} loads!',
+          ),
           backgroundColor: SHColors.primary,
         ),
       );
@@ -294,26 +306,7 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
   }
 
   String _getLoadTypeIcon(String type) {
-    switch (type) {
-      case 'swt':
-        return 'assets/icons/switch.png';
-      case 'dim':
-        return 'assets/icons/dimmer.png';
-      case 'rgb':
-        return 'assets/icons/rgb.png';
-      case 'tun':
-        return 'assets/icons/tunable.png';
-      case 'hvc':
-        return 'assets/icons/hvac.png';
-      case 'fan':
-        return 'assets/icons/fan.png';
-      case 'cur':
-        return 'assets/icons/curtain.png';
-      case 'scn':
-        return 'assets/icons/scene.png';
-      default:
-        return 'assets/icons/light.png';
-    }
+    return loadIconAssetPath(type);
   }
 
   Color _getLoadTypeColor(String type) {
@@ -347,7 +340,10 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
         appBar: AppBar(
           title: Text(
             _isEditing ? 'Edit Room' : 'Add New Room',
-            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -402,71 +398,82 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
                                 ),
                               )
                             : _roomImagePath != null
-                                ? Stack(
-                                    fit: StackFit.expand,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(16),
-                                        child: Image.file(
-                                          File(_roomImagePath!),
-                                          fit: BoxFit.cover,
-                                        ),
+                            ? Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(16),
+                                    child: Image.file(
+                                      File(_roomImagePath!),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(16),
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          Colors.transparent,
+                                          Colors.black.withOpacity(0.7),
+                                        ],
                                       ),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(16),
-                                          gradient: LinearGradient(
-                                            begin: Alignment.topCenter,
-                                            end: Alignment.bottomCenter,
-                                            colors: [
-                                              Colors.transparent,
-                                              Colors.black.withOpacity(0.7),
-                                            ],
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 8,
+                                    right: 8,
+                                    child: Row(
+                                      children: [
+                                        IconButton(
+                                          onPressed: _showImagePickerOptions,
+                                          icon: const Icon(
+                                            Icons.edit,
+                                            color: Colors.white,
+                                            size: 20,
+                                          ),
+                                          style: IconButton.styleFrom(
+                                            backgroundColor: Colors.black54,
+                                            padding: const EdgeInsets.all(8),
                                           ),
                                         ),
-                                      ),
-                                      Positioned(
-                                        bottom: 8,
-                                        right: 8,
-                                        child: Row(
-                                          children: [
-                                            IconButton(
-                                              onPressed: _showImagePickerOptions,
-                                              icon: const Icon(Icons.edit, color: Colors.white, size: 20),
-                                              style: IconButton.styleFrom(
-                                                backgroundColor: Colors.black54,
-                                                padding: const EdgeInsets.all(8),
-                                              ),
-                                            ),
-                                            const SizedBox(width: 4),
-                                            IconButton(
-                                              onPressed: _removeImage,
-                                              icon: const Icon(Icons.delete, color: Colors.red, size: 20),
-                                              style: IconButton.styleFrom(
-                                                backgroundColor: Colors.black54,
-                                                padding: const EdgeInsets.all(8),
-                                              ),
-                                            ),
-                                          ],
+                                        const SizedBox(width: 4),
+                                        IconButton(
+                                          onPressed: _removeImage,
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            color: Colors.red,
+                                            size: 20,
+                                          ),
+                                          style: IconButton.styleFrom(
+                                            backgroundColor: Colors.black54,
+                                            padding: const EdgeInsets.all(8),
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  )
-                                : Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.add_photo_alternate,
-                                        size: 48,
-                                        color: SHColors.primary.withOpacity(0.7),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      const Text(
-                                        'Tap to add room image',
-                                        style: TextStyle(color: Colors.white54, fontSize: 14),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
+                                ],
+                              )
+                            : Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.add_photo_alternate,
+                                    size: 48,
+                                    color: SHColors.primary.withOpacity(0.7),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    'Tap to add room image',
+                                    style: TextStyle(
+                                      color: Colors.white54,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
                       ),
                     ),
 
@@ -486,16 +493,24 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: SHColors.primary.withOpacity(0.3)),
+                        border: Border.all(
+                          color: SHColors.primary.withOpacity(0.3),
+                        ),
                       ),
                       child: TextField(
                         controller: _nameController,
-                        style: const TextStyle(color: Colors.white, fontSize: 16),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
                         decoration: const InputDecoration(
                           hintText: 'e.g., Living Room, Bedroom',
                           hintStyle: TextStyle(color: Colors.white38),
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
                         ),
                       ),
                     ),
@@ -535,8 +550,10 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
                         itemBuilder: (context, index) {
                           final load = _availableLoads[index];
                           final loadId = (load['id'] ?? index + 1).toString();
-                          final loadName = load['name'] ?? load['nm'] ?? 'Load ${index + 1}';
-                          final loadType = (load['type'] ?? load['typ'] ?? 'swt').toString();
+                          final loadName =
+                              load['name'] ?? load['nm'] ?? 'Load ${index + 1}';
+                          final loadType =
+                              (load['type'] ?? load['typ'] ?? 'swt').toString();
                           final isSelected = _selectedLoadIds.contains(loadId);
 
                           return GestureDetector(
@@ -546,7 +563,9 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
                                 color: isSelected
-                                    ? _getLoadTypeColor(loadType).withOpacity(0.2)
+                                    ? _getLoadTypeColor(
+                                        loadType,
+                                      ).withOpacity(0.2)
                                     : Colors.white.withOpacity(0.05),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
@@ -561,20 +580,26 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
                                   Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: _getLoadTypeColor(loadType).withOpacity(0.2),
+                                      color: _getLoadTypeColor(
+                                        loadType,
+                                      ).withOpacity(0.2),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Image.asset(
                                       _getLoadTypeIcon(loadType),
                                       width: 20,
                                       height: 20,
-                                      errorBuilder: (_, __, ___) => const Icon(Icons.lightbulb_outline, size: 20),
+                                      errorBuilder: (_, __, ___) => const Icon(
+                                        Icons.lightbulb_outline,
+                                        size: 20,
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           loadName,
@@ -636,7 +661,11 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
                       ),
                       child: const Text(
                         'Cancel',
-                        style: TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
@@ -653,8 +682,14 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
                         elevation: 0,
                       ),
                       child: Text(
-                        _selectedLoadIds.isEmpty ? 'Save Room' : 'Save (${_selectedLoadIds.length} loads)',
-                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                        _selectedLoadIds.isEmpty
+                            ? 'Save Room'
+                            : 'Save (${_selectedLoadIds.length} loads)',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),

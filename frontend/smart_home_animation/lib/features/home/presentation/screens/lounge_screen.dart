@@ -10,6 +10,7 @@ import 'package:smart_home_animation/core/shared/presentation/widgets/liquid_gla
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
 import '../widgets/figma_load_sheets.dart';
 import '../widgets/load_grid_card.dart';
+import '../widgets/load_icon.dart';
 
 class LoungeScreen extends StatefulWidget {
   const LoungeScreen({super.key});
@@ -826,7 +827,7 @@ class _LoungeScreenState extends State<LoungeScreen> {
   Widget _getLoadIcon(String type, Color color) {
     switch (type) {
       case 'Switch':
-        return _buildIcon('assets/icons/switch.png', 28, color: color);
+        return _buildIcon(loadIconAssetPath('swt'), 28, color: color);
       case 'Dimmer':
         return _buildIcon('assets/icons/dimmer.png', 28, color: color);
       case 'Tunable':
@@ -838,7 +839,7 @@ class _LoungeScreenState extends State<LoungeScreen> {
       case 'Scene':
         return _buildIcon('assets/icons/scene.png', 28, color: color);
       case 'Fan':
-        return _buildIcon('assets/icons/fan.png', 28, color: color);
+        return _buildIcon(loadIconAssetPath('fan'), 28, color: color);
       case 'Curtain':
         return _buildIcon('assets/icons/curtain.png', 28, color: color);
       default:

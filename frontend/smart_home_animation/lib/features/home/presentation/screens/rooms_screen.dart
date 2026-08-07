@@ -8,6 +8,7 @@ import 'package:smart_home_animation/services/room_service.dart';
 import 'package:smart_home_animation/services/token_auth_service.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/add_room_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/room_loads_screen.dart';
+import '../widgets/load_icon.dart';
 
 class RoomsTab extends StatefulWidget {
   const RoomsTab();
@@ -87,13 +88,16 @@ class _RoomsTabState extends State<RoomsTab> {
             ElevatedButton.icon(
               onPressed: () => _navigateToAddRoom(context),
               icon: const Icon(Icons.add),
-            label: const Text('Add Room'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: SHColors.primary,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              label: const Text('Add Room'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: SHColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -222,16 +226,12 @@ class _RoomsTabState extends State<RoomsTab> {
                       // favorite room across all devices via the board.
                       GestureDetector(
                         onTap: () {
-                          final mqtt =
-                              Provider.of<DirectMQTTService>(
-                                context,
-                                listen: false,
-                              );
-                          final next = !room.isFavorite;
-                          RoomService.instance.setFavorite(
-                            room.id,
-                            next,
+                          final mqtt = Provider.of<DirectMQTTService>(
+                            context,
+                            listen: false,
                           );
+                          final next = !room.isFavorite;
+                          RoomService.instance.setFavorite(room.id, next);
                           mqtt.setFavoriteRoom(room.id, next);
                         },
                         child: Container(
@@ -304,7 +304,10 @@ class _RoomsTabState extends State<RoomsTab> {
                           ),
                         ),
                         child: Image.asset(
-                          _getLoadTypeIconAsset(type),
+                          _getLoadTypeIconAsset(
+                            type,
+                            isOn: load['isOn'] == true,
+                          ),
                           width: 18,
                           height: 18,
                           color: _getLoadTypeColor(type),
@@ -323,7 +326,6 @@ class _RoomsTabState extends State<RoomsTab> {
     );
   }
 
-
   void _navigateToAddRoom(BuildContext context) {
     Navigator.push(
       context,
@@ -336,9 +338,7 @@ class _RoomsTabState extends State<RoomsTab> {
   void _openRoomLoads(Room room, List<Map<String, dynamic>> roomLoads) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => RoomLoadsScreen(room: room),
-      ),
+      MaterialPageRoute(builder: (_) => RoomLoadsScreen(room: room)),
     );
   }
 
@@ -423,27 +423,8 @@ class _RoomsTabState extends State<RoomsTab> {
     );
   }
 
-  String _getLoadTypeIconAsset(String type) {
-    switch (type) {
-      case 'swt':
-        return 'assets/icons/switch.png';
-      case 'dim':
-        return 'assets/icons/dimmer.png';
-      case 'rgb':
-        return 'assets/icons/rgb.png';
-      case 'tun':
-        return 'assets/icons/tunable.png';
-      case 'hvc':
-        return 'assets/icons/hvac.png';
-      case 'fan':
-        return 'assets/icons/fan.png';
-      case 'cur':
-        return 'assets/icons/curtain.png';
-      case 'scn':
-        return 'assets/icons/scene.png';
-      default:
-        return 'assets/icons/light.png';
-    }
+  String _getLoadTypeIconAsset(String type, {bool isOn = false}) {
+    return loadIconAssetPath(type, isOn: isOn);
   }
 
   Color _getLoadTypeColor(String type) {
