@@ -161,7 +161,9 @@ class _LoungeScreenState extends State<LoungeScreen> {
 
             const SizedBox(height: 8),
 
-            Expanded(child: _buildLoadsGrid(devicesToShow)),
+            Expanded(
+              child: BackdropGroup(child: _buildLoadsGrid(devicesToShow)),
+            ),
           ],
         ),
       ),
@@ -198,6 +200,10 @@ class _LoungeScreenState extends State<LoungeScreen> {
 
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 96),
+      physics: const BouncingScrollPhysics(
+        parent: AlwaysScrollableScrollPhysics(),
+      ),
+      scrollCacheExtent: 720,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         childAspectRatio: 0.75,
@@ -281,8 +287,7 @@ class _LoungeScreenState extends State<LoungeScreen> {
     // The dimmer's "on" state is derived from brightness > 0 so the slider
     // position and the master toggle stay in lock-step.
     final liveLoad = mqtt.loads[id] ?? <String, dynamic>{};
-    double liveBrightness =
-        ((liveLoad['brightness'] ?? 50) as num).toDouble();
+    double liveBrightness = ((liveLoad['brightness'] ?? 50) as num).toDouble();
     if (liveBrightness <= 0 && (liveLoad['isOn'] ?? false) == true) {
       liveBrightness = 50; // avoid a blank slider when on but no value yet
     }
@@ -292,7 +297,8 @@ class _LoungeScreenState extends State<LoungeScreen> {
       builder: (ctx, setSt) {
         final cur = mqtt.loads[id] ?? <String, dynamic>{};
         final curBrightness = ((cur['brightness'] ?? 0) as num).toDouble();
-        final curIsOn = curBrightness > 0 || (cur['isOn'] == true && curBrightness > 0);
+        final curIsOn =
+            curBrightness > 0 || (cur['isOn'] == true && curBrightness > 0);
         final sliderPct = curBrightness > 0
             ? curBrightness.clamp(0, 100).toDouble()
             : liveBrightness.clamp(0, 100).toDouble();
@@ -331,8 +337,8 @@ class _LoungeScreenState extends State<LoungeScreen> {
     final int mired = rawCtp < 154
         ? 154
         : rawCtp > 500
-            ? 500
-            : rawCtp;
+        ? 500
+        : rawCtp;
     double kelvin = (1000000 / mired).clamp(2700, 6500).toDouble();
 
     return StatefulBuilder(
@@ -450,18 +456,17 @@ class _LoungeScreenState extends State<LoungeScreen> {
         ((mqtt.loads[id]?['fanSpeed'] ?? mqtt.loads[id]?['fSp'] ?? 0) as num)
             .toDouble();
     if (rawSpeed <= 0 && (mqtt.loads[id]?['isOn'] ?? false) == true) {
-      rawSpeed = 50; // avoid a blank slider when the relay is on but speed is unknown
+      rawSpeed =
+          50; // avoid a blank slider when the relay is on but speed is unknown
     }
 
     return StatefulBuilder(
       builder: (ctx, setSt) {
         final liveLoad = mqtt.loads[id] ?? <String, dynamic>{};
         final liveSpeed =
-            ((liveLoad['fanSpeed'] ?? liveLoad['fSp'] ?? 0) as num)
-                .toDouble();
+            ((liveLoad['fanSpeed'] ?? liveLoad['fSp'] ?? 0) as num).toDouble();
         final liveIsOn = liveSpeed > 0;
-        final sliderPct =
-            (liveSpeed > 0 ? liveSpeed : rawSpeed) / 250 * 100;
+        final sliderPct = (liveSpeed > 0 ? liveSpeed : rawSpeed) / 250 * 100;
         return FigmaLoadSheet(
           title: 'FAN SPEED',
           isOn: liveIsOn,
@@ -477,10 +482,7 @@ class _LoungeScreenState extends State<LoungeScreen> {
             label: liveIsOn ? 'SPEED' : 'TAP OR SLIDE TO TURN ON',
             onChanged: (v) {
               final newSpeed = v * 2.5;
-              mqtt.sendFanSpeedCommand(
-                id,
-                newSpeed.round().clamp(0, 250),
-              );
+              mqtt.sendFanSpeedCommand(id, newSpeed.round().clamp(0, 250));
               setSt(() {});
             },
           ),
@@ -599,8 +601,8 @@ class _LoungeScreenState extends State<LoungeScreen> {
         final live = mqtt.loads[id] ?? cur;
         final liveTemp = ((live['temp'] ?? temp) as num).toDouble();
         final liveMode = (live['hvacMode'] ?? mode).toString();
-        final liveFan =
-            ((live['fanSpeed'] ?? live['fSp'] ?? 0) as num).toDouble();
+        final liveFan = ((live['fanSpeed'] ?? live['fSp'] ?? 0) as num)
+            .toDouble();
         // Bus speed is 0..255 — convert to UI step (0..fanMax) so the
         // slider snaps to the discrete steps users expect.
         final fanPct = fanMax > 0
@@ -656,9 +658,7 @@ class _LoungeScreenState extends State<LoungeScreen> {
               ),
               const SizedBox(height: 24),
               Text(
-                fanPct <= 0
-                    ? 'TAP OR SLIDE TO TURN ON FAN'
-                    : 'FAN SPEED',
+                fanPct <= 0 ? 'TAP OR SLIDE TO TURN ON FAN' : 'FAN SPEED',
                 style: const TextStyle(
                   color: SHColors.mutedText,
                   fontSize: 12,

@@ -37,36 +37,32 @@ class LoadGridCard extends StatelessWidget {
       child: RepaintBoundary(
         child: ClipRRect(
           borderRadius: BorderRadius.circular(SHColors.radiusLg),
-          child: BackdropFilter(
-            // Frosted glass: a light blur softens the backdrop. Kept at
-            // sigma 6 — enough for the glass look, cheap enough to scroll.
-            filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+          child: BackdropFilter.grouped(
+            // Frosted glass: blur backdrop while keeping card surface
+            // translucent enough for AuroraBackground to show through.
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
             child: Stack(
               children: [
-                // Glass rim: faint neutral outline, slightly brighter on
-                // top, accent-tinted at the bottom when the load is ON.
+                // Rim only. No gradient fill: card body must inherit the
+                // blurred AuroraBackground instead of becoming gray.
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(SHColors.radiusLg),
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.white.withOpacity(0.16),
-                        Colors.white.withOpacity(0.05),
-                        color.withOpacity(isOn ? 0.22 : 0.10),
-                      ],
+                    border: Border.all(
+                      color: isOn
+                          ? color.withValues(alpha: 0.24)
+                          : Colors.white.withValues(alpha: 0.13),
+                      width: 1,
                     ),
                   ),
                 ),
-                // Inner glass fill — a whisper of frost only, the same for
-                // every card. The glass never changes with state.
+                // Inner glass fill — background remains visible underneath.
                 Container(
-                  margin: const EdgeInsets.all(1.2),
+                  margin: const EdgeInsets.all(1.1),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.035),
+                    color: Colors.white.withValues(alpha: 0.018),
                     borderRadius: BorderRadius.circular(
-                      SHColors.radiusLg - 1.2,
+                      SHColors.radiusLg - 1.1,
                     ),
                   ),
                 ),
@@ -83,8 +79,27 @@ class LoadGridCard extends StatelessWidget {
                           colors: [
                             Colors.transparent,
                             Colors.transparent,
-                            Colors.black.withOpacity(0.05),
-                            Colors.black.withOpacity(0.12),
+                            Colors.black.withValues(alpha: 0.025),
+                            Colors.black.withValues(alpha: 0.08),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                // Soft top-left specular bloom gives glass depth without
+                // changing card color or fighting background glow.
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(SHColors.radiusLg),
+                        gradient: RadialGradient(
+                          center: const Alignment(-0.85, -1.05),
+                          radius: 1.25,
+                          colors: [
+                            Colors.white.withValues(alpha: 0.055),
+                            Colors.transparent,
                           ],
                         ),
                       ),
@@ -110,8 +125,8 @@ class LoadGridCard extends StatelessWidget {
                             center: const Alignment(0, 0),
                             radius: 1.1,
                             colors: [
-                              color.withOpacity(0.16),
-                              color.withOpacity(0.08),
+                              color.withValues(alpha: 0.09),
+                              color.withValues(alpha: 0.04),
                               Colors.transparent,
                             ],
                             stops: const [0.0, 0.45, 1.0],
@@ -132,10 +147,14 @@ class LoadGridCard extends StatelessWidget {
                             width: 38,
                             height: 38,
                             decoration: BoxDecoration(
-                              color: color.withOpacity(isOn ? 0.09 : 0.04),
+                              color: color.withValues(
+                                alpha: isOn ? 0.09 : 0.04,
+                              ),
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(
-                                color: color.withOpacity(isOn ? 0.4 : 0.16),
+                                color: color.withValues(
+                                  alpha: isOn ? 0.4 : 0.16,
+                                ),
                               ),
                             ),
                             child: Center(child: _icon(deviceType, color)),
@@ -184,13 +203,13 @@ class LoadGridCard extends StatelessWidget {
                           height: 34,
                           decoration: BoxDecoration(
                             color: isOn
-                                ? color.withOpacity(0.95)
-                                : Colors.white.withOpacity(0.05),
+                                ? color.withValues(alpha: 0.95)
+                                : Colors.white.withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(18),
                             border: Border.all(
                               color: isOn
                                   ? Colors.transparent
-                                  : Colors.white.withOpacity(0.14),
+                                  : Colors.white.withValues(alpha: 0.14),
                             ),
                           ),
                           child: Icon(
