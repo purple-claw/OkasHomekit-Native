@@ -20,6 +20,7 @@ class RoomLoadsScreen extends StatefulWidget {
 
 class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
   String _selectedCategory = 'All';
+  String _loadStructureSignature = '';
 
   // "Lights" combines every lighting type (on/off switches, dimmers,
   // tunable whites, RGB) into one section with All ON/OFF controls.
@@ -45,8 +46,43 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
   };
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final mqtt = Provider.of<DirectMQTTService>(context, listen: false);
+      _loadStructureSignature = _structureSignature(mqtt);
+      mqtt.addListener(_onDataChanged);
+    });
+  }
+
+  void _onDataChanged() {
+    if (!mounted) return;
+    final mqtt = Provider.of<DirectMQTTService>(context, listen: false);
+    final nextSignature = _structureSignature(mqtt);
+    if (nextSignature == _loadStructureSignature) return;
+    _loadStructureSignature = nextSignature;
+    setState(() {});
+  }
+
+  String _structureSignature(DirectMQTTService mqtt) {
+    return widget.room.loadIds
+        .map((id) {
+          final load = mqtt.loads[id];
+          return '$id:${load?['type']}:${load?['name']}';
+        })
+        .join('|');
+  }
+
+  @override
+  void dispose() {
+    final mqtt = Provider.of<DirectMQTTService>(context, listen: false);
+    mqtt.removeListener(_onDataChanged);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final mqtt = Provider.of<DirectMQTTService>(context);
+    final mqtt = Provider.of<DirectMQTTService>(context, listen: false);
     final allLoads = mqtt.loads.values.toList();
     final roomLoadIds = widget.room.loadIds;
     final roomLoads = allLoads
@@ -288,13 +324,19 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
   }
 
   Widget _makeCard(Map<String, dynamic> load) {
-    final mqtt = Provider.of<DirectMQTTService>(context, listen: false);
     final id = load['id']?.toString() ?? '';
-    final cur = mqtt.loads[id] ?? load;
-    return LoadGridCard(
-      load: cur,
-      onTap: () => _showSheet(context, cur, cur['type'] ?? 'swt'),
-      onToggle: (v) => mqtt.sendCommand(id, v ? 'ON' : 'OFF'),
+    return Selector<DirectMQTTService, bool>(
+      selector: (context, mqtt) => (mqtt.loads[id] ?? load)['isOn'] == true,
+      builder: (context, isOn, child) {
+        final mqtt = Provider.of<DirectMQTTService>(context, listen: false);
+        final cur = Map<String, dynamic>.from(mqtt.loads[id] ?? load)
+          ..['isOn'] = isOn;
+        return LoadGridCard(
+          load: cur,
+          onTap: () => _showSheet(context, cur, cur['type'] ?? 'swt'),
+          onToggle: (v) => mqtt.sendCommand(id, v ? 'ON' : 'OFF'),
+        );
+      },
     );
   }
 

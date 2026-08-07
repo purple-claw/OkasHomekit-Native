@@ -23,6 +23,8 @@ class _LoungeScreenState extends State<LoungeScreen> {
   String _selectedCategory = 'All';
   Map<String, dynamic>? _selectedLoad;
   String? _expandedLoadId;
+  String _loadStructureSignature = '';
+  bool? _lastConnectionState;
 
   final List<String> _categories = [
     'All',
@@ -58,12 +60,37 @@ class _LoungeScreenState extends State<LoungeScreen> {
         context,
         listen: false,
       );
+      _loadStructureSignature = _structureSignature(okasService);
+      _lastConnectionState = okasService.isConnected;
       okasService.addListener(_onDataChanged);
     });
   }
 
   void _onDataChanged() {
-    if (mounted) setState(() {});
+    if (!mounted) return;
+
+    final okasService = Provider.of<DirectMQTTService>(context, listen: false);
+    final structureChanged =
+        _loadStructureSignature != _structureSignature(okasService);
+    final connectionChanged = _lastConnectionState != okasService.isConnected;
+
+    if (structureChanged || connectionChanged) {
+      _loadStructureSignature = _structureSignature(okasService);
+      _lastConnectionState = okasService.isConnected;
+      setState(() {});
+    }
+  }
+
+  String _structureSignature(DirectMQTTService service) {
+    final entries = <String>[];
+    for (final entry in service.loads.entries) {
+      entries.add('${entry.key}:${entry.value['type']}:${entry.value['name']}');
+    }
+    for (final entry in service.devices.entries) {
+      entries.add('${entry.key}:${entry.value['type']}:${entry.value['name']}');
+    }
+    entries.sort();
+    return '${service.isConnected}|${entries.join('|')}';
   }
 
   @override
@@ -81,7 +108,7 @@ class _LoungeScreenState extends State<LoungeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final okasService = Provider.of<DirectMQTTService>(context);
+    final okasService = Provider.of<DirectMQTTService>(context, listen: false);
 
     if (!okasService.isConnected) {
       return AuroraBackground(
@@ -222,22 +249,31 @@ class _LoungeScreenState extends State<LoungeScreen> {
 
   Widget _buildLoadCard(Map<String, dynamic> load) {
     final loadId = load['id']?.toString() ?? '';
-    final deviceType = _getDeviceType(load['type'] ?? 'swt');
-
-    return LoadGridCard(
-      load: load,
-      onTap: () {
-        if (deviceType == 'Dimmer' ||
-            deviceType == 'Tunable' ||
-            deviceType == 'Curtain' ||
-            deviceType == 'RGB' ||
-            deviceType == 'Fan' ||
-            deviceType == 'HVAC') {
-          _showControlBottomSheet(load, deviceType);
-        }
+    return Selector<DirectMQTTService, bool>(
+      selector: (context, mqtt) {
+        final liveLoad = mqtt.loads[loadId] ?? mqtt.devices[loadId] ?? load;
+        return liveLoad['isOn'] == true;
       },
-      onToggle: (value) {
-        _sendCommand(load['id'], value ? 'ON' : 'OFF');
+      builder: (context, isOn, child) {
+        final currentLoad = Map<String, dynamic>.from(load)..['isOn'] = isOn;
+        final deviceType = _getDeviceType(currentLoad['type'] ?? 'swt');
+
+        return LoadGridCard(
+          load: currentLoad,
+          onTap: () {
+            if (deviceType == 'Dimmer' ||
+                deviceType == 'Tunable' ||
+                deviceType == 'Curtain' ||
+                deviceType == 'RGB' ||
+                deviceType == 'Fan' ||
+                deviceType == 'HVAC') {
+              _showControlBottomSheet(currentLoad, deviceType);
+            }
+          },
+          onToggle: (value) {
+            _sendCommand(load['id'], value ? 'ON' : 'OFF');
+          },
+        );
       },
     );
   }
