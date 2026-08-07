@@ -341,6 +341,8 @@ class RgbGamutPicker extends StatelessWidget {
     required this.green,
     required this.blue,
     required this.onChanged,
+    this.brightness,
+    this.onBrightnessChanged,
     super.key,
   });
 
@@ -348,6 +350,11 @@ class RgbGamutPicker extends StatelessWidget {
   final double green;
   final double blue;
   final void Function(int red, int green, int blue) onChanged;
+
+  /// Current brightness 0-100, kept as its own channel so the slider never
+  /// disturbs the chosen hue/sat. Falls back to the color's value when unset.
+  final double? brightness;
+  final void Function(double brightness)? onBrightnessChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -357,100 +364,259 @@ class RgbGamutPicker extends StatelessWidget {
       blue.round().clamp(0, 255),
       1,
     );
+    final hsv = HSVColor.fromColor(currentColor);
 
     return Column(
       children: [
-        const Text(
-          'COLOR',
-          style: TextStyle(
-            color: SHColors.mutedText,
-            fontSize: 12,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-        const SizedBox(height: 14),
-        AspectRatio(
-          aspectRatio: 1,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final size = constraints.biggest.shortestSide;
-              final hsv = HSVColor.fromColor(currentColor);
-              final radius = size / 2;
-              final markerRadius = hsv.saturation * radius;
-              final markerAngle = hsv.hue * math.pi / 180;
-              final marker = Offset(
-                radius + math.cos(markerAngle) * markerRadius,
-                radius + math.sin(markerAngle) * markerRadius,
-              );
+        // Gamut wheel kept moderate (~55% of sheet width) per the Figma
+        // frame — the oversized full-width wheel is what made the sheet
+        // feel bloated.
+        Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 230),
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final size = constraints.biggest.shortestSide;
+                  final radius = size / 2;
+                  final markerRadius = hsv.saturation * radius;
+                  final markerAngle = hsv.hue * math.pi / 180;
+                  final marker = Offset(
+                    radius + math.cos(markerAngle) * markerRadius,
+                    radius + math.sin(markerAngle) * markerRadius,
+                  );
 
-              void handle(Offset localPosition) {
-                final center = Offset(radius, radius);
-                final vector = localPosition - center;
-                final saturation = (vector.distance / radius).clamp(0.0, 1.0);
-                final hue =
-                    ((math.atan2(vector.dy, vector.dx) * 180 / math.pi) + 360) %
-                    360;
-                final color = HSVColor.fromAHSV(
-                  1,
-                  hue,
-                  saturation,
-                  1,
-                ).toColor();
-                onChanged(color.red, color.green, color.blue);
-              }
+                  void handle(Offset localPosition) {
+                    final center = Offset(radius, radius);
+                    final vector = localPosition - center;
+                    final saturation =
+                        (vector.distance / radius).clamp(0.0, 1.0);
+                    final hue = ((math.atan2(vector.dy, vector.dx) * 180 /
+                                math.pi) +
+                            360) %
+                        360;
+                    final color = HSVColor.fromAHSV(
+                      1,
+                      hue,
+                      saturation,
+                      1,
+                    ).toColor();
+                    onChanged(color.red, color.green, color.blue);
+                  }
 
-              return GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onPanDown: (details) => handle(details.localPosition),
-                onPanUpdate: (details) => handle(details.localPosition),
-                onTapDown: (details) => handle(details.localPosition),
-                child: Center(
-                  child: SizedBox(
-                    width: size,
-                    height: size,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        ClipOval(
-                          child: Image.asset(
-                            'assets/images/figma_rgb_gamut.png',
-                            fit: BoxFit.cover,
+                  return GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onPanDown: (details) => handle(details.localPosition),
+                    onPanUpdate: (details) => handle(details.localPosition),
+                    onTapDown: (details) => handle(details.localPosition),
+                    child: SizedBox(
+                      width: size,
+                      height: size,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          ClipOval(
+                            child: Image.asset(
+                              'assets/images/figma_rgb_gamut.png',
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        ),
-                        Positioned(
-                          left: marker.dx - 12,
-                          top: marker.dy - 12,
-                          child: Container(
-                            width: 24,
-                            height: 24,
-                            decoration: BoxDecoration(
-                              color: currentColor,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 3),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.35),
-                                  blurRadius: 10,
+                          // Map-pin selector handle from the Figma frame:
+                          // the pin tip points exactly at the chosen color.
+                          Positioned(
+                            left: marker.dx - 17,
+                            top: marker.dy - 34,
+                            child: Stack(
+                              alignment: Alignment.topCenter,
+                              children: [
+                                const Icon(
+                                  Icons.location_on,
+                                  size: 36,
+                                  color: Colors.white,
+                                ),
+                                Icon(
+                                  Icons.location_on,
+                                  size: 30,
+                                  color: currentColor,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.black.withOpacity(0.4),
+                                      blurRadius: 6,
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ),
-              );
-            },
+                  );
+                },
+              ),
+            ),
           ),
         ),
-        const SizedBox(height: 16),
-        Container(
-          height: 44,
-          decoration: BoxDecoration(
-            color: currentColor,
-            borderRadius: BorderRadius.circular(SHColors.radiusMd),
-            border: Border.all(color: Colors.white.withOpacity(0.18)),
+        const SizedBox(height: 22),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'BRIGHTNESS',
+              style: TextStyle(
+                color: SHColors.mutedText,
+                fontSize: 12,
+                letterSpacing: 2,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Text(
+              '${(brightness ?? hsv.value * 100).round()}%',
+              style: const TextStyle(
+                color: SHColors.primary,
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        FigmaSlider(
+          value: brightness ?? hsv.value * 100,
+          min: 0,
+          max: 100,
+          divisions: 100,
+          onChanged: (v) {
+            onBrightnessChanged?.call(v);
+          },
+        ),
+      ],
+    );
+  }
+}
+
+/// Figma reference (ColorTun.png): vertical warm->cool pill gradient with a
+/// capsule handle for color temperature, plus a separate BRIGHTNESS slider.
+class TunablePicker extends StatelessWidget {
+  const TunablePicker({
+    required this.kelvin,
+    required this.brightness,
+    required this.onKelvinChanged,
+    required this.onBrightnessChanged,
+    super.key,
+  });
+
+  final double kelvin;
+  final double brightness;
+  final ValueChanged<double> onKelvinChanged;
+  final ValueChanged<double> onBrightnessChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Center(
+          child: SizedBox(
+            height: 220,
+            width: 64,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final barHeight = constraints.maxHeight;
+                final t = ((kelvin - 2700) / (6500 - 2700)).clamp(0.0, 1.0);
+                // Warm (2700K) sits at the bottom, cool (6500K) at the top.
+                final handleY = barHeight * (1 - t);
+
+                void handle(Offset localPosition) {
+                  final nt = (1 - localPosition.dy / barHeight).clamp(0.0, 1.0);
+                  onKelvinChanged(2700 + nt * 3800);
+                }
+
+                // Raw pointer events instead of pan gestures: the dialog can
+                // host competing recognizers, and Listener is not part of the
+                // gesture arena, so vertical drags always reach the picker.
+                return Listener(
+                  onPointerDown: (e) => handle(e.localPosition),
+                  onPointerMove: (e) => handle(e.localPosition),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 48,
+                        height: barHeight,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                            colors: [
+                              Color(0xFFFFB84D),
+                              Color(0xFFFFE7B5),
+                              Color(0xFFE8F6F8),
+                              Color(0xFFD6E6EE),
+                              Color(0xFFF4F7F9),
+                            ],
+                            stops: [0, 0.28, 0.5, 0.75, 1],
+                          ),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.18),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: handleY - 12,
+                        child: Container(
+                          width: 64,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+        const SizedBox(height: 22),
+        const Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'BRIGHTNESS',
+            style: TextStyle(
+              color: SHColors.mutedText,
+              fontSize: 12,
+              letterSpacing: 2,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        const SizedBox(height: 4),
+        FigmaSlider(
+          value: brightness,
+          min: 0,
+          max: 100,
+          divisions: 100,
+          onChanged: onBrightnessChanged,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          '${brightness.round()}%',
+          style: const TextStyle(
+            color: SHColors.primary,
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
           ),
         ),
       ],

@@ -378,6 +378,9 @@ class _LoungeScreenState extends State<LoungeScreen> {
         ? 500
         : rawCtp;
     double kelvin = (1000000 / mired).clamp(2700, 6500).toDouble();
+    double bri = ((mqtt.loads[id]?['brightness'] ?? 100) as num)
+        .toDouble()
+        .clamp(0, 100);
 
     return StatefulBuilder(
       builder: (ctx, setSt) => FigmaLoadSheet(
@@ -387,61 +390,21 @@ class _LoungeScreenState extends State<LoungeScreen> {
           mqtt.sendCommand(id, v ? 'ON' : 'OFF');
           setSt(() {});
         },
-        body: Column(
-          children: [
-            Text(
-              '${kelvin.round()}K',
-              style: const TextStyle(
-                color: SHColors.primary,
-                fontSize: 34,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              height: 36,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [
-                    Color(0xFFFFB84D),
-                    Color(0xFFFFE7B5),
-                    Color(0xFFE8F6F8),
-                    Color(0xFFAFD6FF),
-                    Color(0xFFAF7DFF),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(SHColors.radiusMd),
-              ),
-            ),
-            const SizedBox(height: 12),
-            FigmaSlider(
-              value: kelvin,
-              min: 2700,
-              max: 6500,
-              divisions: 100,
-              onChanged: (v) {
-                kelvin = v;
-                // The board's Tun action expects Kelvin directly (it
-                // converts to Mired internally for the bus write).
-                mqtt.sendColorTempCommand(id, v.round());
-                setSt(() {});
-              },
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text(
-                  'Warm',
-                  style: TextStyle(color: SHColors.mutedText, fontSize: 12),
-                ),
-                Text(
-                  'Cool',
-                  style: TextStyle(color: SHColors.mutedText, fontSize: 12),
-                ),
-              ],
-            ),
-          ],
+        body: TunablePicker(
+          kelvin: kelvin,
+          brightness: bri,
+          onKelvinChanged: (v) {
+            // The board's Tun action expects Kelvin directly (it
+            // converts to Mired internally for the bus write).
+            kelvin = v;
+            mqtt.sendColorTempCommand(id, v.round());
+            setSt(() {});
+          },
+          onBrightnessChanged: (v) {
+            bri = v;
+            mqtt.sendBrightnessCommand(id, v.round());
+            setSt(() {});
+          },
         ),
       ),
     );
@@ -457,10 +420,12 @@ class _LoungeScreenState extends State<LoungeScreen> {
     int r = ((cur['red'] ?? 255) as num).round().clamp(0, 255);
     int g = ((cur['green'] ?? 255) as num).round().clamp(0, 255);
     int b = ((cur['blue'] ?? 255) as num).round().clamp(0, 255);
+    // Brightness is its own channel (0-100), independent of the color.
+    int bri = ((cur['brightness'] ?? 100) as num).round().clamp(0, 100);
 
     return StatefulBuilder(
       builder: (ctx, setSt) => FigmaLoadSheet(
-        title: 'COLOR',
+        title: 'RGB',
         isOn: mqtt.loads[id]?['isOn'] ?? false,
         onToggle: (v) {
           mqtt.sendCommand(id, v ? 'ON' : 'OFF');
@@ -470,11 +435,17 @@ class _LoungeScreenState extends State<LoungeScreen> {
           red: r.toDouble(),
           green: g.toDouble(),
           blue: b.toDouble(),
+          brightness: bri.toDouble(),
           onChanged: (nr, ng, nb) {
             r = nr;
             g = ng;
             b = nb;
-            mqtt.sendRGBCommand(id, nr, ng, nb);
+            mqtt.sendRGBCommand(id, nr, ng, nb, brightness: bri);
+            setSt(() {});
+          },
+          onBrightnessChanged: (v) {
+            bri = v.round();
+            mqtt.sendRGBCommand(id, r, g, b, brightness: bri);
             setSt(() {});
           },
         ),

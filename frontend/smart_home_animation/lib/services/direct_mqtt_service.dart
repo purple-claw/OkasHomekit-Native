@@ -305,9 +305,11 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
       // Pair colour-temp writes with swt=true so the load turns on when
       // the user actively tunes it. The user is interacting with the slider,
       // so leaving the relay in the previous state would be wrong.
+      // (Old bug: swt was tied to `clamped > 2700`, which turned the lamp
+      // OFF whenever the user dragged below 2700K.)
       final cmd = <String, dynamic>{
         'cTp': clamped,
-        'swt': clamped > 2700,
+        'swt': true,
       };
 
       final message = json.encode({
@@ -323,16 +325,20 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         // with what the board publishes on status/+.
         final mired = clamped > 0 ? (1000000 / clamped).round() : 0;
         _loads[deviceId]!['cTp'] = mired;
-        _loads[deviceId]!['isOn'] = clamped > 2700;
+        _loads[deviceId]!['isOn'] = true;
         _devices[deviceId]!['cTp'] = mired;
-        _devices[deviceId]!['isOn'] = clamped > 2700;
+        _devices[deviceId]!['isOn'] = true;
         notifyListeners();
       }
     }
   }
 
-  // RGB Control
-  void sendRGBCommand(String deviceId, int red, int green, int blue) {
+  // RGB Control. Brightness rides along with every command: the board's
+  // sndRGB computes the bus color from Val.Hue/Val.Sat/Val.Bri, and its
+  // 'swt' path re-applies `Val.Bri > 0 ? Val.Bri : 100` — so an RGB
+  // command without bri silently snaps to 100% on first use.
+  void sendRGBCommand(String deviceId, int red, int green, int blue,
+      {int? brightness}) {
     print('Sending RGB to OKAS: loadId=$deviceId, R=$red, G=$green, B=$blue');
 
     final load = _loads[deviceId];
@@ -343,14 +349,19 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
       final r = red.clamp(0, 255);
       final g = green.clamp(0, 255);
       final b = blue.clamp(0, 255);
+      final bri = brightness?.clamp(0, 100);
       // The board's PAR_MAP expects HSV (Hue 0-360, Sat 0-100) for RGB
       // loads, not raw r/g/b. Without this conversion the bus write goes
-      // through the unknown-parameter path and silently fails.
+      // through the unknown-parameter path and silently fails. Value is
+      // carried as 'bri' (0-100), not folded into the hue/sat math.
       final hsv = _rgbToHsv(r, g, b);
       final cmd = <String, dynamic>{
+        if (bri != null) 'bri': bri,
         'hue': hsv.hue,
         'sat': hsv.sat,
-        'swt': true,
+        // Sliding brightness to 0 must drop the relay, mirroring the
+        // dimmer path (swt matches the slider position).
+        'swt': bri == null || bri > 0,
       };
 
       final message = json.encode({
@@ -367,13 +378,15 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         _loads[deviceId]!['blue'] = b;
         _loads[deviceId]!['hue'] = hsv.hue;
         _loads[deviceId]!['sat'] = hsv.sat;
-        _loads[deviceId]!['isOn'] = true;
+        if (bri != null) _loads[deviceId]!['brightness'] = bri;
+        _loads[deviceId]!['isOn'] = bri == null || bri > 0;
         _devices[deviceId]!['red'] = r;
         _devices[deviceId]!['green'] = g;
         _devices[deviceId]!['blue'] = b;
         _devices[deviceId]!['hue'] = hsv.hue;
         _devices[deviceId]!['sat'] = hsv.sat;
-        _devices[deviceId]!['isOn'] = true;
+        if (bri != null) _devices[deviceId]!['brightness'] = bri;
+        _devices[deviceId]!['isOn'] = bri == null || bri > 0;
         notifyListeners();
       }
     }
@@ -971,12 +984,14 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
           if (red < 0 || green < 0 || blue < 0) {
             final hue = (sta?['hue'] as num?)?.toDouble() ?? 0.0;
             final sat = (sta?['sat'] as num?)?.toDouble() ?? 0.0;
-            // HSV -> RGB at value=1.0 (brightness is sent separately as bri).
+            // HSV -> RGB at the reported brightness (bri 0-100) so the
+            // cached color matches what the lamp actually shows.
+            final v = (brightness > 0 ? brightness : 100) / 100.0;
             final h = hue % 360;
             final s = sat.clamp(0.0, 1.0);
-            final c = 1.0 * s;
+            final c = v * s;
             final x = c * (1 - (((h / 60) % 2) - 1).abs());
-            final m = 1.0 - c;
+            final m = v - c;
             double rp = 0, gp = 0, bp = 0;
             if (h < 60) {
               rp = c;
@@ -1168,9 +1183,12 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
               if (hue != null && sat != null) {
                 final h = hue % 360;
                 final s = sat.clamp(0.0, 1.0);
-                final c = 1.0 * s;
+                // Dim by the reported bri so the picker shows the real color.
+                final bri = sta['bri'] as num? ?? 100;
+                final v = (bri > 0 ? bri : 100) / 100.0;
+                final c = v * s;
                 final x = c * (1 - (((h / 60) % 2) - 1).abs());
-                final m = 1.0 - c;
+                final m = v - c;
                 double rp = 0, gp = 0, bp = 0;
                 if (h < 60) {
                   rp = c;

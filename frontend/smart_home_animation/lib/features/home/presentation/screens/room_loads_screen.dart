@@ -363,6 +363,23 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
       fallbackBrightness = 50;
     }
 
+    // Tunable sheet state is held locally (like the RGB sheet) so dragging
+    // never depends on the MQTT status round-trip: the thumb and handle
+    // track the finger immediately, the board catches up in the background.
+    final tunCur = mqtt.loads[id] ?? load;
+    final rawCtpDynamic = tunCur['cTp'];
+    final int rawCtp = rawCtpDynamic is int
+        ? rawCtpDynamic
+        : int.tryParse('$rawCtpDynamic') ?? 370;
+    final int mired = rawCtp < 154
+        ? 154
+        : rawCtp > 500
+        ? 500
+        : rawCtp;
+    double tunKelvin = (1000000 / mired).clamp(2700, 6500).toDouble();
+    double tunBri =
+        ((tunCur['brightness'] ?? 100) as num).toDouble().clamp(0, 100);
+
     showLiquidGlassModalBottomSheet(
       context: ctx,
       isScrollControlled: true,
@@ -383,7 +400,20 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
               setSt(() {});
             },
             body: type == 'tun'
-                ? _buildTunableBody(ctx, load, setSt)
+                ? TunablePicker(
+                    kelvin: tunKelvin,
+                    brightness: tunBri,
+                    onKelvinChanged: (v) {
+                      tunKelvin = v;
+                      mqtt.sendColorTempCommand(id, v.round());
+                      setSt(() {});
+                    },
+                    onBrightnessChanged: (v) {
+                      tunBri = v;
+                      mqtt.sendBrightnessCommand(id, v.round());
+                      setSt(() {});
+                    },
+                  )
                 : BrightnessSlider(
                     value: sliderPct,
                     label: curIsOn ? 'BRIGHTNESS' : 'TAP OR SLIDE TO TURN ON',
@@ -398,104 +428,6 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
     );
   }
 
-  Widget _buildTunableBody(
-    BuildContext ctx,
-    Map<String, dynamic> load,
-    StateSetter setSt,
-  ) {
-    final mqtt = Provider.of<DirectMQTTService>(ctx, listen: false);
-    final id = load['id']?.toString() ?? '';
-    final mqttLoad = mqtt.loads[id] ?? load;
-    // Board publishes cTp as Mired (1_000_000 / Kelvin) on Tuv feedback.
-    // Convert back to Kelvin for the slider; clamp to the UI range.
-    final rawCtpDynamic = mqttLoad['cTp'];
-    final int rawCtp = rawCtpDynamic is int
-        ? rawCtpDynamic
-        : int.tryParse('$rawCtpDynamic') ?? 370;
-    final int mired = rawCtp < 154
-        ? 154
-        : rawCtp > 500
-        ? 500
-        : rawCtp;
-    double kelvin = (1000000 / mired).clamp(2700, 6500).toDouble();
-    final previewColor = _kelvinPreview(kelvin);
-
-    return Column(
-      children: [
-        Text(
-          '${kelvin.round()}K',
-          style: const TextStyle(
-            color: SHColors.primary,
-            fontSize: 34,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          height: 36,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: const [
-                Color(0xFFFFB84D),
-                Color(0xFFFFE7B5),
-                Color(0xFFE8F6F8),
-                Color(0xFFAFD6FF),
-                Color(0xFFAF7DFF),
-              ],
-              stops: const [0, 0.28, 0.5, 0.75, 1],
-            ),
-            borderRadius: BorderRadius.circular(SHColors.radiusMd),
-            border: Border.all(color: Colors.white.withOpacity(0.18)),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          height: 24,
-          decoration: BoxDecoration(
-            color: previewColor,
-            borderRadius: BorderRadius.circular(SHColors.radiusSm),
-            border: Border.all(color: Colors.white.withOpacity(0.18)),
-          ),
-        ),
-        const SizedBox(height: 12),
-        FigmaSlider(
-          value: kelvin,
-          min: 2700,
-          max: 6500,
-          divisions: 100,
-          onChanged: (v) {
-            kelvin = v;
-            // Board expects Kelvin directly (it converts to Mired for the
-            // bus write). The previous byte conversion was wrong and the
-            // Tun action rejected the value as out-of-range.
-            mqtt.sendColorTempCommand(id, v.round());
-            setSt(() {});
-          },
-        ),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
-            Text(
-              'Warm',
-              style: TextStyle(color: SHColors.mutedText, fontSize: 12),
-            ),
-            Text(
-              'Cool',
-              style: TextStyle(color: SHColors.mutedText, fontSize: 12),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Color _kelvinPreview(double kelvin) {
-    final t = ((kelvin - 2700) / (6500 - 2700)).clamp(0.0, 1.0);
-    return Color.lerp(const Color(0xFFFFB36B), const Color(0xFFB5D6FF), t) ??
-        const Color(0xFFFFE7B5);
-  }
-
   void _showRGBSheet(BuildContext ctx, Map<String, dynamic> load) {
     final mqtt = Provider.of<DirectMQTTService>(ctx, listen: false);
     final id = load['id']?.toString() ?? '';
@@ -503,13 +435,15 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
     int r = ((cur['red'] ?? 255) as num).round().clamp(0, 255);
     int g = ((cur['green'] ?? 255) as num).round().clamp(0, 255);
     int b = ((cur['blue'] ?? 255) as num).round().clamp(0, 255);
+    // Brightness is its own channel (0-100), independent of the color.
+    int bri = ((cur['brightness'] ?? 100) as num).round().clamp(0, 100);
 
     showLiquidGlassModalBottomSheet(
       context: ctx,
       isScrollControlled: true,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSt) => FigmaLoadSheet(
-          title: 'COLOR',
+          title: 'RGB',
           isOn: (mqtt.loads[id]?['isOn'] ?? false),
           onToggle: (v) {
             mqtt.sendCommand(id, v ? 'ON' : 'OFF');
@@ -519,11 +453,17 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
             red: r.toDouble(),
             green: g.toDouble(),
             blue: b.toDouble(),
+            brightness: bri.toDouble(),
             onChanged: (nr, ng, nb) {
               r = nr;
               g = ng;
               b = nb;
-              mqtt.sendRGBCommand(id, nr, ng, nb);
+              mqtt.sendRGBCommand(id, nr, ng, nb, brightness: bri);
+              setSt(() {});
+            },
+            onBrightnessChanged: (v) {
+              bri = v.round();
+              mqtt.sendRGBCommand(id, r, g, b, brightness: bri);
               setSt(() {});
             },
           ),
