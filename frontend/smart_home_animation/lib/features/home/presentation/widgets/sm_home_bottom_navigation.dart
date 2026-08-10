@@ -60,15 +60,6 @@ class SmHomeBottomNavigationBar extends StatelessWidget {
               ),
               BottomNavigationBarItem(
                 icon: _buildIcon(
-                  'assets/icons/room.png',
-                  22,
-                  color: SHColors.hintColor,
-                ),
-                activeIcon: _activeIcon('assets/icons/room.png'),
-                label: 'Rooms',
-              ),
-              BottomNavigationBarItem(
-                icon: _buildIcon(
                   'assets/icons/scene.png',
                   22,
                   color: SHColors.hintColor,

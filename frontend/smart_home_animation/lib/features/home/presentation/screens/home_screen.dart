@@ -14,7 +14,6 @@ import 'package:smart_home_animation/core/shared/presentation/widgets/room_image
 import 'package:smart_home_animation/features/home/presentation/screens/add_room_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/lounge_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/profile_screen.dart';
-import 'package:smart_home_animation/features/home/presentation/screens/rooms_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/scene_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/room_loads_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/widgets/page_indicators.dart';
@@ -168,8 +167,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     _selectedIndex == 1
                         ? 'Loads'
                         : _selectedIndex == 2
-                        ? 'Rooms'
-                        : _selectedIndex == 3
                         ? 'Scenes'
                         : 'Profile',
                     style: context.titleLarge.copyWith(
@@ -184,7 +181,6 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               _buildHomeTab(),
               const LoungeScreen(),
-              RoomsTab(),
               const SceneScreen(),
               const ProfileScreen(),
             ],
@@ -289,7 +285,7 @@ class _HomeScreenState extends State<HomeScreen> {
           typeLabel: 'Scene',
           icon: scene.icon,
           accent: scene.color,
-          onTap: () => setState(() => _selectedIndex = 3),
+          onTap: () => setState(() => _selectedIndex = 2),
         ),
       ),
     ].take(4).toList();
@@ -392,6 +388,14 @@ class _HomeScreenState extends State<HomeScreen> {
           roomName: room.name,
           loadCount: serviceRoom?.loadIds.length ?? 0,
           isFavorite: room.isFavorite,
+          onFavoriteToggle: () {
+            final next = !room.isFavorite;
+            RoomService.instance.setFavorite(room.id, next);
+            Provider.of<DirectMQTTService>(
+              context,
+              listen: false,
+            ).setFavoriteRoom(room.id, next);
+          },
           onTap: serviceRoom == null
               ? null
               : () {
@@ -616,6 +620,7 @@ class _RoomShowcaseCard extends StatefulWidget {
     required this.roomName,
     required this.loadCount,
     required this.isFavorite,
+    required this.onFavoriteToggle,
     required this.onTap,
   });
 
@@ -624,6 +629,7 @@ class _RoomShowcaseCard extends StatefulWidget {
   final String roomName;
   final int loadCount;
   final bool isFavorite;
+  final VoidCallback onFavoriteToggle;
   final VoidCallback? onTap;
 
   @override
@@ -707,15 +713,27 @@ class _RoomShowcaseCardState extends State<_RoomShowcaseCard> {
                             ),
                           ),
                         ),
-                        if (widget.isFavorite)
-                          Positioned(
-                            top: 12,
-                            right: 12,
-                            child: _RoomGlassIcon(
-                              icon: Icons.star_rounded,
-                              color: SHColors.amber,
+                        Positioned(
+                          top: 12,
+                          right: 12,
+                          child: Semantics(
+                            button: true,
+                            label: widget.isFavorite
+                                ? 'Remove ${widget.roomName} from favorites'
+                                : 'Add ${widget.roomName} to favorites',
+                            child: GestureDetector(
+                              onTap: widget.onFavoriteToggle,
+                              child: _RoomGlassIcon(
+                                icon: widget.isFavorite
+                                    ? Icons.star_rounded
+                                    : Icons.star_border_rounded,
+                                color: widget.isFavorite
+                                    ? SHColors.amber
+                                    : Colors.white70,
+                              ),
                             ),
                           ),
+                        ),
                         Positioned(
                           left: 0,
                           right: 0,
