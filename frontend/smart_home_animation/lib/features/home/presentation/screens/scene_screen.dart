@@ -6,6 +6,7 @@
 import 'package:flutter/material.dart';
 import 'package:smart_home_animation/core/theme/aurora_background.dart';
 import 'package:smart_home_animation/core/theme/sh_colors.dart';
+import 'package:smart_home_animation/services/scene_favorites_service.dart';
 
 class SceneScreen extends StatefulWidget {
   const SceneScreen({super.key});
@@ -78,6 +79,12 @@ class _SceneScreenState extends State<SceneScreen>
     _tabController = TabController(length: _categories.length, vsync: this);
     _searchController.addListener(_onSearchChanged);
     _scenes = List.of(_standardScenes);
+    SceneFavoritesService.instance.load().then((_) {
+      if (!mounted) return;
+      setState(() {
+        _scenes = _scenes.map(_applyStoredFavorite).toList();
+      });
+    });
   }
 
   @override
@@ -111,6 +118,17 @@ class _SceneScreenState extends State<SceneScreen>
           scope: s.scope,
         );
 
+        final updated = _scenes[index];
+        SceneFavoritesService.instance.setFavorite(
+          id: updated.id,
+          name: updated.name,
+          description: updated.description,
+          icon: updated.icon,
+          color: updated.color,
+          scope: updated.scope,
+          favorite: updated.isFavorite,
+        );
+
         final isNowFavorite = _scenes[index].isFavorite;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -125,6 +143,26 @@ class _SceneScreenState extends State<SceneScreen>
         );
       }
     });
+  }
+
+  SmartScene _applyStoredFavorite(SmartScene scene) {
+    final storedFavorites = SceneFavoritesService.instance.favorites
+        .where((favorite) => favorite.id == scene.id)
+        .toList();
+    final stored = storedFavorites.isEmpty ? null : storedFavorites.first;
+    return stored == null
+        ? scene
+        : SmartScene(
+            id: scene.id,
+            name: scene.name,
+            description: scene.description,
+            icon: scene.icon,
+            color: scene.color,
+            deviceCount: scene.deviceCount,
+            isFavorite: true,
+            timeOfDay: scene.timeOfDay,
+            scope: scene.scope,
+          );
   }
 
   /// Opens the scene creation dialog. New scenes are added as custom
@@ -142,10 +180,7 @@ class _SceneScreenState extends State<SceneScreen>
           backgroundColor: SHColors.elevatedCardColor,
           title: const Text(
             'Create Scene',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w800,
-            ),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
           ),
           content: SingleChildScrollView(
             child: Column(
@@ -178,8 +213,7 @@ class _SceneScreenState extends State<SceneScreen>
                     ChoiceChip(
                       label: const Text('Global'),
                       selected: scope == 'Global',
-                      onSelected: (_) =>
-                          setDialogState(() => scope = 'Global'),
+                      onSelected: (_) => setDialogState(() => scope = 'Global'),
                       selectedColor: SHColors.primary,
                       labelStyle: const TextStyle(color: Colors.white),
                     ),
@@ -200,18 +234,48 @@ class _SceneScreenState extends State<SceneScreen>
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     children: [
-                      _iconOption(ctx, setDialogState, Icons.wb_sunny_outlined,
-                          (i) => selectedIcon = i, selectedIcon),
-                      _iconOption(ctx, setDialogState, Icons.nightlight_outlined,
-                          (i) => selectedIcon = i, selectedIcon),
-                      _iconOption(ctx, setDialogState, Icons.movie_outlined,
-                          (i) => selectedIcon = i, selectedIcon),
-                      _iconOption(ctx, setDialogState, Icons.lock_outline,
-                          (i) => selectedIcon = i, selectedIcon),
-                      _iconOption(ctx, setDialogState, Icons.favorite_outline,
-                          (i) => selectedIcon = i, selectedIcon),
-                      _iconOption(ctx, setDialogState, Icons.auto_awesome,
-                          (i) => selectedIcon = i, selectedIcon),
+                      _iconOption(
+                        ctx,
+                        setDialogState,
+                        Icons.wb_sunny_outlined,
+                        (i) => selectedIcon = i,
+                        selectedIcon,
+                      ),
+                      _iconOption(
+                        ctx,
+                        setDialogState,
+                        Icons.nightlight_outlined,
+                        (i) => selectedIcon = i,
+                        selectedIcon,
+                      ),
+                      _iconOption(
+                        ctx,
+                        setDialogState,
+                        Icons.movie_outlined,
+                        (i) => selectedIcon = i,
+                        selectedIcon,
+                      ),
+                      _iconOption(
+                        ctx,
+                        setDialogState,
+                        Icons.lock_outline,
+                        (i) => selectedIcon = i,
+                        selectedIcon,
+                      ),
+                      _iconOption(
+                        ctx,
+                        setDialogState,
+                        Icons.favorite_outline,
+                        (i) => selectedIcon = i,
+                        selectedIcon,
+                      ),
+                      _iconOption(
+                        ctx,
+                        setDialogState,
+                        Icons.auto_awesome,
+                        (i) => selectedIcon = i,
+                        selectedIcon,
+                      ),
                     ],
                   ),
                 ),
@@ -220,18 +284,48 @@ class _SceneScreenState extends State<SceneScreen>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _colorDot(ctx, setDialogState, SHColors.primary,
-                        (c) => selectedColor = c, selectedColor),
-                    _colorDot(ctx, setDialogState, SHColors.amber,
-                        (c) => selectedColor = c, selectedColor),
-                    _colorDot(ctx, setDialogState, SHColors.dimGrey,
-                        (c) => selectedColor = c, selectedColor),
-                    _colorDot(ctx, setDialogState, SHColors.blue,
-                        (c) => selectedColor = c, selectedColor),
-                    _colorDot(ctx, setDialogState, SHColors.rose,
-                        (c) => selectedColor = c, selectedColor),
-                    _colorDot(ctx, setDialogState, SHColors.green,
-                        (c) => selectedColor = c, selectedColor),
+                    _colorDot(
+                      ctx,
+                      setDialogState,
+                      SHColors.primary,
+                      (c) => selectedColor = c,
+                      selectedColor,
+                    ),
+                    _colorDot(
+                      ctx,
+                      setDialogState,
+                      SHColors.amber,
+                      (c) => selectedColor = c,
+                      selectedColor,
+                    ),
+                    _colorDot(
+                      ctx,
+                      setDialogState,
+                      SHColors.dimGrey,
+                      (c) => selectedColor = c,
+                      selectedColor,
+                    ),
+                    _colorDot(
+                      ctx,
+                      setDialogState,
+                      SHColors.blue,
+                      (c) => selectedColor = c,
+                      selectedColor,
+                    ),
+                    _colorDot(
+                      ctx,
+                      setDialogState,
+                      SHColors.rose,
+                      (c) => selectedColor = c,
+                      selectedColor,
+                    ),
+                    _colorDot(
+                      ctx,
+                      setDialogState,
+                      SHColors.green,
+                      (c) => selectedColor = c,
+                      selectedColor,
+                    ),
                   ],
                 ),
               ],
@@ -282,8 +376,7 @@ class _SceneScreenState extends State<SceneScreen>
           SmartScene(
             id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
             name: result['name'] as String,
-            description:
-                '${result['scope']} scene • created by you',
+            description: '${result['scope']} scene • created by you',
             icon: result['icon'] as IconData,
             color: result['color'] as Color,
             deviceCount: 0,
@@ -446,9 +539,9 @@ class _SceneScreenState extends State<SceneScreen>
                     child: Text(
                       'Scenes',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   GestureDetector(
@@ -678,12 +771,18 @@ class _SceneScreenState extends State<SceneScreen>
           children: [
             // Favorite icon
             Positioned(
-              top: 8,
-              right: 8,
-              child: Icon(
-                scene.isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: scene.isFavorite ? SHColors.rose : Colors.white54,
-                size: 20,
+              top: 0,
+              right: 0,
+              child: IconButton(
+                tooltip: scene.isFavorite
+                    ? 'Remove from favorites'
+                    : 'Add to favorites',
+                onPressed: () => _toggleFavorite(scene),
+                icon: Icon(
+                  scene.isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: scene.isFavorite ? SHColors.rose : Colors.white54,
+                  size: 20,
+                ),
               ),
             ),
 
@@ -692,10 +791,7 @@ class _SceneScreenState extends State<SceneScreen>
               top: 8,
               left: 8,
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 6,
-                  vertical: 2,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
                   color: scene.scope == 'Global'
                       ? SHColors.primary.withOpacity(0.25)

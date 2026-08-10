@@ -1,15 +1,12 @@
 // lib/features/home/presentation/screens/home_screen.dart
 // ignore_for_file: unused_field, unused_element, unused_local_variable, unused_import
 
-import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart' hide RefreshIndicator;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_home_animation/core/core.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/device.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/room.dart';
@@ -26,11 +23,11 @@ import 'package:smart_home_animation/services/device_provider_wrapper.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
 import 'package:smart_home_animation/services/house_name_service.dart';
 import 'package:smart_home_animation/services/room_service.dart' hide Room;
+import 'package:smart_home_animation/services/scene_favorites_service.dart';
 import 'package:smart_home_animation/services/token_auth_service.dart';
 import 'package:ui_common/ui_common.dart' hide DeviceType;
 
 import '../widgets/lighted_background.dart';
-import '../widgets/load_icon.dart';
 import '../widgets/sm_home_bottom_navigation.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -42,50 +39,22 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final controller = PageController(viewportFraction: 0.68);
-  final ValueNotifier<double> pageNotifier = ValueNotifier(0);
-  final ValueNotifier<int> roomSelectorNotifier = ValueNotifier(-1);
   int _selectedIndex = 0;
   int _currentRoomIndex = 0;
 
   List<Room> _rooms = [];
-  List<Map<String, dynamic>> _savedRooms = [];
-
-  final RefreshController _refreshController = RefreshController();
-
-  // Load counts for Active Loads section
-  int _totalSwitchCount = 0;
-  int _totalDimmerCount = 0;
-  int _totalTunableCount = 0;
-  int _totalRgbCount = 0;
-
-  // Listener registered with DirectMQTTService so the Active Loads counts
-  // and per-room counts recompute whenever the underlying MQTT state changes
-  // (new loads discovered, status update, command ack). Without this the
-  // counts only updated on pull-to-refresh.
-  VoidCallback? _okasServiceListener;
-
-  // Current room load counts
-  int _currentRoomSwitchCount = 0;
-  int _currentRoomDimmerCount = 0;
-  int _currentRoomTunableCount = 0;
-  int _currentRoomRgbCount = 0;
+  VoidCallback? _sceneFavoritesListener;
 
   @override
   void initState() {
     super.initState();
     controller.addListener(pageListener);
-    // Recompute the Active Loads cards whenever the underlying MQTT
-    // service reports new state (load list, status update, cmd ack).
-    // Without this listener the counts only refresh on pull-to-refresh,
-    // so newly-discovered loads never appear and the per-room counts
-    // stay stale as the user navigates between rooms.
-    final okasService = Provider.of<DirectMQTTService>(context, listen: false);
-    _okasServiceListener = () {
+    _sceneFavoritesListener = () {
       if (!mounted) return;
-      _calculateTotalLoadCounts();
-      _updateCurrentRoomLoads(_currentRoomIndex);
+      setState(() {});
     };
-    okasService.addListener(_okasServiceListener!);
+    SceneFavoritesService.instance.addListener(_sceneFavoritesListener!);
+    SceneFavoritesService.instance.load();
     // Listen to RoomService so newly added rooms show up immediately on
     // the Home screen without waiting for a manual refresh.
     _roomServiceListener = () {
@@ -107,42 +76,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    if (_okasServiceListener != null) {
-      try {
-        Provider.of<DirectMQTTService>(
-          context,
-          listen: false,
-        ).removeListener(_okasServiceListener!);
-      } catch (_) {
-        /* context may be unmounted */
-      }
+    if (_sceneFavoritesListener != null) {
+      SceneFavoritesService.instance.removeListener(_sceneFavoritesListener!);
     }
     if (_roomServiceListener != null) {
       RoomService.instance.removeListener(_roomServiceListener!);
     }
     controller.removeListener(pageListener);
     controller.dispose();
-    pageNotifier.dispose();
-    roomSelectorNotifier.dispose();
-    _refreshController.dispose();
     super.dispose();
   }
 
   Future<void> _loadAllRooms() async {
-    await _loadSavedRooms();
+    await RoomService.instance.loadRooms();
     _loadRoomsFromService();
-    _calculateTotalLoadCounts();
-    _updateCurrentRoomLoads(0);
-  }
-
-  Future<void> _loadSavedRooms() async {
-    final prefs = await SharedPreferences.getInstance();
-    final roomsJson = prefs.getStringList('home_saved_rooms') ?? [];
-    setState(() {
-      _savedRooms = roomsJson
-          .map((json) => jsonDecode(json) as Map<String, dynamic>)
-          .toList();
-    });
   }
 
   void _loadRoomsFromService() {
@@ -163,135 +110,16 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _calculateTotalLoadCounts() {
-    int switchCount = 0;
-    int dimmerCount = 0;
-    int tunableCount = 0;
-    int rgbCount = 0;
-
-    for (var savedRoom in _savedRooms) {
-      final accessories = savedRoom['accessories'] as List<dynamic>? ?? [];
-      for (var accessory in accessories) {
-        final type = accessory['type'] as String? ?? '';
-        switch (type) {
-          case 'Switch':
-            switchCount++;
-            break;
-          case 'Dimmer':
-            dimmerCount++;
-            break;
-          case 'Tunable':
-            tunableCount++;
-            break;
-          case 'RGB':
-            rgbCount++;
-            break;
-        }
-      }
-    }
-
-    final okasService = Provider.of<DirectMQTTService>(context, listen: false);
-    final allDevices = okasService.devices.values.toList();
-    for (var device in allDevices) {
-      final type = device['type'] as String? ?? '';
-      switch (type) {
-        case 'swt':
-          switchCount++;
-          break;
-        case 'dim':
-          dimmerCount++;
-          break;
-        case 'tun':
-          tunableCount++;
-          break;
-        case 'rgb':
-          rgbCount++;
-          break;
-      }
-    }
-
-    setState(() {
-      _totalSwitchCount = switchCount;
-      _totalDimmerCount = dimmerCount;
-      _totalTunableCount = tunableCount;
-      _totalRgbCount = rgbCount;
-    });
-  }
-
-  void _updateCurrentRoomLoads(int roomIndex) {
-    if (roomIndex < 0 || roomIndex >= _rooms.length) {
-      setState(() {
-        _currentRoomSwitchCount = 0;
-        _currentRoomDimmerCount = 0;
-        _currentRoomTunableCount = 0;
-        _currentRoomRgbCount = 0;
-      });
-      return;
-    }
-
-    final room = _rooms[roomIndex];
-    final savedRoomData = _savedRooms.firstWhere(
-      (saved) => saved['id'] == room.id,
-      orElse: () => {},
-    );
-
-    final accessories = savedRoomData['accessories'] as List<dynamic>? ?? [];
-
-    int switchCount = 0;
-    int dimmerCount = 0;
-    int tunableCount = 0;
-    int rgbCount = 0;
-
-    for (var accessory in accessories) {
-      final type = accessory['type'] as String? ?? '';
-      switch (type) {
-        case 'Switch':
-          switchCount++;
-          break;
-        case 'Dimmer':
-          dimmerCount++;
-          break;
-        case 'Tunable':
-          tunableCount++;
-          break;
-        case 'RGB':
-          rgbCount++;
-          break;
-      }
-    }
-
-    setState(() {
-      _currentRoomSwitchCount = switchCount;
-      _currentRoomDimmerCount = dimmerCount;
-      _currentRoomTunableCount = tunableCount;
-      _currentRoomRgbCount = rgbCount;
-    });
-  }
-
-  Future<void> _onRefresh() async {
-    await Future.delayed(const Duration(seconds: 1));
-    await _loadAllRooms();
-    _calculateTotalLoadCounts();
-    _updateCurrentRoomLoads(_currentRoomIndex);
-    _refreshController.refreshCompleted();
-    if (mounted) setState(() {});
-  }
-
   void _addRoom(dynamic roomData) {
     _loadAllRooms();
-    _calculateTotalLoadCounts();
-    _updateCurrentRoomLoads(_currentRoomIndex);
   }
 
   void pageListener() {
     final page = controller.page ?? 0;
-    pageNotifier.value = page;
-
-    // Update current room index when page changes
     final newIndex = page.round();
     if (newIndex != _currentRoomIndex && newIndex < _rooms.length) {
       _currentRoomIndex = newIndex;
-      _updateCurrentRoomLoads(newIndex);
+      setState(() {});
     }
   }
 
@@ -424,67 +252,90 @@ class _HomeScreenState extends State<HomeScreen> {
 
           const SizedBox(height: 24),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Active Loads',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              if (_rooms.isNotEmpty)
-                Text(
-                  'Room ${_currentRoomIndex + 1}/${_rooms.length}',
-                  style: TextStyle(
-                    color: SHColors.mutedText,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 12),
-
-          SizedBox(
-            height: 100,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                _buildActiveLoadCard(
-                  'Switch',
-                  _totalSwitchCount,
-                  const LoadIcon(type: 'swt', color: SHColors.green, size: 24),
-                  SHColors.green,
-                ),
-                const SizedBox(width: 12),
-                _buildActiveLoadCard(
-                  'Dimmer',
-                  _totalDimmerCount,
-                  const LoadIcon(type: 'dim', color: SHColors.amber, size: 24),
-                  SHColors.amber,
-                ),
-                const SizedBox(width: 12),
-                _buildActiveLoadCard(
-                  'Tunable',
-                  _totalTunableCount,
-                  const LoadIcon(type: 'tun', color: SHColors.dimGrey, size: 24),
-                  SHColors.dimGrey,
-                ),
-                const SizedBox(width: 12),
-                _buildActiveLoadCard(
-                  'RGB',
-                  _totalRgbCount,
-                  const LoadIcon(type: 'rgb', color: SHColors.blue, size: 24),
-                  SHColors.blue,
-                ),
-              ],
-            ),
-          ),
+          _buildFavoritesSection(),
         ],
       ),
+    );
+  }
+
+  Widget _buildFavoritesSection() {
+    final favorites = <_FavoriteAccess>[
+      ..._rooms
+          .where((room) => room.isFavorite)
+          .map(
+            (room) => _FavoriteAccess(
+              id: room.id,
+              label: room.name,
+              typeLabel: 'Room',
+              icon: Icons.meeting_room_rounded,
+              accent: SHColors.primary,
+              imagePath: room.wallpaperUrl,
+              onTap: () {
+                final serviceRoom = RoomService.instance.getRoomById(room.id);
+                if (serviceRoom == null) return;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => RoomLoadsScreen(room: serviceRoom),
+                  ),
+                );
+              },
+            ),
+          ),
+      ...SceneFavoritesService.instance.favorites.map(
+        (scene) => _FavoriteAccess(
+          id: scene.id,
+          label: scene.name,
+          typeLabel: 'Scene',
+          icon: scene.icon,
+          accent: scene.color,
+          onTap: () => setState(() => _selectedIndex = 3),
+        ),
+      ),
+    ].take(4).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Favorites',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            Text(
+              '${favorites.length}/4',
+              style: const TextStyle(
+                color: SHColors.mutedText,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 154,
+          child: Row(
+            children: List.generate(4, (index) {
+              final favorite = index < favorites.length
+                  ? favorites[index]
+                  : null;
+              return Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(right: index == 3 ? 0 : 8),
+                  child: _FavoriteAccessCard(favorite: favorite),
+                ),
+              );
+            }),
+          ),
+        ),
+      ],
     );
   }
 
@@ -510,7 +361,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         SizedBox(
-          height: 280,
+          height: 326,
           child: PageView.builder(
             controller: controller,
             clipBehavior: Clip.none,
@@ -532,23 +383,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return AnimatedBuilder(
       animation: controller,
-      child: _RoomShowcaseCard(
-        key: ValueKey(room.id),
-        index: index,
-        imagePath: imagePath,
-        roomName: room.name,
-        loadCount: serviceRoom?.loadIds.length ?? 0,
-        isFavorite: room.isFavorite,
-        onTap: serviceRoom == null
-            ? null
-            : () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => RoomLoadsScreen(room: serviceRoom),
-                  ),
-                );
-              },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+        child: _RoomShowcaseCard(
+          key: ValueKey(room.id),
+          index: index,
+          imagePath: imagePath,
+          roomName: room.name,
+          loadCount: serviceRoom?.loadIds.length ?? 0,
+          isFavorite: room.isFavorite,
+          onTap: serviceRoom == null
+              ? null
+              : () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => RoomLoadsScreen(room: serviceRoom),
+                    ),
+                  );
+                },
+        ),
       ),
       builder: (context, child) {
         final page = controller.hasClients && controller.page != null
@@ -563,54 +417,6 @@ class _HomeScreenState extends State<HomeScreen> {
           child: child,
         );
       },
-    );
-  }
-
-  Widget _buildActiveLoadCard(
-    String title,
-    int count,
-    Widget icon,
-    Color color,
-  ) {
-    return Container(
-      width: 88,
-      decoration: BoxDecoration(
-        color: SHColors.cardColor.withOpacity(0.58),
-        borderRadius: BorderRadius.circular(SHColors.radiusMd),
-        border: Border.all(color: color.withOpacity(0.3), width: 1),
-        boxShadow: SHColors.softShadow,
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: icon,
-          ),
-          const SizedBox(height: 6),
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            count.toString(),
-            style: TextStyle(
-              color: color,
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -743,25 +549,19 @@ class _MqttLoadingSkeletonState extends State<_MqttLoadingSkeleton>
           _bone(width: 152, height: 24, radius: 8),
           const SizedBox(height: 12),
           SizedBox(
-            height: 280,
+            height: 326,
             child: Row(
               children: [
-                SizedBox(width: 52, child: _bone(height: 244, radius: 18)),
+                SizedBox(width: 52, child: _bone(height: 286, radius: 18)),
                 const SizedBox(width: 12),
-                Expanded(child: _bone(height: 280, radius: 18)),
+                Expanded(child: _bone(height: 326, radius: 18)),
                 const SizedBox(width: 12),
-                SizedBox(width: 52, child: _bone(height: 244, radius: 18)),
+                SizedBox(width: 52, child: _bone(height: 286, radius: 18)),
               ],
             ),
           ),
           const SizedBox(height: 30),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _bone(width: 178, height: 24, radius: 8),
-              _bone(width: 74, height: 18, radius: 8),
-            ],
-          ),
+          _bone(width: 132, height: 24, radius: 8),
           const SizedBox(height: 14),
           Row(
             children: List.generate(
@@ -769,7 +569,7 @@ class _MqttLoadingSkeletonState extends State<_MqttLoadingSkeleton>
               (index) => Expanded(
                 child: Padding(
                   padding: EdgeInsets.only(right: index == 3 ? 0 : 10),
-                  child: _bone(height: 150, radius: 16),
+                  child: _bone(height: 154, radius: 18),
                 ),
               ),
             ),
@@ -868,122 +668,121 @@ class _RoomShowcaseCardState extends State<_RoomShowcaseCard> {
             onTapDown: canOpen ? (_) => _setPressed(true) : null,
             onTapCancel: canOpen ? () => _setPressed(false) : null,
             onTapUp: canOpen ? (_) => _setPressed(false) : null,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(18),
-              child: BackdropFilter(
-                filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.06),
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.13),
-                      width: 0.8,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.34),
-                        blurRadius: 24,
-                        offset: const Offset(0, 12),
-                      ),
-                    ],
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.20),
+                    blurRadius: 18,
+                    offset: const Offset(0, 8),
                   ),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      RoomImage(imagePath: widget.imagePath),
-                      DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.black.withValues(alpha: 0.02),
-                              Colors.black.withValues(alpha: 0.06),
-                              Colors.black.withValues(alpha: 0.86),
-                            ],
-                            stops: const [0, 0.46, 1],
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(18),
+                child: BackdropFilter(
+                  filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.06),
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        RoomImage(imagePath: widget.imagePath),
+                        DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.black.withValues(alpha: 0.02),
+                                Colors.black.withValues(alpha: 0.06),
+                                Colors.black.withValues(alpha: 0.68),
+                              ],
+                              stops: const [0, 0.46, 1],
+                            ),
                           ),
                         ),
-                      ),
-                      if (widget.isFavorite)
+                        if (widget.isFavorite)
+                          Positioned(
+                            top: 12,
+                            right: 12,
+                            child: _RoomGlassIcon(
+                              icon: Icons.star_rounded,
+                              color: SHColors.amber,
+                            ),
+                          ),
                         Positioned(
-                          top: 12,
-                          right: 12,
-                          child: _RoomGlassIcon(
-                            icon: Icons.star_rounded,
-                            color: SHColors.amber,
-                          ),
-                        ),
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.vertical(
-                            bottom: Radius.circular(18),
-                          ),
-                          child: BackdropFilter(
-                            filter: ui.ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-                            child: Container(
-                              padding: const EdgeInsets.fromLTRB(
-                                16,
-                                13,
-                                12,
-                                14,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          child: ClipRRect(
+                            borderRadius: const BorderRadius.vertical(
+                              bottom: Radius.circular(18),
+                            ),
+                            child: BackdropFilter(
+                              filter: ui.ImageFilter.blur(
+                                sigmaX: 14,
+                                sigmaY: 14,
                               ),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withValues(alpha: 0.24),
-                                border: Border(
-                                  top: BorderSide(
-                                    color: Colors.white.withValues(alpha: 0.16),
-                                  ),
+                              child: Container(
+                                padding: const EdgeInsets.fromLTRB(
+                                  16,
+                                  13,
+                                  12,
+                                  14,
                                 ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          widget.roomName,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w800,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 3),
-                                        Text(
-                                          '${widget.loadCount} loads',
-                                          style: TextStyle(
-                                            color: Colors.white.withValues(
-                                              alpha: 0.68,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.07),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            widget.roomName,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w800,
                                             ),
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
                                           ),
-                                        ),
-                                      ],
+                                          const SizedBox(height: 3),
+                                          Text(
+                                            '${widget.loadCount} loads',
+                                            style: TextStyle(
+                                              color: Colors.white.withValues(
+                                                alpha: 0.68,
+                                              ),
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  _RoomGlassIcon(
-                                    icon: Icons.chevron_right_rounded,
-                                    color: Colors.white,
-                                    size: 22,
-                                  ),
-                                ],
+                                    _RoomGlassIcon(
+                                      icon: Icons.chevron_right_rounded,
+                                      color: Colors.white,
+                                      size: 22,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -1017,6 +816,191 @@ class _RoomGlassIcon extends StatelessWidget {
         border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
       ),
       child: Icon(icon, color: color, size: size),
+    );
+  }
+}
+
+class _FavoriteAccess {
+  const _FavoriteAccess({
+    required this.id,
+    required this.label,
+    required this.typeLabel,
+    required this.icon,
+    required this.accent,
+    required this.onTap,
+    this.imagePath,
+  });
+
+  final String id;
+  final String label;
+  final String typeLabel;
+  final IconData icon;
+  final Color accent;
+  final String? imagePath;
+  final VoidCallback onTap;
+}
+
+class _FavoriteAccessCard extends StatefulWidget {
+  const _FavoriteAccessCard({required this.favorite});
+
+  final _FavoriteAccess? favorite;
+
+  @override
+  State<_FavoriteAccessCard> createState() => _FavoriteAccessCardState();
+}
+
+class _FavoriteAccessCardState extends State<_FavoriteAccessCard> {
+  bool _pressed = false;
+
+  void _setPressed(bool value) {
+    if (mounted && _pressed != value) setState(() => _pressed = value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final favorite = widget.favorite;
+    final accent = favorite?.accent ?? SHColors.hintColor;
+
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 360),
+      switchInCurve: Curves.easeOutCubic,
+      switchOutCurve: Curves.easeInCubic,
+      transitionBuilder: (child, animation) {
+        return FadeTransition(
+          opacity: animation,
+          child: ScaleTransition(
+            scale: Tween<double>(begin: 0.92, end: 1).animate(animation),
+            child: child,
+          ),
+        );
+      },
+      child: GestureDetector(
+        key: ValueKey(favorite?.id ?? 'empty'),
+        onTap: favorite?.onTap,
+        onTapDown: favorite == null ? null : (_) => _setPressed(true),
+        onTapCancel: favorite == null ? null : () => _setPressed(false),
+        onTapUp: favorite == null ? null : (_) => _setPressed(false),
+        child: AnimatedScale(
+          scale: _pressed ? 0.95 : 1,
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOutCubic,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: favorite == null
+                  ? null
+                  : [
+                      BoxShadow(
+                        color: accent.withValues(alpha: 0.08),
+                        blurRadius: 14,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: BackdropFilter(
+                filter: ui.ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: favorite == null
+                        ? Colors.white.withValues(alpha: 0.045)
+                        : Colors.white.withValues(alpha: 0.075),
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      if (favorite?.imagePath != null)
+                        RoomImage(imagePath: favorite!.imagePath),
+                      if (favorite != null)
+                        DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.black.withValues(alpha: 0.08),
+                                Colors.black.withValues(alpha: 0.64),
+                              ],
+                            ),
+                          ),
+                        ),
+                      if (favorite == null)
+                        const Center(
+                          child: Icon(
+                            Icons.star_border_rounded,
+                            color: SHColors.hintColor,
+                            size: 28,
+                          ),
+                        )
+                      else ...[
+                        Positioned(
+                          top: 9,
+                          left: 9,
+                          child: _FavoritePill(
+                            label: favorite.typeLabel,
+                            color: accent,
+                          ),
+                        ),
+                        Positioned(
+                          top: 9,
+                          right: 9,
+                          child: Icon(favorite.icon, color: accent, size: 18),
+                        ),
+                        Positioned(
+                          left: 10,
+                          right: 8,
+                          bottom: 10,
+                          child: Text(
+                            favorite.label,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              height: 1.12,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FavoritePill extends StatelessWidget {
+  const _FavoritePill({required this.label, required this.color});
+
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.46),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
+      ),
+      child: Text(
+        label.toUpperCase(),
+        style: TextStyle(
+          color: color,
+          fontSize: 8,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 0.4,
+        ),
+      ),
     );
   }
 }

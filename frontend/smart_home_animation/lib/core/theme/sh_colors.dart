@@ -18,7 +18,7 @@ abstract class SHColors {
   static const Color cyan300 = Color(0xFF81F3FB);
 
   // ---- Brand accents ----
-  static const Color green = Color(0xFF1EF62C);
+  static const Color green = Color(0xFF6AEB6A);
   static const Color amber = Color(0xFFFF7135);
   static const Color dimGrey = Color(0xFFB4C5C4);
   static const Color curtYlw = Color(0xFFFCF00F);
