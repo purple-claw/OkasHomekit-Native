@@ -163,7 +163,9 @@ class _HomeScreenState extends State<HomeScreen> {
               _buildHomeTab(),
               const LoungeScreen(),
               const SceneScreen(showHeader: false),
-              const ProfileScreen(),
+              // NOT const: rebuilds when HouseNameService refreshes from
+              // the board (owner/project names).
+              ProfileScreen(),
             ],
           ),
           bottomNavigationBar: SmHomeBottomNavigationBar(

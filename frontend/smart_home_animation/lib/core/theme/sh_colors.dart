@@ -29,6 +29,12 @@ abstract class SHColors {
   // premium scenes, the house-name eyebrow). ----
   static const Color champagne = Color(0xFFE8C58A);
 
+  // ---- Profile/Figma frame tokens (Profile Management design) ----
+  static const Color figmaOrange = Color(0xFFFDBA74);
+  static const Color figmaGray = Color(0xFF9CA3AF);
+  static const Color figmaRed = Color(0xFFEF4444);
+  static const Color guestAvatar = Color(0xFF004F69);
+
   // ---- Text scale ----
   static const Color textColor = Color(0xFFE8F6F8);
   static const Color mutedText = Color(0xFFA9C3C9);
@@ -63,11 +69,7 @@ abstract class SHColors {
   static const Gradient brandRadialGlow = RadialGradient(
     center: Alignment(-0.4, -0.6),
     radius: 1.2,
-    colors: [
-      Color(0x222AC0D1),
-      Color(0x112AC0D1),
-      Color(0x00000000),
-    ],
+    colors: [Color(0x222AC0D1), Color(0x112AC0D1), Color(0x00000000)],
     stops: [0.0, 0.5, 1.0],
   );
 
@@ -148,47 +150,47 @@ abstract class SHColors {
 
   // ---- Elevation tiers (replaces single softShadow) ----
   static List<BoxShadow> get shadowSubtle => [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.16),
-          blurRadius: 12,
-          offset: const Offset(0, 4),
-        ),
-      ];
+    BoxShadow(
+      color: Colors.black.withOpacity(0.16),
+      blurRadius: 12,
+      offset: const Offset(0, 4),
+    ),
+  ];
 
   static List<BoxShadow> get shadowCard => [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.28),
-          blurRadius: 22,
-          offset: const Offset(0, 12),
-        ),
-      ];
+    BoxShadow(
+      color: Colors.black.withOpacity(0.28),
+      blurRadius: 22,
+      offset: const Offset(0, 12),
+    ),
+  ];
 
   static List<BoxShadow> get shadowRaised => [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.4),
-          blurRadius: 32,
-          offset: const Offset(0, 18),
-        ),
-      ];
+    BoxShadow(
+      color: Colors.black.withOpacity(0.4),
+      blurRadius: 32,
+      offset: const Offset(0, 18),
+    ),
+  ];
 
   static List<BoxShadow> get shadowSheet => [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.5),
-          blurRadius: 28,
-          offset: const Offset(0, -12),
-        ),
-      ];
+    BoxShadow(
+      color: Colors.black.withOpacity(0.5),
+      blurRadius: 28,
+      offset: const Offset(0, -12),
+    ),
+  ];
 
   /// Cyan glow used by active loads and selected rooms. Matches the
   /// 24px-blur, 30% opacity recipe from the design notes.
   static List<BoxShadow> glow(Color color, {double opacity = 0.30}) => [
-        BoxShadow(
-          color: color.withOpacity(opacity),
-          blurRadius: 24,
-          spreadRadius: 0,
-          offset: Offset.zero,
-        ),
-      ];
+    BoxShadow(
+      color: color.withOpacity(opacity),
+      blurRadius: 24,
+      spreadRadius: 0,
+      offset: Offset.zero,
+    ),
+  ];
 
   /// Kept for back-compat with callers that previously referenced
   /// `softShadow`. Maps to the new shadowCard tier.
@@ -203,18 +205,20 @@ abstract class SHColors {
     final borderColor = active
         ? (accent ?? primary).withOpacity(0.55)
         : premium
-            ? champagne.withOpacity(0.4)
-            : Colors.white.withOpacity(0.12);
+        ? champagne.withOpacity(0.4)
+        : Colors.white.withOpacity(0.12);
     return BoxDecoration(
       color: elevatedCardColor.withOpacity(active ? 0.72 : 0.56),
       gradient: active
           ? activeCardGradient
           : premium
-              ? premiumCardGradient
-              : cardGradient,
+          ? premiumCardGradient
+          : cardGradient,
       borderRadius: BorderRadius.circular(radius),
       border: Border.all(color: borderColor),
-      boxShadow: active && accent != null ? glow(accent, opacity: 0.18) : shadowCard,
+      boxShadow: active && accent != null
+          ? glow(accent, opacity: 0.18)
+          : shadowCard,
     );
   }
 

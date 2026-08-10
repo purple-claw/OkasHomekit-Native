@@ -29,6 +29,7 @@ class TokenAuthService extends ChangeNotifier {
   List<String> _discoveryLogs = [];
 
   bool get isAuthenticated => _isAuthenticated;
+
   /// True when a token/session is still stored on this device (i.e. the
   /// last auth failure was transient, not a definitive rejection).
   bool get hasStoredCredentials => _token != null;
@@ -39,9 +40,11 @@ class TokenAuthService extends ChangeNotifier {
   String? get token => _token;
   String get role => _session?['principal']?['role'] as String? ?? '';
   bool get isAdmin => role == 'admin';
-  Map<String, dynamic>? get mqttCredentials => _session?['mqtt'] as Map<String, dynamic>?;
+  Map<String, dynamic>? get mqttCredentials =>
+      _session?['mqtt'] as Map<String, dynamic>?;
   String? get commandToken => _session?['commandToken'] as String?;
   String? get displayName => _session?['principal']?['label'] as String?;
+  String? get adminEmail => _session?['principal']?['email'] as String?;
 
   TokenAuthService() {
     _loadSavedCredentials();
@@ -165,7 +168,8 @@ class TokenAuthService extends ChangeNotifier {
 
       // The board returns the raw admin token as accessToken; the guests
       // APIs authenticate with it over the Bearer header.
-      _token = session['accessToken'] as String? ??
+      _token =
+          session['accessToken'] as String? ??
           session['commandToken'] as String? ??
           _token;
       _session = session;
@@ -255,12 +259,19 @@ class TokenAuthService extends ChangeNotifier {
     _requireAdmin();
     const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     final random = Random.secure();
-    final guestToken = List.generate(8, (_) => alphabet[random.nextInt(alphabet.length)]).join();
+    final guestToken = List.generate(
+      8,
+      (_) => alphabet[random.nextInt(alphabet.length)],
+    ).join();
     final response = await http
         .post(
           _apiUri('/api/auth/guests'),
           headers: _authHeaders(),
-          body: jsonEncode({'label': label, 'durationMinutes': durationMinutes, 'token': guestToken}),
+          body: jsonEncode({
+            'label': label,
+            'durationMinutes': durationMinutes,
+            'token': guestToken,
+          }),
         )
         .timeout(const Duration(seconds: 10));
     final result = _decodeResponse(response);
@@ -289,7 +300,10 @@ class TokenAuthService extends ChangeNotifier {
         .patch(
           _apiUri('/api/auth/guests/$guestId'),
           headers: _authHeaders(),
-          body: jsonEncode({'label': label, 'durationMinutes': durationMinutes}),
+          body: jsonEncode({
+            'label': label,
+            'durationMinutes': durationMinutes,
+          }),
         )
         .timeout(const Duration(seconds: 10));
     return _decodeResponse(response);
@@ -298,10 +312,7 @@ class TokenAuthService extends ChangeNotifier {
   Future<void> deleteGuest(String guestId) async {
     _requireAdmin();
     final response = await http
-        .delete(
-          _apiUri('/api/auth/guests/$guestId'),
-          headers: _authHeaders(),
-        )
+        .delete(_apiUri('/api/auth/guests/$guestId'), headers: _authHeaders())
         .timeout(const Duration(seconds: 10));
     _decodeResponse(response);
   }
@@ -329,7 +340,9 @@ class TokenAuthService extends ChangeNotifier {
   String? _macDerivedToken(String mac) {
     final normalized = mac.toLowerCase().replaceAll(RegExp(r'[^a-f0-9]'), '');
     if (normalized.length != 12) return null;
-    final digest = sha256.convert(utf8.encode('OKAS-MAC-AUTH-V1:$normalized')).bytes;
+    final digest = sha256
+        .convert(utf8.encode('OKAS-MAC-AUTH-V1:$normalized'))
+        .bytes;
     const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     final output = StringBuffer();
     for (final value in digest) {
@@ -345,8 +358,15 @@ class TokenAuthService extends ChangeNotifier {
     try {
       final response = await http
           .post(
-            Uri(scheme: Constants.apiScheme, host: ip, path: '/api/auth/exchange'),
-            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'},
+            Uri(
+              scheme: Constants.apiScheme,
+              host: ip,
+              path: '/api/auth/exchange',
+            ),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
             body: jsonEncode({'token': token}),
           )
           .timeout(const Duration(seconds: 10));
@@ -400,9 +420,9 @@ class TokenAuthService extends ChangeNotifier {
   }
 
   Map<String, String> _authHeaders() => {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${_token ?? ''}',
-      };
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ${_token ?? ''}',
+  };
 
   Map<String, dynamic> _decodeResponse(http.Response response) {
     Map<String, dynamic> data;
@@ -411,8 +431,13 @@ class TokenAuthService extends ChangeNotifier {
     } catch (_) {
       throw const AuthApiException('The board returned an invalid response.');
     }
-    if (response.statusCode < 200 || response.statusCode >= 300 || data['success'] == false) {
-      throw AuthApiException(data['message'] as String? ?? 'Request failed (${response.statusCode}).');
+    if (response.statusCode < 200 ||
+        response.statusCode >= 300 ||
+        data['success'] == false) {
+      throw AuthApiException(
+        data['message'] as String? ??
+            'Request failed (${response.statusCode}).',
+      );
     }
     return data;
   }

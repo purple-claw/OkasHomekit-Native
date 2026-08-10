@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/glass_panel.dart';
 import 'package:smart_home_animation/core/theme/sh_colors.dart';
 import 'package:smart_home_animation/services/token_auth_service.dart';
 
@@ -13,6 +14,7 @@ class GuestManagementScreen extends StatefulWidget {
 }
 
 class _GuestManagementScreenState extends State<GuestManagementScreen> {
+  final _guestCarouselController = PageController(viewportFraction: 0.68);
   static const int _maxGuestDurationMinutes = 30 * 24 * 60;
   List<Map<String, dynamic>> _guests = [];
   bool _loading = true;
@@ -46,6 +48,7 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
     DateTime selectedDate = _initialExpiryDate(guest);
     final request = await showDialog<Map<String, dynamic>>(
       context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.6),
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
           backgroundColor: SHColors.elevatedCardColor,
@@ -313,12 +316,6 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
     appBar: widget.showAppBar
         ? AppBar(title: const Text('Guest access'))
         : null,
-    floatingActionButton: FloatingActionButton.extended(
-      onPressed: () => _openGuestForm(),
-      backgroundColor: SHColors.primary,
-      icon: const Icon(Icons.person_add),
-      label: const Text('Add guest'),
-    ),
     body: RefreshIndicator(
       onRefresh: _loadGuests,
       child: _loading
@@ -333,7 +330,7 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
               ),
             )
           : ListView(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
               children: _guests.isEmpty
                   ? const [
                       SizedBox(height: 120),
@@ -350,89 +347,201 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
                         ),
                       ),
                     ]
-                  : _guests.map((guest) {
-                      final revoked = guest['revokedAt'] != null;
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        decoration: BoxDecoration(
-                          color: SHColors.cardColor.withOpacity(0.58),
-                          gradient: SHColors.cardGradient,
-                          borderRadius: BorderRadius.circular(
-                            SHColors.radiusLg,
-                          ),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.12),
-                          ),
-                          boxShadow: SHColors.softShadow,
+                  : [
+                      // Guest cards carousel (same pattern as the room
+                      // showcase: active card + peek of the neighbours).
+                      SizedBox(
+                        height: 158,
+                        child: PageView.builder(
+                          controller: _guestCarouselController,
+                          clipBehavior: Clip.none,
+                          padEnds: true,
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: _guests.length,
+                          itemBuilder: (context, index) {
+                            final guest = _guests[index];
+                            return AnimatedBuilder(
+                              animation: _guestCarouselController,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 7,
+                                  vertical: 3,
+                                ),
+                                child: _GuestCard(
+                                  guest: guest,
+                                  onEdit: guest['revokedAt'] != null
+                                      ? null
+                                      : () => _openGuestForm(guest: guest),
+                                  onDelete: () => _deleteGuest(guest),
+                                  onToggle: () => _toggleGuestStatus(guest),
+                                ),
+                              ),
+                              builder: (context, child) {
+                                final page =
+                                    _guestCarouselController.hasClients &&
+                                        _guestCarouselController.page != null
+                                    ? _guestCarouselController.page!
+                                    : index.toDouble();
+                                final distance = (page - index).abs().clamp(
+                                  0.0,
+                                  1.0,
+                                );
+                                return Transform.scale(
+                                  alignment: Alignment.center,
+                                  scale: 1 - (distance * 0.14),
+                                  child: child,
+                                );
+                              },
+                            );
+                          },
                         ),
-                        child: ListTile(
-                          leading: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: revoked
-                                  ? SHColors.rose.withOpacity(0.14)
-                                  : SHColors.primary.withOpacity(0.14),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              revoked ? Icons.person_off : Icons.person,
-                              color: revoked ? SHColors.rose : SHColors.primary,
-                            ),
-                          ),
-                          title: Text(
-                            guest['label'] as String? ?? 'Guest',
-                            style: const TextStyle(
-                              color: SHColors.textColor,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          subtitle: Text(
-                            revoked
-                                ? 'Revoked'
-                                : 'Expires: ${_formatExpiry(guest['expiresAt'])}',
-                            style: const TextStyle(color: SHColors.mutedText),
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: Icon(
-                                  revoked
-                                      ? Icons.check_circle_outline
-                                      : Icons.block,
-                                  color: revoked
-                                      ? SHColors.green
-                                      : SHColors.amber,
-                                ),
-                                tooltip: revoked
-                                    ? 'Enable guest'
-                                    : 'Revoke guest',
-                                onPressed: () => _toggleGuestStatus(guest),
+                      ),
+                      // Add Guest: centered frosted pill below the cards.
+                      const SizedBox(height: 18),
+                      Center(
+                        child: SizedBox(
+                          width: 97,
+                          child: GlassPanel(
+                            radius: SHColors.pillRadius,
+                            blur: 7,
+                            fillColor: Colors.white.withValues(alpha: 0.04),
+                            onTap: () => _openGuestForm(),
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 9,
                               ),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.edit_outlined,
-                                  color: SHColors.primary,
-                                ),
-                                tooltip: 'Update guest',
-                                onPressed: revoked
-                                    ? null
-                                    : () => _openGuestForm(guest: guest),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.person_add,
+                                    size: 16,
+                                    color: SHColors.primary,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Add Guest',
+                                    style: TextStyle(
+                                      color: SHColors.primary,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.delete_outline,
-                                  color: SHColors.rose,
-                                ),
-                                tooltip: 'Delete guest',
-                                onPressed: () => _deleteGuest(guest),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
-                      );
-                    }).toList(),
+                      ),
+                    ],
             ),
     ),
   );
+}
+
+/// Figma guest card: teal avatar disc, name, orange expiry, action icons.
+class _GuestCard extends StatelessWidget {
+  const _GuestCard({
+    required this.guest,
+    this.width = double.infinity,
+    this.onEdit,
+    this.onDelete,
+    this.onToggle,
+  });
+
+  final Map<String, dynamic> guest;
+  final double width;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
+  final VoidCallback? onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    final revoked = guest['revokedAt'] != null;
+    return SizedBox(
+      width: width,
+      child: GlassPanel(
+        radius: 16,
+        blur: 6,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: const BoxDecoration(
+                  color: SHColors.guestAvatar,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  revoked ? Icons.person_off : Icons.person,
+                  color: Colors.white.withValues(alpha: 0.9),
+                  size: 22,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                guest['label'] as String? ?? 'Guest',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                revoked
+                    ? 'Revoked'
+                    : 'Expires: ${_GuestManagementScreenState._formatExpiry(guest['expiresAt'])}',
+                maxLines: 2,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: revoked ? SHColors.figmaRed : SHColors.figmaOrange,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GlassIconButton(
+                    icon: Icons.edit_outlined,
+                    color: SHColors.primary,
+                    tooltip: 'Update guest',
+                    size: 26,
+                    iconSize: 13,
+                    onPressed: onEdit,
+                  ),
+                  const SizedBox(width: 8),
+                  GlassIconButton(
+                    icon: Icons.delete_outline,
+                    color: SHColors.figmaRed,
+                    tooltip: 'Delete guest',
+                    size: 26,
+                    iconSize: 13,
+                    onPressed: onDelete,
+                  ),
+                  const SizedBox(width: 8),
+                  GlassIconButton(
+                    icon: revoked ? Icons.check_circle_outline : Icons.block,
+                    color: revoked ? SHColors.green : SHColors.figmaRed,
+                    tooltip: revoked ? 'Enable guest' : 'Revoke guest',
+                    size: 26,
+                    iconSize: 13,
+                    onPressed: onToggle,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

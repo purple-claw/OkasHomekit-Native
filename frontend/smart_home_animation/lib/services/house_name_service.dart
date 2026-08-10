@@ -15,12 +15,15 @@ class HouseNameService {
 
   static const _showPrefKey = 'okas_show_house_name';
   static const _nameKey = 'okas_house_name';
+  static const _ownerKey = 'okas_owner_name';
 
   String _houseName = 'Smart Home';
+  String _ownerName = 'Owner';
   bool _showHouseName = true;
   bool _loaded = false;
 
   String get houseName => _houseName;
+  String get ownerName => _ownerName;
   bool get showHouseName => _showHouseName;
   bool get loaded => _loaded;
 
@@ -28,6 +31,7 @@ class HouseNameService {
     try {
       final prefs = await SharedPreferences.getInstance();
       _houseName = prefs.getString(_nameKey) ?? 'Smart Home';
+      _ownerName = prefs.getString(_ownerKey) ?? 'Owner';
       _showHouseName = prefs.getBool(_showPrefKey) ?? true;
       _loaded = true;
     } catch (_) {
@@ -55,6 +59,12 @@ class HouseNameService {
             _houseName = name;
             final prefs = await SharedPreferences.getInstance();
             await prefs.setString(_nameKey, name);
+          }
+          final owner = data[0]['ownrNm'] as String?;
+          if (owner != null && owner.isNotEmpty) {
+            _ownerName = owner;
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString(_ownerKey, owner);
           }
         }
       }

@@ -1,51 +1,16 @@
 // screens/profile_screen.dart
+//
+// Profile Management screen. Layout follows the Figma frame: centered
+// identity header (avatar, owner name, email, Logout pill), then GENERAL
+// and GUEST MANAGEMENT sections of frosted-glass cards. Owner name and
+// email come from the board's Auth API (session principal).
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/glass_panel.dart';
 import 'package:smart_home_animation/core/theme/sh_colors.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/guest_management_screen.dart';
 import 'package:smart_home_animation/services/house_name_service.dart';
 import 'package:smart_home_animation/services/token_auth_service.dart';
-
-class HouseNameToggleTile extends StatelessWidget {
-  const HouseNameToggleTile({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Builder(
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
-          final service = HouseNameService.instance;
-          return TextButton.icon(
-            onPressed: () {
-              final next = !service.showHouseName;
-              service.setShowHouseName(next);
-              setState(() {});
-            },
-            icon: Icon(
-              service.showHouseName
-                  ? Icons.home_outlined
-                  : Icons.home_work_outlined,
-              size: 18,
-              color: service.showHouseName
-                  ? SHColors.primary
-                  : SHColors.mutedText,
-            ),
-            label: Text(
-              service.showHouseName ? 'Hide house name' : 'Show house name',
-              style: const TextStyle(color: SHColors.textColor),
-            ),
-            style: TextButton.styleFrom(
-              backgroundColor: Colors.white.withOpacity(0.06),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -53,94 +18,209 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<TokenAuthService>();
+    final admin = auth.isAdmin;
+    final ownerName = auth.displayName ?? HouseNameService.instance.ownerName;
+    final email = auth.adminEmail ?? '';
+    final initial = ownerName.isNotEmpty
+        ? ownerName[0].toUpperCase()
+        : (HouseNameService.instance.houseName.isNotEmpty
+              ? HouseNameService.instance.houseName[0].toUpperCase()
+              : 'O');
 
     return Column(
       children: [
-        // Profile header: house name + logout always available.
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Profile',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      auth.isAdmin ? 'House Owner' : 'Guest',
-                      style: const TextStyle(
-                        color: SHColors.mutedText,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Logout — always available regardless of role.
-              TextButton.icon(
-                onPressed: () => _confirmLogout(context),
-                icon: const Icon(
-                  Icons.logout,
-                  size: 18,
-                  color: SHColors.rose,
-                ),
-                label: const Text(
-                  'Logout',
-                  style: TextStyle(color: SHColors.rose),
-                ),
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.white.withOpacity(0.06),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
+        const SizedBox(height: 24),
+        // Centered identity header (avatar, name, email, logout).
+        // Outer 96px ring per the Figma frame, teal 78px inner disc.
+        Container(
+          width: 96,
+          height: 96,
+          decoration: BoxDecoration(
+            color: const Color(0x24686F7D), // rgba(104,111,125,0.14)
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x40000000),
+                blurRadius: 24,
+                offset: Offset(0, 10),
               ),
             ],
           ),
-        ),
-        const Divider(color: Colors.white12, height: 1),
-        if (auth.isAdmin)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-            child: SizedBox(
-              width: double.infinity,
-              child: TextButton.icon(
-                onPressed: () => _showChangePasswordDialog(context),
-                icon: const Icon(
-                  Icons.lock_reset,
-                  size: 18,
-                  color: SHColors.primary,
+          child: Center(
+            child: Container(
+              width: 78,
+              height: 78,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    Color(0xFF4FE3F2),
+                    SHColors.primary,
+                    Color(0xFF007380),
+                  ],
+                  stops: [0.0, 0.55, 1.0],
                 ),
-                label: const Text(
-                  'Change Password',
-                  style: TextStyle(color: SHColors.textColor),
-                ),
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.white.withOpacity(0.06),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              ),
+              child: Center(
+                child: Text(
+                  initial,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ),
             ),
           ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 4, 20, 0),
-          child: SizedBox(
-            width: double.infinity,
-            child: HouseNameToggleTile(),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          admin ? ownerName : 'Guest',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
           ),
         ),
+        if (email.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          Text(
+            email,
+            style: const TextStyle(
+              color: SHColors.figmaOrange,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+        const SizedBox(height: 12),
+        // Frosted logout pill (neutral glass, red icon + text).
+        Center(
+          child: SizedBox(
+            width: 97,
+            child: GlassPanel(
+              radius: SHColors.pillRadius,
+              blur: 7,
+              fillColor: Colors.white.withValues(alpha: 0.04),
+              onTap: () => _confirmLogout(context),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.logout, size: 16, color: SHColors.figmaRed),
+                    SizedBox(width: 8),
+                    Text(
+                      'Logout',
+                      style: TextStyle(
+                        color: SHColors.figmaRed,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        if (admin) ...[
+          // GENERAL section.
+          const Padding(
+            padding: EdgeInsets.fromLTRB(20, 24, 20, 10),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'GENERAL',
+                style: TextStyle(
+                  color: SHColors.figmaGray,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+            child: GlassPanel(
+              radius: 14,
+              blur: 6,
+              onTap: () => _showChangePasswordDialog(context),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 14, vertical: 17),
+                child: Row(
+                  children: [
+                    Text(
+                      'Change Password',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Spacer(),
+                    Icon(
+                      Icons.chevron_right,
+                      size: 18,
+                      color: SHColors.figmaGray,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+            child: GlassPanel(
+              radius: 14,
+              blur: 6,
+              onTap: () => _showHelpDialog(context),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 14, vertical: 17),
+                child: Row(
+                  children: [
+                    Text(
+                      'Help & Support',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Spacer(),
+                    Icon(
+                      Icons.chevron_right,
+                      size: 18,
+                      color: SHColors.figmaGray,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // GUEST MANAGEMENT section.
+          const Padding(
+            padding: EdgeInsets.fromLTRB(20, 24, 20, 10),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'GUEST MANAGEMENT',
+                style: TextStyle(
+                  color: SHColors.figmaGray,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ),
+          ),
+        ],
         Expanded(
-          child: !auth.isAdmin
+          child: !admin
               ? const Center(
                   child: Padding(
                     padding: EdgeInsets.all(24),
@@ -240,19 +320,17 @@ class ProfileScreen extends StatelessWidget {
                       }
                       setDialogState(() => saving = true);
                       try {
-                        await context
-                            .read<TokenAuthService>()
-                            .changePassword(
-                              currentPassword: current,
-                              newPassword: next,
-                            );
+                        await context.read<TokenAuthService>().changePassword(
+                          currentPassword: current,
+                          newPassword: next,
+                        );
                         if (ctx.mounted) Navigator.pop(ctx, true);
                       } catch (e) {
                         if (ctx.mounted) {
                           setDialogState(() => saving = false);
-                          ScaffoldMessenger.of(ctx).showSnackBar(
-                            SnackBar(content: Text('$e')),
-                          );
+                          ScaffoldMessenger.of(
+                            ctx,
+                          ).showSnackBar(SnackBar(content: Text('$e')));
                         }
                       }
                     },
@@ -280,15 +358,38 @@ class ProfileScreen extends StatelessWidget {
     }
   }
 
+  Future<void> _showHelpDialog(BuildContext context) async {
+    final email = context.read<TokenAuthService>().adminEmail ?? '';
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: SHColors.elevatedCardColor,
+        title: const Text(
+          'Help & Support',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          email.isEmpty
+              ? 'Contact your installer for assistance with this device.'
+              : 'Contact your installer at $email for assistance with this device.',
+          style: const TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Done', style: TextStyle(color: Colors.white70)),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _confirmLogout(BuildContext context) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: SHColors.elevatedCardColor,
-        title: const Text(
-          'Log out?',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Log out?', style: TextStyle(color: Colors.white)),
         content: const Text(
           'You will need to enter your access token again to reconnect.',
           style: TextStyle(color: Colors.white70),
@@ -313,10 +414,9 @@ class ProfileScreen extends StatelessWidget {
       await context.read<TokenAuthService>().logout();
       // Also drop the MQTT connection so the token entry screen starts clean.
       // ignore: use_build_context_synchronously
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        '/token-entry',
-        (route) => false,
-      );
+      Navigator.of(
+        context,
+      ).pushNamedAndRemoveUntil('/token-entry', (route) => false);
     }
   }
 }
