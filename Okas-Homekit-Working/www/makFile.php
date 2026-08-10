@@ -71,6 +71,9 @@ if (file_exists($file)) {
         if (isset($fDat[0]->authToken)) {
             $autnToken = $fDat[0]->authToken;
         }
+        if (isset($fDat[0]->location)) {
+            $location = $fDat[0]->location;
+        }
     }
 }
 
@@ -115,6 +118,9 @@ if ($inDat) {
         $ldData[0]->gwPort = $inDat->knxPort;
         $ldData[0]->pinCode = $pPC;
         $ldData[0]->authToken = $autnToken;
+        if (isset($location)) {
+            $ldData[0]->location = $location;
+        }
         echo $rslt;
         $oData = o2S($ldData);
         file_put_contents($file, $oData);

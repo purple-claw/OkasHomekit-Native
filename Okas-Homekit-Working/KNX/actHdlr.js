@@ -1,8 +1,5 @@
-// Action Handler Script for Okas-Homekit(Aplha)
-// Originally Written by Anil K Chikkam
-// Modified by Nithin.J 
-
-// Modifications Done : 
+// KNX action handlers — HomeKit / mobile commands -> KNX write commands.
+//
 // Previously these wrote directly to `knx` Datapoint objects. Now they publish
 // to the Python xknx bridge via knxCmd() (KNX/knxBridge.js). Signatures and the
 // { ok, err } return shape are unchanged, so HkB.js and Mqtt/mqttClnt.js keep
@@ -14,7 +11,7 @@ require('./knxBridge');
 (module.exports = () => {
     let rgbTmr = null;
 
-    sndRGB = async (lNm, p, v) => {
+    sndRGB = (lNm, p, v) => {
         return new Promise((resolve) => {
             if (rgbTmr) clearTimeout(rgbTmr);
             knxLod[lNm].Val[p] = v;
@@ -31,7 +28,7 @@ require('./knxBridge');
                         return;
                     }
                     dbg.Inf(`${o2S(rgb)} sent to ${lNm}.`);
-                    // Push RGB state to HomeKit immediately #NP
+                    // Push RGB state to HomeKit immediately
                     const hkSvc = hkbAcc[lNm] && hkbAcc[lNm][0];
                     if (hkSvc) {
                         try {
@@ -72,18 +69,23 @@ require('./knxBridge');
                     knxLod[lNm].Val.Tmc = 0;
                     knxLod[lNm].Val.Tmv = 0;
                 } else if (knxLod[lNm].Val.Tmc === 0) {
-                    // Turning the HVAC back on without a mode set would leave  the relay latched but no Cool/Heat/Auto command on the bus, so the unit never actually runs. 
-                    // Re-apply the last known mode (falling back to COOL) so the AC starts running immediately when toggled on via the Fanv2.On.
-                    const rsMod = knxLod[lNm].Val.Tmc || 1; // 1 = COOL
-                    dbg.Inf(`HVAC toggle-on without mode - resuming ${rsMod}`);
-                    await knxCmd(lNm, 'Tmc', rsMod); // Send Telegram to Bus
-                    knxLod[lNm].Val.Tmc = rsMod;    // Update the Value
-                    knxLod[lNm].Val.Tmv = rsMod;    // Update the Status
+                    // Turning the HVAC back on without a mode set would leave
+                    // the relay latched but no Cool/Heat/Auto command on the
+                    // bus, so the unit never actually runs. Re-apply the last
+                    // known mode (falling back to COOL) so the AC starts
+                    // running immediately when toggled on via the Fanv2.On
+                    // tile or the mobile app.
+                    const resumeMode = knxLod[lNm].Val.Tmc || 1; // 1 = COOL
+                    dbg.Inf(`HVAC toggle-on without mode - resuming ${resumeMode}`);
+                    await knxCmd(lNm, 'Tmc', resumeMode);
+                    knxLod[lNm].Val.Tmc = resumeMode;
+                    knxLod[lNm].Val.Tmv = resumeMode;
                 }
             }
             dbg.Inf(`Turn-${val ? 'On' : 'Off'} sent to ${lNm}.`);
-            // Push state to HomeKit + MQTT immediately so the Home app and mobile app see it without waiting for bus feedback (many KNX devices do not echo status telegrams).
-
+            // Push state to HomeKit + MQTT immediately so the Home app and
+            // mobile app see it without waiting for bus feedback (many KNX
+            // devices do not echo status telegrams).
             const hkSvc = hkbAcc[lNm] && hkbAcc[lNm][0];
             if (hkSvc) {
                 try {
@@ -118,7 +120,7 @@ require('./knxBridge');
                 try {
                     hkSvc.updateCharacteristic(Characteristic.Brightness, val);
                 } catch (e) {
-                    dbg.Inf(`Unable to update Brightness for ${lNm}: ${o2S(e)}`);
+                    dbg.Inf(`Unable to update HomeKit Brightness for ${lNm}: ${o2S(e)}`);
                 }
             }
             if (typeof global.mqttRptSts === 'function') {

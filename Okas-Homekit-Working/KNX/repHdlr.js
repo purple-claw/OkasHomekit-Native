@@ -30,7 +30,7 @@ require('../Mqtt/mqttClnt');
     const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
     const mqttRptSts = (lNm) => {
-        if (typeof isMqttCntd === 'undefined' || !isMqttCntd) return; // Checking the Status of MQTT
+        if (typeof isMqttCntd === 'undefined' || !isMqttCntd) return;
         try {
             let tpc = stsTpc(lNm);
             if (!tpc) return;
