@@ -5,7 +5,6 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/core.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/device.dart';
@@ -24,6 +23,7 @@ import 'package:smart_home_animation/services/house_name_service.dart';
 import 'package:smart_home_animation/services/room_service.dart' hide Room;
 import 'package:smart_home_animation/services/scene_favorites_service.dart';
 import 'package:smart_home_animation/services/token_auth_service.dart';
+import 'package:smart_home_animation/services/weather_service.dart';
 import 'package:ui_common/ui_common.dart' hide DeviceType;
 
 import '../widgets/lighted_background.dart';
@@ -54,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
     };
     SceneFavoritesService.instance.addListener(_sceneFavoritesListener!);
     SceneFavoritesService.instance.load();
+    WeatherService.instance.load();
     // Listen to RoomService so newly added rooms show up immediately on
     // the Home screen without waiting for a manual refresh.
     _roomServiceListener = () {
@@ -138,28 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: _selectedIndex == 0
-              ? AppBar(
-                  title: Row(
-                    children: [
-                      SvgPicture.asset(
-                        'assets/svg/okas-logo.svg',
-                        width: 72,
-                        height: 22,
-                      ),
-                      const SizedBox(width: 10),
-                      const Text(
-                        'HomeKit',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                )
+              ? null
               : AppBar(
                   backgroundColor: Colors.transparent,
                   elevation: 0,
@@ -201,55 +181,61 @@ class _HomeScreenState extends State<HomeScreen> {
       return const _MqttLoadingSkeleton();
     }
 
-    return SingleChildScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      // Greet the owner by their display name (set by the
-                      // programmer on the web User Management page).
-                      context.watch<TokenAuthService>().displayName != null
-                          ? 'Hi, ${context.watch<TokenAuthService>().displayName}'
-                          : 'Welcome back',
-                      style: TextStyle(
-                        color: SHColors.mutedText,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
+    return SafeArea(
+      top: true,
+      bottom: false,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        // Greet the owner by their display name (set by the
+                        // programmer on the web User Management page).
+                        context.watch<TokenAuthService>().displayName != null
+                            ? 'Hi, ${context.watch<TokenAuthService>().displayName}'
+                            : 'Welcome back',
+                        style: TextStyle(
+                          color: SHColors.mutedText,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      // House name from the board when the option is enabled;
-                      // falls back to the generic brand title.
-                      HouseNameService.instance.showHouseName
-                          ? HouseNameService.instance.houseName
-                          : "Smart Home",
-                      style: Theme.of(context).textTheme.displaySmall,
-                    ),
-                  ],
+                      const SizedBox(height: 4),
+                      Text(
+                        // House name from the board when the option is enabled;
+                        // falls back to the generic brand title.
+                        HouseNameService.instance.showHouseName
+                            ? HouseNameService.instance.houseName
+                            : "Smart Home",
+                        style: Theme.of(context).textTheme.displaySmall,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              _buildAddRoomButton(),
-            ],
-          ),
+                _buildAddRoomButton(),
+              ],
+            ),
 
-          const SizedBox(height: 22),
-          if (_rooms.isNotEmpty) _buildRoomCard(),
-          if (_rooms.isEmpty) _buildEmptyState(),
+            const SizedBox(height: 22),
+            if (_rooms.isNotEmpty) _buildRoomCard(),
+            if (_rooms.isEmpty) _buildEmptyState(),
 
-          const SizedBox(height: 24),
+            const SizedBox(height: 24),
 
-          _buildFavoritesSection(),
-        ],
+            _buildFavoritesSection(),
+            const SizedBox(height: 20),
+            _buildWeatherSection(),
+          ],
+        ),
       ),
     );
   }
@@ -316,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         const SizedBox(height: 12),
         SizedBox(
-          height: 154,
+          height: 136,
           child: Row(
             children: List.generate(4, (index) {
               final favorite = index < favorites.length
@@ -332,6 +318,31 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildWeatherSection() {
+    final weather = WeatherService.instance;
+    return AnimatedBuilder(
+      animation: weather,
+      builder: (context, _) {
+        final snapshot = weather.snapshot;
+        final stateKey = snapshot == null
+            ? 'weather-${weather.isLoading}-${weather.error}'
+            : 'weather-${snapshot.observedAt.toIso8601String()}';
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 360),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          child: _WeatherGlassCard(
+            key: ValueKey(stateKey),
+            snapshot: snapshot,
+            isLoading: weather.isLoading,
+            error: weather.error,
+            onRetry: () => weather.load(force: true),
+          ),
+        );
+      },
     );
   }
 
@@ -1020,5 +1031,177 @@ class _FavoritePill extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _WeatherGlassCard extends StatelessWidget {
+  const _WeatherGlassCard({
+    super.key,
+    required this.snapshot,
+    required this.isLoading,
+    required this.error,
+    required this.onRetry,
+  });
+
+  final WeatherSnapshot? snapshot;
+  final bool isLoading;
+  final String? error;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 148,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.18),
+            blurRadius: 20,
+            offset: const Offset(0, 9),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ui.ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.white.withValues(alpha: 0.105),
+                  Colors.white.withValues(alpha: 0.045),
+                ],
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+              child: snapshot == null
+                  ? _buildStatus()
+                  : _buildWeather(snapshot!),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatus() {
+    return Row(
+      children: [
+        Icon(
+          isLoading ? Icons.cloud_sync_rounded : Icons.cloud_off_rounded,
+          color: Colors.white.withValues(alpha: 0.72),
+          size: 34,
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Text(
+            isLoading ? 'Checking the sky...' : error ?? 'Weather unavailable',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        if (!isLoading)
+          IconButton(
+            onPressed: onRetry,
+            tooltip: 'Refresh weather',
+            icon: const Icon(Icons.refresh_rounded),
+            color: Colors.white70,
+          ),
+      ],
+    );
+  }
+
+  Widget _buildWeather(WeatherSnapshot weather) {
+    final accent =
+        weather.weatherCode == 0 ||
+            weather.weatherCode == 1 ||
+            weather.weatherCode == 2
+        ? const Color(0xFFFFD166)
+        : const Color(0xFF9AD9FF);
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.location_on_rounded,
+                    color: Colors.white.withValues(alpha: 0.72),
+                    size: 15,
+                  ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      weather.locationLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.78),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                weather.condition,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '${_formatTime(weather.boardTime)}  •  Wind ${weather.windSpeedKmh.round()} km/h',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.62),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 12),
+        Icon(weather.icon, color: accent, size: 48),
+        const SizedBox(width: 4),
+        Text(
+          '${weather.temperatureCelsius.round()}°',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 38,
+            fontWeight: FontWeight.w300,
+            height: 1,
+          ),
+        ),
+      ],
+    );
+  }
+
+  static String _formatTime(DateTime value) {
+    final hour = value.hour % 12 == 0 ? 12 : value.hour % 12;
+    final minute = value.minute.toString().padLeft(2, '0');
+    final period = value.hour >= 12 ? 'PM' : 'AM';
+    return '$hour:$minute $period';
   }
 }
