@@ -1,664 +1,94 @@
-// screens/scene_screen.dart
-// Scene management: Global Scenes + Room-Based Scenes, with a creation
-// flow (previously scene creation was not available where expected).
-// ignore_for_file: unused_element, prefer_final_fields
+import 'dart:async';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/theme/aurora_background.dart';
 import 'package:smart_home_animation/core/theme/sh_colors.dart';
+import 'package:smart_home_animation/features/home/presentation/widgets/load_icon.dart';
+import 'package:smart_home_animation/services/direct_mqtt_service.dart';
 import 'package:smart_home_animation/services/scene_favorites_service.dart';
 
 class SceneScreen extends StatefulWidget {
-  const SceneScreen({super.key});
+  const SceneScreen({super.key, this.showHeader = true});
+
+  final bool showHeader;
 
   @override
   State<SceneScreen> createState() => _SceneScreenState();
 }
 
-class _SceneScreenState extends State<SceneScreen>
-    with TickerProviderStateMixin {
-  late TabController _tabController;
-  String _searchQuery = '';
+class _SceneScreenState extends State<SceneScreen> {
   final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  final Set<String> _activeSceneIds = <String>{};
+  final Map<String, Timer> _activationTimers = <String, Timer>{};
 
-  final List<SceneCategory> _categories = [
-    SceneCategory(name: 'All', icon: Icons.apps),
-    SceneCategory(name: 'Global', icon: Icons.public),
-    SceneCategory(name: 'Rooms', icon: Icons.meeting_room_outlined),
-    SceneCategory(name: 'Favorites', icon: Icons.favorite),
-  ];
-
-  // 4 standard + 6 custom scenes, split by scope.
-  List<SmartScene> _scenes = [];
-  final List<SmartScene> _standardScenes = [
-    SmartScene(
-      id: 'std_morning',
-      name: 'Morning',
-      description: 'Gentle wake-up lighting',
-      icon: Icons.wb_sunny_outlined,
-      color: SHColors.amber,
-      deviceCount: 4,
-      isFavorite: false,
-      scope: 'Global',
-    ),
-    SmartScene(
-      id: 'std_evening',
-      name: 'Evening',
-      description: 'Warm dimmed ambience',
-      icon: Icons.nightlight_outlined,
-      color: SHColors.dimGrey,
-      deviceCount: 3,
-      isFavorite: false,
-      scope: 'Global',
-    ),
-    SmartScene(
-      id: 'std_movie',
-      name: 'Movie',
-      description: 'Cinema dim lighting',
-      icon: Icons.movie_outlined,
-      color: SHColors.blue,
-      deviceCount: 5,
-      isFavorite: false,
-      scope: 'Global',
-    ),
-    SmartScene(
-      id: 'std_away',
-      name: 'Away',
-      description: 'All loads off',
-      icon: Icons.lock_outline,
-      color: SHColors.rose,
-      deviceCount: 6,
-      isFavorite: false,
-      scope: 'Global',
-    ),
-  ];
+  VoidCallback? _favoritesListener;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: _categories.length, vsync: this);
     _searchController.addListener(_onSearchChanged);
-    _scenes = List.of(_standardScenes);
-    SceneFavoritesService.instance.load().then((_) {
-      if (!mounted) return;
-      setState(() {
-        _scenes = _scenes.map(_applyStoredFavorite).toList();
-      });
-    });
+    _favoritesListener = () {
+      if (mounted) setState(() {});
+    };
+    SceneFavoritesService.instance.addListener(_favoritesListener!);
+    SceneFavoritesService.instance.load();
   }
 
   @override
   void dispose() {
-    _searchController.removeListener(_onSearchChanged);
-    _searchController.dispose();
-    _tabController.dispose();
+    if (_favoritesListener != null) {
+      SceneFavoritesService.instance.removeListener(_favoritesListener!);
+    }
+    _searchController
+      ..removeListener(_onSearchChanged)
+      ..dispose();
+    for (final timer in _activationTimers.values) {
+      timer.cancel();
+    }
     super.dispose();
   }
 
   void _onSearchChanged() {
-    setState(() {
-      _searchQuery = _searchController.text.toLowerCase().trim();
-    });
-  }
-
-  void _toggleFavorite(SmartScene scene) {
-    setState(() {
-      final index = _scenes.indexWhere((s) => s.id == scene.id);
-      if (index != -1) {
-        final s = _scenes[index];
-        _scenes[index] = SmartScene(
-          id: s.id,
-          name: s.name,
-          description: s.description,
-          icon: s.icon,
-          color: s.color,
-          deviceCount: s.deviceCount,
-          isFavorite: !s.isFavorite,
-          timeOfDay: s.timeOfDay,
-          scope: s.scope,
-        );
-
-        final updated = _scenes[index];
-        SceneFavoritesService.instance.setFavorite(
-          id: updated.id,
-          name: updated.name,
-          description: updated.description,
-          icon: updated.icon,
-          color: updated.color,
-          scope: updated.scope,
-          favorite: updated.isFavorite,
-        );
-
-        final isNowFavorite = _scenes[index].isFavorite;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              isNowFavorite
-                  ? '${scene.name} added to favorites'
-                  : '${scene.name} removed from favorites',
-            ),
-            backgroundColor: isNowFavorite ? Colors.green : Colors.grey,
-            duration: const Duration(seconds: 1),
-          ),
-        );
-      }
-    });
-  }
-
-  SmartScene _applyStoredFavorite(SmartScene scene) {
-    final storedFavorites = SceneFavoritesService.instance.favorites
-        .where((favorite) => favorite.id == scene.id)
-        .toList();
-    final stored = storedFavorites.isEmpty ? null : storedFavorites.first;
-    return stored == null
-        ? scene
-        : SmartScene(
-            id: scene.id,
-            name: scene.name,
-            description: scene.description,
-            icon: scene.icon,
-            color: scene.color,
-            deviceCount: scene.deviceCount,
-            isFavorite: true,
-            timeOfDay: scene.timeOfDay,
-            scope: scene.scope,
-          );
-  }
-
-  /// Opens the scene creation dialog. New scenes are added as custom
-  /// Room-Based scenes by default (user picks the scope in the dialog).
-  Future<void> _openCreateScene() async {
-    final nameController = TextEditingController();
-    var selectedIcon = Icons.auto_awesome;
-    var selectedColor = SHColors.primary;
-    var scope = 'Room';
-
-    final result = await showDialog<Map<String, dynamic>>(
-      context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setDialogState) => AlertDialog(
-          backgroundColor: SHColors.elevatedCardColor,
-          title: const Text(
-            'Create Scene',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: nameController,
-                  autofocus: true,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                    labelText: 'Scene name',
-                    labelStyle: TextStyle(color: Colors.white70),
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white38),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: SHColors.primary),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                // Scope: Global or Room-based.
-                Row(
-                  children: [
-                    const Text(
-                      'Scope:',
-                      style: TextStyle(color: Colors.white70, fontSize: 13),
-                    ),
-                    const SizedBox(width: 12),
-                    ChoiceChip(
-                      label: const Text('Global'),
-                      selected: scope == 'Global',
-                      onSelected: (_) => setDialogState(() => scope = 'Global'),
-                      selectedColor: SHColors.primary,
-                      labelStyle: const TextStyle(color: Colors.white),
-                    ),
-                    const SizedBox(width: 8),
-                    ChoiceChip(
-                      label: const Text('Room'),
-                      selected: scope == 'Room',
-                      onSelected: (_) => setDialogState(() => scope = 'Room'),
-                      selectedColor: SHColors.dimGrey,
-                      labelStyle: const TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                // Icon picker.
-                SizedBox(
-                  height: 44,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      _iconOption(
-                        ctx,
-                        setDialogState,
-                        Icons.wb_sunny_outlined,
-                        (i) => selectedIcon = i,
-                        selectedIcon,
-                      ),
-                      _iconOption(
-                        ctx,
-                        setDialogState,
-                        Icons.nightlight_outlined,
-                        (i) => selectedIcon = i,
-                        selectedIcon,
-                      ),
-                      _iconOption(
-                        ctx,
-                        setDialogState,
-                        Icons.movie_outlined,
-                        (i) => selectedIcon = i,
-                        selectedIcon,
-                      ),
-                      _iconOption(
-                        ctx,
-                        setDialogState,
-                        Icons.lock_outline,
-                        (i) => selectedIcon = i,
-                        selectedIcon,
-                      ),
-                      _iconOption(
-                        ctx,
-                        setDialogState,
-                        Icons.favorite_outline,
-                        (i) => selectedIcon = i,
-                        selectedIcon,
-                      ),
-                      _iconOption(
-                        ctx,
-                        setDialogState,
-                        Icons.auto_awesome,
-                        (i) => selectedIcon = i,
-                        selectedIcon,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                // Color picker.
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _colorDot(
-                      ctx,
-                      setDialogState,
-                      SHColors.primary,
-                      (c) => selectedColor = c,
-                      selectedColor,
-                    ),
-                    _colorDot(
-                      ctx,
-                      setDialogState,
-                      SHColors.amber,
-                      (c) => selectedColor = c,
-                      selectedColor,
-                    ),
-                    _colorDot(
-                      ctx,
-                      setDialogState,
-                      SHColors.dimGrey,
-                      (c) => selectedColor = c,
-                      selectedColor,
-                    ),
-                    _colorDot(
-                      ctx,
-                      setDialogState,
-                      SHColors.blue,
-                      (c) => selectedColor = c,
-                      selectedColor,
-                    ),
-                    _colorDot(
-                      ctx,
-                      setDialogState,
-                      SHColors.rose,
-                      (c) => selectedColor = c,
-                      selectedColor,
-                    ),
-                    _colorDot(
-                      ctx,
-                      setDialogState,
-                      SHColors.green,
-                      (c) => selectedColor = c,
-                      selectedColor,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text(
-                'Cancel',
-                style: TextStyle(color: Colors.white70),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                final name = nameController.text.trim();
-                if (name.isEmpty) {
-                  ScaffoldMessenger.of(ctx).showSnackBar(
-                    const SnackBar(
-                      content: Text('Scene name is required'),
-                      duration: Duration(seconds: 1),
-                    ),
-                  );
-                  return;
-                }
-                Navigator.pop(ctx, {
-                  'name': name,
-                  'icon': selectedIcon,
-                  'color': selectedColor,
-                  'scope': scope,
-                });
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: SHColors.primary,
-                foregroundColor: Colors.white,
-              ),
-              child: const Text('Create'),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    if (result != null && mounted) {
-      setState(() {
-        _scenes.insert(
-          0,
-          SmartScene(
-            id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
-            name: result['name'] as String,
-            description: '${result['scope']} scene • created by you',
-            icon: result['icon'] as IconData,
-            color: result['color'] as Color,
-            deviceCount: 0,
-            isFavorite: false,
-            scope: result['scope'] as String,
-          ),
-        );
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Scene "${result['name']}" created!'),
-          backgroundColor: SHColors.green,
-          duration: const Duration(seconds: 1),
-        ),
-      );
-    }
-  }
-
-  Widget _iconOption(
-    BuildContext ctx,
-    StateSetter setDialogState,
-    IconData icon,
-    ValueChanged<IconData> onPick,
-    IconData current,
-  ) {
-    final active = current == icon;
-    return GestureDetector(
-      onTap: () => setDialogState(() => onPick(icon)),
-      child: Container(
-        margin: const EdgeInsets.only(right: 8),
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: active
-              ? SHColors.primary.withOpacity(0.25)
-              : Colors.white.withOpacity(0.06),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: active ? SHColors.primary : Colors.white.withOpacity(0.1),
-          ),
-        ),
-        child: Icon(icon, color: active ? SHColors.primary : Colors.white54),
-      ),
-    );
-  }
-
-  Widget _colorDot(
-    BuildContext ctx,
-    StateSetter setDialogState,
-    Color color,
-    ValueChanged<Color> onPick,
-    Color current,
-  ) {
-    final active = current == color;
-    return GestureDetector(
-      onTap: () => setDialogState(() => onPick(color)),
-      child: Container(
-        width: 30,
-        height: 30,
-        decoration: BoxDecoration(
-          color: color,
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: active ? Colors.white : Colors.transparent,
-            width: 2,
-          ),
-          boxShadow: active
-              ? [BoxShadow(color: color.withOpacity(0.6), blurRadius: 8)]
-              : null,
-        ),
-      ),
-    );
-  }
-
-  void _showPinDialog(String sceneName) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey[900],
-        title: Text(
-          'Enter PIN for $sceneName',
-          style: const TextStyle(color: Colors.white),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'This scene is protected',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              obscureText: true,
-              keyboardType: TextInputType.number,
-              maxLength: 4,
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                hintText: 'Enter 4-digit PIN',
-                hintStyle: TextStyle(color: Colors.grey[400]),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Colors.white24),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Colors.white24),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: SHColors.primary),
-                ),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: Colors.white70),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('$sceneName activated!'),
-                  backgroundColor: Colors.green,
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: SHColors.primary,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Activate'),
-          ),
-        ],
-      ),
-    );
+    if (!mounted) return;
+    setState(() => _searchQuery = _searchController.text.trim().toLowerCase());
   }
 
   @override
   Widget build(BuildContext context) {
-    return AuroraBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Column(
+    final screen = _buildScreen(context);
+    return widget.showHeader ? AuroraBackground(child: screen) : screen;
+  }
+
+  Widget _buildScreen(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: widget.showHeader
+          ? AppBar(
+              title: const Text(
+                'Scenes',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              centerTitle: true,
+              backgroundColor: Colors.black.withValues(alpha: 0.12),
+              surfaceTintColor: Colors.transparent,
+              elevation: 0,
+            )
+          : null,
+      body: SafeArea(
+        top: false,
+        bottom: false,
+        child: Column(
           children: [
-            // Header row: title + Add Scene (admin or all users can create
-            // scenes — scenes are per-device customization).
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Scenes',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: _openCreateScene,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: SHColors.primary,
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.add, color: Colors.white, size: 18),
-                          SizedBox(width: 6),
-                          Text(
-                            'Add Scene',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w800,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Search Bar with clear button
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: SHColors.cardColor.withOpacity(0.56),
-                  borderRadius: BorderRadius.circular(SHColors.radiusMd),
-                  border: Border.all(
-                    color: _searchQuery.isNotEmpty
-                        ? SHColors.primary.withOpacity(0.5)
-                        : Colors.white.withOpacity(0.12),
-                  ),
-                  boxShadow: SHColors.softShadow,
-                ),
-                child: TextField(
-                  controller: _searchController,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    hintText: 'Search scenes...',
-                    hintStyle: TextStyle(color: SHColors.hintColor),
-                    prefixIcon: Icon(Icons.search, color: SHColors.hintColor),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(
-                            icon: Icon(Icons.clear, color: SHColors.hintColor),
-                            onPressed: () {
-                              _searchController.clear();
-                              setState(() {
-                                _searchQuery = '';
-                              });
-                            },
-                          )
-                        : null,
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
-                ),
-              ),
-            ),
-
-            // Categories Tab Bar
-            SizedBox(
-              height: 80,
-              child: TabBar(
-                controller: _tabController,
-                isScrollable: true,
-                tabAlignment: TabAlignment.start,
-                indicator: BoxDecoration(
-                  color: SHColors.primary.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: SHColors.primary.withOpacity(0.35)),
-                ),
-                dividerColor: Colors.transparent,
-                labelColor: SHColors.primary,
-                unselectedLabelColor: SHColors.hintColor,
-                tabs: _categories.map((category) {
-                  return Tab(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(category.icon, size: 20),
-                          const SizedBox(width: 8),
-                          Text(category.name),
-                        ],
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-
-            // Scenes Grid
+            _buildSearchField(),
             Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: _categories.map((category) {
-                  return _buildScenesGrid(category);
-                }).toList(),
-              ),
+              child: _buildSceneList(context.watch<DirectMQTTService>()),
             ),
           ],
         ),
@@ -666,213 +96,452 @@ class _SceneScreenState extends State<SceneScreen>
     );
   }
 
-  Widget _buildScenesGrid(SceneCategory category) {
-    // Filter scenes based on category and search query
-    List<SmartScene> filteredScenes = _scenes;
-
-    // Apply search filter first
-    if (_searchQuery.isNotEmpty) {
-      filteredScenes = filteredScenes.where((scene) {
-        return scene.name.toLowerCase().contains(_searchQuery) ||
-            scene.description.toLowerCase().contains(_searchQuery);
-      }).toList();
-    }
-
-    // Apply category filter
-    if (category.name == 'All') {
-      // All: show everything.
-    } else if (category.name == 'Favorites') {
-      filteredScenes = filteredScenes
-          .where((scene) => scene.isFavorite)
-          .toList();
-    } else if (category.name == 'Global') {
-      filteredScenes = filteredScenes
-          .where((scene) => scene.scope == 'Global')
-          .toList();
-    } else if (category.name == 'Rooms') {
-      filteredScenes = filteredScenes
-          .where((scene) => scene.scope == 'Room')
-          .toList();
-    }
-
-    if (filteredScenes.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.auto_awesome_outlined,
-              size: 80,
-              color: SHColors.hintColor,
+  Widget _buildSearchField() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
+      child: Container(
+        height: 54,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(19),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.16),
+              blurRadius: 18,
+              offset: const Offset(0, 7),
             ),
-            const SizedBox(height: 16),
-            Text(
-              _searchQuery.isNotEmpty
-                  ? 'No scenes match your search'
-                  : 'No scenes found',
-              style: TextStyle(
-                fontSize: 18,
-                color: SHColors.mutedText,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            if (_searchQuery.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Text(
-                'Try a different keyword',
-                style: TextStyle(fontSize: 14, color: SHColors.hintColor),
-              ),
-            ] else ...[
-              const SizedBox(height: 8),
-              Text(
-                'Tap "Add Scene" to create one',
-                style: TextStyle(fontSize: 14, color: SHColors.hintColor),
-              ),
-            ],
           ],
         ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(19),
+          child: BackdropFilter(
+            filter: ui.ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.075),
+                borderRadius: BorderRadius.circular(19),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.11)),
+              ),
+              child: TextField(
+                controller: _searchController,
+                textInputAction: TextInputAction.search,
+                style: const TextStyle(color: Colors.white, fontSize: 15),
+                decoration: InputDecoration(
+                  hintText: 'Search scenes',
+                  hintStyle: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.55),
+                    fontSize: 15,
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search_rounded,
+                    color: Colors.white.withValues(alpha: 0.68),
+                  ),
+                  suffixIcon: _searchQuery.isEmpty
+                      ? null
+                      : IconButton(
+                          tooltip: 'Clear search',
+                          onPressed: _searchController.clear,
+                          icon: const Icon(Icons.close_rounded),
+                          color: Colors.white70,
+                        ),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSceneList(DirectMQTTService mqtt) {
+    if (!mqtt.isConnected) {
+      return const _SceneMessage(
+        icon: Icons.wifi_off_rounded,
+        title: 'Connecting to OKAS',
+        subtitle: 'Configured scenes appear after board connection',
+      );
+    }
+
+    final scenes = _scenesFromLoads(mqtt);
+    final filtered = scenes.where((scene) {
+      return _searchQuery.isEmpty ||
+          scene.name.toLowerCase().contains(_searchQuery);
+    }).toList();
+
+    if (filtered.isEmpty) {
+      return _SceneMessage(
+        icon: _searchQuery.isEmpty
+            ? Icons.auto_awesome_outlined
+            : Icons.search_off_rounded,
+        title: _searchQuery.isEmpty
+            ? 'No scenes configured'
+            : 'No scenes match search',
+        subtitle: _searchQuery.isEmpty
+            ? 'Programmer-uploaded Scene loads appear here'
+            : 'Try another scene name',
       );
     }
 
     return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 28),
+      // Same grid geometry as the Loads screen (LoadGridCard), so scene
+      // cards render at exactly the same size as Scene Load cards.
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 0.9,
+        crossAxisCount: 3,
+        childAspectRatio: 0.75,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
       ),
-      itemCount: filteredScenes.length,
-      itemBuilder: (context, index) {
-        final scene = filteredScenes[index];
-        return _buildSceneCard(scene);
-      },
+      itemCount: filtered.length,
+      itemBuilder: (context, index) => _SceneGlassCard(
+        scene: filtered[index],
+        onTap: () => _activateScene(filtered[index]),
+        onFavoriteTap: () => _toggleFavorite(filtered[index]),
+      ),
     );
   }
 
-  Widget _buildSceneCard(SmartScene scene) {
+  List<SmartScene> _scenesFromLoads(DirectMQTTService mqtt) {
+    final favoriteIds = SceneFavoritesService.instance.favorites
+        .map((favorite) => favorite.id)
+        .toSet();
+
+    return mqtt.loads.entries
+        .where((entry) => _isSceneLoad(entry.value))
+        .map((entry) {
+          final load = entry.value;
+          final id = (load['id'] ?? load['ldId'] ?? entry.key).toString();
+          final name = (load['name'] ?? load['nm'] ?? 'Scene $id').toString();
+          return SmartScene(
+            id: id,
+            name: name,
+            icon: _iconForScene(id, name),
+            color: SHColors.deviceAccent('Scene'),
+            isFavorite: favoriteIds.contains(id),
+            isActivated: _activeSceneIds.contains(id),
+          );
+        })
+        .toList(growable: false);
+  }
+
+  static bool _isSceneLoad(Map<String, dynamic> load) {
+    final type = load['type']?.toString().toLowerCase();
+    return type == 'scn' || type == 'scene';
+  }
+
+  void _activateScene(SmartScene scene) {
+    _activationTimers[scene.id]?.cancel();
+    setState(() => _activeSceneIds.add(scene.id));
+    context.read<DirectMQTTService>().sendCommand(scene.id, 'ON');
+    _activationTimers[scene.id] = Timer(const Duration(milliseconds: 1800), () {
+      if (!mounted) return;
+      setState(() => _activeSceneIds.remove(scene.id));
+      _activationTimers.remove(scene.id);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${scene.name} activated'),
+        duration: const Duration(milliseconds: 900),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: scene.color.withValues(alpha: 0.92),
+      ),
+    );
+  }
+
+  void _toggleFavorite(SmartScene scene) {
+    SceneFavoritesService.instance.setFavorite(
+      id: scene.id,
+      name: scene.name,
+      description: 'Board-configured scene',
+      icon: scene.icon,
+      color: scene.color,
+      scope: 'Board',
+      favorite: !scene.isFavorite,
+    );
+  }
+
+  static int _stableIndex(String id, String name, int length) {
+    var value = 17;
+    for (final rune in '$id$name'.runes) {
+      value = (value * 31 + rune) & 0x7fffffff;
+    }
+    return value % length;
+  }
+
+  static IconData _iconForScene(String id, String name) {
+    const icons = [
+      Icons.auto_awesome_rounded,
+      Icons.wb_sunny_rounded,
+      Icons.nightlight_round,
+      Icons.movie_creation_rounded,
+      Icons.music_note_rounded,
+      Icons.local_dining_rounded,
+      Icons.bedtime_rounded,
+      Icons.celebration_rounded,
+      Icons.lock_open_rounded,
+      Icons.home_rounded,
+    ];
+    return icons[_stableIndex(id, name, icons.length)];
+  }
+}
+
+class _SceneGlassCard extends StatelessWidget {
+  const _SceneGlassCard({
+    required this.scene,
+    required this.onTap,
+    required this.onFavoriteTap,
+  });
+
+  final SmartScene scene;
+  final VoidCallback onTap;
+  final VoidCallback onFavoriteTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final active = scene.isActivated;
     return GestureDetector(
-      onTap: () => _showPinDialog(scene.name),
-      onLongPress: () => _toggleFavorite(scene),
-      child: Container(
-        decoration: BoxDecoration(
-          color: SHColors.cardColor.withOpacity(0.58),
-          gradient: SHColors.cardGradient,
+      onTap: onTap,
+      child: RepaintBoundary(
+        child: ClipRRect(
           borderRadius: BorderRadius.circular(SHColors.radiusLg),
-          border: Border.all(
-            color: scene.isFavorite
-                ? SHColors.rose.withOpacity(0.5)
-                : scene.color.withOpacity(0.3),
-            width: scene.isFavorite ? 2 : 1,
-          ),
-          boxShadow: SHColors.softShadow,
-        ),
-        child: Stack(
-          children: [
-            // Favorite icon
-            Positioned(
-              top: 0,
-              right: 0,
-              child: IconButton(
-                tooltip: scene.isFavorite
-                    ? 'Remove from favorites'
-                    : 'Add to favorites',
-                onPressed: () => _toggleFavorite(scene),
-                icon: Icon(
-                  scene.isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: scene.isFavorite ? SHColors.rose : Colors.white54,
-                  size: 20,
-                ),
-              ),
-            ),
-
-            // Scope badge
-            Positioned(
-              top: 8,
-              left: 8,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: scene.scope == 'Global'
-                      ? SHColors.primary.withOpacity(0.25)
-                      : SHColors.dimGrey.withOpacity(0.25),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  scene.scope,
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: scene.scope == 'Global'
-                        ? SHColors.primary
-                        : SHColors.dimGrey,
-                    fontWeight: FontWeight.w700,
+          child: BackdropFilter.grouped(
+            filter: ui.ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            child: Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(SHColors.radiusLg),
+                    border: Border.all(
+                      color: active
+                          ? scene.color.withValues(alpha: 0.18)
+                          : Colors.white.withValues(alpha: 0.13),
+                      width: 1,
+                    ),
                   ),
                 ),
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Icon
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: scene.color.withOpacity(0.2),
-                      shape: BoxShape.circle,
+                Container(
+                  margin: const EdgeInsets.all(1.1),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.018),
+                    borderRadius: BorderRadius.circular(
+                      SHColors.radiusLg - 1.1,
                     ),
-                    child: Icon(scene.icon, color: scene.color, size: 32),
                   ),
-
-                  const SizedBox(height: 12),
-
-                  // Scene name
-                  Text(
-                    scene.name,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-
-                  const SizedBox(height: 4),
-
-                  // Description
-                  Text(
-                    scene.description,
-                    style: TextStyle(fontSize: 11, color: SHColors.mutedText),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  // Device count
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: scene.color.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      '${scene.deviceCount} devices',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: scene.color,
-                        fontWeight: FontWeight.w500,
+                ),
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(SHColors.radiusLg),
+                        gradient: LinearGradient(
+                          begin: const Alignment(-0.9, -1.1),
+                          end: const Alignment(0.85, 0.65),
+                          colors: [
+                            Colors.transparent,
+                            Colors.transparent,
+                            Colors.black.withValues(alpha: 0.025),
+                            Colors.black.withValues(alpha: 0.08),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ],
+                ),
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(SHColors.radiusLg),
+                        gradient: RadialGradient(
+                          center: const Alignment(-0.85, -1.05),
+                          radius: 1.25,
+                          colors: [
+                            Colors.white.withValues(alpha: 0.055),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: AnimatedOpacity(
+                      opacity: active ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 700),
+                      curve: Curves.easeOutCubic,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(
+                            SHColors.radiusLg,
+                          ),
+                          gradient: RadialGradient(
+                            center: const Alignment(0, 0),
+                            radius: 1.1,
+                            colors: [
+                              scene.color.withValues(alpha: 0.25),
+                              scene.color.withValues(alpha: 0.10),
+                              Colors.transparent,
+                            ],
+                            stops: const [0.0, 0.45, 1.0],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 12, 10, 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        height: 58,
+                        child: Center(
+                          child: LoadIcon(
+                            type: 'Scene',
+                            isOn: active,
+                            color: scene.color,
+                            size: 45,
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        scene.name,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 3),
+                      const Text(
+                        'SCENE',
+                        style: TextStyle(
+                          color: SHColors.mutedText,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.1,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 10),
+                      GestureDetector(
+                        onTap: onTap,
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 260),
+                          curve: Curves.easeOutCubic,
+                          width: double.infinity,
+                          height: 34,
+                          decoration: BoxDecoration(
+                            color: active
+                                ? scene.color.withValues(alpha: 0.22)
+                                : Colors.white.withValues(alpha: 0.05),
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(
+                              color: active
+                                  ? scene.color.withValues(alpha: 0.42)
+                                  : Colors.white.withValues(alpha: 0.14),
+                            ),
+                            boxShadow: active
+                                ? [
+                                    BoxShadow(
+                                      color: scene.color.withValues(
+                                        alpha: 0.20,
+                                      ),
+                                      blurRadius: 12,
+                                      spreadRadius: -3,
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                          child: Icon(
+                            Icons.power_settings_new,
+                            color: active ? Colors.white : SHColors.hintColor,
+                            size: 18,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  top: 2,
+                  right: 2,
+                  child: IconButton(
+                    tooltip: scene.isFavorite
+                        ? 'Remove from favorites'
+                        : 'Add to favorites',
+                    onPressed: onFavoriteTap,
+                    icon: Icon(
+                      scene.isFavorite
+                          ? Icons.star_rounded
+                          : Icons.star_border_rounded,
+                      color: scene.isFavorite ? SHColors.amber : Colors.white54,
+                      size: 20,
+                    ),
+                    visualDensity: VisualDensity.compact,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minWidth: 34,
+                      minHeight: 34,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SceneMessage extends StatelessWidget {
+  const _SceneMessage({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(28),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: Colors.white.withValues(alpha: 0.42), size: 58),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 7),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.58),
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],
@@ -882,34 +551,20 @@ class _SceneScreenState extends State<SceneScreen>
   }
 }
 
-// Models
-class SceneCategory {
-  final String name;
-  final IconData icon;
-
-  SceneCategory({required this.name, required this.icon});
-}
-
 class SmartScene {
-  final String id;
-  final String name;
-  final String description;
-  final IconData icon;
-  final Color color;
-  final int deviceCount;
-  final bool isFavorite;
-  final String? timeOfDay;
-  final String scope;
-
-  SmartScene({
+  const SmartScene({
     required this.id,
     required this.name,
-    required this.description,
     required this.icon,
     required this.color,
-    required this.deviceCount,
     required this.isFavorite,
-    this.timeOfDay,
-    this.scope = 'Global',
+    required this.isActivated,
   });
+
+  final String id;
+  final String name;
+  final IconData icon;
+  final Color color;
+  final bool isFavorite;
+  final bool isActivated;
 }

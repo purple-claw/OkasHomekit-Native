@@ -141,7 +141,8 @@ class _HomeScreenState extends State<HomeScreen> {
           appBar: _selectedIndex == 0
               ? null
               : AppBar(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: Colors.black.withValues(alpha: 0.12),
+                  surfaceTintColor: Colors.transparent,
                   elevation: 0,
                   title: Text(
                     _selectedIndex == 1
@@ -161,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               _buildHomeTab(),
               const LoungeScreen(),
-              const SceneScreen(),
+              const SceneScreen(showHeader: false),
               const ProfileScreen(),
             ],
           ),

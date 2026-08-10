@@ -1,3 +1,5 @@
+// ignore_for_file: non_const_argument_for_const_parameter
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -24,6 +26,8 @@ class FavoriteSceneShortcut {
     'id': id,
     'name': name,
     'description': description,
+    'iconCodePoint': icon.codePoint,
+    'iconFontFamily': icon.fontFamily,
     'color': color.toARGB32(),
     'scope': scope,
   };
@@ -33,10 +37,21 @@ class FavoriteSceneShortcut {
       id: json['id'] as String,
       name: json['name'] as String? ?? 'Scene',
       description: json['description'] as String? ?? '',
-      icon: _iconForId(json['id'] as String? ?? ''),
+      icon: _iconFromJson(json),
       color: Color(json['color'] as int? ?? Colors.cyan.toARGB32()),
       scope: json['scope'] as String? ?? 'Global',
     );
+  }
+
+  static IconData _iconFromJson(Map<String, dynamic> json) {
+    final codePoint = json['iconCodePoint'];
+    if (codePoint is int) {
+      return IconData(
+        codePoint,
+        fontFamily: json['iconFontFamily'] as String? ?? 'MaterialIcons',
+      );
+    }
+    return _iconForId(json['id'] as String? ?? '');
   }
 
   static IconData _iconForId(String id) {
