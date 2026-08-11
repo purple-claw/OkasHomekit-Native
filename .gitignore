@@ -86,3 +86,13 @@ __pycache__/
 *.dylib
 
 .agres
+.agents/skills/caveman
+.claude
+.commandcode
+Images-Errors
+ColorTun.png
+skills-lock.json
+Okas-Homekit-Working/.bash
+Okas-Homekit-Working/README-KNX-Bridge.md
+Okas-Homekit-Working/package.json
+frontend/__MACOSX
