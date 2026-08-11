@@ -14,7 +14,7 @@ class GuestManagementScreen extends StatefulWidget {
 }
 
 class _GuestManagementScreenState extends State<GuestManagementScreen> {
-  static const double _guestCardWidth = 140;
+  static const double _guestCardWidth = 150;
   PageController? _guestCarouselController;
   static const int _maxGuestDurationMinutes = 30 * 24 * 60;
   List<Map<String, dynamic>> _guests = [];
@@ -361,7 +361,7 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
                       // Guest cards carousel (same pattern as the room
                       // showcase: active card + peek of the neighbours).
                       SizedBox(
-                        height: 160,
+                        height: 178,
                         child: PageView.builder(
                           controller: _guestCarouselController!,
                           clipBehavior: Clip.none,
@@ -378,8 +378,8 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
                                   width: _guestCardWidth,
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
-                                      horizontal: 7,
-                                      vertical: 3,
+                                      horizontal: 10,
+                                      vertical: 6,
                                     ),
                                     child: _GuestCard(
                                       guest: guest,
@@ -504,7 +504,7 @@ class _GuestCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 14,
+                  fontSize: 15,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -517,7 +517,7 @@ class _GuestCard extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: revoked ? SHColors.figmaRed : SHColors.figmaOrange,
-                  fontSize: 11,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                   height: 1.2,
                 ),
@@ -531,7 +531,7 @@ class _GuestCard extends StatelessWidget {
                     color: SHColors.primary,
                     tooltip: 'Update guest',
                     size: 26,
-                    iconSize: 17,
+                    iconSize: 20,
                     onPressed: onEdit,
                   ),
                   const SizedBox(width: 8),
@@ -540,7 +540,7 @@ class _GuestCard extends StatelessWidget {
                     color: SHColors.figmaRed,
                     tooltip: 'Delete guest',
                     size: 26,
-                    iconSize: 14,
+                    iconSize: 17,
                     onPressed: onDelete,
                   ),
                   const SizedBox(width: 8),
@@ -555,7 +555,7 @@ class _GuestCard extends StatelessWidget {
                         color: revoked ? SHColors.green : SHColors.figmaRed,
                         tooltip: revoked ? 'Enable guest' : 'Revoke guest',
                         size: 26,
-                        iconSize: 17,
+                        iconSize: 20,
                         onPressed: onToggle,
                       ),
                     ),
