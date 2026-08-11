@@ -1249,7 +1249,7 @@ class _WeatherGlassCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.18),
+            color: const ui.Color.from(alpha: 0, red: 0, green: 0, blue: 0).withValues(alpha: 0.18),
             blurRadius: 20,
             offset: const Offset(0, 9),
           ),
@@ -1343,7 +1343,7 @@ class _WeatherGlassCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.78),
-                        fontSize: 12,
+                        fontSize: 14,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -1379,7 +1379,7 @@ class _WeatherGlassCard extends StatelessWidget {
         Icon(weather.icon, color: accent, size: 48),
         const SizedBox(width: 4),
         Text(
-          '${weather.temperatureCelsius.round()}°',
+          '${weather.temperatureCelsius.round()}°C',
           style: const TextStyle(
             color: Colors.white,
             fontSize: 38,
