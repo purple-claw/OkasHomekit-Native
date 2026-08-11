@@ -246,7 +246,7 @@ class ProfileScreen extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setDialogState) => AlertDialog(
+        builder: (ctx, setDialogState) => FrostedAlertDialog(
           backgroundColor: SHColors.elevatedCardColor,
           title: const Text(
             'Change Password',
@@ -362,7 +362,7 @@ class ProfileScreen extends StatelessWidget {
     final email = context.read<TokenAuthService>().adminEmail ?? '';
     await showDialog<void>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => FrostedAlertDialog(
         backgroundColor: SHColors.elevatedCardColor,
         title: const Text(
           'Help & Support',
@@ -387,7 +387,7 @@ class ProfileScreen extends StatelessWidget {
   Future<void> _confirmLogout(BuildContext context) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => FrostedAlertDialog(
         backgroundColor: SHColors.elevatedCardColor,
         title: const Text('Log out?', style: TextStyle(color: Colors.white)),
         content: const Text(

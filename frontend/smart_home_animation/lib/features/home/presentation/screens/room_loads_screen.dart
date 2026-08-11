@@ -9,6 +9,7 @@ import 'package:smart_home_animation/services/token_auth_service.dart';
 import '../widgets/load_grid_card.dart';
 import '../widgets/figma_load_sheets.dart';
 import 'add_room_screen.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/glass_panel.dart';
 
 class RoomLoadsScreen extends StatefulWidget {
   const RoomLoadsScreen({required this.room, super.key});
@@ -768,7 +769,7 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
   void _showRoomEditMenu(BuildContext context) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => FrostedAlertDialog(
         backgroundColor: SHColors.elevatedCardColor,
         title: Text(
           widget.room.name,
@@ -821,7 +822,7 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
     final mqttService = Provider.of<DirectMQTTService>(context, listen: false);
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => FrostedAlertDialog(
         backgroundColor: SHColors.elevatedCardColor,
         title: const Text(
           'Delete Room?',

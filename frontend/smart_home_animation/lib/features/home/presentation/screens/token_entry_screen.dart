@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/theme/sh_colors.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
 import 'package:smart_home_animation/services/token_auth_service.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/glass_panel.dart';
 
 class TokenEntryScreen extends StatefulWidget {
   const TokenEntryScreen({super.key});
@@ -616,7 +617,7 @@ class _TokenEntryScreenState extends State<TokenEntryScreen>
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
+      builder: (context) => FrostedAlertDialog(
         backgroundColor: const Color(0xFF173F4B),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text(
@@ -673,7 +674,7 @@ class _TokenEntryScreenState extends State<TokenEntryScreen>
     showDialog(
       context: context,
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setDialogState) => AlertDialog(
+        builder: (ctx, setDialogState) => FrostedAlertDialog(
           backgroundColor: const Color(0xFF173F4B),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -799,7 +800,7 @@ class _TokenEntryScreenState extends State<TokenEntryScreen>
   void _showHelpDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => FrostedAlertDialog(
         backgroundColor: const Color(0xFF173F4B),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Need Help?', style: TextStyle(color: Colors.white)),

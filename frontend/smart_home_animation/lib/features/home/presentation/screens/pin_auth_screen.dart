@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:smart_home_animation/core/theme/sh_theme.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/glass_panel.dart';
 
 class PinAuthScreen extends StatefulWidget {
   @override
@@ -407,7 +408,7 @@ class _PinAuthScreenState extends State<PinAuthScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
+        return FrostedAlertDialog(
           title: Text('Forgot PIN'),
           content: Text(
             'Please contact support or reset your PIN through email verification.',

@@ -110,9 +110,13 @@ abstract class SHTheme {
     ),
     iconTheme: const IconThemeData(color: SHColors.textColor),
     dialogTheme: DialogThemeData(
-      backgroundColor: SHColors.elevatedCardColor,
+      backgroundColor: SHColors.elevatedCardColor.withValues(alpha: 0.6),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(SHColors.radiusLg),
+        side: BorderSide(
+          color: Colors.white.withValues(alpha: 0.08),
+          width: 1,
+        ),
       ),
     ),
     bottomSheetTheme: const BottomSheetThemeData(

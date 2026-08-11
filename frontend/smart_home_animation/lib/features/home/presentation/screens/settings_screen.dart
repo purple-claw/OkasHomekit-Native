@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_animation/services/mqtt_command_service.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/glass_panel.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -116,7 +117,7 @@ class SettingsScreen extends StatelessWidget {
   void _showHubsDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => FrostedAlertDialog(
         title: const Text('Home Hubs & Bridges'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,

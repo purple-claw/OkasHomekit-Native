@@ -9,6 +9,7 @@ import 'package:smart_home_animation/services/token_auth_service.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/add_room_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/room_loads_screen.dart';
 import '../widgets/load_icon.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/glass_panel.dart';
 
 class RoomsTab extends StatefulWidget {
   const RoomsTab();
@@ -345,7 +346,7 @@ class _RoomsTabState extends State<RoomsTab> {
   void _showEditDeleteDialog(Room room) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => FrostedAlertDialog(
         backgroundColor: Colors.grey[900],
         title: Text(room.name, style: const TextStyle(color: Colors.white)),
         content: Column(
@@ -395,7 +396,7 @@ class _RoomsTabState extends State<RoomsTab> {
     final mqttService = Provider.of<DirectMQTTService>(context, listen: false);
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => FrostedAlertDialog(
         backgroundColor: Colors.grey[900],
         title: const Text(
           'Delete Room?',

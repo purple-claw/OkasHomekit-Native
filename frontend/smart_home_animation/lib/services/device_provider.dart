@@ -15,6 +15,7 @@ import '../core/shared/domain/entities/device.dart';
 import '../core/shared/domain/entities/device_state.dart';
 import 'connection_service.dart';
 import 'i_device_service.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/glass_panel.dart';
 
 class DeviceProvider extends ChangeNotifier {
   final IDeviceService _deviceService;
@@ -131,7 +132,7 @@ class DeviceProvider extends ChangeNotifier {
   void _showSyncRequiredDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => FrostedAlertDialog(
         title: const Text('Sync Required'),
         content: const Text(
           'The device configuration has changed. Please sync to continue.',

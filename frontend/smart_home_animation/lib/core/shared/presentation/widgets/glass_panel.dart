@@ -193,3 +193,42 @@ class GlassPill extends StatelessWidget {
     );
   }
 }
+
+/// AlertDialog variant: frosted-glass card that blurs the backdrop behind
+/// the popup while the near-opaque fill keeps screen content unreadable.
+class FrostedAlertDialog extends AlertDialog {
+  const FrostedAlertDialog({
+    super.key,
+    super.backgroundColor,
+    super.elevation,
+    super.insetPadding,
+    super.clipBehavior,
+    super.shape,
+    super.alignment,
+    super.titlePadding,
+    super.title,
+    super.titleTextStyle,
+    super.contentPadding,
+    super.content,
+    super.contentTextStyle,
+    super.icon,
+    super.iconColor,
+    super.iconPadding,
+    super.actionsPadding,
+    super.actions,
+    super.actionsAlignment,
+    super.buttonPadding,
+    super.scrollable,
+    super.semanticLabel,
+    super.shadowColor,
+    super.surfaceTintColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+      child: super.build(context),
+    );
+  }
+}

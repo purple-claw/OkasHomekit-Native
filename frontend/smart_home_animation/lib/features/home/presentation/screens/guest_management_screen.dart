@@ -60,7 +60,7 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.6),
       builder: (dialogContext) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
+        builder: (context, setDialogState) => FrostedAlertDialog(
           backgroundColor: SHColors.elevatedCardColor,
           title: Text(
             editing ? 'Update guest' : 'Add guest',
@@ -171,7 +171,7 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
       final token = result['guestToken'] as String;
       await showDialog<void>(
         context: context,
-        builder: (context) => AlertDialog(
+        builder: (context) => FrostedAlertDialog(
           backgroundColor: SHColors.elevatedCardColor,
           title: const Text(
             'Share this guest token now',
@@ -260,7 +260,7 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
   Future<void> _deleteGuest(Map<String, dynamic> guest) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => FrostedAlertDialog(
         backgroundColor: SHColors.elevatedCardColor,
         title: const Text(
           'Delete guest',

@@ -42,7 +42,7 @@ abstract class SHColors {
 
   // ---- Surfaces ----
   static const Color cardColor = Color(0xFF12313B);
-  static const Color elevatedCardColor = Color(0xFF173F4B);
+  static const Color elevatedCardColor = Color.from(alpha: 0.707, red: 0.047, green: 0.125, blue: 0.149);
   static const Color trackColor = Color(0xFF0B2731);
   static const Color selectedColor = Color(0xFFBDF8FF);
 

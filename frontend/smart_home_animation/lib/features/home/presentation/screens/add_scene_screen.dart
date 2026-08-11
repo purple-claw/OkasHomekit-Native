@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/device.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/scene.dart';
 import 'package:smart_home_animation/services/mqtt_command_service.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/glass_panel.dart';
 
 class AddSceneScreen extends StatefulWidget {
   const AddSceneScreen({super.key});
@@ -135,7 +136,7 @@ class _AddSceneScreenState extends State<AddSceneScreen> {
                 trailing: const Text('70%'),
                 onTap: () => showDialog(
                   context: context,
-                  builder: (context) => AlertDialog(
+                  builder: (context) => FrostedAlertDialog(
                     title: const Text('Set Brightness'),
                     content: StatefulBuilder(
                       builder: (context, setState) {
