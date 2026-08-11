@@ -53,6 +53,7 @@ class LoadIcon extends StatelessWidget {
       width: size,
       height: size,
       color: color,
+      filterQuality: FilterQuality.high,
       errorBuilder: (_, __, ___) => Icon(
         Icons.lightbulb_outline,
         color: color ?? Colors.white54,

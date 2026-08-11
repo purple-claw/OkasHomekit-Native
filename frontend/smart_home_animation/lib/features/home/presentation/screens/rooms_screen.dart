@@ -312,6 +312,7 @@ class _RoomsTabState extends State<RoomsTab> {
                           width: 18,
                           height: 18,
                           color: _getLoadTypeColor(type),
+                          filterQuality: FilterQuality.high,
                           errorBuilder: (_, __, ___) =>
                               const Icon(Icons.lightbulb_outline, size: 16),
                         ),
