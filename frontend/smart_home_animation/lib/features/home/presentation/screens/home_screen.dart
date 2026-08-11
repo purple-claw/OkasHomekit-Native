@@ -10,6 +10,7 @@ import 'package:smart_home_animation/core/core.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/device.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/room.dart';
 import 'package:smart_home_animation/core/shared/presentation/widgets/room_image.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/glass_panel.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/add_room_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/lounge_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/profile_screen.dart';
@@ -420,6 +421,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   );
                 },
+          onLongPress: Provider.of<TokenAuthService>(context, listen: false)
+                  .isAdmin
+              ? () => _showRoomActionsDialog(context, room)
+              : null,
         ),
       ),
       builder: (context, child) {
@@ -453,6 +458,132 @@ class _HomeScreenState extends State<HomeScreen> {
           const Text(
             'Tap + button to add a room',
             style: TextStyle(color: SHColors.hintColor),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Long-press action menu for a home-screen room card.
+  void _showRoomActionsDialog(BuildContext context, Room room) {
+    final serviceRoom = RoomService.instance.getRoomById(room.id);
+    showDialog(
+      context: context,
+      builder: (dialogContext) => FrostedAlertDialog(
+        titlePadding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+        contentPadding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+        title: Text(
+          room.name,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit, size: 22, color: Colors.white),
+              title: const Text(
+                'Edit Room',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(dialogContext);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AddRoomScreen(
+                      roomToEdit: {
+                        'id': room.id,
+                        'name': room.name,
+                        'imagePath':
+                            serviceRoom?.imagePath ?? room.wallpaperUrl,
+                        'loads': serviceRoom?.loadIds ??
+                            room.devices.map((d) => d.id).toList(),
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                room.isFavorite
+                    ? Icons.star_rounded
+                    : Icons.star_border_rounded,
+                size: 22,
+                color: room.isFavorite ? SHColors.amber : Colors.white,
+              ),
+              title: Text(
+                room.isFavorite ? 'Remove from Favorites' : 'Add to Favorites',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(dialogContext);
+                final next = !room.isFavorite;
+                RoomService.instance.setFavorite(room.id, next);
+                Provider.of<DirectMQTTService>(
+                  context,
+                  listen: false,
+                ).setFavoriteRoom(room.id, next);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete, size: 22, color: Colors.red),
+              title: const Text(
+                'Delete Room',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(dialogContext);
+                _confirmDeleteRoom(context, room);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _confirmDeleteRoom(BuildContext context, Room room) {
+    final mqttService = Provider.of<DirectMQTTService>(context, listen: false);
+    showDialog(
+      context: context,
+      builder: (context) => FrostedAlertDialog(
+        title: const Text(
+          'Delete Room?',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          'Are you sure you want to delete "${room.name}"?',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              RoomService.instance.deleteRoom(room.id);
+              mqttService.deleteRoom(room.id);
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -636,6 +767,7 @@ class _RoomShowcaseCard extends StatefulWidget {
     required this.isFavorite,
     required this.onFavoriteToggle,
     required this.onTap,
+    required this.onLongPress,
   });
 
   final int index;
@@ -645,6 +777,7 @@ class _RoomShowcaseCard extends StatefulWidget {
   final bool isFavorite;
   final VoidCallback onFavoriteToggle;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
 
   @override
   State<_RoomShowcaseCard> createState() => _RoomShowcaseCardState();
@@ -685,6 +818,7 @@ class _RoomShowcaseCardState extends State<_RoomShowcaseCard> {
           label: '${widget.roomName} room',
           child: GestureDetector(
             onTap: widget.onTap,
+            onLongPress: widget.onLongPress,
             onTapDown: canOpen ? (_) => _setPressed(true) : null,
             onTapCancel: canOpen ? () => _setPressed(false) : null,
             onTapUp: canOpen ? (_) => _setPressed(false) : null,

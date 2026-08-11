@@ -110,11 +110,11 @@ abstract class SHTheme {
     ),
     iconTheme: const IconThemeData(color: SHColors.textColor),
     dialogTheme: DialogThemeData(
-      backgroundColor: SHColors.elevatedCardColor.withValues(alpha: 0.6),
+      backgroundColor: SHColors.elevatedCardColor.withValues(alpha: 0.45),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(SHColors.radiusLg),
         side: BorderSide(
-          color: Colors.white.withValues(alpha: 0.08),
+          color: Colors.white.withValues(alpha: 0.12),
           width: 1,
         ),
       ),
