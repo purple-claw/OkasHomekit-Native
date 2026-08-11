@@ -14,11 +14,21 @@ class GuestManagementScreen extends StatefulWidget {
 }
 
 class _GuestManagementScreenState extends State<GuestManagementScreen> {
-  final _guestCarouselController = PageController(viewportFraction: 0.68);
+  static const double _guestCardWidth = 140;
+  PageController? _guestCarouselController;
   static const int _maxGuestDurationMinutes = 30 * 24 * 60;
   List<Map<String, dynamic>> _guests = [];
   bool _loading = true;
   String? _error;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // ponytail: fixed card width -> page == card width so peek stays tight
+    _guestCarouselController ??= PageController(
+      viewportFraction: _guestCardWidth / MediaQuery.sizeOf(context).width,
+    );
+  }
 
   @override
   void initState() {
@@ -351,36 +361,41 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
                       // Guest cards carousel (same pattern as the room
                       // showcase: active card + peek of the neighbours).
                       SizedBox(
-                        height: 158,
+                        height: 160,
                         child: PageView.builder(
-                          controller: _guestCarouselController,
+                          controller: _guestCarouselController!,
                           clipBehavior: Clip.none,
                           padEnds: true,
                           physics: const BouncingScrollPhysics(),
                           itemCount: _guests.length,
                           itemBuilder: (context, index) {
                             final guest = _guests[index];
+                            final carousel = _guestCarouselController!;
                             return AnimatedBuilder(
-                              animation: _guestCarouselController,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 7,
-                                  vertical: 3,
-                                ),
-                                child: _GuestCard(
-                                  guest: guest,
-                                  onEdit: guest['revokedAt'] != null
-                                      ? null
-                                      : () => _openGuestForm(guest: guest),
-                                  onDelete: () => _deleteGuest(guest),
-                                  onToggle: () => _toggleGuestStatus(guest),
+                              animation: carousel,
+                              child: Center(
+                                child: SizedBox(
+                                  width: _guestCardWidth,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 7,
+                                      vertical: 3,
+                                    ),
+                                    child: _GuestCard(
+                                      guest: guest,
+                                      onEdit: guest['revokedAt'] != null
+                                          ? null
+                                          : () => _openGuestForm(guest: guest),
+                                      onDelete: () => _deleteGuest(guest),
+                                      onToggle: () => _toggleGuestStatus(guest),
+                                    ),
+                                  ),
                                 ),
                               ),
                               builder: (context, child) {
                                 final page =
-                                    _guestCarouselController.hasClients &&
-                                        _guestCarouselController.page != null
-                                    ? _guestCarouselController.page!
+                                    carousel.hasClients && carousel.page != null
+                                    ? carousel.page!
                                     : index.toDouble();
                                 final distance = (page - index).abs().clamp(
                                   0.0,
@@ -400,7 +415,7 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
                       const SizedBox(height: 18),
                       Center(
                         child: SizedBox(
-                          width: 97,
+                          width: 120,
                           child: GlassPanel(
                             radius: SHColors.pillRadius,
                             blur: 7,
@@ -464,6 +479,7 @@ class _GuestCard extends StatelessWidget {
       child: GlassPanel(
         radius: 16,
         blur: 6,
+        fillColor: Colors.white.withValues(alpha: 0.039),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
@@ -492,7 +508,7 @@ class _GuestCard extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 8),
               Text(
                 revoked
                     ? 'Revoked'
@@ -506,7 +522,7 @@ class _GuestCard extends StatelessWidget {
                   height: 1.2,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -515,7 +531,7 @@ class _GuestCard extends StatelessWidget {
                     color: SHColors.primary,
                     tooltip: 'Update guest',
                     size: 26,
-                    iconSize: 13,
+                    iconSize: 17,
                     onPressed: onEdit,
                   ),
                   const SizedBox(width: 8),
@@ -524,17 +540,25 @@ class _GuestCard extends StatelessWidget {
                     color: SHColors.figmaRed,
                     tooltip: 'Delete guest',
                     size: 26,
-                    iconSize: 13,
+                    iconSize: 14,
                     onPressed: onDelete,
                   ),
                   const SizedBox(width: 8),
-                  GlassIconButton(
-                    icon: revoked ? Icons.check_circle_outline : Icons.block,
-                    color: revoked ? SHColors.green : SHColors.figmaRed,
-                    tooltip: revoked ? 'Enable guest' : 'Revoke guest',
-                    size: 26,
-                    iconSize: 13,
-                    onPressed: onToggle,
+                  Opacity(
+                    opacity: 0.65,
+                    child: Transform.flip(
+                      flipY: true,
+                      child: GlassIconButton(
+                        icon: revoked
+                            ? Icons.check_circle_outline
+                            : Icons.block,
+                        color: revoked ? SHColors.green : SHColors.figmaRed,
+                        tooltip: revoked ? 'Enable guest' : 'Revoke guest',
+                        size: 26,
+                        iconSize: 17,
+                        onPressed: onToggle,
+                      ),
+                    ),
                   ),
                 ],
               ),

@@ -225,7 +225,7 @@ class ProfileScreen extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.all(24),
                     child: Text(
-                      'Guest access management is available only for the admin user.',
+                      'Guest management is available only for the House Owner.',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: SHColors.mutedText),
                     ),
@@ -370,8 +370,8 @@ class ProfileScreen extends StatelessWidget {
         ),
         content: Text(
           email.isEmpty
-              ? 'Contact your installer for assistance with this device.'
-              : 'Contact your installer at $email for assistance with this device.',
+              ? 'Contact your installer for assistance with OKAS Homekit.'
+              : 'Having Trouble? Contact Your OKAS Distributor / Programmer for Technical Support.',
           style: const TextStyle(color: Colors.white70),
         ),
         actions: [
