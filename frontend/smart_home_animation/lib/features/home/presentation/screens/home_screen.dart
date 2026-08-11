@@ -266,6 +266,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               },
+              onLongPress:
+                  Provider.of<TokenAuthService>(context, listen: false)
+                          .isAdmin
+                      ? () => _showRemoveFavoriteDialog(context, room)
+                      : null,
             ),
           ),
       ...SceneFavoritesService.instance.favorites.map(
@@ -586,6 +591,54 @@ class _HomeScreenState extends State<HomeScreen> {
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
+      ),
+    );
+  }
+
+  /// Long-press action menu for a favorite room card: removes the
+  /// favorite status (same toggle the star button performs).
+  void _showRemoveFavoriteDialog(BuildContext context, Room room) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => FrostedAlertDialog(
+        titlePadding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+        contentPadding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+        title: Text(
+          room.name,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(
+                Icons.star_rounded,
+                size: 22,
+                color: SHColors.amber,
+              ),
+              title: const Text(
+                'Remove Favorite',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(dialogContext);
+                RoomService.instance.setFavorite(room.id, false);
+                Provider.of<DirectMQTTService>(
+                  context,
+                  listen: false,
+                ).setFavoriteRoom(room.id, false);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -994,6 +1047,7 @@ class _FavoriteAccess {
     required this.icon,
     required this.accent,
     required this.onTap,
+    this.onLongPress,
     this.imagePath,
   });
 
@@ -1004,6 +1058,7 @@ class _FavoriteAccess {
   final Color accent;
   final String? imagePath;
   final VoidCallback onTap;
+  final VoidCallback? onLongPress;
 }
 
 class _FavoriteAccessCard extends StatefulWidget {
@@ -1043,6 +1098,7 @@ class _FavoriteAccessCardState extends State<_FavoriteAccessCard> {
       child: GestureDetector(
         key: ValueKey(favorite?.id ?? 'empty'),
         onTap: favorite?.onTap,
+        onLongPress: favorite?.onLongPress,
         onTapDown: favorite == null ? null : (_) => _setPressed(true),
         onTapCancel: favorite == null ? null : () => _setPressed(false),
         onTapUp: favorite == null ? null : (_) => _setPressed(false),
