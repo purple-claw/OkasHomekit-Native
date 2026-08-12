@@ -297,16 +297,31 @@ require('./knxBridge');
     };
 
     Scn = async (lNm, val) => {
-        val = knxLod[lNm].Val.Scn;
+        // Use the value the caller (mobile app / HomeKit) passed in.
+        // Previously this line overwrote it with the cached Val.Scn which
+        // is 0 for every scene that was never triggered — so every scene
+        // write sent 0 to DPT17.001 and failed serialization. Fall back
+        // to the cached value only when the caller didn't supply one.
+        if (val === undefined || val === null) {
+            val = knxLod[lNm].Val.Scn;
+        }
         dbg.Inf(`Scene Trigger: ${lNm} called with value: ${val}`);
         try {
-            // Python encodes DPT17.001 as (scene number - 1) on the wire, matching
-            // the previous behaviour. Send the 1-based scene number.
-            let res = knxCmd(lNm, 'Scn', val);
+            // xknx DPTSceneNumber (17.001) accepts 1-based scene numbers
+            // (1-64) and encodes the raw bus byte as value-1 internally.
+            // Send the 1-based value straight through — do NOT subtract 1
+            // here (that double-decoding produced an out-of-range write).
+            const busVal = Number(val);
+            if (!Number.isFinite(busVal) || busVal < 1 || busVal > 64) {
+                dbg.Err(`Scene ${lNm}: value ${val} out of range (1-64).`);
+                return { ok: false, err: `Scene number out of range (1-64): ${val}` };
+            }
+            let res = knxCmd(lNm, 'Scn', busVal);
             if (!res.ok) {
                 dbg.Err(`Unable to send Trigger Scene ${lNm} command: ${res.err}.`);
                 return res;
             }
+            knxLod[lNm].Val.Scn = busVal;
             dbg.Inf(`Trigger Scene-${val} sent to ${lNm}.`);
             let hkSvc = hkbAcc[lNm][0];
             hkSvc.updateCharacteristic(Characteristic.On, false);

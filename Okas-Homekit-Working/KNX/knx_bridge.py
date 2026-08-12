@@ -199,8 +199,52 @@ class KnxBridge:
         if self.loop:
             self.loop.call_soon_threadsafe(self._do_write, ga, val, dpt, label)
 
+    # DPT ranges for the value types this bridge writes. Values outside the
+    # DPT's legal range previously produced ERROR log spam on every write
+    # (e.g. bri=999 → "Could not serialize DPTScaling value=999"). Clamping
+    # here keeps the bus sane and the logs clean — the mobile app may still
+    # send out-of-range values when sliders/steppers are dragged hard.
+    DPT_RANGES = {
+        "1.001": (0, 1),    # boolean switch
+        "1.008": (0, 1),    # move
+        "1.010": (0, 1),    # stop
+        "1.100": (0, 1),    # heat/cool
+        "3.007": (0, 100),  # dimming (relative)
+        "5.001": (0, 100),  # scaling / brightness / position
+        "5.010": (0, 255),  # 1-byte unsigned (fan speed)
+        "7.600": (0, 65535),  # color temperature (Kelvin)
+        "9.001": (0, 40),   # temperature °C (extended range, clamp to sane HVAC)
+        "17.001": (1, 64),  # scene number (1-based per xknx DPTSceneNumber)
+        "20.102": (0, 3),   # HVAC mode (raw enum)
+        "232.600": (0, 255),  # RGB — clamped per channel below
+    }
+
+    @staticmethod
+    def _clamp_dpt(dpt, val):
+        """Clamp a value to the DPT's legal range. Returns the clamped value
+        (or the original when the DPT is unknown / unclamped)."""
+        try:
+            num = float(val)
+        except (TypeError, ValueError):
+            return val  # strings / dicts pass through untouched
+        rng = KnxBridge.DPT_RANGES.get(dpt)
+        if not rng:
+            return val
+        lo, hi = rng
+        return int(max(lo, min(hi, round(num))))
+
     def _do_write(self, ga, val, dpt, label):
         try:
+            # Clamp out-of-range numerics per DPT (see DPT_RANGES).
+            if isinstance(val, dict):
+                # RGB dict: clamp each channel to 0-255.
+                val = {
+                    k: int(max(0, min(255, round(float(v)))))
+                    if k in ("red", "green", "blue") else v
+                    for k, v in val.items()
+                }
+            else:
+                val = self._clamp_dpt(dpt, val)
             group_value_write(self.xknx, ga, val, value_type=dpt)
             log.info("KNX write -> %s (%s) = %s [DPT %s]", ga, label, val, dpt)
         except Exception as e:  # noqa: BLE001
