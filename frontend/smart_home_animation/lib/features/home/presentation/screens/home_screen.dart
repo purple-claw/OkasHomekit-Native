@@ -1162,14 +1162,20 @@ class _FavoriteAccessCardState extends State<_FavoriteAccessCard> {
                           ),
                         ),
                         if (favorite.typeLabel == 'Scene') ...[
-                          // Scene favorites: icon in the centre of the
-                          // card, larger, like a scene tile.
+                          // Scene favorites: scene.png logo in the centre
+                          // of the card, tinted with the scene accent.
                           Positioned.fill(
                             child: Center(
-                              child: Icon(
-                                favorite.icon,
+                              child: Image.asset(
+                                'assets/icons/scene.png',
+                                width: 44,
+                                height: 44,
                                 color: accent,
-                                size: 40,
+                                errorBuilder: (_, __, ___) => Icon(
+                                  favorite.icon,
+                                  color: accent,
+                                  size: 40,
+                                ),
                               ),
                             ),
                           ),

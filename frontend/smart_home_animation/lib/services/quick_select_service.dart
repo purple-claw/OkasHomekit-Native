@@ -1,12 +1,10 @@
 // lib/services/quick_select_service.dart
 //
-// "Quick Select" — a per-room strip of favourite loads shown at the
-// bottom of each room card. Long-pressing a load card in the loads grid
-// (or room loads grid) toggles it in/out of the room's Quick Select
-// strip. Persisted locally per device (SharedPreferences) so the strip
-// survives restarts.
-// ignore_for_file: non_const_argument_for_const_parameter
-
+// "Quick Select" — pinned loads for a room (or the global Loads tab)
+// shown as compact shortcuts. Persisted locally per device
+// (SharedPreferences). Icons are derived from the load TYPE at render
+// time (via LoadIcon assets) so no dynamic IconData is persisted — this
+// keeps release builds with tree-shake-icons working.
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -16,14 +14,12 @@ class QuickSelectLoad {
   final String id;
   final String name;
   final String type;
-  final IconData icon;
   final Color color;
 
   QuickSelectLoad({
     required this.id,
     required this.name,
     required this.type,
-    required this.icon,
     required this.color,
   });
 
@@ -31,23 +27,14 @@ class QuickSelectLoad {
         'id': id,
         'name': name,
         'type': type,
-        'iconCodePoint': icon.codePoint,
-        'iconFontFamily': icon.fontFamily,
         'color': color.toARGB32(),
       };
 
   factory QuickSelectLoad.fromJson(Map<String, dynamic> json) {
-    final codePoint = json['iconCodePoint'];
     return QuickSelectLoad(
       id: json['id'] as String,
       name: json['name'] as String? ?? 'Load',
       type: json['type'] as String? ?? 'swt',
-      icon: codePoint is int
-          ? IconData(
-              codePoint,
-              fontFamily: json['iconFontFamily'] as String? ?? 'MaterialIcons',
-            )
-          : Icons.lightbulb_outline,
       color: Color(json['color'] as int? ?? 0xFF2AC0D1),
     );
   }

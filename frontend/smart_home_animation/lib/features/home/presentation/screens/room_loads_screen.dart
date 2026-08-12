@@ -548,7 +548,6 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
                     id: loadId,
                     name: name,
                     type: type,
-                    icon: _quickIconFor(type),
                     color: SHColors.deviceAccent(type),
                   ),
                 );
@@ -559,29 +558,6 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
         ),
       ),
     );
-  }
-
-  IconData _quickIconFor(String type) {
-    switch (type) {
-      case 'swt':
-        return Icons.power_settings_new;
-      case 'dim':
-        return Icons.brightness_6;
-      case 'rgb':
-        return Icons.palette;
-      case 'tun':
-        return Icons.light_mode;
-      case 'hvc':
-        return Icons.thermostat;
-      case 'fan':
-        return Icons.toys;
-      case 'cur':
-        return Icons.curtains;
-      case 'scn':
-        return Icons.auto_awesome;
-      default:
-        return Icons.lightbulb_outline;
-    }
   }
 
   void _showSheet(BuildContext ctx, Map<String, dynamic> load, String type) {
@@ -596,11 +572,107 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
     } else if (type == 'hvc') {
       _showHVACSheet(ctx, load);
     } else {
-      // Plain switches / scenes have no dedicated sheet — reuse the
-      // dimmer sheet (same as the Loads tab) so every shortcut opens
-      // something.
-      _showDimSheet(ctx, load, 'dim');
+      // Plain switches / scenes: simple ON/OFF sheet — NO brightness
+      // slider (that is only for dimmers / tunables).
+      _showSwitchSheet(ctx, load);
     }
+  }
+
+  /// Simple ON/OFF sheet for plain switches and scenes. No brightness
+  /// slider — the master toggle is the only control.
+  void _showSwitchSheet(BuildContext ctx, Map<String, dynamic> load) {
+    final mqtt = Provider.of<DirectMQTTService>(ctx, listen: false);
+    final id = load['id']?.toString() ?? '';
+    final name = load['name']?.toString() ?? 'Device';
+    final type = load['type']?.toString() ?? 'swt';
+    final isScene = type == 'scn';
+
+    showLiquidGlassModalBottomSheet(
+      context: ctx,
+      isScrollControlled: true,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSt) {
+          final cur = mqtt.loads[id] ?? load;
+          final isOn = cur['isOn'] == true;
+          return FigmaLoadSheet(
+            title: isScene ? 'SCENE' : 'SWITCH',
+            isOn: isOn,
+            onToggle: (v) {
+              if (isScene) {
+                mqtt.sendCommand(id, v ? 'ON' : 'OFF');
+              } else {
+                mqtt.sendCommand(id, v ? 'ON' : 'OFF');
+              }
+              setSt(() {});
+            },
+            body: Column(
+              children: [
+                Container(
+                  width: 96,
+                  height: 96,
+                  decoration: BoxDecoration(
+                    color: isOn
+                        ? SHColors.green.withValues(alpha: 0.18)
+                        : Colors.white.withValues(alpha: 0.06),
+                    borderRadius: BorderRadius.circular(28),
+                    border: Border.all(
+                      color: isOn
+                          ? SHColors.green.withValues(alpha: 0.5)
+                          : Colors.white.withValues(alpha: 0.14),
+                    ),
+                  ),
+                  child: Center(
+                    child: isScene
+                        ? Image.asset(
+                            'assets/icons/scene.png',
+                            width: 44,
+                            height: 44,
+                            color: isOn ? SHColors.green : SHColors.hintColor,
+                            errorBuilder: (_, __, ___) => Icon(
+                              Icons.auto_awesome,
+                              color: isOn
+                                  ? SHColors.green
+                                  : SHColors.hintColor,
+                              size: 44,
+                            ),
+                          )
+                        : Icon(
+                            Icons.power_settings_new,
+                            color:
+                                isOn ? SHColors.green : SHColors.hintColor,
+                            size: 44,
+                          ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  name,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  isOn
+                      ? isScene
+                          ? 'Scene will activate'
+                          : 'Switch is ON'
+                      : isScene
+                      ? 'Tap toggle to activate scene'
+                      : 'Switch is OFF',
+                  style: TextStyle(
+                    color: SHColors.mutedText,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 
   void _showDimSheet(BuildContext ctx, Map<String, dynamic> load, String type) {

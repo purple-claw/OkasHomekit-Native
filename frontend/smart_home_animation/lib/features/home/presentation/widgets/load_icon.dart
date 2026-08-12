@@ -5,7 +5,7 @@ String loadIconAssetPath(String type, {bool isOn = false}) {
   switch (type.toLowerCase()) {
     case 'swt':
     case 'switch':
-      return isOn ? 'assets/icons/switchon.png' : 'assets/icons/switchoff.png';
+      return isOn ? 'assets/icons/switchOn.png' : 'assets/icons/switchOff.png';
     case 'light':
       return 'assets/icons/light.png';
     case 'dim':

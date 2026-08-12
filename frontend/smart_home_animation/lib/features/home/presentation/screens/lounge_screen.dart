@@ -473,7 +473,6 @@ class _LoungeScreenState extends State<LoungeScreen> {
                     id: loadId,
                     name: name,
                     type: type,
-                    icon: _quickIconFor(type),
                     color: SHColors.deviceAccent(type),
                   ),
                 );
@@ -484,29 +483,6 @@ class _LoungeScreenState extends State<LoungeScreen> {
         ),
       ),
     );
-  }
-
-  IconData _quickIconFor(String type) {
-    switch (type) {
-      case 'swt':
-        return Icons.power_settings_new;
-      case 'dim':
-        return Icons.brightness_6;
-      case 'rgb':
-        return Icons.palette;
-      case 'tun':
-        return Icons.light_mode;
-      case 'hvc':
-        return Icons.thermostat;
-      case 'fan':
-        return Icons.toys;
-      case 'cur':
-        return Icons.curtains;
-      case 'scn':
-        return Icons.auto_awesome;
-      default:
-        return Icons.lightbulb_outline;
-    }
   }
 
   void _showControlBottomSheet(Map<String, dynamic> load, String deviceType) {
@@ -543,8 +519,94 @@ class _LoungeScreenState extends State<LoungeScreen> {
       case 'hvc':
         return _buildHVACSheet(ctx, mqtt, id, deviceName);
       default:
-        return _buildDimmerSheet(ctx, mqtt, id, deviceName);
+        // Plain switches / scenes: simple ON/OFF sheet — no brightness
+        // slider (that is only for dimmers / tunables).
+        return _buildSwitchSheet(ctx, mqtt, id, deviceName, typeCode);
     }
+  }
+
+  /// Simple ON/OFF sheet for plain switches and scenes — no brightness
+  /// slider, only the master toggle.
+  Widget _buildSwitchSheet(
+    BuildContext ctx,
+    DirectMQTTService mqtt,
+    String id,
+    String deviceName,
+    String typeCode,
+  ) {
+    final isScene = typeCode == 'scn';
+    return StatefulBuilder(
+      builder: (ctx, setSt) {
+        final cur = mqtt.loads[id] ?? <String, dynamic>{};
+        final isOn = cur['isOn'] == true;
+        return FigmaLoadSheet(
+          title: isScene ? 'SCENE' : 'SWITCH',
+          isOn: isOn,
+          onToggle: (v) {
+            mqtt.sendCommand(id, v ? 'ON' : 'OFF');
+            setSt(() {});
+          },
+          body: Column(
+            children: [
+              Container(
+                width: 96,
+                height: 96,
+                decoration: BoxDecoration(
+                  color: isOn
+                      ? SHColors.green.withValues(alpha: 0.18)
+                      : Colors.white.withValues(alpha: 0.06),
+                  borderRadius: BorderRadius.circular(28),
+                  border: Border.all(
+                    color: isOn
+                        ? SHColors.green.withValues(alpha: 0.5)
+                        : Colors.white.withValues(alpha: 0.14),
+                  ),
+                ),
+                child: Center(
+                  child: isScene
+                      ? Image.asset(
+                          'assets/icons/scene.png',
+                          width: 44,
+                          height: 44,
+                          color:
+                              isOn ? SHColors.green : SHColors.hintColor,
+                          errorBuilder: (_, __, ___) => const Icon(
+                            Icons.auto_awesome,
+                            size: 44,
+                          ),
+                        )
+                      : Icon(
+                          Icons.power_settings_new,
+                          color: isOn ? SHColors.green : SHColors.hintColor,
+                          size: 44,
+                        ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                deviceName,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                isOn
+                    ? isScene
+                        ? 'Scene will activate'
+                        : 'Switch is ON'
+                    : isScene
+                    ? 'Tap toggle to activate scene'
+                    : 'Switch is OFF',
+                style: TextStyle(color: SHColors.mutedText, fontSize: 13),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildDimmerSheet(

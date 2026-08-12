@@ -44,13 +44,9 @@ class FavoriteSceneShortcut {
   }
 
   static IconData _iconFromJson(Map<String, dynamic> json) {
-    final codePoint = json['iconCodePoint'];
-    if (codePoint is int) {
-      return IconData(
-        codePoint,
-        fontFamily: json['iconFontFamily'] as String? ?? 'MaterialIcons',
-      );
-    }
+    // Always resolve via the id -> const icon map. The persisted
+    // codePoint is ignored so release builds can tree-shake icons
+    // (non-constant IconData instances are not allowed).
     return _iconForId(json['id'] as String? ?? '');
   }
 
