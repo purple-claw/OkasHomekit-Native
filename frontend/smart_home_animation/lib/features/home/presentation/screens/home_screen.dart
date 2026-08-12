@@ -12,7 +12,6 @@ import 'package:smart_home_animation/core/shared/domain/entities/room.dart';
 import 'package:smart_home_animation/core/shared/presentation/widgets/room_image.dart';
 import 'package:smart_home_animation/core/shared/presentation/widgets/glass_panel.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/add_room_screen.dart';
-import 'package:smart_home_animation/features/home/presentation/screens/lounge_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/profile_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/scene_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/room_loads_screen.dart';
@@ -147,8 +146,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   elevation: 0,
                   title: Text(
                     _selectedIndex == 1
-                        ? 'Loads'
-                        : _selectedIndex == 2
                         ? 'Scenes'
                         : 'Profile',
                     style: context.titleLarge.copyWith(
@@ -162,7 +159,6 @@ class _HomeScreenState extends State<HomeScreen> {
             index: _selectedIndex,
             children: [
               _buildHomeTab(),
-              const LoungeScreen(),
               const SceneScreen(showHeader: false),
               // NOT const: rebuilds when HouseNameService refreshes from
               // the board (owner/project names).
@@ -280,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
           typeLabel: 'Scene',
           icon: scene.icon,
           accent: scene.color,
-          onTap: () => setState(() => _selectedIndex = 2),
+          onTap: () => setState(() => _selectedIndex = 1),
         ),
       ),
     ].take(4).toList();
@@ -1165,11 +1161,28 @@ class _FavoriteAccessCardState extends State<_FavoriteAccessCard> {
                             color: accent,
                           ),
                         ),
-                        Positioned(
-                          top: 9,
-                          right: 9,
-                          child: Icon(favorite.icon, color: accent, size: 18),
-                        ),
+                        if (favorite.typeLabel == 'Scene') ...[
+                          // Scene favorites: icon in the centre of the
+                          // card, larger, like a scene tile.
+                          Positioned.fill(
+                            child: Center(
+                              child: Icon(
+                                favorite.icon,
+                                color: accent,
+                                size: 40,
+                              ),
+                            ),
+                          ),
+                        ] else
+                          Positioned(
+                            top: 9,
+                            right: 9,
+                            child: Icon(
+                              favorite.icon,
+                              color: accent,
+                              size: 18,
+                            ),
+                          ),
                         Positioned(
                           left: 10,
                           right: 8,
