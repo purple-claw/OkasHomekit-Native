@@ -117,6 +117,17 @@ class LiquidGlassSheet extends StatelessWidget {
                 ],
               ),
         ),
+        // Tap-outside-to-dismiss catcher. The sheet body (below) sits on
+        // top of this and absorbs its own taps; taps anywhere else land
+        // here and pop the overlay. Without it the full-screen Stack
+        // covers the whole route, leaving the dialog barrier zero area
+        // to receive taps, so tap-outside could never dismiss the sheet.
+        Positioned.fill(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => Navigator.of(context).pop(),
+          ),
+        ),
         // Sheet body pinned to the bottom of the screen. SizedToBox
         // (the default for Align when the child is finite) lets the body
         // take its natural height — this is what stops the sheet from

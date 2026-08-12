@@ -38,14 +38,14 @@ class FigmaLoadSheet extends StatelessWidget {
         // caller is expected to wrap this sheet in a LiquidGlassSheet so
         // the load grid behind the sheet is blurred and the controls stay
         // legible without needing a heavy opaque backdrop.
-        color: SHColors.elevatedCardColor,
+        color: SHColors.elevatedCardColor.withValues(alpha: 0.45),
         gradient: useRadialGradient
             ? SHColors.curtainRadialGradient
             : SHColors.cardGradient,
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(SHColors.radiusXl),
         ),
-        border: Border(top: BorderSide(color: Colors.white24)),
+        border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.12))),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.5),
