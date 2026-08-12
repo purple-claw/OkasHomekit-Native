@@ -1,9 +1,13 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/core.dart';
 import 'package:smart_home_animation/core/shared/presentation/widgets/liquid_glass_scrim.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/quick_select_strip.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
+import 'package:smart_home_animation/services/quick_select_service.dart';
 import 'package:smart_home_animation/services/room_service.dart';
 import 'package:smart_home_animation/services/token_auth_service.dart';
 import '../widgets/load_grid_card.dart';
@@ -22,28 +26,30 @@ class RoomLoadsScreen extends StatefulWidget {
 class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
   String _selectedCategory = 'All';
   String _loadStructureSignature = '';
+  // Carousel: one page per category so the user can swipe horizontally
+  // between All / Lights / Climate / Curtain / Scene instead of tapping
+  // each filter chip.
+  final PageController _pageController = PageController();
+  bool _pageProgrammaticScroll = false;
+  // Load id currently highlighted after a Quick Select shortcut jump.
+  String? _highlightedLoadId;
 
-  // "Lights" combines every lighting type (on/off switches, dimmers,
-  // tunable whites, RGB) into one section with All ON/OFF controls.
+  // Grouped categories to reduce taps: "Lights" combines every lighting
+  // type (on/off switches, dimmers, tunable whites, RGB), "Climate"
+  // combines HVAC + fans, curtains and scenes stay as their own sections.
   static const _categories = [
     'All',
     'Lights',
-    'Dimmers',
-    'Tunable',
-    'RGB',
-    'Fans',
-    'Curtains',
-    'Scenes',
+    'Climate',
+    'Curtain',
+    'Scene',
   ];
   static const _categoryTypeCodes = {
     'All': <String>[],
     'Lights': ['swt', 'dim', 'tun', 'rgb'],
-    'Dimmers': ['dim'],
-    'Tunable': ['tun'],
-    'RGB': ['rgb'],
-    'Fans': ['fan'],
-    'Curtains': ['cur'],
-    'Scenes': ['scn'],
+    'Climate': ['hvc', 'fan'],
+    'Curtain': ['cur'],
+    'Scene': ['scn'],
   };
 
   @override
@@ -53,6 +59,10 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
       final mqtt = Provider.of<DirectMQTTService>(context, listen: false);
       _loadStructureSignature = _structureSignature(mqtt);
       mqtt.addListener(_onDataChanged);
+    });
+    // Load the Quick Select strip for this room.
+    QuickSelectService.instance.load().then((_) {
+      if (mounted) setState(() {});
     });
   }
 
@@ -78,6 +88,7 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
   void dispose() {
     final mqtt = Provider.of<DirectMQTTService>(context, listen: false);
     mqtt.removeListener(_onDataChanged);
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -132,31 +143,51 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
                   return Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: GestureDetector(
-                      onTap: () => setState(() => _selectedCategory = cat),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: sel
-                              ? SHColors.primary.withOpacity(0.95)
-                              : SHColors.cardColor.withOpacity(0.55),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: sel
-                                ? SHColors.primary
-                                : Colors.white.withOpacity(0.12),
+                      onTap: () {
+                        setState(() => _selectedCategory = cat);
+                        // Slide the carousel to the tapped category.
+                        _pageProgrammaticScroll = true;
+                        _pageController.animateToPage(
+                          i,
+                          duration: const Duration(milliseconds: 260),
+                          curve: Curves.easeOutCubic,
+                        );
+                      },
+                      // Frosted-glass chip: blurs the background behind the
+                      // chip so it reads as glassmorphism.
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: BackdropFilter(
+                          filter: ui.ImageFilter.blur(
+                            sigmaX: 10,
+                            sigmaY: 10,
                           ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            cat,
-                            style: TextStyle(
-                              color: sel ? Colors.white : Colors.white70,
-                              fontWeight: sel
-                                  ? FontWeight.w800
-                                  : FontWeight.w600,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: sel
+                                  ? SHColors.primary.withValues(alpha: 0.85)
+                                  : Colors.white.withValues(alpha: 0.07),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: sel
+                                    ? SHColors.primary.withValues(alpha: 0.9)
+                                    : Colors.white.withValues(alpha: 0.16),
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                cat,
+                                style: TextStyle(
+                                  color: sel ? Colors.white : Colors.white70,
+                                  fontWeight: sel
+                                      ? FontWeight.w800
+                                      : FontWeight.w600,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -167,24 +198,118 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
               ),
             ),
             const SizedBox(height: 16),
+            // Carousel: swipe left/right across the category pages. The
+            // selected chip stays in sync with the visible page.
             Expanded(
-              child: Column(
-                children: [
-                  // All ON / All OFF control — shown for the combined
-                  // Lights section based on the room's lighting config.
-                  if (_selectedCategory == 'Lights')
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-                      child: _buildAllLightsBar(roomLoads),
-                    ),
-                  Expanded(child: BackdropGroup(child: _buildGrid(roomLoads))),
-                ],
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: _categories.length,
+                onPageChanged: (index) {
+                  if (_pageProgrammaticScroll) {
+                    _pageProgrammaticScroll = false;
+                    return;
+                  }
+                  setState(() => _selectedCategory = _categories[index]);
+                },
+                itemBuilder: (ctx, index) {
+                  final cat = _categories[index];
+                  return Column(
+                    children: [
+                      // All ON / All OFF control — shown for the combined
+                      // Lights section based on the room's lighting config.
+                      if (cat == 'Lights')
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                          child: _buildAllLightsBar(roomLoads),
+                        ),
+                      Expanded(
+                        child: BackdropGroup(
+                          child: _buildGrid(roomLoads, cat),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
+            // Quick Select strip: pinned loads for this room shown as
+            // compact glass chips at the bottom of the screen. Tap a chip
+            // to open that load's control sheet.
+            _buildQuickSelectStrip(roomLoads),
           ],
         ),
       ),
     );
+  }
+
+  /// Bottom Quick Select strip — replicates the home screen's Favorites
+  /// 4-card layout: frosted-glass tiles in a row. Tapping a tile is a
+  /// SHORTCUT to the actual load card in the grid — it navigates to the
+  /// load's category page and highlights the real card. It does NOT open
+  /// a separate control sheet.
+  Widget _buildQuickSelectStrip(List<Map<String, dynamic>> roomLoads) {
+    final quickLoads = QuickSelectService.instance.forRoom(widget.room.id);
+    if (quickLoads.isEmpty) return const SizedBox.shrink();
+
+    return QuickSelectStrip(
+      loads: quickLoads,
+      onTapLoad: (ql) {
+        final liveLoad = roomLoads
+            .where((l) => l['id']?.toString() == ql.id)
+            .firstOrNull;
+        if (liveLoad == null) return;
+        _jumpToLoad(liveLoad);
+      },
+      // Long-pressing the quick tile itself removes it from Quick Select.
+      onLongPressLoad: (ql) async {
+        await QuickSelectService.instance.removeFromRoom(
+          roomId: widget.room.id,
+          loadId: ql.id,
+        );
+        if (mounted) setState(() {});
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${ql.name} removed from Quick Select'),
+              backgroundColor: SHColors.rose,
+              duration: const Duration(seconds: 1),
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  /// Shortcut: find the load's category page, animate the carousel to it,
+  /// and briefly highlight the actual load card in the grid.
+  void _jumpToLoad(Map<String, dynamic> load) {
+    final type = load['type']?.toString() ?? 'swt';
+    // Find which category contains this load type.
+    var targetIndex = 0; // 'All'
+    for (var i = 1; i < _categories.length; i++) {
+      final codes = _categoryTypeCodes[_categories[i]] ?? [];
+      if (codes.contains(type)) {
+        targetIndex = i;
+        break;
+      }
+    }
+
+    setState(() {
+      _selectedCategory = _categories[targetIndex];
+      _highlightedLoadId = load['id']?.toString() ?? '';
+    });
+    _pageProgrammaticScroll = true;
+    _pageController.animateToPage(
+      targetIndex,
+      duration: const Duration(milliseconds: 260),
+      curve: Curves.easeOutCubic,
+    );
+    // Clear the highlight after a moment so the card settles back to normal.
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted && _highlightedLoadId != null) {
+        setState(() => _highlightedLoadId = null);
+      }
+    });
   }
 
   /// Combined "All Lights" control: turns every lighting load in the room
@@ -291,10 +416,10 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
     );
   }
 
-  Widget _buildGrid(List<Map<String, dynamic>> allLoads) {
+  Widget _buildGrid(List<Map<String, dynamic>> allLoads, String category) {
     List<Map<String, dynamic>> filtered = allLoads;
-    if (_selectedCategory != 'All') {
-      final codes = _categoryTypeCodes[_selectedCategory] ?? [];
+    if (category != 'All') {
+      final codes = _categoryTypeCodes[category] ?? [];
       filtered = allLoads
           .where((l) => codes.contains(l['type'] ?? 'swt'))
           .toList();
@@ -326,19 +451,137 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
 
   Widget _makeCard(Map<String, dynamic> load) {
     final id = load['id']?.toString() ?? '';
+    final isHighlighted = _highlightedLoadId == id;
     return Selector<DirectMQTTService, bool>(
       selector: (context, mqtt) => (mqtt.loads[id] ?? load)['isOn'] == true,
       builder: (context, isOn, child) {
         final mqtt = Provider.of<DirectMQTTService>(context, listen: false);
         final cur = Map<String, dynamic>.from(mqtt.loads[id] ?? load)
           ..['isOn'] = isOn;
-        return LoadGridCard(
-          load: cur,
-          onTap: () => _showSheet(context, cur, cur['type'] ?? 'swt'),
-          onToggle: (v) => mqtt.sendCommand(id, v ? 'ON' : 'OFF'),
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOutCubic,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(SHColors.radiusLg + 2),
+            border: isHighlighted
+                ? Border.all(
+                    color: SHColors.primary,
+                    width: 2.5,
+                  )
+                : null,
+            boxShadow: isHighlighted
+                ? [
+                    BoxShadow(
+                      color: SHColors.primary.withValues(alpha: 0.45),
+                      blurRadius: 18,
+                      spreadRadius: 1,
+                    ),
+                  ]
+                : null,
+          ),
+          child: LoadGridCard(
+            load: cur,
+            onTap: () => _showSheet(context, cur, cur['type'] ?? 'swt'),
+            onToggle: (v) => mqtt.sendCommand(id, v ? 'ON' : 'OFF'),
+            onLongPress: () => _showQuickSelectDialog(cur),
+          ),
         );
       },
     );
+  }
+
+  /// Long-press popup: pins the load to the room's Quick Select strip.
+  /// Shows "Add to Quick Select" only — removing happens by long-pressing
+  /// the load's tile inside the strip itself.
+  void _showQuickSelectDialog(Map<String, dynamic> load) {
+    final roomId = widget.room.id;
+    final loadId = load['id']?.toString() ?? '';
+    if (QuickSelectService.instance.isQuickSelected(roomId, loadId)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Already in Quick Select'),
+          backgroundColor: SHColors.rose,
+          duration: Duration(seconds: 1),
+        ),
+      );
+      return;
+    }
+    final name = load['name']?.toString() ?? 'Load';
+    final type = load['type']?.toString() ?? 'swt';
+
+    showDialog(
+      context: context,
+      builder: (ctx) => FrostedAlertDialog(
+        title: Text(
+          name,
+          style: const TextStyle(color: Colors.white),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(
+                Icons.add_rounded,
+                size: 22,
+                color: SHColors.green,
+              ),
+              title: const Text(
+                'Add to Quick Select',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              subtitle: Text(
+                'Pin this load to the room quick strip',
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.55),
+                  fontSize: 12,
+                ),
+              ),
+              onTap: () async {
+                Navigator.pop(ctx);
+                await QuickSelectService.instance.addToRoom(
+                  roomId: roomId,
+                  load: QuickSelectLoad(
+                    id: loadId,
+                    name: name,
+                    type: type,
+                    icon: _quickIconFor(type),
+                    color: SHColors.deviceAccent(type),
+                  ),
+                );
+                if (mounted) setState(() {});
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  IconData _quickIconFor(String type) {
+    switch (type) {
+      case 'swt':
+        return Icons.power_settings_new;
+      case 'dim':
+        return Icons.brightness_6;
+      case 'rgb':
+        return Icons.palette;
+      case 'tun':
+        return Icons.light_mode;
+      case 'hvc':
+        return Icons.thermostat;
+      case 'fan':
+        return Icons.toys;
+      case 'cur':
+        return Icons.curtains;
+      case 'scn':
+        return Icons.auto_awesome;
+      default:
+        return Icons.lightbulb_outline;
+    }
   }
 
   void _showSheet(BuildContext ctx, Map<String, dynamic> load, String type) {
@@ -352,6 +595,11 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
       _showCurtainSheet(ctx, load);
     } else if (type == 'hvc') {
       _showHVACSheet(ctx, load);
+    } else {
+      // Plain switches / scenes have no dedicated sheet — reuse the
+      // dimmer sheet (same as the Loads tab) so every shortcut opens
+      // something.
+      _showDimSheet(ctx, load, 'dim');
     }
   }
 

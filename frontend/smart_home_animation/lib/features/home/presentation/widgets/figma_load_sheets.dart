@@ -90,7 +90,16 @@ class FigmaLoadSheet extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            body,
+            // The body is wrapped in a scroll view with a max height so a
+            // tall body (curtain sheet with visualization + slider + 3
+            // buttons) never overflows the screen and misaligns the
+            // bottom button row.
+            Flexible(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: body,
+              ),
+            ),
             const SizedBox(height: 24),
             Row(
               children: [

@@ -1,14 +1,19 @@
 // lib/features/home/presentation/screens/lounge_screen.dart
 // ignore_for_file: unused_local_variable, unused_field, unused_element
 
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/core.dart';
 import 'package:smart_home_animation/core/shared/presentation/widgets/liquid_glass_scrim.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/glass_panel.dart';
 import 'package:smart_home_animation/core/shared/presentation/widgets/skeleton.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/quick_select_strip.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
+import 'package:smart_home_animation/services/quick_select_service.dart';
 import '../widgets/figma_load_sheets.dart';
 import '../widgets/load_grid_card.dart';
 import '../widgets/load_icon.dart';
@@ -22,6 +27,13 @@ class LoungeScreen extends StatefulWidget {
 
 class _LoungeScreenState extends State<LoungeScreen> {
   String _selectedCategory = 'All';
+  // Carousel: one page per category so the user can swipe horizontally
+  // between All / Lights / Climate / Curtain / Scene instead of tapping
+  // each filter chip.
+  final PageController _pageController = PageController();
+  bool _pageProgrammaticScroll = false;
+  // Load id currently highlighted after a Quick Select shortcut jump.
+  String? _highlightedLoadId;
   Map<String, dynamic>? _selectedLoad;
   String? _expandedLoadId;
   String _loadStructureSignature = '';
@@ -30,27 +42,23 @@ class _LoungeScreenState extends State<LoungeScreen> {
   final List<String> _categories = [
     'All',
     'Lights',
-    'Dimmers',
-    'Tunable',
-    'RGB',
-    'HVAC',
-    'Scene',
-    'Fan',
+    'Climate',
     'Curtain',
+    'Scene',
   ];
 
   /// Maps display-friendly category names to the internal type codes
   /// used by _getDeviceType / load['type'].
+  ///
+  /// Grouped to reduce taps: all lighting types live under "Lights"
+  /// (switches, dimmers, tunable whites, RGB), climate under "Climate"
+  /// (HVAC + fans), and curtains/scenes stay as their own sections.
   static const Map<String, List<String>> _categoryTypeCodes = {
     'All': <String>[],
-    'Lights': ['swt'],
-    'Dimmers': ['dim'],
-    'Tunable': ['tun'],
-    'RGB': ['rgb'],
-    'HVAC': ['hvc'],
-    'Scene': ['scn'],
-    'Fan': ['fan'],
+    'Lights': ['swt', 'dim', 'tun', 'rgb'],
+    'Climate': ['hvc', 'fan'],
     'Curtain': ['cur'],
+    'Scene': ['scn'],
   };
 
   @override
@@ -64,6 +72,10 @@ class _LoungeScreenState extends State<LoungeScreen> {
       _loadStructureSignature = _structureSignature(okasService);
       _lastConnectionState = okasService.isConnected;
       okasService.addListener(_onDataChanged);
+    });
+    // Load the Quick Select strip.
+    QuickSelectService.instance.load().then((_) {
+      if (mounted) setState(() {});
     });
   }
 
@@ -98,6 +110,7 @@ class _LoungeScreenState extends State<LoungeScreen> {
   void dispose() {
     final okasService = Provider.of<DirectMQTTService>(context, listen: false);
     okasService.removeListener(_onDataChanged);
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -145,32 +158,51 @@ class _LoungeScreenState extends State<LoungeScreen> {
                   final category = _categories[index];
                   final isSelected = _selectedCategory == category;
                   return GestureDetector(
-                    onTap: () => setState(() => _selectedCategory = category),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? SHColors.primary.withOpacity(0.95)
-                            : SHColors.cardColor.withOpacity(0.55),
-                        borderRadius: BorderRadius.circular(25),
-                        border: Border.all(
-                          color: isSelected
-                              ? SHColors.primary
-                              : Colors.white.withOpacity(0.12),
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          category,
-                          style: TextStyle(
-                            color: isSelected ? Colors.white : Colors.white70,
-                            fontWeight: isSelected
-                                ? FontWeight.w800
-                                : FontWeight.w600,
+                    onTap: () {
+                      setState(() => _selectedCategory = category);
+                      // Slide the carousel to the tapped category.
+                      _pageProgrammaticScroll = true;
+                      _pageController.animateToPage(
+                        index,
+                        duration: const Duration(milliseconds: 260),
+                        curve: Curves.easeOutCubic,
+                      );
+                    },
+                    // Frosted-glass chip: blurs the background behind the
+                    // chip so it reads as glassmorphism.
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(25),
+                      child: BackdropFilter(
+                        filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? SHColors.primary.withValues(alpha: 0.85)
+                                : Colors.white.withValues(alpha: 0.07),
+                            borderRadius: BorderRadius.circular(25),
+                            border: Border.all(
+                              color: isSelected
+                                  ? SHColors.primary.withValues(alpha: 0.9)
+                                  : Colors.white.withValues(alpha: 0.16),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              category,
+                              style: TextStyle(
+                                color: isSelected
+                                    ? Colors.white
+                                    : Colors.white70,
+                                fontWeight: isSelected
+                                    ? FontWeight.w800
+                                    : FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -182,20 +214,111 @@ class _LoungeScreenState extends State<LoungeScreen> {
 
             const SizedBox(height: 8),
 
+            // Carousel: swipe left/right across the category pages. The
+            // selected chip stays in sync with the visible page.
             Expanded(
-              child: BackdropGroup(child: _buildLoadsGrid(devicesToShow)),
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: _categories.length,
+                onPageChanged: (index) {
+                  if (_pageProgrammaticScroll) {
+                    _pageProgrammaticScroll = false;
+                    return;
+                  }
+                  setState(() => _selectedCategory = _categories[index]);
+                },
+                itemBuilder: (context, index) {
+                  final category = _categories[index];
+                  return BackdropGroup(
+                    child: _buildLoadsGrid(devicesToShow, category),
+                  );
+                },
+              ),
             ),
+            // Quick Select strip: pinned loads shown as compact glass
+            // chips at the bottom. Tap a chip to open its control sheet.
+            _buildQuickSelectStrip(allLoads),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildLoadsGrid(List<Map<String, dynamic>> allDevices) {
+  /// Bottom Quick Select strip (Loads tab) — replicates the home screen's
+  /// Favorites 4-card layout: frosted-glass tiles in a row.
+  Widget _buildQuickSelectStrip(List<Map<String, dynamic>> allLoads) {
+    const roomId = '__global__';
+    final quickLoads = QuickSelectService.instance.forRoom(roomId);
+    if (quickLoads.isEmpty) return const SizedBox.shrink();
+
+    return QuickSelectStrip(
+      loads: quickLoads,
+      onTapLoad: (ql) {
+        final liveLoad = allLoads
+            .where((l) => l['id']?.toString() == ql.id)
+            .firstOrNull;
+        if (liveLoad != null) {
+          _jumpToLoad(liveLoad);
+        }
+      },
+      // Long-pressing the quick tile itself removes it from Quick Select.
+      onLongPressLoad: (ql) async {
+        await QuickSelectService.instance.removeFromRoom(
+          roomId: roomId,
+          loadId: ql.id,
+        );
+        if (mounted) setState(() {});
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${ql.name} removed from Quick Select'),
+              backgroundColor: SHColors.rose,
+              duration: const Duration(seconds: 1),
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  /// Shortcut: find the load's category page, animate the carousel to it,
+  /// and briefly highlight the actual load card in the grid.
+  void _jumpToLoad(Map<String, dynamic> load) {
+    final type = load['type']?.toString() ?? 'swt';
+    var targetIndex = 0; // 'All'
+    for (var i = 1; i < _categories.length; i++) {
+      final codes = _categoryTypeCodes[_categories[i]] ?? [];
+      if (codes.contains(type)) {
+        targetIndex = i;
+        break;
+      }
+    }
+
+    setState(() {
+      _selectedCategory = _categories[targetIndex];
+      _highlightedLoadId = load['id']?.toString() ?? '';
+    });
+    _pageProgrammaticScroll = true;
+    _pageController.animateToPage(
+      targetIndex,
+      duration: const Duration(milliseconds: 260),
+      curve: Curves.easeOutCubic,
+    );
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted && _highlightedLoadId != null) {
+        setState(() => _highlightedLoadId = null);
+      }
+    });
+  }
+
+  Widget _buildLoadsGrid(
+    List<Map<String, dynamic>> allDevices,
+    String category,
+  ) {
     List<Map<String, dynamic>> filteredLoads = allDevices;
 
-    if (_selectedCategory != 'All') {
-      final matchingCodes = _categoryTypeCodes[_selectedCategory] ?? <String>[];
+    if (category != 'All') {
+      final matchingCodes = _categoryTypeCodes[category] ?? <String>[];
       filteredLoads = allDevices.where((load) {
         return matchingCodes.contains(load['type'] ?? 'swt');
       }).toList();
@@ -241,6 +364,7 @@ class _LoungeScreenState extends State<LoungeScreen> {
 
   Widget _buildLoadCard(Map<String, dynamic> load) {
     final loadId = load['id']?.toString() ?? '';
+    final isHighlighted = _highlightedLoadId == loadId;
     return Selector<DirectMQTTService, bool>(
       selector: (context, mqtt) {
         final liveLoad = mqtt.loads[loadId] ?? mqtt.devices[loadId] ?? load;
@@ -250,24 +374,139 @@ class _LoungeScreenState extends State<LoungeScreen> {
         final currentLoad = Map<String, dynamic>.from(load)..['isOn'] = isOn;
         final deviceType = _getDeviceType(currentLoad['type'] ?? 'swt');
 
-        return LoadGridCard(
-          load: currentLoad,
-          onTap: () {
-            if (deviceType == 'Dimmer' ||
-                deviceType == 'Tunable' ||
-                deviceType == 'Curtain' ||
-                deviceType == 'RGB' ||
-                deviceType == 'Fan' ||
-                deviceType == 'HVAC') {
-              _showControlBottomSheet(currentLoad, deviceType);
-            }
-          },
-          onToggle: (value) {
-            _sendCommand(load['id'], value ? 'ON' : 'OFF');
-          },
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOutCubic,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(SHColors.radiusLg + 2),
+            border: isHighlighted
+                ? Border.all(
+                    color: SHColors.primary,
+                    width: 2.5,
+                  )
+                : null,
+            boxShadow: isHighlighted
+                ? [
+                    BoxShadow(
+                      color: SHColors.primary.withValues(alpha: 0.45),
+                      blurRadius: 18,
+                      spreadRadius: 1,
+                    ),
+                  ]
+                : null,
+          ),
+          child: LoadGridCard(
+            load: currentLoad,
+            onTap: () {
+              if (deviceType == 'Dimmer' ||
+                  deviceType == 'Tunable' ||
+                  deviceType == 'Curtain' ||
+                  deviceType == 'RGB' ||
+                  deviceType == 'Fan' ||
+                  deviceType == 'HVAC') {
+                _showControlBottomSheet(currentLoad, deviceType);
+              }
+            },
+            onToggle: (value) {
+              _sendCommand(load['id'], value ? 'ON' : 'OFF');
+            },
+            onLongPress: () => _showQuickSelectDialog(currentLoad),
+          ),
         );
       },
     );
+  }
+
+  /// Long-press popup (Loads tab): toggles the load in/out of a global
+  /// Long-press popup: pins the load to the Quick Select strip. Shows
+  /// "Add to Quick Select" only — removing happens by long-pressing the
+  /// load's tile inside the strip itself.
+  void _showQuickSelectDialog(Map<String, dynamic> load) {
+    const roomId = '__global__';
+    final loadId = load['id']?.toString() ?? '';
+    if (QuickSelectService.instance.isQuickSelected(roomId, loadId)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Already in Quick Select'),
+          backgroundColor: SHColors.rose,
+          duration: Duration(seconds: 1),
+        ),
+      );
+      return;
+    }
+    final name = load['name']?.toString() ?? 'Load';
+    final type = load['type']?.toString() ?? 'swt';
+
+    showDialog(
+      context: context,
+      builder: (ctx) => FrostedAlertDialog(
+        title: Text(name, style: const TextStyle(color: Colors.white)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(
+                Icons.add_rounded,
+                size: 22,
+                color: SHColors.green,
+              ),
+              title: const Text(
+                'Add to Quick Select',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              subtitle: Text(
+                'Pin this load to the quick strip',
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.55),
+                  fontSize: 12,
+                ),
+              ),
+              onTap: () async {
+                Navigator.pop(ctx);
+                await QuickSelectService.instance.addToRoom(
+                  roomId: roomId,
+                  load: QuickSelectLoad(
+                    id: loadId,
+                    name: name,
+                    type: type,
+                    icon: _quickIconFor(type),
+                    color: SHColors.deviceAccent(type),
+                  ),
+                );
+                if (mounted) setState(() {});
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  IconData _quickIconFor(String type) {
+    switch (type) {
+      case 'swt':
+        return Icons.power_settings_new;
+      case 'dim':
+        return Icons.brightness_6;
+      case 'rgb':
+        return Icons.palette;
+      case 'tun':
+        return Icons.light_mode;
+      case 'hvc':
+        return Icons.thermostat;
+      case 'fan':
+        return Icons.toys;
+      case 'cur':
+        return Icons.curtains;
+      case 'scn':
+        return Icons.auto_awesome;
+      default:
+        return Icons.lightbulb_outline;
+    }
   }
 
   void _showControlBottomSheet(Map<String, dynamic> load, String deviceType) {

@@ -17,12 +17,14 @@ class LoadGridCard extends StatelessWidget {
     required this.load,
     required this.onTap,
     required this.onToggle,
+    this.onLongPress,
     super.key,
   });
 
   final Map<String, dynamic> load;
   final VoidCallback onTap;
   final ValueChanged<bool> onToggle;
+  final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +35,7 @@ class LoadGridCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
+      onLongPress: onLongPress,
       // RepaintBoundary: each card repaints on its own, so scrolling and
       // toggles don't repaint the whole grid (big scroll-lag win).
       child: RepaintBoundary(
