@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/theme/aurora_background.dart';
 import 'package:smart_home_animation/core/theme/sh_colors.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/skeleton.dart';
 import 'package:smart_home_animation/features/home/presentation/widgets/load_icon.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
 import 'package:smart_home_animation/services/scene_favorites_service.dart';
@@ -156,10 +157,8 @@ class _SceneScreenState extends State<SceneScreen> {
 
   Widget _buildSceneList(DirectMQTTService mqtt) {
     if (!mqtt.isConnected) {
-      return const _SceneMessage(
-        icon: Icons.wifi_off_rounded,
-        title: 'Connecting to OKAS',
-        subtitle: 'Configured scenes appear after board connection',
+      return const SafeArea(
+        child: LoadsGridSkeleton(),
       );
     }
 

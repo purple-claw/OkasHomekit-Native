@@ -46,6 +46,19 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
   Timer? _credentialExpiryTimer;
   StreamSubscription<List<MqttReceivedMessage<MqttMessage>>>? _updatesSubscription;
 
+  // Payload dedup: on a fresh install the board publishes loads/setLoads
+  // and rooms/set twice within a few hundred ms — once as the retained
+  // message on subscribe, once as the reply to our loads/getLoads +
+  // rooms/get requests. Both carry identical payloads. Without dedup the
+  // home screen and loads grid rebuild twice, which reads as a visible
+  // double-refresh flicker. We keep a hash of the last processed payload
+  // per topic and skip rebuilds when the incoming payload matches within
+  // a short dedup window.
+  final Map<String, String> _lastPayloadHash = {};
+  final Map<String, DateTime> _lastPayloadTime = {};
+  // Per-load status dedup: topic status/{ldId} -> last processed payload.
+  final Map<String, String> _lastStatusHash = {};
+
   // Store devices and loads
   final Map<String, Map<String, dynamic>> _devices = {};
   final Map<String, Map<String, dynamic>> _rooms = {};
@@ -66,6 +79,43 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
   bool get roomsPrimed => _roomsPrimed;
   List<String> get brokerAttempts => _brokerAttempts;
   String? get lastError => _lastError;
+
+  /// Returns true when [payload] for [topic] is a duplicate of the last
+  /// processed payload within the dedup window (default 2s). Skips the
+  /// expensive rebuild + notifyListeners() in that case.
+  ///
+  /// The board stamps every response with a fresh `ts` field, so the
+  /// retained message and the getLoads reply differ only in that field.
+  /// We strip it before comparing so the duplicate is caught.
+  bool _isDuplicatePayload(String topic, String payload) {
+    final now = DateTime.now();
+    final lastTime = _lastPayloadTime[topic];
+    if (lastTime != null &&
+        now.difference(lastTime) < const Duration(seconds: 2)) {
+      final lastHash = _lastPayloadHash[topic];
+      if (lastHash != null && lastHash == _normalizePayload(payload)) {
+        return true;
+      }
+    }
+    _lastPayloadHash[topic] = _normalizePayload(payload);
+    _lastPayloadTime[topic] = now;
+    return false;
+  }
+
+  /// Strips volatile fields (ts) so identical logical payloads compare
+  /// equal even when the board re-stamps them.
+  String _normalizePayload(String payload) {
+    try {
+      final decoded = json.decode(payload);
+      if (decoded is Map<String, dynamic>) {
+        decoded.remove('ts');
+        return json.encode(decoded);
+      }
+    } catch (_) {
+      // Not JSON — compare raw.
+    }
+    return payload;
+  }
 
   DirectMQTTService() {
     WidgetsBinding.instance.addObserver(this);
@@ -940,6 +990,13 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
       final data = json.decode(message);
 
       if (topic == 'loads/setLoads' && data.containsKey('lds')) {
+        // Skip rebuild when this payload is identical to the one we just
+        // processed (retained publish + getLoads reply arrive back-to-back
+        // on fresh install).
+        if (_isDuplicatePayload(topic, message)) {
+          print('⏭ Skipped duplicate loads/setLoads payload');
+          return;
+        }
         _loads.clear();
         _devices.clear();
         _loadNameToId.clear();
@@ -1127,6 +1184,13 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
 
       // Handle rooms updates - board is the source of truth, replace list
       if (topic == 'rooms/set' && data.containsKey('rooms')) {
+        // Skip rebuild when this payload is identical to the one we just
+        // processed (retained publish + getRooms reply arrive back-to-back
+        // on fresh install).
+        if (_isDuplicatePayload(topic, message)) {
+          print('⏭ Skipped duplicate rooms/set payload');
+          return;
+        }
         final roomsData = data['rooms'] as List<dynamic>;
         final newRooms = <Room>[];
         for (var roomJson in roomsData) {
@@ -1267,6 +1331,19 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
             if (_devices.containsKey(ldId)) {
               _devices[ldId]!.addAll(load);
             }
+
+            // Only notify when the state actually changed. The board
+            // republishes status/{ldId} with retain=true on subscribe and
+            // after every command ack — an unchanged payload would otherwise
+            // trigger a full UI rebuild (grid flicker) for every load on
+            // every connect. The ts field is stripped before comparing.
+            final before = _lastStatusHash[ldId];
+            final after = _normalizePayload(message);
+            if (before == after) {
+              print('⏭ Skipped duplicate status for load $ldId');
+              return;
+            }
+            _lastStatusHash[ldId] = after;
           }
 
           notifyListeners();

@@ -7,6 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/core.dart';
 import 'package:smart_home_animation/core/shared/presentation/widgets/liquid_glass_scrim.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/skeleton.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
 import '../widgets/figma_load_sheets.dart';
 import '../widgets/load_grid_card.dart';
@@ -112,17 +113,8 @@ class _LoungeScreenState extends State<LoungeScreen> {
 
     if (!okasService.isConnected) {
       return AuroraBackground(
-        child: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.wifi_off, size: 64, color: Colors.grey),
-              SizedBox(height: 16),
-              Text('Connecting to OKAS device...'),
-              SizedBox(height: 8),
-              CircularProgressIndicator(),
-            ],
-          ),
+        child: const SafeArea(
+          child: LoadsGridSkeleton(),
         ),
       );
     }
