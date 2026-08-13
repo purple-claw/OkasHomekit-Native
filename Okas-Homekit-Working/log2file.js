@@ -43,6 +43,13 @@ delLogs = () => {
 makStream = (fNm) => {
     const fPth = path.join(logDir, fNm);
     logStream = fs.createWriteStream(fPth, { flags: 'a' });
+    try {
+        const dirStat = fs.statSync(logDir);
+        fs.chownSync(fPth, process.getuid(), dirStat.gid);
+        fs.chmodSync(fPth, 0o664);
+    } catch (e) {
+        console.log('Log file permission fix failed:', e);
+    }
     //delete fPth;
     logFile = fNm;
     delLogs();

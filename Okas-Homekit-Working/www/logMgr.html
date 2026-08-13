@@ -6,7 +6,7 @@
     <title>Log Manager</title>
     <link rel="icon" type="image/png" href="./assets/Log.png" />
     <link href="./assets/bootstrap.min.css" rel="stylesheet" />
-    <link href="./style.css?v=20260528" rel="stylesheet" />
+    <link href="./style.css?v=20260814" rel="stylesheet" />
   </head>
 
   <body>
@@ -21,6 +21,7 @@
 
       <nav class="tabs" aria-label="Primary">
         <a class="tab" href="index.html">Configuration</a>
+        <a class="tab" href="users.html">User Management</a>
         <a class="tab active" href="logMgr.html">Log Manager</a>
         <a class="tab" href="deviceInfo.html">Device Information</a>
       </nav>
@@ -38,15 +39,15 @@
             </div>
             <div class="file-buttons">
               <button type="button" class="btn-view" id="vewBtn" onclick="viewFile()">
-                All Logs
+                Refresh
               </button>
               <button type="button" class="btn-download" id="dldBtn" onclick="downloadFile()">
                 Download
               </button>
-              <button type="button" class="btn-delete" id="delBtn" onclick="confirmDeleteDay()">
+              <button type="button" class="btn-delete" id="delBtn" onclick="deleteOneFile()">
                 Delete
               </button>
-              <button type="button" class="btn-restore" id="clrBtn" onclick="confirmClearLogs()">
+              <button type="button" class="btn-restore" id="clrBtn" onclick="clearAllLogs()">
                 Clear All Logs
               </button>
             </div>
@@ -155,9 +156,7 @@
       let filterType = "all";
       let searchTerm = "";
       let dateFilter = "";
-      let logRefreshTimer = null;
-      let logRefreshInFlight = false;
-      const LOG_REFRESH_INTERVAL_MS = 1000;
+      let searchDebounceTimer = null;
 
       function decodeHtml(value) {
         const textArea = document.createElement("textarea");
@@ -243,22 +242,19 @@
         });
       }
 
-      function updateCounts() {
-        document.getElementById("countAll").textContent = `(${getFilteredLogs("all").length})`;
-        document.getElementById("countInfo").textContent = `(${getFilteredLogs("info").length})`;
-        document.getElementById("countWarn").textContent = `(${getFilteredLogs("warn").length})`;
-        document.getElementById("countError").textContent = `(${getFilteredLogs("error").length})`;
+      function updateCounts(filteredLogs) {
+        document.getElementById("countAll").textContent = `(${filteredLogs.length})`;
+        document.getElementById("countInfo").textContent = `(${filteredLogs.filter((l) => l.type === "info").length})`;
+        document.getElementById("countWarn").textContent = `(${filteredLogs.filter((l) => l.type === "warn").length})`;
+        document.getElementById("countError").textContent = `(${filteredLogs.filter((l) => l.type === "error").length})`;
       }
 
-      function scrollLogViewerToBottom() {
+      function renderLogs() {
         const viewer = document.getElementById("fileContent");
-        if (viewer) viewer.scrollTop = viewer.scrollHeight;
-      }
-
-      function renderLogs(scrollTail = false) {
-        updateCounts();
-        const viewer = document.getElementById("fileContent");
+        if (!viewer) return;
+        const scrollPos = viewer.scrollTop;
         const filteredLogs = getFilteredLogs();
+        updateCounts(filteredLogs);
 
         document.getElementById("totalLogs").textContent = filteredLogs.length;
         document.getElementById("showingType").textContent =
@@ -269,7 +265,6 @@
           viewer.innerHTML = `<div class="log-line log-line-info"><span class="log-text">There are no Log Files.</span></div>`;
           return;
         }
-
         if (filteredLogs.length === 0) {
           viewer.innerHTML = `<div class="log-line log-line-info"><span class="log-text">No log entries to display.</span></div>`;
           return;
@@ -281,8 +276,7 @@
             : "";
           return `<div class="log-line log-line-${escHtml(log.type)}">${prefix}<span class="log-text">${escHtml(log.message)}</span></div>`;
         }).join("");
-
-        if (scrollTail) scrollLogViewerToBottom();
+        viewer.scrollTop = scrollPos;
       }
 
       function setFilter(type) {
@@ -290,55 +284,39 @@
         ["All", "Info", "Warn", "Error"].forEach((key) => {
           document.getElementById(`filter${key}`).classList.toggle("active", key.toLowerCase() === type);
         });
-        renderLogs(false);
+        renderLogs();
       }
 
       function updateSearch(value) {
         searchTerm = value || "";
-        renderLogs(false);
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(renderLogs, 300);
       }
 
       function updateDateFilter(value) {
         dateFilter = value || "";
-        renderLogs(false);
+        renderLogs();
       }
 
       function clearDateFilter() {
         dateFilter = "";
         document.getElementById("logDateFilter").value = "";
-        renderLogs(false);
+        renderLogs();
       }
 
       async function refreshCurrentLog() {
-        if (logRefreshInFlight || !hasLogFiles()) return;
+        if (!hasLogFiles()) return;
         const filename = getSelectedLogFile();
         if (!filename) return;
 
-        logRefreshInFlight = true;
         try {
           const res = await fetch(withCacheBust(`${org}/readFile.php?file=${encodeURIComponent(filename)}`), { cache: "no-store" });
           const content = decodeHtml(await res.text());
           currentLogs = parseLogLines(content);
-          renderLogs(true);
+          renderLogs();
         } catch (e) {
           console.log("Error refreshing the selected log file.", e);
-        } finally {
-          logRefreshInFlight = false;
         }
-      }
-
-      function startAutoRefresh() {
-        if (logRefreshTimer) return;
-        logRefreshTimer = window.setInterval(() => {
-          if (document.hidden) return;
-          refreshCurrentLog();
-        }, LOG_REFRESH_INTERVAL_MS);
-      }
-
-      function stopAutoRefresh() {
-        if (!logRefreshTimer) return;
-        window.clearInterval(logRefreshTimer);
-        logRefreshTimer = null;
       }
 
       async function loadFiles() {
@@ -362,7 +340,7 @@
           fileList.appendChild(option);
           updateButtons(false);
           currentLogs = [];
-          renderLogs(false);
+          renderLogs();
           return;
         }
 
@@ -383,74 +361,58 @@
         await refreshCurrentLog();
       }
 
-      async function confirmClearLogs() {
-        if (!hasLogFiles()) {
-          showInfo("No log files to clear.");
-          return;
-        }
+      async function clearAllLogs() {
+        if (!hasLogFiles()) return;
         const choice = await showConfirmDialog(
-          "This will permanently delete ALL log files. This action cannot be undone.",
+          "This will clear every entry in ALL log files. The files themselves remain on the device. This action cannot be undone.",
           { title: "Clear All Logs", type: "warning", confirmText: "Clear All" }
         );
         if (choice !== "confirm") return;
-        await clearAllLogs();
-      }
 
-      async function clearAllLogs() {
-        if (!hasLogFiles()) return;
         let cleared = 0;
         for (const file of files) {
           try {
             const res = await fetch(withCacheBust(`${org}/delFile.php?file=${encodeURIComponent(file)}`));
             const result = await res.text();
-            if (result.trim() === "deleted") cleared++;
+            if (result.trim() === "cleared") cleared++;
           } catch (e) {
-            console.log("Error deleting file:", file, e);
+            console.log("Error clearing file:", file, e);
           }
         }
         showInfo(`Cleared ${cleared} log file${cleared !== 1 ? "s" : ""}.`, { type: "success" });
-        currentLogs = [];
-        await loadFiles();
+        await refreshCurrentLog();
       }
 
-      async function confirmDeleteDay() {
-        if (!hasLogFiles()) {
-          showInfo("No log files to delete.");
-          return;
-        }
-        const filename = getSelectedLogFile();
+      async function deleteOneFile(filename) {
+        if (!filename) filename = getSelectedLogFile();
         if (!filename) {
           showInfo("Please select a log file first.");
           return;
         }
         const choice = await showConfirmDialog(
-          `Delete the log file "${filename}"?\nThis action cannot be undone.`,
-          { title: "Delete Day's Logs", type: "warning", confirmText: "Delete" }
+          `Clear all entries in the log file "${filename}"?\nThe file itself stays on the device and new log lines keep appending to it. This action cannot be undone.`,
+          { title: "Clear Day's Logs", type: "warning", confirmText: "Clear" }
         );
         if (choice !== "confirm") return;
-        await deleteOneFile(filename);
-      }
 
-      async function deleteOneFile(filename) {
         try {
           const res = await fetch(withCacheBust(`${org}/delFile.php?file=${encodeURIComponent(filename)}`));
           const result = await res.text();
-          if (result.trim() === "deleted") {
-            showInfo(`Deleted "${filename}".`, { type: "success" });
-            currentLogs = [];
-            await loadFiles();
+          if (result.trim() === "cleared") {
+            showInfo(`Cleared "${filename}".`, { type: "success" });
+            await refreshCurrentLog();
           } else {
-            showError(`Could not delete "${filename}".`);
+            showError(`Could not clear "${filename}".`);
           }
         } catch (e) {
-          showError(`Failed to delete "${filename}": ${e.message}`);
+          showError(`Failed to clear "${filename}": ${e.message}`);
         }
       }
 
       async function viewFile() {
         if (!hasLogFiles()) {
           currentLogs = [];
-          renderLogs(false);
+          renderLogs();
           return;
         }
         const filename = getSelectedLogFile();
@@ -470,7 +432,7 @@
           currentLogs = [];
           showError(`Failed to load the selected log file: ${e.message}`);
         }
-        renderLogs(true);
+        renderLogs();
       }
 
       async function downloadFile() {
@@ -499,10 +461,6 @@
 
       window.addEventListener("load", () => {
         loadFiles();
-        startAutoRefresh();
-      });
-
-      window.addEventListener("beforeunload", stopAutoRefresh);
-    </script>
+      });    </script>
   </body>
 </html>
