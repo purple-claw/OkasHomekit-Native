@@ -150,20 +150,49 @@ require("../KNX/actHdlr");
         return 'status/' + idx;
     };
 
+    // Per-load dim-write coalescing: KNX dimmers drop absolute-dim writes
+    // that land while the relay is still settling, and restart their ramp on
+    // every mid-ramp write. A fast slider drag therefore oscillated the light
+    // (0<->100) because each tick hit the bus. Only ONE write per settle
+    // window reaches the bus — always the latest requested value.
+    const dimTmr = {};
+    const dimPending = {};
+
+    // Shared flush for coalesced dim writes (slider drags AND the 100%
+    // relatch the swt act triggers). RGB also re-sends Hue/Sat after the
+    // final write so the colour doesn't drift on the dimmer.
+    const scheduleDimFlush = (lNm) => {
+        if (dimTmr[lNm]) return;
+        dimTmr[lNm] = setTimeout(async () => {
+            dimTmr[lNm] = null;
+            const target = dimPending[lNm];
+            dimPending[lNm] = undefined;
+            const res = await Bri(lNm, target);
+            if (res.ok && knxLod[lNm].Typ === 'RGB') {
+                await Hue(lNm, knxLod[lNm].Val.Hue);
+                await Sat(lNm, knxLod[lNm].Val.Sat);
+            }
+        }, 400);
+    };
+
     const PAR_MAP = {
         'swt': {
             types: ['Switch', 'Dimmer', 'RGB', 'Tunable', 'HVAC', 'Fan'],
             act: async (lNm, val) => {
                 if (['Dimmer', 'RGB', 'Tunable'].includes(knxLod[lNm].Typ)) {
-                    // Always write the Swt GA first so the dimmer relay latches
-                    // ON/OFF on the bus and Val.Sta tracks reality. Then, if we
-                    // are turning on, reapply the last-known brightness (or 100%
-                    // on first-on) so the lamp actually lights up.
+                    // Latch the relay first, then drive brightness so the UI
+                    // slider follows: ON snaps to 100%, OFF drops to 0%.
                     const swtRes = await Swt(lNm, val);
                     if (!swtRes.ok) return swtRes;
                     if (val) {
-                        const vl = knxLod[lNm].Val.Bri > 0 ? knxLod[lNm].Val.Bri : 100;
-                        return await Bri(lNm, vl);
+                        // Route the relatch through the coalescer too: the app
+                        // used to pair swt:true with every bri tick, and each
+                        // swt would otherwise re-write 100% to the bus.
+                        knxLod[lNm].Val.Bri = 100;
+                        knxLod[lNm].Val.Bvi = 100;
+                        dimPending[lNm] = 100;
+                        scheduleDimFlush(lNm);
+                        return swtRes;
                     }
                     return swtRes;
                 } else {
@@ -174,12 +203,23 @@ require("../KNX/actHdlr");
         'bri': {
             types: ['Dimmer', 'RGB', 'Tunable'],
             act: async (lNm, val) => {
-                let res = await Bri(lNm, val);
-                if (res.ok && knxLod[lNm].Typ === 'RGB') {
-                    await Hue(lNm, knxLod[lNm].Val.Hue);
-                    await Sat(lNm, knxLod[lNm].Val.Sat);
+                val = Number(val) || 0;
+                if (val > 0 && !knxLod[lNm].Val.Sta) {
+                    const onRes = await Swt(lNm, 1);
+                    if (!onRes.ok) return onRes;
+                    // KNX dimmers drop a dim write that lands while the relay
+                    // is still settling and power on at 100% instead.
+                    await new Promise((r) => setTimeout(r, 400));
+                } else if (val <= 0 && knxLod[lNm].Val.Sta) {
+                    const offRes = await Swt(lNm, 0);
+                    if (!offRes.ok) return offRes;
                 }
-                return res;
+                // Optimistic: status reports show the drag target right away.
+                knxLod[lNm].Val.Bri = val;
+                knxLod[lNm].Val.Bvi = val;
+                dimPending[lNm] = val;
+                scheduleDimFlush(lNm);
+                return { ok: true };
             }
         },
         'hue': {
@@ -445,6 +485,8 @@ require("../KNX/actHdlr");
         }
     };
 
+    global.mqttGtLds = mqttGtLds;
+
     mqttHdlCmd = async (pld) => {
         dbg.Inf('MQTT: Processing Command');
         if (!pld || pld.ldId === undefined || !pld.cmd || typeof pld.cmd !== 'object') {
@@ -533,7 +575,12 @@ require("../KNX/actHdlr");
             ts: Date.now()
         };
         if (scs) {
-            stsMsg.cSt = gtLdSt(lNm);
+            let cSt = gtLdSt(lNm);
+            if (pld.cmd && typeof pld.cmd.swt === 'boolean' &&
+                ['Dimmer', 'RGB', 'Tunable'].includes(ldTyp)) {
+                cSt.bri = pld.cmd.swt ? 100 : 0;
+            }
+            stsMsg.cSt = cSt;
         } else {
             stsMsg.err = eMsg;
         }
@@ -558,19 +605,19 @@ require("../KNX/actHdlr");
             case 'Dimmer':
                 return {
                     on: vals.Sta ? true : false,
-                    bri: vals.Bvi || 0
+                    bri: vals.Sta ? (vals.Bvi || 0) : 0
                 };
             case 'RGB':
                 return {
                     on: vals.Sta ? true : false,
-                    bri: vals.Bvi || 0,
+                    bri: vals.Sta ? (vals.Bvi || 0) : 0,
                     hue: vals.Hue || 0,
                     sat: vals.Sat || 0
                 };
             case 'Tunable':
                 return {
                     on: vals.Sta ? true : false,
-                    bri: vals.Bvi || 0,
+                    bri: vals.Sta ? (vals.Bvi || 0) : 0,
                     cTp: vals.Tuv || 0
                 };
             case 'HVAC':

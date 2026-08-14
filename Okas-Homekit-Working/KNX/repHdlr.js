@@ -40,6 +40,9 @@ require('../Mqtt/mqttClnt');
                 sta: gtLdSt(lNm),
                 ts: Date.now()
             }, true);
+            if (typeof global.mqttGtLds === 'function') {
+                global.mqttGtLds({});
+            }
         } catch (e) {
             dbg.Err('MQTT: Error publishing KNX status - ' + e.message);
         }
@@ -78,6 +81,11 @@ require('../Mqtt/mqttClnt');
                     dbg.Inf(`${lNm} is Turned-${val ? 'On' : 'Off'}.`);
                     break;
                 case 'Bvi':
+                    if (!knxLod[lNm].Val.Sta) {
+                        // The device echoes its last level while off; an off
+                        // load's brightness is 0 by definition.
+                        val = 0;
+                    }
                     hkSvc.updateCharacteristic(Characteristic.Brightness, val);
                     knxLod[lNm].Val[lTp] = val;
                     dbg.Inf(`${lNm}'s Brightness is set to ${val}%.`);

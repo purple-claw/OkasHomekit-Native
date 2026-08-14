@@ -59,6 +59,34 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
   // Per-load status dedup: topic status/{ldId} -> last processed payload.
   final Map<String, String> _lastStatusHash = {};
 
+  // Per-load echo suppression. The board republishes status/{ldId} on every
+  // bus echo (ramp steps, bri relatch 0->100, cmdAck cSt, 400ms-settle
+  // write drops). While the user is dragging a slider, those echoes must not
+  // overwrite the optimistic drag value or the thumb fights the bus and
+  // bounces. Echoes are ignored within this window after the user's own
+  // command; the optimistic state (identical to what the board publishes
+  // back) is the source of truth during interaction.
+  static const int _echoSuppressMs = 1200;
+  final Map<String, DateTime> _lastLocalCmdAt = {};
+
+  void _noteLocalCommand(String loadId) {
+    _lastLocalCmdAt[loadId] = DateTime.now();
+  }
+
+  bool _echoSuppressed(String loadId) {
+    final t = _lastLocalCmdAt[loadId];
+    return t != null &&
+        DateTime.now().difference(t).inMilliseconds < _echoSuppressMs;
+  }
+
+  // True if ANY load has a local command in flight. Used to skip whole-list
+  // rebuilds (loads/setLoads) that carry intermediate bus states.
+  bool _echoSuppressedAny() {
+    final now = DateTime.now();
+    return _lastLocalCmdAt.values
+        .any((t) => now.difference(t).inMilliseconds < _echoSuppressMs);
+  }
+
   // Store devices and loads
   final Map<String, Map<String, dynamic>> _devices = {};
   final Map<String, Map<String, dynamic>> _rooms = {};
@@ -313,14 +341,12 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
       final loadType = load['type'] as String? ?? 'dim';
 
       final clamped = brightness.clamp(0, 100);
-      // Off/on logic for dimmers: sliding up from 0% must turn the load on,
-      // and sliding to 0% must turn it off — the bus relay cannot be left
-      // out of sync with the slider. We pair bri with swt so the load's
-      // on/off state always matches the slider position.
-      final isOn = clamped > 0;
+      // bri alone manages the relay on the board (bri>0 and relay off =>
+      // switch on; bri 0 => switch off). NEVER pair swt here: the board's
+      // swt act would re-fire its 100% relatch write on every drag tick,
+      // making the light — and the echoed status — snap to 100 mid-drag.
       final cmd = <String, dynamic>{
         'bri': clamped,
-        'swt': isOn,
       };
 
       final message = json.encode({
@@ -333,9 +359,9 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
 
       if (_loads.containsKey(deviceId)) {
         _loads[deviceId]!['brightness'] = clamped;
-        _loads[deviceId]!['isOn'] = isOn;
+        _loads[deviceId]!['isOn'] = clamped > 0;
         _devices[deviceId]!['brightness'] = clamped;
-        _devices[deviceId]!['isOn'] = isOn;
+        _devices[deviceId]!['isOn'] = clamped > 0;
         notifyListeners();
       }
     }
@@ -997,6 +1023,16 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
           print('⏭ Skipped duplicate loads/setLoads payload');
           return;
         }
+        // The board republishes the whole retained load list after every
+        // command ack. During a slider drag the list can still carry the
+        // intermediate bus state (e.g. the 100% relatch or a coalesced
+        // mid-write value), which would yank the thumb away from the finger.
+        // Treat the list like any echo: skip the rebuild while any load has
+        // a recent local command in flight.
+        if (_echoSuppressedAny()) {
+          print('⏭ Skipped loads/setLoads rebuild (local command in flight)');
+          return;
+        }
         _loads.clear();
         _devices.clear();
         _loadNameToId.clear();
@@ -1218,6 +1254,16 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
       // Handle status updates for specific loads
       if (topic.startsWith('status/') && topic != 'status/mobAck') {
         final ldId = topic.split('/')[1];
+
+        // Ignore echoes of the user's own commands while they're in flight:
+        // ramp steps, bri relatch (0->100), cmdAck cSt and settle-window
+        // drops would otherwise fight the optimistic drag value and make the
+        // slider bounce between 0 and 100.
+        if (_echoSuppressed(ldId)) {
+          print('⏭ Suppressed echo for load $ldId (user interacting)');
+          return;
+        }
+
         final sta = data['sta'] as Map<String, dynamic>?;
 
         if (_loads.containsKey(ldId)) {
@@ -1361,7 +1407,9 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
           final cSt = data['cSt'] as Map<String, dynamic>?;
           final loadId = ldId?.toString();
 
-          if (loadId != null && _loads.containsKey(loadId)) {
+          if (loadId != null &&
+              _loads.containsKey(loadId) &&
+              !_echoSuppressed(loadId)) {
             if (cSt != null) {
               _loads[loadId]!['isOn'] = cSt['on'] ?? _loads[loadId]!['isOn'];
               _loads[loadId]!['brightness'] =
@@ -1530,15 +1578,26 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
           cmd = {'swt': newState};
           break;
         case 'dim':
+          // The board latches dimmers at 100% on swt-ON and zeroes bri on
+          // swt-OFF (actHdlr Swt). Mirror that here so the sheet switch AND
+          // slider respond instantly instead of waiting ~400ms for the bus
+          // echo, which also keeps the optimistic state identical to what
+          // the board will publish back.
           if (newState) {
-            final brightness = load['brightness'] ?? 100;
-            cmd = {'swt': newState};
+            cmd = {'swt': true};
+            _loads[loadId]!['brightness'] = 100;
+            _devices[loadId]!['brightness'] = 100;
           } else {
             cmd = {'swt': false};
+            _loads[loadId]!['brightness'] = 0;
+            _devices[loadId]!['brightness'] = 0;
           }
           break;
         case 'tun':
           cmd = {'swt': newState};
+          // Mirror the board latch (bri 100 on swt-ON, 0 on swt-OFF).
+          _loads[loadId]!['brightness'] = newState ? 100 : 0;
+          _devices[loadId]!['brightness'] = newState ? 100 : 0;
           break;
         case 'cur':
           cmd = {'pos': newState ? 100 : 0};
@@ -1548,6 +1607,9 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
           break;
         case 'rgb':
           cmd = {'swt': newState};
+          // Mirror the board latch (bri 100 on swt-ON, 0 on swt-OFF).
+          _loads[loadId]!['brightness'] = newState ? 100 : 0;
+          _devices[loadId]!['brightness'] = newState ? 100 : 0;
           break;
         case 'hvc':
           // HVAC uses swt for on/off
@@ -1582,6 +1644,11 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
           builder.addString(jsonEncode(decoded));
         } else {
           builder.addString(message);
+        }
+        // Mark the load so its bus echoes are suppressed while in flight.
+        if (decoded is Map<String, dynamic>) {
+          final ldId = decoded['ldId'];
+          if (ldId != null) _noteLocalCommand(ldId.toString());
         }
         _client!.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
         print('📤 OKAS Command to $topic');

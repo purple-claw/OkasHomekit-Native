@@ -590,20 +590,17 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
     showLiquidGlassModalBottomSheet(
       context: ctx,
       isScrollControlled: true,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSt) {
+      builder: (ctx) => ListenableBuilder(
+        listenable: mqtt,
+        builder: (ctx, _) {
           final cur = mqtt.loads[id] ?? load;
           final isOn = cur['isOn'] == true;
           return FigmaLoadSheet(
             title: isScene ? 'SCENE' : 'SWITCH',
             isOn: isOn,
             onToggle: (v) {
-              if (isScene) {
-                mqtt.sendCommand(id, v ? 'ON' : 'OFF');
-              } else {
-                mqtt.sendCommand(id, v ? 'ON' : 'OFF');
-              }
-              setSt(() {});
+              mqtt.sendCommand(id, v ? 'ON' : 'OFF');
+              setState(() {});
             },
             body: Column(
               children: [
@@ -678,61 +675,67 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
   void _showDimSheet(BuildContext ctx, Map<String, dynamic> load, String type) {
     final mqtt = Provider.of<DirectMQTTService>(ctx, listen: false);
     final id = load['id']?.toString() ?? '';
-    double fallbackBrightness = ((mqtt.loads[id]?['brightness'] ?? 50) as num)
+    final double fallbackBrightness = ((mqtt.loads[id]?['brightness'] ?? 50) as num)
         .toDouble();
-    if (fallbackBrightness <= 0 && (mqtt.loads[id]?['isOn'] ?? false) == true) {
-      fallbackBrightness = 50;
-    }
-
-    // Tunable sheet state is held locally (like the RGB sheet) so dragging
-    // never depends on the MQTT status round-trip: the thumb and handle
-    // track the finger immediately, the board catches up in the background.
-    final tunCur = mqtt.loads[id] ?? load;
-    final rawCtpDynamic = tunCur['cTp'];
-    final int rawCtp = rawCtpDynamic is int
-        ? rawCtpDynamic
-        : int.tryParse('$rawCtpDynamic') ?? 370;
-    final int mired = rawCtp < 154
-        ? 154
-        : rawCtp > 500
-        ? 500
-        : rawCtp;
-    double tunKelvin = (1000000 / mired).clamp(2700, 6500).toDouble();
-    double tunBri =
-        ((tunCur['brightness'] ?? 100) as num).toDouble().clamp(0, 100);
 
     showLiquidGlassModalBottomSheet(
       context: ctx,
       isScrollControlled: true,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSt) {
+      // ListenableBuilder: the sheet rebuilds on EVERY DirectMQTTService
+      // notification — live status/+ echoes, cmdAck reconciliation and the
+      // optimistic updates the send* commands apply. Without it the sheet
+      // only ever rebuilt via the local setSt(), so bus feedback (wall
+      // switch, HomeKit, scene, the 400ms bri settle) never re-rendered the
+      // open sheet and the slider/switch stayed stale.
+      builder: (ctx) => ListenableBuilder(
+        listenable: mqtt,
+        builder: (ctx, _) {
           final cur = mqtt.loads[id] ?? load;
           final curBrightness = ((cur['brightness'] ?? 0) as num).toDouble();
-          final curIsOn =
-              curBrightness > 0 || (cur['isOn'] == true && curBrightness > 0);
+          // Follow the load's true switch state, not brightness > 0: the
+          // board zeroes bri on OFF and briefly echoes bri:0 right after an
+          // ON, so deriving the switch from bri alone made it look stuck.
+          final curIsOn = cur['isOn'] == true;
           final sliderPct = curBrightness > 0
               ? curBrightness.clamp(0, 100).toDouble()
-              : fallbackBrightness.clamp(0, 100).toDouble();
+              : curIsOn
+                  ? 100.0
+                  : fallbackBrightness.clamp(0, 100).toDouble();
+
+          // Tunable values come from the live load map on every rebuild.
+          // The send* commands update the map optimistically, so the
+          // picker tracks the finger AND follows bus feedback — no frozen
+          // local copies.
+          final rawCtpDynamic = cur['cTp'];
+          final int rawCtp = rawCtpDynamic is int
+              ? rawCtpDynamic
+              : int.tryParse('$rawCtpDynamic') ?? 370;
+          final int mired = rawCtp < 154
+              ? 154
+              : rawCtp > 500
+              ? 500
+              : rawCtp;
+          final double tunKelvin =
+              (1000000 / mired).clamp(2700, 6500).toDouble();
+          final double tunBri =
+              ((cur['brightness'] ?? 100) as num).toDouble().clamp(0, 100);
+
           return FigmaLoadSheet(
             title: type == 'tun' ? 'TUNING' : 'BRIGHTNESS',
             isOn: curIsOn,
             onToggle: (v) {
               mqtt.sendCommand(id, v ? 'ON' : 'OFF');
-              setSt(() {});
+              setState(() {});
             },
             body: type == 'tun'
                 ? TunablePicker(
                     kelvin: tunKelvin,
                     brightness: tunBri,
                     onKelvinChanged: (v) {
-                      tunKelvin = v;
                       mqtt.sendColorTempCommand(id, v.round());
-                      setSt(() {});
                     },
                     onBrightnessChanged: (v) {
-                      tunBri = v;
                       mqtt.sendBrightnessCommand(id, v.round());
-                      setSt(() {});
                     },
                   )
                 : BrightnessSlider(
@@ -740,7 +743,6 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
                     label: curIsOn ? 'BRIGHTNESS' : 'TAP OR SLIDE TO TURN ON',
                     onChanged: (v) {
                       mqtt.sendBrightnessCommand(id, v.round());
-                      setSt(() {});
                     },
                   ),
           );
@@ -752,43 +754,51 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
   void _showRGBSheet(BuildContext ctx, Map<String, dynamic> load) {
     final mqtt = Provider.of<DirectMQTTService>(ctx, listen: false);
     final id = load['id']?.toString() ?? '';
-    final cur = mqtt.loads[id] ?? load;
-    int r = ((cur['red'] ?? 255) as num).round().clamp(0, 255);
-    int g = ((cur['green'] ?? 255) as num).round().clamp(0, 255);
-    int b = ((cur['blue'] ?? 255) as num).round().clamp(0, 255);
-    // Brightness is its own channel (0-100), independent of the color.
-    int bri = ((cur['brightness'] ?? 100) as num).round().clamp(0, 100);
+    // The color picker is driven by drag-local r/g/b: the board only
+    // stores HSV (hue/sat) for RGB loads, so the live map cannot feed the
+    // picker's RGB channels. They are seeded once from the map and keep
+    // tracking the finger; isOn/brightness are read live on every rebuild.
+    final cur0 = mqtt.loads[id] ?? load;
+    int r = ((cur0['red'] ?? 255) as num).round().clamp(0, 255);
+    int g = ((cur0['green'] ?? 255) as num).round().clamp(0, 255);
+    int b = ((cur0['blue'] ?? 255) as num).round().clamp(0, 255);
 
     showLiquidGlassModalBottomSheet(
       context: ctx,
       isScrollControlled: true,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSt) => FigmaLoadSheet(
-          title: 'RGB',
-          isOn: (mqtt.loads[id]?['isOn'] ?? false),
-          onToggle: (v) {
-            mqtt.sendCommand(id, v ? 'ON' : 'OFF');
-            setSt(() {});
-          },
-          body: RgbGamutPicker(
-            red: r.toDouble(),
-            green: g.toDouble(),
-            blue: b.toDouble(),
-            brightness: bri.toDouble(),
-            onChanged: (nr, ng, nb) {
-              r = nr;
-              g = ng;
-              b = nb;
-              mqtt.sendRGBCommand(id, nr, ng, nb, brightness: bri);
-              setSt(() {});
+      builder: (ctx) => ListenableBuilder(
+        listenable: mqtt,
+        builder: (ctx, _) {
+          final cur = mqtt.loads[id] ?? load;
+          final isOn = cur['isOn'] == true;
+          // Brightness is its own channel (0-100), independent of the color.
+          final int bri = ((cur['brightness'] ?? 100) as num)
+              .round()
+              .clamp(0, 100);
+          return FigmaLoadSheet(
+            title: 'RGB',
+            isOn: isOn,
+            onToggle: (v) {
+              mqtt.sendCommand(id, v ? 'ON' : 'OFF');
+              setState(() {});
             },
-            onBrightnessChanged: (v) {
-              bri = v.round();
-              mqtt.sendRGBCommand(id, r, g, b, brightness: bri);
-              setSt(() {});
-            },
-          ),
-        ),
+            body: RgbGamutPicker(
+              red: r.toDouble(),
+              green: g.toDouble(),
+              blue: b.toDouble(),
+              brightness: bri.toDouble(),
+              onChanged: (nr, ng, nb) {
+                r = nr;
+                g = ng;
+                b = nb;
+                mqtt.sendRGBCommand(id, nr, ng, nb, brightness: bri);
+              },
+              onBrightnessChanged: (v) {
+                mqtt.sendRGBCommand(id, r, g, b, brightness: v.round());
+              },
+            ),
+          );
+        },
       ),
     );
   }
@@ -809,8 +819,9 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
     showLiquidGlassModalBottomSheet(
       context: ctx,
       isScrollControlled: true,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSt) {
+      builder: (ctx) => ListenableBuilder(
+        listenable: mqtt,
+        builder: (ctx, _) {
           final liveLoad = mqtt.loads[id] ?? load;
           final liveSpeed =
               ((liveLoad['fanSpeed'] ?? liveLoad['fSp'] ?? 0) as num)
@@ -826,15 +837,12 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
               // underlying on/off is mirrored to fSp=0 (off) or fSp=128 (on)
               // so the slider remains the source of truth for the speed.
               mqtt.sendCommand(id, v ? 'ON' : 'OFF');
-              setSt(() {});
             },
             body: BrightnessSlider(
               value: sliderPct.clamp(0, 100).toDouble(),
               label: liveIsOn ? 'SPEED' : 'TAP OR SLIDE TO TURN ON',
               onChanged: (v) {
-                final newSpeed = v * 2.5;
-                mqtt.sendFanSpeedCommand(id, newSpeed.round().clamp(0, 250));
-                setSt(() {});
+                mqtt.sendFanSpeedCommand(id, (v * 2.5).round().clamp(0, 250));
               },
             ),
           );
@@ -846,84 +854,78 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
   void _showCurtainSheet(BuildContext ctx, Map<String, dynamic> load) {
     final mqtt = Provider.of<DirectMQTTService>(ctx, listen: false);
     final id = load['id']?.toString() ?? '';
-    double pos =
-        ((mqtt.loads[id]?['tPs'] ?? mqtt.loads[id]?['cPs'] ?? 0) as num)
-            .toDouble();
 
     showLiquidGlassModalBottomSheet(
       context: ctx,
       isScrollControlled: true,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSt) => FigmaLoadSheet(
-          title: 'MOVEMENT',
-          isOn: pos > 0,
-          useRadialGradient: true,
-          onToggle: (v) {
-            pos = v ? 0 : 100;
-            mqtt.sendCurtainPositionCommand(id, pos.round());
-            setSt(() {});
-          },
-          body: Column(
-            children: [
-              CurtainVisualization(position: pos.clamp(0, 100) / 100),
-              const SizedBox(height: 14),
-              Text(
-                pos == 0
-                    ? 'Fully Open'
-                    : pos == 100
-                    ? 'Fully Closed'
-                    : '${pos.round()}%',
-                style: const TextStyle(
-                  color: SHColors.primary,
-                  fontSize: 26,
-                  fontWeight: FontWeight.w800,
+      builder: (ctx) => ListenableBuilder(
+        listenable: mqtt,
+        builder: (ctx, _) {
+          final cur = mqtt.loads[id] ?? load;
+          final double pos = ((cur['tPs'] ?? cur['cPs'] ?? 0) as num)
+              .toDouble();
+          return FigmaLoadSheet(
+            title: 'MOVEMENT',
+            isOn: pos > 0,
+            useRadialGradient: true,
+            onToggle: (v) {
+              mqtt.sendCurtainPositionCommand(id, v ? 0 : 100);
+            },
+            body: Column(
+              children: [
+                CurtainVisualization(position: pos.clamp(0, 100) / 100),
+                const SizedBox(height: 14),
+                Text(
+                  pos == 0
+                      ? 'Fully Open'
+                      : pos == 100
+                      ? 'Fully Closed'
+                      : '${pos.round()}%',
+                  style: const TextStyle(
+                    color: SHColors.primary,
+                    fontSize: 26,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 4),
-              const Text(
-                'CURTAIN MOVEMENT',
-                style: TextStyle(
-                  color: SHColors.mutedText,
-                  fontSize: 12,
-                  letterSpacing: 2,
-                  fontWeight: FontWeight.w700,
+                const SizedBox(height: 4),
+                const Text(
+                  'CURTAIN MOVEMENT',
+                  style: TextStyle(
+                    color: SHColors.mutedText,
+                    fontSize: 12,
+                    letterSpacing: 2,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 14),
-              FigmaSlider(
-                value: pos.clamp(0, 100),
-                min: 0,
-                max: 100,
-                divisions: 100,
-                onChanged: (v) {
-                  pos = v;
-                  mqtt.sendCurtainPositionCommand(id, v.round());
-                  setSt(() {});
-                },
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _curtainBtn('Open', 0, pos, (v) {
-                    pos = v.toDouble();
-                    mqtt.sendCurtainPositionCommand(id, v);
-                    setSt(() {});
-                  }),
-                  _curtainBtn('Stop', -1, pos, (v) {
-                    mqtt.sendCurtainPositionCommand(id, 50);
-                    setSt(() {});
-                  }),
-                  _curtainBtn('Close', 100, pos, (v) {
-                    pos = v.toDouble();
-                    mqtt.sendCurtainPositionCommand(id, v);
-                    setSt(() {});
-                  }),
-                ],
-              ),
-            ],
-          ),
-        ),
+                const SizedBox(height: 14),
+                FigmaSlider(
+                  value: pos.clamp(0, 100),
+                  min: 0,
+                  max: 100,
+                  divisions: 100,
+                  onChanged: (v) {
+                    mqtt.sendCurtainPositionCommand(id, v.round());
+                  },
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _curtainBtn('Open', 0, pos, (v) {
+                      mqtt.sendCurtainPositionCommand(id, v);
+                    }),
+                    _curtainBtn('Stop', -1, pos, (v) {
+                      mqtt.sendCurtainPositionCommand(id, 50);
+                    }),
+                    _curtainBtn('Close', 100, pos, (v) {
+                      mqtt.sendCurtainPositionCommand(id, v);
+                    }),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -983,8 +985,9 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
     showLiquidGlassModalBottomSheet(
       context: ctx,
       isScrollControlled: true,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSt) {
+      builder: (ctx) => ListenableBuilder(
+        listenable: mqtt,
+        builder: (ctx, _) {
           final live = mqtt.loads[id] ?? cur;
           final liveTemp = ((live['temp'] ?? temp) as num).toDouble();
           final liveMode = (live['hvacMode'] ?? mode).toString();
@@ -1001,7 +1004,6 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
             isOn: (live['isOn'] ?? false),
             onToggle: (v) {
               mqtt.sendCommand(id, v ? 'ON' : 'OFF');
-              setSt(() {});
             },
             body: Column(
               children: [
@@ -1030,7 +1032,6 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
                   labelBuilder: (m) => m.toUpperCase(),
                   onSelected: (m) {
                     mqtt.sendHVACModeCommand(id, m);
-                    setSt(() {});
                   },
                 ),
                 const SizedBox(height: 20),
@@ -1041,7 +1042,6 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
                   divisions: 32,
                   onChanged: (v) {
                     mqtt.sendTemperatureCommand(id, v.round());
-                    setSt(() {});
                   },
                 ),
                 const SizedBox(height: 24),
@@ -1075,7 +1075,6 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
                         ? (v / fanMax * 255).round().clamp(0, 255)
                         : 0;
                     mqtt.sendFanSpeedCommand(id, busSpeed);
-                    setSt(() {});
                   },
                 ),
               ],

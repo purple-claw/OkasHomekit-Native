@@ -63,6 +63,10 @@ require('./knxBridge');
             }
             knxLod[lNm].Val.Swt = val;
             knxLod[lNm].Val.Sta = val;
+            if (val === 0 && ['Dimmer', 'RGB', 'Tunable'].includes(knxLod[lNm].Typ)) {
+                knxLod[lNm].Val.Bri = 0;
+                knxLod[lNm].Val.Bvi = 0;
+            }
             if (knxLod[lNm].Typ === 'HVAC') {
                 if (val === 0) {
                     // For HVAC, turning off also clears the mode to 0 (OFF).
