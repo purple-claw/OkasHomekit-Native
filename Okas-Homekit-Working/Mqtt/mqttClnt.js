@@ -232,7 +232,23 @@ require("../KNX/actHdlr");
         },
         'cTp': {
             types: ['Tunable'],
-            act: async (lNm, val) => { return await Tun(lNm, val); }
+            act: async (lNm, val) => {
+                // Tuning an OFF load must start it, but throu the relay
+                // directly (no 100% relatch) — the app no longer pairs swt
+                // with cTp, so without this a kelvin drag on an off light
+                // wrote colour temp to an actuator that ignores it.
+                if (!knxLod[lNm].Val.Sta) {
+                    const onRes = await Swt(lNm, 1);
+                    if (!onRes.ok) return onRes;
+                    // Let the relay settle, then restore brightness through
+                    // the coalescer so the light powers to 100% instead of
+                    // sitting at the actuator's raw power-on level.
+                    await new Promise((r) => setTimeout(r, 400));
+                    dimPending[lNm] = knxLod[lNm].Val.Bri || 100;
+                    scheduleDimFlush(lNm);
+                }
+                return await Tun(lNm, val);
+            }
         },
         'spt': {
             types: ['HVAC'],

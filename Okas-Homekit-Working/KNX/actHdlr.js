@@ -208,12 +208,22 @@ require('./knxBridge');
 
     Fsp = async (lNm, val) => {
         try {
-            // Convert 1-5 scale to KNX 0-255 if needed
-            let fnSpd = Number(val);
-            if (val >= 1 && val <= 5) {
-                fnSpd = Math.round((val / 5) * 255);
+            // Straight 0..255 pass-through. The old "1-5 scale" auto-detect
+            // corrupted real low speeds: dragging a slider to 1-5% produced
+            // 153-255 on the bus (1-5 mapped to /5*255), so the fan snapped
+            // high whenever the user aimed low.
+            let fnSpd = Math.min(255, Math.max(0, Number(val) || 0));
+            // Speed writes do not latch the relay on KNX fan coils. Manage
+            // the edge here (speed>0 => on, 0 => off) so the app can send
+            // fSp alone — the same pattern as bri for dimmers — instead of
+            // re-sending swt on every slider tick.
+            if (fnSpd > 0 && !knxLod[lNm].Val.Sta) {
+                const onRes = await Swt(lNm, 1);
+                if (!onRes.ok) return onRes;
+            } else if (fnSpd <= 0 && knxLod[lNm].Val.Sta) {
+                const offRes = await Swt(lNm, 0);
+                if (!offRes.ok) return offRes;
             }
-            fnSpd = Math.min(255, Math.max(0, fnSpd));
             let res = knxCmd(lNm, 'Fsc', fnSpd);
             if (!res.ok) {
                 dbg.Err(`Unable to send Fan Speed command to ${lNm}: ${res.err}.`);

@@ -378,14 +378,12 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
       // Tunable colour temperature is expressed in Kelvin on the wire —
       // the board's Tun action converts to Mired for the DPT7.600 bus write.
       final clamped = colorTemp.clamp(2000, 6500);
-      // Pair colour-temp writes with swt=true so the load turns on when
-      // the user actively tunes it. The user is interacting with the slider,
-      // so leaving the relay in the previous state would be wrong.
-      // (Old bug: swt was tied to `clamped > 2700`, which turned the lamp
-      // OFF whenever the user dragged below 2700K.)
+      // cTp alone: the board's 'cTp' act turns the relay on once when the
+      // load is off (and restores brightness through the coalescer). NEVER
+      // pair swt here — every tick would re-fire the swt act's relay write
+      // and 100% relatch, flashing the light to 100 during kelvin drags.
       final cmd = <String, dynamic>{
         'cTp': clamped,
-        'swt': true,
       };
 
       final message = json.encode({
@@ -435,9 +433,10 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         if (bri != null) 'bri': bri,
         'hue': hsv.hue,
         'sat': hsv.sat,
-        // Sliding brightness to 0 must drop the relay, mirroring the
-        // dimmer path (swt matches the slider position).
-        'swt': bri == null || bri > 0,
+        // No swt: the board's bri act manages the relay edge (bri>0 => on,
+        // 0 => off) and the sheet always sends bri, so a per-tick swt would
+        // only re-fire the relay write and the 100% relatch on every color
+        // drag.
       };
 
       final message = json.encode({
@@ -545,17 +544,21 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
       final ldId = load['ldId'] as int? ?? int.tryParse(deviceId) ?? 1;
       final loadType = load['type'] as String? ?? 'hvc';
 
+      final clamped = temperature.clamp(16, 32);
+      // Board param is 'spt' (setpoint). 'temp' is not in PAR_MAP and every
+      // command with it fails with "Unknown parameter: temp" — the slider
+      // never reached the bus.
       final message = json.encode({
         'ldId': ldId,
         'typ': loadType,
-        'cmd': {'temp': temperature.clamp(16, 32)},
+        'cmd': {'spt': clamped},
       });
 
       publish('command/sndCmd', message);
 
       if (_loads.containsKey(deviceId)) {
-        _loads[deviceId]!['temp'] = temperature;
-        _devices[deviceId]!['temp'] = temperature;
+        _loads[deviceId]!['temp'] = clamped;
+        _devices[deviceId]!['temp'] = clamped;
         notifyListeners();
       }
     }
@@ -888,15 +891,11 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
       // which range they happened to use.
       final okasSpeed = speed.clamp(0, 255);
 
-      // Off/on logic for the fan: sliding all the way down to 0 must turn
-      // the relay off, and sliding up from 0 must turn it on. The bus does
-      // not infer the switch state from fSp alone, so we pair the speed
-      // change with an explicit swt write so the load's on/off state stays
-      // in sync with the slider position.
-      final isOn = okasSpeed > 0;
+      // Off/on for fans rides in the board's fSp act (speed>0 => relay on,
+      // 0 => off), same pattern as bri for dimmers. Sending swt per tick
+      // would spam the relay telegram for the whole drag.
       final cmd = <String, dynamic>{
         'fSp': okasSpeed,
-        'swt': isOn,
       };
 
       final message = json.encode({
@@ -909,11 +908,12 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
       publish('command/sndCmd', message);
 
       // Update local state immediately
+      final isOn = okasSpeed > 0;
       if (_loads.containsKey(deviceId)) {
         _loads[deviceId]!['fanSpeed'] = okasSpeed;
         _loads[deviceId]!['fSp'] = okasSpeed;
         _loads[deviceId]!['isOn'] = isOn;
-        _devices[deviceId]!['fanSpeed'] = speed;
+        _devices[deviceId]!['fanSpeed'] = okasSpeed;
         _devices[deviceId]!['fSp'] = okasSpeed;
         _devices[deviceId]!['isOn'] = isOn;
         notifyListeners();
@@ -1138,11 +1138,8 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
 
           final temperature = sta?['spt'] as int? ?? sta?['temp'] as int? ?? 25;
 
-          // Fan speed
+          // Fan speed — raw bus value (0..255); sheets scale it.
           int fanSpeed = sta?['fSp'] as int? ?? sta?['spd'] as int? ?? 0;
-          final displaySpeed = fanSpeed > 0
-              ? (fanSpeed / 255 * 250).round()
-              : 0;
           // Fan-speed configuration comes from loadData.json (`Smx` = max
           // speed, `Fst` = step). Fall back to the Figma spec defaults
           // (5 speeds, step 1) when the load doesn't carry them, so a
@@ -1175,7 +1172,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
             'blue': blue,
             'hvacMode': hvacMode,
             'temp': temperature,
-            'fanSpeed': displaySpeed,
+            'fanSpeed': fanSpeed,
             'fSp': fanSpeed,
             'fanSpeedMax': fanSpeedMax,
             'fanSpeedStep': fanSpeedStep,
@@ -1199,7 +1196,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
             'blue': blue,
             'hvacMode': hvacMode,
             'temp': temperature,
-            'fanSpeed': displaySpeed,
+            'fanSpeed': fanSpeed,
             'fSp': fanSpeed,
             'fanSpeedMax': fanSpeedMax,
             'fanSpeedStep': fanSpeedStep,
@@ -1355,13 +1352,12 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
 
             load['temp'] = sta['spt'] ?? sta['temp'] ?? load['temp'];
 
-            // Handle fan speed
+            // Handle fan speed — stored RAW (0..255) so the optimistic
+            // value in sendFanSpeedCommand and the echoed value are the
+            // same number; sheets do their own 0..100 / 0..fanMax scaling.
             final fanSpeed = sta['fSp'] as int? ?? sta['spd'] as int?;
             if (fanSpeed != null) {
-              final displaySpeed = fanSpeed > 0
-                  ? (fanSpeed / 255 * 250).round()
-                  : 0;
-              load['fanSpeed'] = displaySpeed;
+              load['fanSpeed'] = fanSpeed;
               load['fSp'] = fanSpeed;
             }
 
@@ -1601,9 +1597,21 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
           break;
         case 'cur':
           cmd = {'pos': newState ? 100 : 0};
+          // Mirror optimistically — the echo is suppressed for 1.2s and the
+          // sheet derives everything from the position.
+          _loads[loadId]!['cPs'] = newState ? 100 : 0;
+          _loads[loadId]!['pos'] = newState ? 100 : 0;
+          _loads[loadId]!['tPs'] = newState ? 100 : 0;
+          _devices[loadId]!['cPs'] = newState ? 100 : 0;
+          _devices[loadId]!['pos'] = newState ? 100 : 0;
+          _devices[loadId]!['tPs'] = newState ? 100 : 0;
           break;
         case 'fan':
-          cmd = {'fSp': newState ? 128 : 0};
+          // fSp alone (Fsp act) does not latch the relay — a bare speed
+          // write left on:false in status while the UI showed ON.
+          cmd = {'fSp': newState ? 128 : 0, 'swt': newState};
+          _loads[loadId]!['fanSpeed'] = newState ? 128 : 0;
+          _devices[loadId]!['fanSpeed'] = newState ? 128 : 0;
           break;
         case 'rgb':
           cmd = {'swt': newState};
