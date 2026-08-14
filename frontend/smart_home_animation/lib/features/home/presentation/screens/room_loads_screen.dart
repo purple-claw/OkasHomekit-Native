@@ -121,6 +121,39 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
           ),
           centerTitle: true,
           actions: [
+            // Room power: lit while ANY load in the room is on. Tapping it
+            // turns every load in the room off.
+            Selector<DirectMQTTService, bool>(
+              selector: (context, mqtt) => mqtt.loads.values.any(
+                (l) =>
+                    widget.room.loadIds.contains(l['id']?.toString()) &&
+                    l['isOn'] == true,
+              ),
+              builder: (context, anyOn, child) {
+                final mqtt =
+                    Provider.of<DirectMQTTService>(context, listen: false);
+                final roomLoads = mqtt.loads.values
+                    .where((l) =>
+                        widget.room.loadIds.contains(l['id']?.toString()))
+                    .toList();
+                return IconButton(
+                  tooltip: anyOn
+                      ? 'Turn all loads in this room off'
+                      : 'Turn all loads in this room on',
+                  icon: Icon(
+                    Icons.power_settings_new,
+                    color: anyOn ? SHColors.green : SHColors.rose,
+                  ),
+                  onPressed: () {
+                    for (final l in roomLoads) {
+                      if (anyOn ? l['isOn'] == true : true) {
+                        mqtt.sendCommand(l['id'].toString(), anyOn ? 'OFF' : 'ON');
+                      }
+                    }
+                  },
+                );
+              },
+            ),
             if (context.watch<TokenAuthService>().isAdmin)
               IconButton(
                 icon: const Icon(Icons.more_vert, color: Colors.white),
@@ -215,13 +248,6 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
                   final cat = _categories[index];
                   return Column(
                     children: [
-                      // All ON / All OFF control — shown for the combined
-                      // Lights section based on the room's lighting config.
-                      if (cat == 'Lights')
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-                          child: _buildAllLightsBar(roomLoads),
-                        ),
                       Expanded(
                         child: BackdropGroup(
                           child: _buildGrid(roomLoads, cat),
@@ -310,110 +336,6 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
         setState(() => _highlightedLoadId = null);
       }
     });
-  }
-
-  /// Combined "All Lights" control: turns every lighting load in the room
-  /// on or off with one tap. Buttons only appear when the room actually
-  /// has lighting loads.
-  Widget _buildAllLightsBar(List<Map<String, dynamic>> roomLoads) {
-    final lightLoads = roomLoads
-        .where((l) => const ['swt', 'dim', 'tun', 'rgb'].contains(l['type']))
-        .toList();
-    if (lightLoads.isEmpty) return const SizedBox.shrink();
-
-    final mqtt = Provider.of<DirectMQTTService>(context, listen: false);
-    final allOn = lightLoads.every((l) => l['isOn'] == true);
-    final someOn = lightLoads.any((l) => l['isOn'] == true);
-
-    return Row(
-      children: [
-        Expanded(
-          child: GestureDetector(
-            onTap: () {
-              for (final l in lightLoads) {
-                mqtt.sendCommand(l['id'].toString(), 'ON');
-              }
-            },
-            child: Container(
-              height: 44,
-              decoration: BoxDecoration(
-                color: allOn
-                    ? SHColors.primary.withOpacity(0.9)
-                    : Colors.white.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(SHColors.radiusMd),
-                border: Border.all(
-                  color: allOn
-                      ? SHColors.primary
-                      : Colors.white.withOpacity(0.14),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.lightbulb,
-                    size: 18,
-                    color: allOn ? Colors.white : SHColors.mutedText,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'All ON',
-                    style: TextStyle(
-                      color: allOn ? Colors.white : SHColors.mutedText,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: GestureDetector(
-            onTap: () {
-              for (final l in lightLoads) {
-                mqtt.sendCommand(l['id'].toString(), 'OFF');
-              }
-            },
-            child: Container(
-              height: 44,
-              decoration: BoxDecoration(
-                color: !someOn
-                    ? SHColors.rose.withOpacity(0.9)
-                    : Colors.white.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(SHColors.radiusMd),
-                border: Border.all(
-                  color: !someOn
-                      ? SHColors.rose
-                      : Colors.white.withOpacity(0.14),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.lightbulb_outline,
-                    size: 18,
-                    color: !someOn ? Colors.white : SHColors.mutedText,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'All OFF',
-                    style: TextStyle(
-                      color: !someOn ? Colors.white : SHColors.mutedText,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
   }
 
   Widget _buildGrid(List<Map<String, dynamic>> allLoads, String category) {
