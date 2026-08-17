@@ -281,9 +281,7 @@ require("../KNX/actHdlr");
         return new Promise((resolve) => {
             let settled = false;
             let startupTmr = null;
-            // MQTT is auxiliary. It must never block or crash HomeKit startup:
-            // resolve exactly once, and keep the client retrying in the background
-            // (reconnectPeriod) so it recovers on its own when the broker comes up.
+            // MQTT is auxiliary. It must never block or crash HomeKit startup
             const settle = (v) => {
                 if (settled) return;
                 settled = true;

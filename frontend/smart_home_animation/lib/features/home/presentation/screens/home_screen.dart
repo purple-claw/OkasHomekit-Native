@@ -221,7 +221,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-                _buildAddRoomButton(),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildAddRoomButton(),
+                    const SizedBox(width: 10),
+                    _buildHousePowerButton(),
+                  ],
+                ),
               ],
             ),
 
@@ -639,6 +646,39 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Entire-house power: lit while ANY load anywhere is on. Tapping it turns
+  // every load in the house off (or all on when everything is off). Same
+  // behavior as the room power button in RoomLoadsScreen, scoped to the
+  // whole house.
+  Widget _buildHousePowerButton() {
+    return Selector<DirectMQTTService, bool>(
+      selector: (context, mqtt) => mqtt.loads.values.any(
+        (l) => l['isOn'] == true,
+      ),
+      builder: (context, anyOn, child) {
+        final mqtt =
+            Provider.of<DirectMQTTService>(context, listen: false);
+        final allLoads = mqtt.loads.values.toList();
+        return IconButton(
+          tooltip: anyOn
+              ? 'Turn all loads in the house off'
+              : 'Turn all loads in the house on',
+          icon: Icon(
+            Icons.power_settings_new,
+            color: anyOn ? SHColors.green : SHColors.rose,
+          ),
+          onPressed: () {
+            for (final l in allLoads) {
+              if (anyOn ? l['isOn'] == true : true) {
+                mqtt.sendCommand(l['id'].toString(), anyOn ? 'OFF' : 'ON');
+              }
+            }
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildAddRoomButton() {
     return GestureDetector(
       onTap: () async {
@@ -651,30 +691,41 @@ class _HomeScreenState extends State<HomeScreen> {
           if (mounted) setState(() {});
         }
       },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: SHColors.primary.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(
-            color: SHColors.primary.withOpacity(0.5),
-            width: 1,
+      // Frosted-glass pill: blurs the background behind the button so it
+      // reads as glassmorphism, matching the category chips in the room
+      // load screen.
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: BackdropFilter(
+          filter: ui.ImageFilter.blur(
+            sigmaX: 10,
+            sigmaY: 10,
           ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.add_circle_outline, color: SHColors.primary, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              "Add Room",
-              style: TextStyle(
-                color: SHColors.primary,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.07),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.16),
               ),
             ),
-          ],
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.add_circle_outline, color: Colors.white, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  "Add Room",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

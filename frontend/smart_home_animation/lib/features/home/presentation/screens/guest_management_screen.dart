@@ -324,30 +324,28 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
   /// Add Guest frosted pill — shown in both the empty state and
   /// the guest-carousel state.
   Widget _addGuestPill() => Center(
-    child: SizedBox(
-      width: 120,
-      child: GlassPanel(
-        radius: SHColors.pillRadius,
-        blur: 7,
-        fillColor: Colors.white.withValues(alpha: 0.04),
-        onTap: () => _openGuestForm(),
-        child: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.person_add, size: 16, color: SHColors.primary),
-              SizedBox(width: 8),
-              Text(
-                'Add Guest',
-                style: TextStyle(
-                  color: SHColors.primary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                ),
+    child: GlassPanel(
+      radius: 18,
+      blur: 7,
+      fillColor: Colors.white.withValues(alpha: 0.04),
+      onTap: () => _openGuestForm(),
+      child: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.person_add, size: 20, color: SHColors.primary),
+            SizedBox(width: 8),
+            Text(
+              'Add Guest',
+              style: TextStyle(
+                color: SHColors.primary,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     ),
