@@ -211,7 +211,9 @@ class LoadGridCard extends StatelessWidget {
                                 : null,
                           ),
                           child: Icon(
-                            Icons.power_settings_new,
+                            deviceType == 'Curtain'
+                                ? Icons.curtains
+                                : Icons.power_settings_new,
                             color: isOn ? Colors.white : SHColors.hintColor,
                             size: 18,
                           ),

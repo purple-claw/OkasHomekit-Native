@@ -808,6 +808,7 @@ class _LoungeScreenState extends State<LoungeScreen> {
         title: 'MOVEMENT',
         isOn: pos > 0,
         useRadialGradient: true,
+        showToggle: false,
         onToggle: (v) {
           pos = v ? 0 : 100;
           mqtt.sendCurtainPositionCommand(id, pos.round());

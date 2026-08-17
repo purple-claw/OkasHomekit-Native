@@ -807,6 +807,7 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
             title: 'MOVEMENT',
             isOn: pos > 0,
             useRadialGradient: true,
+            showToggle: false,
             onToggle: (v) {
               mqtt.sendCurtainPositionCommand(id, v ? 0 : 100);
             },

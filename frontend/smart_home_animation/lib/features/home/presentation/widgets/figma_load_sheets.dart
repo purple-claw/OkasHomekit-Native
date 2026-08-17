@@ -109,6 +109,7 @@ class FigmaLoadSheet extends StatelessWidget {
     required this.onToggle,
     required this.body,
     this.useRadialGradient = false,
+    this.showToggle = true,
     super.key,
   });
 
@@ -120,6 +121,10 @@ class FigmaLoadSheet extends StatelessWidget {
   /// When true, the sheet uses the Figma curtain radial gradient
   /// (cyan -> teal -> dark blue -> black) instead of the glass card gradient.
   final bool useRadialGradient;
+
+  /// When false, the master toggle switch next to the title is hidden
+  /// (curtain sheet: position is controlled by the slider / buttons only).
+  final bool showToggle;
 
   @override
   Widget build(BuildContext context) {
@@ -172,12 +177,13 @@ class FigmaLoadSheet extends StatelessWidget {
                     ),
                   ),
                 ),
-                Switch(
-                  value: isOn,
-                  onChanged: onToggle,
-                  activeColor: SHColors.green,
-                  inactiveThumbColor: Colors.white54,
-                ),
+                if (showToggle)
+                  Switch(
+                    value: isOn,
+                    onChanged: onToggle,
+                    activeColor: SHColors.green,
+                    inactiveThumbColor: Colors.white54,
+                  ),
               ],
             ),
             const SizedBox(height: 16),
