@@ -100,45 +100,7 @@ class FigmaLoadSheet extends StatelessWidget {
                 child: body,
               ),
             ),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      side: BorderSide(color: Colors.white.withOpacity(0.22)),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(SHColors.radiusMd),
-                      ),
-                      backgroundColor: Colors.white.withOpacity(0.1),
-                    ),
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      backgroundColor: SHColors.green,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(SHColors.radiusMd),
-                      ),
-                    ),
-                    child: const Text(
-                      'Save',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            const SizedBox(height: 16),
           ],
         ),
       ),

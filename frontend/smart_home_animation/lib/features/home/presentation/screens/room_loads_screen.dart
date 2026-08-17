@@ -403,7 +403,15 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
           ),
           child: LoadGridCard(
             load: cur,
-            onTap: () => _showSheet(context, cur, cur['type'] ?? 'swt'),
+            onTap: () {
+              // Switch loads toggle straight from the card — no control
+              // sheet.
+              if ((cur['type'] ?? 'swt') == 'swt') {
+                mqtt.sendCommand(id, isOn ? 'OFF' : 'ON');
+              } else {
+                _showSheet(context, cur, cur['type'] ?? 'swt');
+              }
+            },
             onToggle: (v) => mqtt.sendCommand(id, v ? 'ON' : 'OFF'),
             onLongPress: () => _showQuickSelectDialog(cur),
           ),
