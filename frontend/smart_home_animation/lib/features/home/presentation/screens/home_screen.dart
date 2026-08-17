@@ -16,6 +16,7 @@ import 'package:smart_home_animation/features/home/presentation/screens/profile_
 import 'package:smart_home_animation/features/home/presentation/screens/scene_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/room_loads_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/widgets/page_indicators.dart';
+import 'package:smart_home_animation/features/home/presentation/widgets/figma_load_sheets.dart';
 import 'package:smart_home_animation/features/home/presentation/widgets/smart_room_page_view.dart';
 import 'package:smart_home_animation/services/device_provider_wrapper.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
@@ -668,11 +669,19 @@ class _HomeScreenState extends State<HomeScreen> {
             color: anyOn ? SHColors.green : SHColors.rose,
           ),
           onPressed: () {
-            for (final l in allLoads) {
-              if (anyOn ? l['isOn'] == true : true) {
-                mqtt.sendCommand(l['id'].toString(), anyOn ? 'OFF' : 'ON');
-              }
-            }
+            showPowerConfirmDialog(
+              context,
+              message: anyOn
+                  ? 'Turn off the entire house?'
+                  : 'Turn on the entire house?',
+              action: () {
+                for (final l in allLoads) {
+                  if (anyOn ? l['isOn'] == true : true) {
+                    mqtt.sendCommand(l['id'].toString(), anyOn ? 'OFF' : 'ON');
+                  }
+                }
+              },
+            );
           },
         );
       },

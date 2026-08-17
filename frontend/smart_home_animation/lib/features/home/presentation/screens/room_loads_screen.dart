@@ -145,11 +145,20 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
                     color: anyOn ? SHColors.green : SHColors.rose,
                   ),
                   onPressed: () {
-                    for (final l in roomLoads) {
-                      if (anyOn ? l['isOn'] == true : true) {
-                        mqtt.sendCommand(l['id'].toString(), anyOn ? 'OFF' : 'ON');
-                      }
-                    }
+                    showPowerConfirmDialog(
+                      context,
+                      message: anyOn
+                          ? 'Turn off all loads in ${widget.room.name}?'
+                          : 'Turn on all loads in ${widget.room.name}?',
+                      action: () {
+                        for (final l in roomLoads) {
+                          if (anyOn ? l['isOn'] == true : true) {
+                            mqtt.sendCommand(
+                                l['id'].toString(), anyOn ? 'OFF' : 'ON');
+                          }
+                        }
+                      },
+                    );
                   },
                 );
               },

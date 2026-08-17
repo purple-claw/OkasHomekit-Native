@@ -1,12 +1,103 @@
 // lib/features/home/presentation/widgets/figma_load_sheets.dart
 // Bottom sheets matching the Figma designs for loads control.
 // Imports the relevant load types' controllers from LoungeScreen style API.
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/core.dart';
+import 'package:smart_home_animation/core/shared/presentation/widgets/glass_panel.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
+
+/// Confirmation dialog with Yes / No. If the user never answers, the
+/// action runs automatically after [timeout] (5 seconds by default).
+void showPowerConfirmDialog(
+  BuildContext context, {
+  required String message,
+  required VoidCallback action,
+  Duration timeout = const Duration(seconds: 5),
+}) {
+  showDialog(
+    context: context,
+    builder: (_) => _PowerConfirmDialog(
+      message: message,
+      action: action,
+      timeout: timeout,
+    ),
+  );
+}
+
+class _PowerConfirmDialog extends StatefulWidget {
+  const _PowerConfirmDialog({
+    required this.message,
+    required this.action,
+    required this.timeout,
+  });
+
+  final String message;
+  final VoidCallback action;
+  final Duration timeout;
+
+  @override
+  State<_PowerConfirmDialog> createState() => _PowerConfirmDialogState();
+}
+
+class _PowerConfirmDialogState extends State<_PowerConfirmDialog> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer(widget.timeout, () {
+      if (!mounted) return;
+      Navigator.pop(context);
+      widget.action();
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _choose(bool yes) {
+    _timer?.cancel();
+    Navigator.pop(context);
+    if (yes) widget.action();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FrostedAlertDialog(
+      title: const Text(
+        'Are You Sure?',
+        style: TextStyle(color: Colors.white),
+      ),
+      content: Text(
+        widget.message,
+        style: TextStyle(color: Colors.white70),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => _choose(false),
+          child: const Text(
+            'No',
+            style: TextStyle(color: SHColors.rose),
+          ),
+        ),
+        TextButton(
+          onPressed: () => _choose(true),
+          child: const Text(
+            'Yes',
+            style: TextStyle(color: SHColors.green),
+          ),
+        ),
+      ],
+    );
+  }
+}
 
 /// Generic Figma-style bottom sheet wrapper used by every load control sheet.
 /// It draws the rounded container, the title + master toggle on the right,
