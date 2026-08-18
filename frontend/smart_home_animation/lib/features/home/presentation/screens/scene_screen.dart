@@ -6,8 +6,10 @@ import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/theme/aurora_background.dart';
 import 'package:smart_home_animation/core/theme/sh_colors.dart';
 import 'package:smart_home_animation/core/shared/presentation/widgets/skeleton.dart';
+import 'package:smart_home_animation/core/shared/domain/entities/room_scene.dart';
 import 'package:smart_home_animation/features/home/presentation/widgets/load_icon.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
+import 'package:smart_home_animation/services/room_scene_service.dart';
 import 'package:smart_home_animation/services/scene_favorites_service.dart';
 
 class SceneScreen extends StatefulWidget {
@@ -26,6 +28,7 @@ class _SceneScreenState extends State<SceneScreen> {
   final Map<String, Timer> _activationTimers = <String, Timer>{};
 
   VoidCallback? _favoritesListener;
+  VoidCallback? _scenesListener;
 
   @override
   void initState() {
@@ -36,12 +39,20 @@ class _SceneScreenState extends State<SceneScreen> {
     };
     SceneFavoritesService.instance.addListener(_favoritesListener!);
     SceneFavoritesService.instance.load();
+    _scenesListener = () {
+      if (mounted) setState(() {});
+    };
+    RoomSceneService.instance.addListener(_scenesListener!);
+    RoomSceneService.instance.load();
   }
 
   @override
   void dispose() {
     if (_favoritesListener != null) {
       SceneFavoritesService.instance.removeListener(_favoritesListener!);
+    }
+    if (_scenesListener != null) {
+      RoomSceneService.instance.removeListener(_scenesListener!);
     }
     _searchController
       ..removeListener(_onSearchChanged)
@@ -162,7 +173,10 @@ class _SceneScreenState extends State<SceneScreen> {
       );
     }
 
-    final scenes = _scenesFromLoads(mqtt);
+    final scenes = [
+      ..._scenesFromLoads(mqtt),
+      ...RoomSceneService.instance.scenes.map(_appScene),
+    ];
     final filtered = scenes.where((scene) {
       return _searchQuery.isEmpty ||
           scene.name.toLowerCase().contains(_searchQuery);
@@ -177,7 +191,7 @@ class _SceneScreenState extends State<SceneScreen> {
             ? 'No scenes configured'
             : 'No scenes match search',
         subtitle: _searchQuery.isEmpty
-            ? 'Programmer-uploaded Scene loads appear here'
+            ? 'Board scenes and app scenes appear here'
             : 'Try another scene name',
       );
     }
@@ -196,9 +210,38 @@ class _SceneScreenState extends State<SceneScreen> {
       itemCount: filtered.length,
       itemBuilder: (context, index) => _SceneGlassCard(
         scene: filtered[index],
-        onTap: () => _activateScene(filtered[index]),
+        onTap: () => _onSceneTap(mqtt, filtered[index]),
         onFavoriteTap: () => _toggleFavorite(filtered[index]),
       ),
+    );
+  }
+
+  /// Board scenes fire a raw ON command with a brief highlight; app scenes
+  /// toggle through RoomSceneService (staggered per-load replay).
+  void _onSceneTap(DirectMQTTService mqtt, SmartScene scene) {
+    final appScene = scene.appScene;
+    if (appScene != null) {
+      RoomSceneService.instance.toggleScene(mqtt, appScene);
+      return;
+    }
+    _activateScene(scene);
+  }
+
+  /// App-side RoomScene mapped to the global list; id is prefixed so it
+  /// can never collide with a board scene id.
+  SmartScene _appScene(RoomScene scene) {
+    final id = 'appscene-${scene.id}';
+    final favoriteIds = SceneFavoritesService.instance.favorites
+        .map((favorite) => favorite.id)
+        .toSet();
+    return SmartScene(
+      id: id,
+      name: scene.name,
+      icon: roomSceneIcon(scene.iconId),
+      color: SHColors.violet,
+      isFavorite: favoriteIds.contains(id),
+      isActivated: RoomSceneService.instance.isActive(scene.id),
+      appScene: scene,
     );
   }
 
@@ -250,13 +293,14 @@ class _SceneScreenState extends State<SceneScreen> {
   }
 
   void _toggleFavorite(SmartScene scene) {
+    final isApp = scene.appScene != null;
     SceneFavoritesService.instance.setFavorite(
       id: scene.id,
       name: scene.name,
-      description: 'Board-configured scene',
+      description: isApp ? 'App scene' : 'Board-configured scene',
       icon: scene.icon,
       color: scene.color,
-      scope: 'Board',
+      scope: isApp ? 'App' : 'Board',
       favorite: !scene.isFavorite,
     );
   }
@@ -558,6 +602,7 @@ class SmartScene {
     required this.color,
     required this.isFavorite,
     required this.isActivated,
+    this.appScene,
   });
 
   final String id;
@@ -566,4 +611,6 @@ class SmartScene {
   final Color color;
   final bool isFavorite;
   final bool isActivated;
+  /// Non-null for app-side scenes (RoomScene); board scenes pass null.
+  final RoomScene? appScene;
 }

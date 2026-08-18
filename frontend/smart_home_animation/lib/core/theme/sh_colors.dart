@@ -25,6 +25,10 @@ abstract class SHColors {
   static const Color blue = Color(0xFF1B5AF9);
   static const Color rose = Color(0xFFF4424B);
 
+  /// App-side scene accent (user-created Room Scenes). Distinct from the
+  /// board's KNX scene blue so the two never get confused.
+  static const Color violet = Color(0xFFA78BFA);
+
   // ---- Premium accent (Keus-inspired champagne for favorite rooms,
   // premium scenes, the house-name eyebrow). ----
   static const Color champagne = Color(0xFFE8C58A);

@@ -16,13 +16,15 @@ require("../KNX/actHdlr");
             GT_ROOMS: 'rooms/get',
             ADD_ROOM: 'rooms/add',
             DEL_ROOM: 'rooms/delete',
-            WATCHDOG_CMD: 'okas/watchdog/cmd'
+            WATCHDOG_CMD: 'okas/watchdog/cmd',
+            APP_SCENES: 'app/scenes'
         },
         PUB: {
             ST_LDS:  'loads/setLoads',
             CMD_ACK: 'command/cmdAck',
             ST_ROOMS: 'rooms/set',
-            WATCHDOG_STATUS: 'okas/watchdog/status'
+            WATCHDOG_STATUS: 'okas/watchdog/status',
+            APP_SCENES: 'app/scenes'
         }
     };
 
@@ -73,6 +75,43 @@ require("../KNX/actHdlr");
         } catch (e) {
             dbg.Err('MQTT: Failed to save rooms: ' + e.message);
         }
+    };
+
+    // App scenes (app 'app/scenes') - persistent mirror of the mobile app's
+    // scene list. The app publishes it retained; the backend keeps a disk
+    // copy so a cleared broker or app storage never loses the scenes.
+    const SCENES_FILE = path.join(__dirname, '..', 'Data', 'appScenes.json');
+
+    global.appScenes = [];
+    const loadAppScenes = () => {
+        try {
+            if (fs.existsSync(SCENES_FILE)) {
+                global.appScenes = JSON.parse(fs.readFileSync(SCENES_FILE, 'utf8'));
+                dbg.Inf('MQTT: Loaded ' + global.appScenes.length + ' app scenes.');
+            }
+        } catch (e) {
+            dbg.Err('MQTT: Failed to load app scenes: ' + e.message);
+            global.appScenes = [];
+        }
+    };
+    loadAppScenes();
+
+    const saveAppScenes = () => {
+        try {
+            fs.writeFileSync(SCENES_FILE, JSON.stringify(global.appScenes, null, 2));
+            dbg.Inf('MQTT: Saved ' + global.appScenes.length + ' app scenes.');
+        } catch (e) {
+            dbg.Err('MQTT: Failed to save app scenes: ' + e.message);
+        }
+    };
+
+    global.mqttSetAppScenes = (pld) => {
+        if (!Array.isArray(pld)) {
+            dbg.Err('MQTT: Invalid app scenes payload');
+            return;
+        }
+        global.appScenes = pld;
+        saveAppScenes();
     };
 
     global.mqttGetRooms = (pld) => {
@@ -316,6 +355,11 @@ require("../KNX/actHdlr");
                         settle(false);
                     } else {
                         dbg.Inf('MQTT: Subscribed to - ' + sbTpcs.join(', '));
+                        // Re-seed the broker's retained app/scenes cache from
+                        // disk, so scenes survive a broker persistence loss.
+                        if (global.appScenes && global.appScenes.length) {
+                            mqttPub(TPCS.PUB.APP_SCENES, global.appScenes, true);
+                        }
                         settle(true);
                     }
                 });
@@ -422,6 +466,9 @@ require("../KNX/actHdlr");
                 break;
             case TPCS.SUB.DEL_ROOM:
                 mqttDeleteRoom(pld);
+                break;
+            case TPCS.SUB.APP_SCENES:
+                mqttSetAppScenes(pld);
                 break;
             case TPCS.SUB.WATCHDOG_CMD:
                 // Handle watchdog commands: {cmd: 'restart', reason: '...'}

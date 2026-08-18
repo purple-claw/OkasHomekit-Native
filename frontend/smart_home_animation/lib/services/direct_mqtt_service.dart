@@ -12,6 +12,7 @@ import 'package:network_info_plus/network_info_plus.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/music_info.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/smart_device.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/smart_room.dart';
+import 'package:smart_home_animation/services/room_scene_service.dart';
 import 'package:smart_home_animation/services/room_service.dart';
 
 // Note: We're not using multicast_dns due to API issues
@@ -819,6 +820,8 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         // published with retain=true so the broker delivers it immediately
         // on subscribe) will populate the real list via `replaceRooms`.
         RoomService.instance.clearRooms();
+        RoomSceneService.instance.clearAll();
+        RoomSceneService.instance.attachMqtt(this);
         _roomsPrimed = false;
         _requestAllLoads();
         _requestAllRooms();
@@ -828,6 +831,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         print('❌ Disconnected from OKAS MQTT');
         _isConnected = false;
         _isConnecting = false;
+        RoomSceneService.instance.detachMqtt();
         notifyListeners();
       };
 
@@ -837,6 +841,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         _isConnecting = true;
         _lastError = 'Reconnecting to OKAS MQTT...';
         _brokerAttempts.add('Reconnecting to MQTT $host:$port');
+        RoomSceneService.instance.detachMqtt();
         notifyListeners();
       };
 
@@ -847,6 +852,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         _lastError = null;
         _brokerAttempts.add('Reconnected to MQTT $host:$port');
         notifyListeners();
+        RoomSceneService.instance.attachMqtt(this);
         _requestAllLoads();
         _requestAllRooms();
       };
@@ -987,6 +993,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         'status/+',
         'status/mobAck',
         'rooms/set',
+        'app/scenes',
       ];
 
       for (String topic in topics) {
@@ -1246,6 +1253,13 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         RoomService.instance.replaceRooms(newRooms);
         _roomsPrimed = true;
         print('✅ Loaded ${newRooms.length} rooms from OKAS');
+      }
+
+      // App scenes - the board's retained mirror of the app's scene list.
+      // The board is the source of truth, same as rooms: any phone that
+      // connects hydrates from it (survives app storage clears).
+      if (topic == 'app/scenes' && data is List) {
+        RoomSceneService.instance.hydrateFromBoard(message);
       }
 
       // Handle status updates for specific loads
@@ -1662,6 +1676,26 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         print('📤 OKAS Command to $topic');
       } catch (e) {
         print('Error publishing: $e');
+      }
+    }
+  }
+
+  /// Retained publish for app-owned state (RoomScene list on 'app/scenes').
+  /// The board's broker keeps the payload across app storage clears, so
+  /// scenes survive exactly like the board's own retained rooms/set.
+  Future<void> publishRetained(String topic, String message) async {
+    if (_client != null && _isConnected) {
+      try {
+        final builder = MqttClientPayloadBuilder()..addString(message);
+        _client!.publishMessage(
+          topic,
+          MqttQos.atLeastOnce,
+          builder.payload!,
+          retain: true,
+        );
+        print('📤 OKAS Retained to $topic');
+      } catch (e) {
+        print('Error publishing retained: $e');
       }
     }
   }

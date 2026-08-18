@@ -18,6 +18,9 @@ class LoadGridCard extends StatelessWidget {
     required this.onTap,
     required this.onToggle,
     this.onLongPress,
+    this.onDoubleTap,
+    this.accent,
+    this.icon,
     super.key,
   });
 
@@ -26,15 +29,28 @@ class LoadGridCard extends StatelessWidget {
   final ValueChanged<bool> onToggle;
   final VoidCallback? onLongPress;
 
+  /// Double-tap action (app scenes: toggle activate/deactivate). Long-press
+  /// stays free for other gestures (e.g. add-to-quick-select).
+  final VoidCallback? onDoubleTap;
+
+  /// Overrides the per-type accent (e.g. App Scenes use violet, not the
+  /// KNX scene blue).
+  final Color? accent;
+
+  /// When set, renders a bare icon card (used for the "+" create card) —
+  /// just the glass surface with a centered icon, no name/label/pill.
+  final IconData? icon;
+
   @override
   Widget build(BuildContext context) {
     final deviceType = _deviceType(load['type'] ?? 'swt');
     final isOn = load['isOn'] ?? false;
     final deviceName = load['name'] ?? 'Device';
-    final color = SHColors.deviceAccent(deviceType);
+    final color = accent ?? SHColors.deviceAccent(deviceType);
 
     return GestureDetector(
       onTap: onTap,
+      onDoubleTap: onDoubleTap,
       onLongPress: onLongPress,
       // RepaintBoundary: each card repaints on its own, so scrolling and
       // toggles don't repaint the whole grid (big scroll-lag win).
@@ -142,7 +158,17 @@ class LoadGridCard extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(10, 12, 10, 10),
-                  child: Column(
+                  child: icon != null
+                      // Bare icon card: "+" creation tile shares the exact
+                      // load-card surface, just with a centered icon.
+                      ? Center(
+                          child: Icon(
+                            icon,
+                            color: accent ?? SHColors.primary,
+                            size: 40,
+                          ),
+                        )
+                      : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
@@ -157,30 +183,41 @@ class LoadGridCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const Spacer(),
-                      // Row 2: load name — highlighted.
-                      Text(
-                        deviceName,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
+                      // Name + label block is flexible: at larger system
+                      // text scales the lines compress instead of blowing
+                      // past the fixed card height (yellow overflow lines).
+                      Flexible(
+                        fit: FlexFit.loose,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Row 2: load name — highlighted.
+                            Text(
+                              deviceName,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 3),
+                            // Row 3: load type label.
+                            Text(
+                              _typeLabel(deviceType),
+                              style: const TextStyle(
+                                color: SHColors.mutedText,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.1,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 3),
-                      // Row 3: load type label.
-                      Text(
-                        _typeLabel(deviceType),
-                        style: const TextStyle(
-                          color: SHColors.mutedText,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 1.1,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 10),
                       GestureDetector(

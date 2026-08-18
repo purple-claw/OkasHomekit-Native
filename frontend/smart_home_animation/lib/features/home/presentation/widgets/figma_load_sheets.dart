@@ -20,11 +20,8 @@ void showPowerConfirmDialog(
 }) {
   showDialog(
     context: context,
-    builder: (_) => _PowerConfirmDialog(
-      message: message,
-      action: action,
-      timeout: timeout,
-    ),
+    builder: (_) =>
+        _PowerConfirmDialog(message: message, action: action, timeout: timeout),
   );
 }
 
@@ -71,28 +68,16 @@ class _PowerConfirmDialogState extends State<_PowerConfirmDialog> {
   @override
   Widget build(BuildContext context) {
     return FrostedAlertDialog(
-      title: const Text(
-        'Are You Sure?',
-        style: TextStyle(color: Colors.white),
-      ),
-      content: Text(
-        widget.message,
-        style: TextStyle(color: Colors.white70),
-      ),
+      title: const Text('Are You Sure?', style: TextStyle(color: Colors.white)),
+      content: Text(widget.message, style: TextStyle(color: Colors.white70)),
       actions: [
         TextButton(
           onPressed: () => _choose(false),
-          child: const Text(
-            'No',
-            style: TextStyle(color: SHColors.rose),
-          ),
+          child: const Text('No', style: TextStyle(color: SHColors.rose)),
         ),
         TextButton(
           onPressed: () => _choose(true),
-          child: const Text(
-            'Yes',
-            style: TextStyle(color: SHColors.green),
-          ),
+          child: const Text('Yes', style: TextStyle(color: SHColors.green)),
         ),
       ],
     );
@@ -128,77 +113,86 @@ class FigmaLoadSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        // Restore the translucent Figma glass / curtain gradient. The
-        // caller is expected to wrap this sheet in a LiquidGlassSheet so
-        // the load grid behind the sheet is blurred and the controls stay
-        // legible without needing a heavy opaque backdrop.
-        color: SHColors.elevatedCardColor.withValues(alpha: 0.45),
-        gradient: useRadialGradient
-            ? SHColors.curtainRadialGradient
-            : SHColors.cardGradient,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(SHColors.radiusXl),
-        ),
-        border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.12))),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.5),
-            blurRadius: 28,
-            offset: const Offset(0, -12),
+    // This sheet is used inside a custom fullscreen overlay (liquid glass
+    // scrim) that provides no Material ancestor, yet the title Switch and
+    // every body control (Slider etc.) require one. A single transparent
+    // Material at the root covers the whole sheet.
+    return Material(
+      type: MaterialType.transparency,
+      child: Container(
+        decoration: BoxDecoration(
+          // Restore the translucent Figma glass / curtain gradient. The
+          // caller is expected to wrap this sheet in a LiquidGlassSheet so
+          // the load grid behind the sheet is blurred and the controls stay
+          // legible without needing a heavy opaque backdrop.
+          color: SHColors.elevatedCardColor.withValues(alpha: 0.45),
+          gradient: useRadialGradient
+              ? SHColors.curtainRadialGradient
+              : SHColors.cardGradient,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(SHColors.radiusXl),
           ),
-        ],
-      ),
-      padding: const EdgeInsets.fromLTRB(22, 12, 22, 16),
-      child: SafeArea(
-        top: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 42,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 18),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.34),
-                borderRadius: BorderRadius.circular(2),
-              ),
+          border: Border(
+            top: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.5),
+              blurRadius: 28,
+              offset: const Offset(0, -12),
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
+          ],
+        ),
+        padding: const EdgeInsets.fromLTRB(22, 12, 22, 16),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 42,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 18),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.34),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ),
-                ),
-                if (showToggle)
-                  Switch(
-                    value: isOn,
-                    onChanged: onToggle,
-                    activeColor: SHColors.green,
-                    inactiveThumbColor: Colors.white54,
-                  ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            // The body is wrapped in a scroll view with a max height so a
-            // tall body (curtain sheet with visualization + slider + 3
-            // buttons) never overflows the screen and misaligns the
-            // bottom button row.
-            Flexible(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: body,
+                  if (showToggle)
+                    Switch(
+                      value: isOn,
+                      onChanged: onToggle,
+                      activeColor: SHColors.green,
+                      inactiveThumbColor: Colors.white54,
+                    ),
+                ],
               ),
-            ),
-            const SizedBox(height: 16),
-          ],
+              const SizedBox(height: 16),
+              // The body is wrapped in a scroll view with a max height so a
+              // tall body (curtain sheet with visualization + slider + 3
+              // buttons) never overflows the screen and misaligns the
+              // bottom button row.
+              Flexible(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: body,
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );
@@ -458,10 +452,12 @@ class RgbGamutPicker extends StatelessWidget {
                   void handle(Offset localPosition) {
                     final center = Offset(radius, radius);
                     final vector = localPosition - center;
-                    final saturation =
-                        (vector.distance / radius).clamp(0.0, 1.0);
-                    final hue = ((math.atan2(vector.dy, vector.dx) * 180 /
-                                math.pi) +
+                    final saturation = (vector.distance / radius).clamp(
+                      0.0,
+                      1.0,
+                    );
+                    final hue =
+                        ((math.atan2(vector.dy, vector.dx) * 180 / math.pi) +
                             360) %
                         360;
                     final color = HSVColor.fromAHSV(

@@ -4,15 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/core.dart';
+import 'package:smart_home_animation/core/shared/domain/entities/room_scene.dart';
 import 'package:smart_home_animation/core/shared/presentation/widgets/liquid_glass_scrim.dart';
 import 'package:smart_home_animation/core/shared/presentation/widgets/quick_select_strip.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
 import 'package:smart_home_animation/services/quick_select_service.dart';
+import 'package:smart_home_animation/services/room_scene_service.dart';
 import 'package:smart_home_animation/services/room_service.dart';
+import 'package:smart_home_animation/services/scene_favorites_service.dart';
 import 'package:smart_home_animation/services/token_auth_service.dart';
 import '../widgets/load_grid_card.dart';
 import '../widgets/figma_load_sheets.dart';
 import 'add_room_screen.dart';
+import 'room_scene_editor_screen.dart';
 import 'package:smart_home_animation/core/shared/presentation/widgets/glass_panel.dart';
 
 class RoomLoadsScreen extends StatefulWidget {
@@ -64,6 +68,10 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
     QuickSelectService.instance.load().then((_) {
       if (mounted) setState(() {});
     });
+    // Load persisted scenes for this room.
+    RoomSceneService.instance.load().then((_) {
+      if (mounted) setState(() {});
+    });
   }
 
   void _onDataChanged() {
@@ -90,6 +98,19 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
     mqtt.removeListener(_onDataChanged);
     _pageController.dispose();
     super.dispose();
+  }
+
+  void _openSceneEditor(List<Map<String, dynamic>> roomLoads, RoomScene? scene) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RoomSceneEditorScreen(
+          roomId: widget.room.id,
+          roomLoads: roomLoads,
+          existing: scene,
+        ),
+      ),
+    );
   }
 
   @override
@@ -258,8 +279,11 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
                   return Column(
                     children: [
                       Expanded(
-                        child: BackdropGroup(
-                          child: _buildGrid(roomLoads, cat),
+                        child: AnimatedBuilder(
+                          animation: RoomSceneService.instance,
+                          builder: (context, _) => BackdropGroup(
+                            child: _buildGrid(roomLoads, cat),
+                          ),
                         ),
                       ),
                     ],
@@ -289,6 +313,12 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
     return QuickSelectStrip(
       loads: quickLoads,
       onTapLoad: (ql) {
+        // App scenes (appscene-<id>) aren't in mqtt.loads; jump straight
+        // to the Scene category page by synthetic map.
+        if (ql.id.startsWith('appscene-')) {
+          _jumpToLoad({'id': ql.id, 'type': 'scn'});
+          return;
+        }
         final liveLoad = roomLoads
             .where((l) => l['id']?.toString() == ql.id)
             .firstOrNull;
@@ -355,6 +385,28 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
           .where((l) => codes.contains(l['type'] ?? 'swt'))
           .toList();
     }
+    // User-created app scenes live in the Scene category as cards exactly
+    // like the board's `scn` loads. A "+" card (bare icon, same surface)
+    // opens the editor for a new scene and always sits first.
+    if (category == 'Scene') {
+      filtered = [
+        {
+          'id': 'appscene-new',
+          'type': 'scn',
+          'name': '',
+          'isOn': false,
+          '__createScene': true,
+        },
+        ...filtered,
+        ...RoomSceneService.instance.forRoom(widget.room.id).map((s) => {
+              'id': 'appscene-${s.id}',
+              'type': 'scn',
+              'name': s.name,
+              'isOn': false,
+              '__scene': s,
+            }),
+      ];
+    }
     if (filtered.isEmpty) {
       return const Center(
         child: Text(
@@ -376,12 +428,63 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
         mainAxisSpacing: 12,
       ),
       itemCount: filtered.length,
-      itemBuilder: (ctx, i) => _makeCard(filtered[i]),
+      itemBuilder: (ctx, i) => _makeCard(filtered[i], allLoads),
     );
   }
 
-  Widget _makeCard(Map<String, dynamic> load) {
+  Widget _makeCard(
+    Map<String, dynamic> load,
+    List<Map<String, dynamic>> allLoads,
+  ) {
     final id = load['id']?.toString() ?? '';
+    final scene = load['__scene'] as RoomScene?;
+    final creatingScene = load['__createScene'] == true;
+    if (scene != null) {
+      final mqtt = Provider.of<DirectMQTTService>(context, listen: false);
+      final active = RoomSceneService.instance.isActive(scene.id);
+      return AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(SHColors.radiusLg + 2),
+          boxShadow: active
+              ? [
+                  BoxShadow(
+                    color: SHColors.violet.withValues(alpha: 0.45),
+                    blurRadius: 18,
+                    spreadRadius: 1,
+                  ),
+                ]
+              : null,
+        ),
+        child: LoadGridCard(
+          accent: SHColors.violet,
+          load: Map<String, dynamic>.from(load)..['isOn'] = active,
+          onTap: () => _openSceneEditor(allLoads, scene),
+          onToggle: (_) => RoomSceneService.instance.toggleScene(mqtt, scene),
+          // Double-tap = activate/deactivate; long-press = actions popup
+          // (edit / quick select / delete).
+          onDoubleTap: () => RoomSceneService.instance.toggleScene(mqtt, scene),
+          onLongPress: () => _showSceneActions(allLoads, scene),
+        ),
+      );
+    }
+    if (creatingScene) {
+      return AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(SHColors.radiusLg + 2),
+        ),
+        child: LoadGridCard(
+          accent: SHColors.violet,
+          icon: Icons.add_rounded,
+          load: load,
+          onTap: () => _openSceneEditor(allLoads, null),
+          onToggle: (_) {},
+        ),
+      );
+    }
     final isHighlighted = _highlightedLoadId == id;
     return Selector<DirectMQTTService, bool>(
       selector: (context, mqtt) => (mqtt.loads[id] ?? load)['isOn'] == true,
@@ -491,6 +594,197 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
                   ),
                 );
                 if (mounted) setState(() {});
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Long-press popup on a scene card: Edit, Add to Quick Select, Favorites,
+  /// Delete.
+  void _showSceneActions(
+    List<Map<String, dynamic>> allLoads,
+    RoomScene scene,
+  ) {
+    final roomId = widget.room.id;
+    final sceneLoadId = 'appscene-${scene.id}';
+    final isFavorite = SceneFavoritesService.instance.favorites
+        .any((favorite) => favorite.id == sceneLoadId);
+    showDialog(
+      context: context,
+      builder: (ctx) => FrostedAlertDialog(
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(roomSceneIcon(scene.iconId), size: 20, color: SHColors.violet),
+            const SizedBox(width: 8),
+            Text(
+              scene.name,
+              style: const TextStyle(color: Colors.white),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(
+                Icons.edit_rounded,
+                size: 22,
+                color: SHColors.primary,
+              ),
+              title: const Text(
+                'Edit Scene',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              subtitle: Text(
+                'Change loads and their settings',
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.55),
+                  fontSize: 12,
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(ctx);
+                _openSceneEditor(allLoads, scene);
+              },
+            ),
+            ListTile(
+              leading: const Icon(
+                Icons.add_rounded,
+                size: 22,
+                color: SHColors.green,
+              ),
+              title: const Text(
+                'Add to Quick Select',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              subtitle: Text(
+                'Pin this scene to the room quick strip',
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.55),
+                  fontSize: 12,
+                ),
+              ),
+              onTap: () async {
+                Navigator.pop(ctx);
+                if (QuickSelectService.instance
+                    .isQuickSelected(roomId, sceneLoadId)) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Already in Quick Select'),
+                      backgroundColor: SHColors.rose,
+                      duration: Duration(seconds: 1),
+                    ),
+                  );
+                  return;
+                }
+                await QuickSelectService.instance.addToRoom(
+                  roomId: roomId,
+                  load: QuickSelectLoad(
+                    id: sceneLoadId,
+                    name: scene.name,
+                    type: 'scn',
+                    color: SHColors.violet,
+                  ),
+                );
+                if (mounted) setState(() {});
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                isFavorite
+                    ? Icons.star_rounded
+                    : Icons.star_border_rounded,
+                size: 22,
+                color: SHColors.amber,
+              ),
+              title: Text(
+                isFavorite
+                    ? 'Remove from Favorites'
+                    : 'Add to Favorites',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              subtitle: Text(
+                'Show this scene on the home screen',
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.55),
+                  fontSize: 12,
+                ),
+              ),
+              onTap: () async {
+                Navigator.pop(ctx);
+                await SceneFavoritesService.instance.setFavorite(
+                  id: sceneLoadId,
+                  name: scene.name,
+                  description: 'App scene',
+                  icon: roomSceneIcon(scene.iconId),
+                  color: SHColors.violet,
+                  scope: 'App',
+                  favorite: !isFavorite,
+                );
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        isFavorite
+                            ? '${scene.name} removed from Favorites'
+                            : '${scene.name} added to Favorites',
+                      ),
+                      backgroundColor: SHColors.amber,
+                      duration: const Duration(seconds: 1),
+                    ),
+                  );
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(
+                Icons.delete_outline_rounded,
+                size: 22,
+                color: SHColors.rose,
+              ),
+              title: const Text(
+                'Delete Scene',
+                style: TextStyle(
+                  color: SHColors.rose,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              subtitle: Text(
+                'Remove this scene and its settings',
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.55),
+                  fontSize: 12,
+                ),
+              ),
+              onTap: () async {
+                Navigator.pop(ctx);
+                await RoomSceneService.instance.deleteScene(scene.id);
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('${scene.name} deleted'),
+                      backgroundColor: SHColors.rose,
+                      duration: const Duration(seconds: 1),
+                    ),
+                  );
+                }
               },
             ),
           ],

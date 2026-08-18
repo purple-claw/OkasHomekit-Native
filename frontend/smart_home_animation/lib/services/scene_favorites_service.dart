@@ -121,6 +121,15 @@ class SceneFavoritesService extends ChangeNotifier {
     await _save();
   }
 
+  /// Removes a shortcut by id — used for pinned items whose source card no
+  /// longer exists (e.g. a deleted scene), so they can still be cleaned up.
+  Future<void> removeFavorite(String id) async {
+    if (_favorites.remove(id) != null) {
+      notifyListeners();
+      await _save();
+    }
+  }
+
   Future<void> _save() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(

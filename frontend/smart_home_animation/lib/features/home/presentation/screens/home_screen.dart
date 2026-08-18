@@ -249,6 +249,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildFavoritesSection() {
+    final isAdmin =
+        Provider.of<TokenAuthService>(context, listen: false).isAdmin;
     final favorites = <_FavoriteAccess>[
       ..._rooms
           .where((room) => room.isFavorite)
@@ -270,11 +272,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               },
-              onLongPress:
-                  Provider.of<TokenAuthService>(context, listen: false)
-                          .isAdmin
-                      ? () => _showRemoveFavoriteDialog(context, room)
-                      : null,
+              onLongPress: isAdmin
+                  ? () => _showRemoveFavoriteDialog(
+                        context,
+                        room.name,
+                        () {
+                          RoomService.instance.setFavorite(room.id, false);
+                          Provider.of<DirectMQTTService>(
+                            context,
+                            listen: false,
+                          ).setFavoriteRoom(room.id, false);
+                        },
+                      )
+                  : null,
             ),
           ),
       ...SceneFavoritesService.instance.favorites.map(
@@ -285,9 +295,46 @@ class _HomeScreenState extends State<HomeScreen> {
           icon: scene.icon,
           accent: scene.color,
           onTap: () => setState(() => _selectedIndex = 1),
+          // Long-press removal also covers orphaned shortcuts (deleted
+          // scenes) which no card exists to toggle off any more.
+          onLongPress: isAdmin
+              ? () => _showRemoveFavoriteDialog(
+                    context,
+                    scene.name,
+                    () => SceneFavoritesService.instance
+                        .removeFavorite(scene.id),
+                  )
+              : null,
         ),
       ),
-    ].take(4).toList();
+    ];
+
+    // 4 slots on the home tile row. Beyond 4 the row does not silently
+    // drop favorites: slot 4 becomes a "+N more" card that opens a sheet
+    // listing every favorite. Room/load/scene additions keep working with
+    // no cap — the tile row just delegates to the sheet.
+    final slots = <_FavoriteAccess?>[
+      if (favorites.isNotEmpty) favorites[0],
+      if (favorites.length > 1) favorites[1],
+      if (favorites.length > 2) favorites[2],
+    ];
+    if (favorites.length > 4) {
+      slots.add(
+        _FavoriteAccess(
+          id: '__more',
+          label: '+${favorites.length - 3} more',
+          typeLabel: 'Favorites',
+          icon: Icons.more_horiz_rounded,
+          accent: SHColors.primary,
+          onTap: () => _showAllFavorites(context, favorites),
+        ),
+      );
+    } else if (favorites.length > 3) {
+      slots.add(favorites[3]);
+    }
+    while (slots.length < 4) {
+      slots.add(null);
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -304,7 +351,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Text(
-              '${favorites.length}/4',
+              favorites.length > 4
+                  ? '${favorites.length} total'
+                  : '${favorites.length}/4',
               style: const TextStyle(
                 color: SHColors.mutedText,
                 fontSize: 12,
@@ -318,9 +367,7 @@ class _HomeScreenState extends State<HomeScreen> {
           height: 136,
           child: Row(
             children: List.generate(4, (index) {
-              final favorite = index < favorites.length
-                  ? favorites[index]
-                  : null;
+              final favorite = index < slots.length ? slots[index] : null;
               return Expanded(
                 child: Padding(
                   padding: EdgeInsets.only(right: index == 3 ? 0 : 8),
@@ -331,6 +378,75 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  /// Bottom sheet listing every favorite when the home tile row overflows
+  /// its 4 slots. Each row keeps the same tap / long-press behaviour as its
+  /// tile.
+  void _showAllFavorites(BuildContext context, List<_FavoriteAccess> all) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: SHColors.navy900,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 14),
+              child: Text(
+                'All Favorites',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+            Flexible(
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  for (final favorite in all)
+                    ListTile(
+                      leading: Icon(
+                        favorite.icon,
+                        color: favorite.accent,
+                      ),
+                      title: Text(
+                        favorite.label,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      subtitle: Text(
+                        favorite.typeLabel,
+                        style: const TextStyle(
+                          color: SHColors.mutedText,
+                          fontSize: 12,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.pop(sheetContext);
+                        favorite.onTap();
+                      },
+                      onLongPress: favorite.onLongPress == null
+                          ? null
+                          : () {
+                              Navigator.pop(sheetContext);
+                              favorite.onLongPress!();
+                            },
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -599,16 +715,20 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Long-press action menu for a favorite room card: removes the
-  /// favorite status (same toggle the star button performs).
-  void _showRemoveFavoriteDialog(BuildContext context, Room room) {
+  /// Long-press action menu for a favorite card: removes the favorite
+  /// status (same toggle the star button performs).
+  void _showRemoveFavoriteDialog(
+    BuildContext context,
+    String name,
+    VoidCallback onRemove,
+  ) {
     showDialog(
       context: context,
       builder: (dialogContext) => FrostedAlertDialog(
         titlePadding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
         contentPadding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
         title: Text(
-          room.name,
+          name,
           style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -634,11 +754,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               onTap: () {
                 Navigator.pop(dialogContext);
-                RoomService.instance.setFavorite(room.id, false);
-                Provider.of<DirectMQTTService>(
-                  context,
-                  listen: false,
-                ).setFavoriteRoom(room.id, false);
+                onRemove();
               },
             ),
           ],
