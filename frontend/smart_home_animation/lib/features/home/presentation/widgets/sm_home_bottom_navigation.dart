@@ -22,9 +22,9 @@ class SmHomeBottomNavigationBar extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
         decoration: BoxDecoration(
-          color: SHColors.black.withOpacity(0.82),
+          color: SHColors.black.withValues(alpha: 0.82),
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: Colors.white.withOpacity(0.12)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
           boxShadow: SHColors.softShadow,
         ),
         child: ClipRRect(
@@ -75,9 +75,9 @@ class SmHomeBottomNavigationBar extends StatelessWidget {
       width: 36,
       height: 30,
       decoration: BoxDecoration(
-        color: SHColors.primary.withOpacity(0.16),
+        color: SHColors.primary.withValues(alpha: 0.16),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: SHColors.primary.withOpacity(0.28)),
+        border: Border.all(color: SHColors.primary.withValues(alpha: 0.28)),
       ),
       child: Center(
         child: path == null

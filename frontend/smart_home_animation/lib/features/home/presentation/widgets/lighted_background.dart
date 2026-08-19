@@ -22,9 +22,9 @@ class LightedBackgound extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.white.withOpacity(0.06),
+                    Colors.white.withValues(alpha: 0.06),
                     Colors.transparent,
-                    Colors.black.withOpacity(0.22),
+                    Colors.black.withValues(alpha: 0.22),
                   ],
                   stops: const [0, 0.4, 1],
                 ),

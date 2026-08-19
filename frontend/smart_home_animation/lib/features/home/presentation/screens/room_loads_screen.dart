@@ -1178,10 +1178,10 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
           margin: const EdgeInsets.symmetric(horizontal: 4),
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: active ? SHColors.primary : Colors.white.withOpacity(0.08),
+            color: active ? SHColors.primary : Colors.white.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(SHColors.radiusMd),
             border: Border.all(
-              color: active ? SHColors.primary : Colors.white.withOpacity(0.16),
+              color: active ? SHColors.primary : Colors.white.withValues(alpha: 0.16),
             ),
           ),
           child: Center(

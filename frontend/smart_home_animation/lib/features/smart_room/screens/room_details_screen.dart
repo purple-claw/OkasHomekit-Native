@@ -57,7 +57,7 @@ class RoomDetailScreen extends StatelessWidget {
           ClipRRect(
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaY: 10, sigmaX: 10),
-              child: Container(color: Colors.black.withOpacity(0.3)),
+              child: Container(color: Colors.black.withValues(alpha: 0.3)),
             ),
           ),
 
@@ -140,7 +140,7 @@ class RoomDetailScreen extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
-      color: Colors.grey[900]?.withOpacity(0.8),
+      color: Colors.grey[900]?.withValues(alpha: 0.8),
       child: Column(
         children: [
           ListTile(
@@ -148,8 +148,8 @@ class RoomDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: isOn
-                    ? Colors.amber.withOpacity(0.2)
-                    : Colors.grey.withOpacity(0.1),
+                    ? Colors.amber.withValues(alpha: 0.2)
+                    : Colors.grey.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
@@ -181,7 +181,7 @@ class RoomDetailScreen extends StatelessWidget {
                   ),
                 );
               },
-              activeColor: Colors.amber,
+              activeThumbColor: Colors.amber,
             ),
           ),
           // Show slider for dimmer devices
@@ -230,7 +230,7 @@ class RoomDetailScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '${temperature}°C',
+                        '$temperature°C',
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,

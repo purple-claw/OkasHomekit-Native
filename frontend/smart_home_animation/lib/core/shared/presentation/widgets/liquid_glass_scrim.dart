@@ -66,7 +66,7 @@ class LiquidGlassScrim extends StatelessWidget {
         // Subtle dim wash so the focused sheet sits clearly on top.
         DecoratedBox(
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(dimOpacity),
+            color: Colors.black.withValues(alpha: dimOpacity),
           ),
         ),
         // Faint gradient tint tying the scrim to the Figma palette.

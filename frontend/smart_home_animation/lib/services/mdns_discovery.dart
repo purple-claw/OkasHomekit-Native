@@ -1,4 +1,5 @@
 // lib/services/mdns_discovery.dart
+import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -55,7 +56,7 @@ class MDNSDiscovery {
           listener(ip);
         }
       } catch (e) {
-        print('Error calling listener: $e');
+        debugPrint('Error calling listener: $e');
       }
     }
   }
@@ -65,13 +66,13 @@ class MDNSDiscovery {
     _discoveryTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
       discoverOKASDevice();
     });
-    print('🔄 Started background mDNS discovery');
+    debugPrint('🔄 Started background mDNS discovery');
   }
 
   void stopBackgroundDiscovery() {
     _discoveryTimer?.cancel();
     _discoveryTimer = null;
-    print('⏹️ Stopped background mDNS discovery');
+    debugPrint('⏹️ Stopped background mDNS discovery');
   }
 
   Future<bool> checkBoardAccessible(String ip) async {
@@ -92,7 +93,7 @@ class MDNSDiscovery {
   Future<List<Map<String, dynamic>>> discoverOKASDevice() async {
     _devices.clear();
 
-    print('🔍 Starting OKAS board discovery...');
+    debugPrint('🔍 Starting OKAS board discovery...');
 
     // Fast path: the board's address from the last successful discovery.
     // Home networks rarely reassign addresses, so skip the whole
@@ -101,7 +102,7 @@ class MDNSDiscovery {
     // force-close slow — every launch re-ran the full chain.
     final savedIp = await _readLastIp();
     if (savedIp != null) {
-      print('🔍 Trying last known IP: $savedIp');
+      debugPrint('🔍 Trying last known IP: $savedIp');
       if (await checkBoardAccessible(savedIp)) {
         return await _registerDevice(
           name: 'OKAS HomeKit',
@@ -120,7 +121,7 @@ class MDNSDiscovery {
 
     // Check known IPs
     for (final ip in commonIPs) {
-      print('  🔍 Testing: $ip');
+      debugPrint('  🔍 Testing: $ip');
       final isAccessible = await checkBoardAccessible(ip);
       if (isAccessible) {
         final deviceInfo = {
@@ -140,12 +141,12 @@ class MDNSDiscovery {
         try {
           await _storage.write(key: _lastIpKey, value: ip);
         } catch (_) {}
-        print('✅ Found OKAS board at: $ip');
+        debugPrint('✅ Found OKAS board at: $ip');
         return _devices;
       }
     }
 
-    print('❌ No OKAS board found on the network');
+    debugPrint('❌ No OKAS board found on the network');
     return _devices;
   }
 
@@ -165,7 +166,7 @@ class MDNSDiscovery {
     for (final candidate in [cleanHostname, hostname]) {
       final ip = await _resolveHostToIpv4(candidate);
       if (ip == null) continue;
-      print('  🔍 Testing hostname $candidate resolved to: $ip');
+      debugPrint('  🔍 Testing hostname $candidate resolved to: $ip');
       if (await checkBoardAccessible(ip)) {
         return await _registerDevice(
           name: 'OKAS HomeKit',
@@ -202,7 +203,7 @@ class MDNSDiscovery {
       }
       client.stop();
     } catch (e) {
-      print('mDNS hostname resolution error: $e');
+      debugPrint('mDNS hostname resolution error: $e');
     }
     return null;
   }
@@ -219,14 +220,14 @@ class MDNSDiscovery {
       final MDnsClient client = MDnsClient();
       await client.start();
 
-      print('🔍 Checking mDNS for OKAS devices...');
+      debugPrint('🔍 Checking mDNS for OKAS devices...');
 
       for (final type in [serviceType, homeKitServiceType]) {
         await for (final PtrResourceRecord ptr
             in client.lookup<PtrResourceRecord>(
               ResourceRecordQuery.serverPointer(type),
             )) {
-          print('Found service: ${ptr.domainName}');
+          debugPrint('Found service: ${ptr.domainName}');
 
           await for (final SrvResourceRecord srv
               in client.lookup<SrvResourceRecord>(
@@ -237,7 +238,7 @@ class MDNSDiscovery {
                 : srv.target;
             final ip = await _resolveHostToIpv4(target);
             if (ip == null) continue;
-            print('  🔍 Testing mDNS found: $ip');
+            debugPrint('  🔍 Testing mDNS found: $ip');
             final isAccessible = await checkBoardAccessible(ip);
 
             if (isAccessible) {
@@ -248,7 +249,7 @@ class MDNSDiscovery {
                     in client.lookup<TxtResourceRecord>(
                       ResourceRecordQuery.text(ptr.domainName),
                     )) {
-                  print('  📋 mDNS TXT: ${txt.text}');
+                  debugPrint('  📋 mDNS TXT: ${txt.text}');
                   final text = txt.text.trim();
                   if (text.startsWith('mac=') || text.startsWith('hwaddr=') || text.startsWith('id=')) {
                     macAddress = text.split('=').skip(1).join('=').trim();
@@ -264,7 +265,7 @@ class MDNSDiscovery {
                 macAddress: macAddress,
                 source: type,
               );
-              print('✅ Found OKAS board via mDNS at: $ip');
+              debugPrint('✅ Found OKAS board via mDNS at: $ip');
               client.stop();
               return devices;
             }
@@ -274,7 +275,7 @@ class MDNSDiscovery {
 
       client.stop();
     } catch (e) {
-      print('mDNS discovery error: $e');
+      debugPrint('mDNS discovery error: $e');
     }
     return null;
   }
@@ -287,7 +288,7 @@ class MDNSDiscovery {
   }) async {
     if (macAddress != null && macAddress.isNotEmpty) {
       Constants.setMacAddress(macAddress);
-      print('  📍 Board MAC: $macAddress');
+      debugPrint('  📍 Board MAC: $macAddress');
     }
     final deviceInfo = {
       'name': name,

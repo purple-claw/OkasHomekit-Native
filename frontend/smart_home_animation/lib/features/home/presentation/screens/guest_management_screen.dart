@@ -122,8 +122,9 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
                       child: child!,
                     ),
                   );
-                  if (picked != null)
+                  if (picked != null) {
                     setDialogState(() => selectedDate = picked);
+                  }
                 },
               ),
             ],
@@ -152,6 +153,7 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
       name.dispose();
       return;
     }
+    if (!mounted) return;
     try {
       Map<String, dynamic>? result;
       if (editing) {
@@ -211,7 +213,7 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
         ),
       );
     } catch (error) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -221,6 +223,7 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
             ),
           ),
         );
+      }
     } finally {
       name.dispose();
     }
@@ -244,7 +247,7 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
       }
       await _loadGuests();
     } catch (error) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -254,6 +257,7 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
             ),
           ),
         );
+      }
     }
   }
 
@@ -289,6 +293,7 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
       ),
     );
     if (confirmed != true) return;
+    if (!mounted) return;
     await context.read<TokenAuthService>().deleteGuest(guest['id'] as String);
     await _loadGuests();
   }
@@ -320,7 +325,6 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
     return parsed == null ? 'Unknown' : _formatDate(parsed.toLocal());
   }
 
-  @override
   /// Add Guest frosted pill — shown in both the empty state and
   /// the guest-carousel state.
   Widget _addGuestPill() => Center(
@@ -351,6 +355,7 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
     ),
   );
 
+  @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: Colors.transparent,
     appBar: widget.showAppBar
@@ -456,14 +461,12 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
 class _GuestCard extends StatelessWidget {
   const _GuestCard({
     required this.guest,
-    this.width = double.infinity,
     this.onEdit,
     this.onDelete,
     this.onToggle,
   });
 
   final Map<String, dynamic> guest;
-  final double width;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
   final VoidCallback? onToggle;
@@ -471,96 +474,91 @@ class _GuestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final revoked = guest['revokedAt'] != null;
-    return SizedBox(
-      width: width,
-      child: GlassPanel(
-        radius: 16,
-        blur: 6,
-        fillColor: Colors.white.withValues(alpha: 0.039),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: const BoxDecoration(
-                  color: SHColors.guestAvatar,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  revoked ? Icons.person_off : Icons.person,
-                  color: Colors.white.withValues(alpha: 0.9),
-                  size: 22,
-                ),
+    return GlassPanel(
+      radius: 16,
+      blur: 6,
+      fillColor: Colors.white.withValues(alpha: 0.039),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: const BoxDecoration(
+                color: SHColors.guestAvatar,
+                shape: BoxShape.circle,
               ),
-              const SizedBox(height: 8),
-              Text(
-                guest['label'] as String? ?? 'Guest',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                ),
+              child: Icon(
+                revoked ? Icons.person_off : Icons.person,
+                color: Colors.white.withValues(alpha: 0.9),
+                size: 22,
               ),
-              const SizedBox(height: 8),
-              Text(
-                revoked
-                    ? 'Revoked'
-                    : 'Expires: ${_GuestManagementScreenState._formatExpiry(guest['expiresAt'])}',
-                maxLines: 2,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: revoked ? SHColors.figmaRed : SHColors.figmaOrange,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  height: 1.2,
-                ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              guest['label'] as String? ?? 'Guest',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
               ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GlassIconButton(
-                    icon: Icons.edit_outlined,
-                    color: SHColors.primary,
-                    tooltip: 'Update guest',
-                    size: 26,
-                    iconSize: 20,
-                    onPressed: onEdit,
-                  ),
-                  const SizedBox(width: 8),
-                  GlassIconButton(
-                    icon: Icons.delete_outline,
-                    color: SHColors.figmaRed,
-                    tooltip: 'Delete guest',
-                    size: 26,
-                    iconSize: 17,
-                    onPressed: onDelete,
-                  ),
-                  const SizedBox(width: 8),
-                  Opacity(
-                    opacity: 0.65,
-                    child: Transform.flip(
-                      flipY: true,
-                      child: GlassIconButton(
-                        icon: revoked
-                            ? Icons.check_circle_outline
-                            : Icons.block,
-                        color: revoked ? SHColors.green : SHColors.figmaRed,
-                        tooltip: revoked ? 'Enable guest' : 'Revoke guest',
-                        size: 26,
-                        iconSize: 20,
-                        onPressed: onToggle,
-                      ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              revoked
+                  ? 'Revoked'
+                  : 'Expires: ${_GuestManagementScreenState._formatExpiry(guest['expiresAt'])}',
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: revoked ? SHColors.figmaRed : SHColors.figmaOrange,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                height: 1.2,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GlassIconButton(
+                  icon: Icons.edit_outlined,
+                  color: SHColors.primary,
+                  tooltip: 'Update guest',
+                  size: 26,
+                  iconSize: 20,
+                  onPressed: onEdit,
+                ),
+                const SizedBox(width: 8),
+                GlassIconButton(
+                  icon: Icons.delete_outline,
+                  color: SHColors.figmaRed,
+                  tooltip: 'Delete guest',
+                  size: 26,
+                  iconSize: 17,
+                  onPressed: onDelete,
+                ),
+                const SizedBox(width: 8),
+                Opacity(
+                  opacity: 0.65,
+                  child: Transform.flip(
+                    flipY: true,
+                    child: GlassIconButton(
+                      icon: revoked ? Icons.check_circle_outline : Icons.block,
+                      color: revoked ? SHColors.green : SHColors.figmaRed,
+                      tooltip: revoked ? 'Enable guest' : 'Revoke guest',
+                      size: 26,
+                      iconSize: 20,
+                      onPressed: onToggle,
                     ),
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

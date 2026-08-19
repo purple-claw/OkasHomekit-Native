@@ -107,7 +107,7 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
 
       return compressedFile.path;
     } catch (e) {
-      print('Error compressing image: $e');
+      debugPrint('Error compressing image: $e');
       return originalPath;
     }
   }
@@ -127,6 +127,7 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
 
       if (pickedImage != null) {
         final compressedPath = await _compressAndSaveImage(pickedImage.path);
+        if (!mounted) return;
         setState(() {
           _roomImagePath = compressedPath;
           _isImageLoading = false;
@@ -142,6 +143,7 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
         setState(() => _isImageLoading = false);
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isImageLoading = false);
       ScaffoldMessenger.of(
         context,
@@ -212,7 +214,7 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
         decoration: BoxDecoration(
           color: Colors.grey[800],
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: SHColors.primary.withOpacity(0.5)),
+          border: Border.all(color: SHColors.primary.withValues(alpha: 0.5)),
         ),
         child: Column(
           children: [
@@ -283,6 +285,7 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
     // rooms reappear when I create a new room" bug: a previous version
     // of the local cache would briefly reappear if the rooms/set response
     // raced the local add. Skipping the local add eliminates the race.
+    if (!mounted) return;
     final mqttService = Provider.of<DirectMQTTService>(context, listen: false);
     mqttService.publish('rooms/add', json.encode(roomData));
 
@@ -376,10 +379,10 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
                         height: 150,
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.05),
+                          color: Colors.white.withValues(alpha: 0.05),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: SHColors.primary.withOpacity(0.3),
+                            color: SHColors.primary.withValues(alpha: 0.3),
                             width: 1,
                           ),
                         ),
@@ -416,7 +419,7 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
                                         end: Alignment.bottomCenter,
                                         colors: [
                                           Colors.transparent,
-                                          Colors.black.withOpacity(0.7),
+                                          Colors.black.withValues(alpha: 0.7),
                                         ],
                                       ),
                                     ),
@@ -462,7 +465,7 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
                                   Icon(
                                     Icons.add_photo_alternate,
                                     size: 48,
-                                    color: SHColors.primary.withOpacity(0.7),
+                                    color: SHColors.primary.withValues(alpha: 0.7),
                                   ),
                                   const SizedBox(height: 8),
                                   const Text(
@@ -491,10 +494,10 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
                     const SizedBox(height: 12),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
+                        color: Colors.white.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: SHColors.primary.withOpacity(0.3),
+                          color: SHColors.primary.withValues(alpha: 0.3),
                         ),
                       ),
                       child: TextField(
@@ -532,7 +535,7 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.05),
+                          color: Colors.white.withValues(alpha: 0.05),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Center(
@@ -565,13 +568,13 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
                                 color: isSelected
                                     ? _getLoadTypeColor(
                                         loadType,
-                                      ).withOpacity(0.2)
-                                    : Colors.white.withOpacity(0.05),
+                                      ).withValues(alpha: 0.2)
+                                    : Colors.white.withValues(alpha: 0.05),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color: isSelected
                                       ? _getLoadTypeColor(loadType)
-                                      : Colors.white.withOpacity(0.1),
+                                      : Colors.white.withValues(alpha: 0.1),
                                   width: isSelected ? 2 : 1,
                                 ),
                               ),
@@ -582,7 +585,7 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
                                     decoration: BoxDecoration(
                                       color: _getLoadTypeColor(
                                         loadType,
-                                      ).withOpacity(0.2),
+                                      ).withValues(alpha: 0.2),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Image.asset(
@@ -640,7 +643,7 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.8),
+                color: Colors.black.withValues(alpha: 0.8),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
@@ -653,7 +656,7 @@ class _AddRoomScreenState extends State<AddRoomScreen> {
                       onPressed: _cancel,
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        side: BorderSide(color: Colors.red.withOpacity(0.7)),
+                        side: BorderSide(color: Colors.red.withValues(alpha: 0.7)),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),

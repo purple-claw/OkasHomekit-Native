@@ -1,4 +1,6 @@
 // lib/api/constants.dart
+import 'package:flutter/foundation.dart';
+
 class Constants {
   static const String apiScheme = String.fromEnvironment(
     'OKAS_API_SCHEME',
@@ -12,7 +14,7 @@ class Constants {
   static int _apiPort = 80;
 
   // Add KNX Gateway IP
-  static String _knxGatewayIp = '192.168.1.11';
+  static final String _knxGatewayIp = '192.168.1.11';
 
   // Getters
   static String get localHost => _baseUrl;
@@ -31,34 +33,34 @@ class Constants {
     } else {
       _baseUrl = url;
     }
-    print('📍 Constants base URL updated to: $_baseUrl');
+    debugPrint('📍 Constants base URL updated to: $_baseUrl');
   }
 
   static void setCurrentIp(String ip) {
     _currentIp = ip;
-    print('📍 Current IP set to: $ip');
+    debugPrint('📍 Current IP set to: $ip');
   }
 
   static void setApiPort(int port) {
     _apiPort = port;
-    print('📍 API Port set to: $port');
+    debugPrint('📍 API Port set to: $port');
   }
 
   static void setMacAddress(String mac) {
     _macAddress = mac;
-    print('📍 MAC Address set to: $mac');
+    debugPrint('📍 MAC Address set to: $mac');
   }
 
   static void setAuthToken(String token) {
     _authToken = token;
     _isAuthenticated = token.isNotEmpty;
-    print('📍 Authentication token ${token.isNotEmpty ? 'set' : 'cleared'}');
+    debugPrint('📍 Authentication token ${token.isNotEmpty ? 'set' : 'cleared'}');
   }
 
   static void clearAuth() {
     _authToken = '';
     _isAuthenticated = false;
-    print('📍 Authentication cleared');
+    debugPrint('📍 Authentication cleared');
   }
 
   // API endpoints with authentication headers
@@ -146,12 +148,12 @@ class Constants {
   }
 
   static void printConfig() {
-    print('📋 OKAS Configuration:');
-    print('   Base URL: $_baseUrl');
-    print('   Current IP: $_currentIp');
-    print('   API Port: $_apiPort');
-    print('   MAC Address: $_macAddress');
-    print('   Auth Token: $_authToken');
-    print('   Authenticated: $_isAuthenticated');
+    debugPrint('📋 OKAS Configuration:');
+    debugPrint('   Base URL: $_baseUrl');
+    debugPrint('   Current IP: $_currentIp');
+    debugPrint('   API Port: $_apiPort');
+    debugPrint('   MAC Address: $_macAddress');
+    debugPrint('   Auth Token: $_authToken');
+    debugPrint('   Authenticated: $_isAuthenticated');
   }
 }

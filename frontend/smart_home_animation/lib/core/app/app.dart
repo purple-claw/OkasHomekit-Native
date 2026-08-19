@@ -36,7 +36,7 @@ class SmartHomeApp extends StatelessWidget {
             '/splash': (context) => SplashScreen(),
             '/token-entry': (context) => const TokenEntryScreen(),
             '/home': (context) => const HomeScreen(),
-            '/pin': (context) => PinAuthScreen(),
+            '/pin': (context) => const PinAuthScreen(),
             '/scenes': (context) => const SceneScreen(),
             '/guests': (context) => const GuestManagementScreen(),
           },

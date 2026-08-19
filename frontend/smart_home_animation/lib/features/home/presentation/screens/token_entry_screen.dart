@@ -572,7 +572,7 @@ class _TokenEntryScreenState extends State<TokenEntryScreen>
       success = await authService.authenticateWithToken(token);
     }
 
-    if (success && mounted) {
+    if (success && context.mounted) {
       final mqtt = authService.mqttCredentials;
       if (mqtt == null || authService.discoveredIp == null) {
         _showErrorDialog(
@@ -600,15 +600,16 @@ class _TokenEntryScreenState extends State<TokenEntryScreen>
             tls: mqtt['tls'] == true,
             expiresAt: mqtt['expiresAt'] as String?,
           );
-      if (!connected && mounted) {
+      if (!connected && context.mounted) {
         _showErrorDialog(
           context,
           'Authenticated, but unable to connect to MQTT.',
         );
         return;
       }
+      if (!context.mounted) return;
       Navigator.pushReplacementNamed(context, '/home');
-    } else if (mounted && authService.error != null) {
+    } else if (context.mounted && authService.error != null) {
       _showErrorDialog(context, authService.error!);
     }
   }

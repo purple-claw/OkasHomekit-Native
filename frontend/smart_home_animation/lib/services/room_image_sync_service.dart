@@ -13,6 +13,7 @@
 //   4. When a device renders the image, it loads from the URL (with a
 //      local cache fallback so it still works offline / after the image
 //      was previously downloaded).
+import 'package:flutter/foundation.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -59,10 +60,10 @@ class RoomImageSyncService {
       if (data['success'] == true) {
         return data['url'] as String? ?? data['path'] as String?;
       }
-      print('Room image upload failed: ${data['message']}');
+      debugPrint('Room image upload failed: ${data['message']}');
       return null;
     } catch (e) {
-      print('Room image upload error: $e');
+      debugPrint('Room image upload error: $e');
       return null;
     }
   }

@@ -138,34 +138,40 @@ class Device extends Equatable {
       case MQTTDeviceType.dim:
         if (action == 'ON') return {'swt': true};
         if (action == 'OFF') return {'swt': false};
-        if (action == 'SET_BRIGHTNESS')
+        if (action == 'SET_BRIGHTNESS') {
           return {'bri': value ?? brightness ?? 0};
+          }
         break;
 
       case MQTTDeviceType.rgb:
         if (action == 'ON') return {'swt': true};
         if (action == 'OFF') return {'swt': false};
-        if (action == 'SET_BRIGHTNESS')
+        if (action == 'SET_BRIGHTNESS') {
           return {'bri': value ?? brightness ?? 0};
+          }
         if (action == 'SET_HUE') return {'hue': value ?? hue ?? 0};
-        if (action == 'SET_SATURATION')
+        if (action == 'SET_SATURATION') {
           return {'sat': value ?? saturation ?? 0};
+          }
         break;
 
       case MQTTDeviceType.tun:
         if (action == 'ON') return {'swt': true};
         if (action == 'OFF') return {'swt': false};
-        if (action == 'SET_BRIGHTNESS')
+        if (action == 'SET_BRIGHTNESS') {
           return {'bri': value ?? brightness ?? 0};
-        if (action == 'SET_COLOR_TEMP')
+          }
+        if (action == 'SET_COLOR_TEMP') {
           return {'cTp': value ?? colorTemp ?? 2700};
+          }
         break;
 
       case MQTTDeviceType.hvc:
         if (action == 'ON') return {'swt': true};
         if (action == 'OFF') return {'swt': false};
-        if (action == 'SET_TEMPERATURE')
+        if (action == 'SET_TEMPERATURE') {
           return {'spt': value ?? setpoint ?? 22};
+          }
         if (action == 'SET_FAN_SPEED') return {'fSp': value ?? fanSpeed ?? 0};
         if (action == 'SET_MODE') return {'mod': value ?? mode ?? 0};
         break;

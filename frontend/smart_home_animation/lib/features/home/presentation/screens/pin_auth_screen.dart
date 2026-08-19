@@ -8,8 +8,10 @@ import 'package:smart_home_animation/core/theme/sh_theme.dart';
 import 'package:smart_home_animation/core/shared/presentation/widgets/glass_panel.dart';
 
 class PinAuthScreen extends StatefulWidget {
+  const PinAuthScreen({super.key});
+
   @override
-  _PinAuthScreenState createState() => _PinAuthScreenState();
+  State<PinAuthScreen> createState() => _PinAuthScreenState();
 }
 
 class _PinAuthScreenState extends State<PinAuthScreen> {
@@ -44,7 +46,7 @@ class _PinAuthScreenState extends State<PinAuthScreen> {
         _isBiometricSupported = isDeviceSupported;
       });
     } catch (e) {
-      print('Error checking biometrics: $e');
+      debugPrint('Error checking biometrics: $e');
       setState(() {
         _isBiometricAvailable = false;
         _isBiometricSupported = false;
@@ -180,7 +182,7 @@ class _PinAuthScreenState extends State<PinAuthScreen> {
             end: Alignment.bottomCenter,
             colors: [
               SHTheme.dark.primaryColor,
-              SHTheme.dark.primaryColor.withOpacity(0.8),
+              SHTheme.dark.primaryColor.withValues(alpha: 0.8),
               SHTheme.dark.secondaryHeaderColor,
             ],
           ),
@@ -248,7 +250,7 @@ class _PinAuthScreenState extends State<PinAuthScreen> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: _pinDigits[index].isEmpty
-                            ? Colors.white.withOpacity(0.3)
+                            ? Colors.white.withValues(alpha: 0.3)
                             : Colors.white,
                         border: Border.all(color: Colors.white, width: 2),
                       ),
@@ -263,7 +265,7 @@ class _PinAuthScreenState extends State<PinAuthScreen> {
                   margin: EdgeInsets.only(bottom: 16),
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.red.withOpacity(0.2),
+                    color: Colors.red.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -296,7 +298,7 @@ class _PinAuthScreenState extends State<PinAuthScreen> {
                       ),
                     ),
                     style: TextButton.styleFrom(
-                      backgroundColor: Colors.white.withOpacity(0.15),
+                      backgroundColor: Colors.white.withValues(alpha: 0.15),
                       padding: EdgeInsets.symmetric(
                         horizontal: 24,
                         vertical: 12,
@@ -367,13 +369,13 @@ class _PinAuthScreenState extends State<PinAuthScreen> {
 
   Widget _buildNumberButton(String number) {
     return Material(
-      color: Colors.white.withOpacity(0.2),
+      color: Colors.white.withValues(alpha: 0.2),
       borderRadius: BorderRadius.circular(15),
       child: InkWell(
         onTap: () => _onPinDigitPressed(number),
         borderRadius: BorderRadius.circular(15),
-        splashColor: Colors.white.withOpacity(0.3),
-        highlightColor: Colors.white.withOpacity(0.1),
+        splashColor: Colors.white.withValues(alpha: 0.3),
+        highlightColor: Colors.white.withValues(alpha: 0.1),
         child: Center(
           child: Text(
             number,
@@ -390,13 +392,13 @@ class _PinAuthScreenState extends State<PinAuthScreen> {
 
   Widget _buildDeleteButton() {
     return Material(
-      color: Colors.white.withOpacity(0.2),
+      color: Colors.white.withValues(alpha: 0.2),
       borderRadius: BorderRadius.circular(15),
       child: InkWell(
         onTap: _onDeletePressed,
         borderRadius: BorderRadius.circular(15),
-        splashColor: Colors.white.withOpacity(0.3),
-        highlightColor: Colors.white.withOpacity(0.1),
+        splashColor: Colors.white.withValues(alpha: 0.3),
+        highlightColor: Colors.white.withValues(alpha: 0.1),
         child: Center(
           child: Icon(Icons.backspace_outlined, color: Colors.white, size: 28),
         ),

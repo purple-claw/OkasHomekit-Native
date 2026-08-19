@@ -408,10 +408,11 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
 
+    if (!context.mounted) return;
     if (confirmed == true) {
       await context.read<TokenAuthService>().logout();
       // Also drop the MQTT connection so the token entry screen starts clean.
-      // ignore: use_build_context_synchronously
+      if (!context.mounted) return;
       Navigator.of(
         context,
       ).pushNamedAndRemoveUntil('/token-entry', (route) => false);

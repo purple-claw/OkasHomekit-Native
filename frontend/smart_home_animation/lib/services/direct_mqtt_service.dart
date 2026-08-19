@@ -43,7 +43,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
   String? _currentUsername;
   String? _currentPassword;
   bool _currentTls = false;
-  List<String> _brokerAttempts = [];
+  final List<String> _brokerAttempts = [];
   String? _lastError;
   String? _commandToken;
   Timer? _credentialExpiryTimer;
@@ -163,7 +163,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed &&
         !_isConnected &&
         _currentHost != null) {
-      print('App resumed - forcing fresh MQTT reconnect');
+      debugPrint('App resumed - forcing fresh MQTT reconnect');
       _isConnecting = false;
       unawaited(() async {
         await disconnect();
@@ -216,7 +216,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         // difference is a brief reconnect. (TokenAuthService.checkAutoLogin
         // re-exchanges the owner/guest token on next launch.)
         _credentialExpiryTimer = Timer(delay, () {
-          print('MQTT credentials expired - requesting reconnection');
+          debugPrint('MQTT credentials expired - requesting reconnection');
           _isConnected = false;
           _lastError = 'MQTT credentials expired. Reconnecting...';
           notifyListeners();
@@ -334,7 +334,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
   // Add to direct_mqtt_service.dart
 
   void sendBrightnessCommand(String deviceId, int brightness) {
-    print(
+    debugPrint(
       'Sending brightness to OKAS: loadId=$deviceId, brightness=$brightness',
     );
 
@@ -371,7 +371,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void sendColorTempCommand(String deviceId, int colorTemp) {
-    print('Sending color temp to OKAS: loadId=$deviceId, colorTemp=$colorTemp');
+    debugPrint('Sending color temp to OKAS: loadId=$deviceId, colorTemp=$colorTemp');
 
     final load = _loads[deviceId];
     if (load != null) {
@@ -416,7 +416,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
   // command without bri silently snaps to 100% on first use.
   void sendRGBCommand(String deviceId, int red, int green, int blue,
       {int? brightness}) {
-    print('Sending RGB to OKAS: loadId=$deviceId, R=$red, G=$green, B=$blue');
+    debugPrint('Sending RGB to OKAS: loadId=$deviceId, R=$red, G=$green, B=$blue');
 
     final load = _loads[deviceId];
     if (load != null) {
@@ -496,7 +496,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
 
   // HVAC Mode Control
   void sendHVACModeCommand(String deviceId, String mode) {
-    print('Sending HVAC mode to OKAS: loadId=$deviceId, mode=$mode');
+    debugPrint('Sending HVAC mode to OKAS: loadId=$deviceId, mode=$mode');
 
     final load = _loads[deviceId];
     if (load != null) {
@@ -540,7 +540,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
 
   // Temperature Control for HVAC
   void sendTemperatureCommand(String deviceId, int temperature) {
-    print('Sending temperature to OKAS: loadId=$deviceId, temp=$temperature°C');
+    debugPrint('Sending temperature to OKAS: loadId=$deviceId, temp=$temperature°C');
 
     final load = _loads[deviceId];
     if (load != null) {
@@ -568,7 +568,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void sendCurtainPositionCommand(String deviceId, int position) {
-    print(
+    debugPrint(
       'Sending curtain position to OKAS: loadId=$deviceId, position=$position',
     );
 
@@ -601,15 +601,15 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
 
     for (final hostname in hostnames) {
       try {
-        print('Resolving $hostname...');
+        debugPrint('Resolving $hostname...');
         final addresses = await InternetAddress.lookup(hostname);
         if (addresses.isNotEmpty) {
           final ip = addresses.first.address;
-          print('✅ Resolved $hostname to $ip');
+          debugPrint('✅ Resolved $hostname to $ip');
           return ip;
         }
       } catch (e) {
-        print('Could not resolve $hostname: $e');
+        debugPrint('Could not resolve $hostname: $e');
       }
     }
     return null;
@@ -638,17 +638,17 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
     // Check priority IPs first
     for (final ip in priorityIps) {
       try {
-        print('Testing priority IP: $ip');
+        debugPrint('Testing priority IP: $ip');
         final socket = await Socket.connect(
           ip,
           1884,
           timeout: Duration(seconds: 2),
         );
         socket.destroy();
-        print('✅ Found OKAS board at $ip');
+        debugPrint('✅ Found OKAS board at $ip');
         return ip;
       } catch (e) {
-        print('Could not connect to $ip: $e');
+        debugPrint('Could not connect to $ip: $e');
       }
     }
 
@@ -664,14 +664,14 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
 
     for (final ip in commonIps) {
       try {
-        print('Testing IP: $ip');
+        debugPrint('Testing IP: $ip');
         final socket = await Socket.connect(
           ip,
           1884,
           timeout: Duration(seconds: 2),
         );
         socket.destroy();
-        print('✅ Found OKAS board at $ip');
+        debugPrint('✅ Found OKAS board at $ip');
         return ip;
       } catch (e) {
         // Connection failed, try next IP
@@ -751,7 +751,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         return gateway;
       }
     } catch (e) {
-      print('Error getting gateway: $e');
+      debugPrint('Error getting gateway: $e');
     }
     return null;
   }
@@ -764,7 +764,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         return ip;
       }
     } catch (e) {
-      print('Error getting device IP: $e');
+      debugPrint('Error getting device IP: $e');
     }
     return null;
   }
@@ -802,14 +802,13 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
 
       final connectMessage = MqttConnectMessage()
           .withClientIdentifier(clientId)
-          .keepAliveFor(15)
           .startClean()
           .authenticateAs(username, password);
 
       _client!.connectionMessage = connectMessage;
 
       _client!.onConnected = () {
-        print('✅ Connected to OKAS MQTT at $host:$port');
+        debugPrint('✅ Connected to OKAS MQTT at $host:$port');
         _isConnected = true;
         _isConnecting = false;
         _lastError = null;
@@ -832,7 +831,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
       };
 
       _client!.onDisconnected = () {
-        print('❌ Disconnected from OKAS MQTT');
+        debugPrint('❌ Disconnected from OKAS MQTT');
         _isConnected = false;
         _isConnecting = false;
         RoomSceneService.instance.detachMqtt();
@@ -840,7 +839,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
       };
 
       _client!.onAutoReconnect = () {
-        print('🔄 Reconnecting to OKAS MQTT at $host:$port');
+        debugPrint('🔄 Reconnecting to OKAS MQTT at $host:$port');
         _isConnected = false;
         _isConnecting = true;
         _lastError = 'Reconnecting to OKAS MQTT...';
@@ -850,7 +849,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
       };
 
       _client!.onAutoReconnected = () {
-        print('✅ Reconnected to OKAS MQTT at $host:$port');
+        debugPrint('✅ Reconnected to OKAS MQTT at $host:$port');
         _isConnected = true;
         _isConnecting = false;
         _lastError = null;
@@ -863,7 +862,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         _requestAllRooms();
       };
 
-      print('Connecting to OKAS at $host:$port...');
+      debugPrint('Connecting to OKAS at $host:$port...');
       final connMessage = await _client!.connect();
 
       _isConnecting = false;
@@ -877,7 +876,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
       notifyListeners();
       return false;
     } catch (e) {
-      print('Connection error to $host: $e');
+      debugPrint('Connection error to $host: $e');
       _lastError = 'MQTT connection error to $host:$port - $e';
       _brokerAttempts.add(_lastError!);
       _isConnected = false;
@@ -889,7 +888,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
 
   // Add this method to send fan speed commands
   void sendFanSpeedCommand(String deviceId, int speed) {
-    print('Sending fan speed to OKAS: loadId=$deviceId, speed=$speed');
+    debugPrint('Sending fan speed to OKAS: loadId=$deviceId, speed=$speed');
 
     final load = _loads[deviceId];
     if (load != null) {
@@ -916,7 +915,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         'cmd': cmd,
       });
 
-      print('Publishing fan command: $message');
+      debugPrint('Publishing fan command: $message');
       publish('command/sndCmd', message);
 
       // Update local state immediately
@@ -1004,7 +1003,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
 
       for (String topic in topics) {
         _client!.subscribe(topic, MqttQos.atLeastOnce);
-        print('Subscribed to: $topic');
+        debugPrint('Subscribed to: $topic');
       }
 
       _updatesSubscription ??= _client!.updates!.listen((
@@ -1015,7 +1014,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
           final text = MqttPublishPayload.bytesToStringAsString(
             payload.payload.message,
           );
-          print('📨 OKAS Message [${message.topic}]: $text');
+          debugPrint('📨 OKAS Message [${message.topic}]: $text');
           _handleMessage(message.topic, text);
         }
       });
@@ -1033,7 +1032,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         // processed (retained publish + getLoads reply arrive back-to-back
         // on fresh install).
         if (_isDuplicatePayload(topic, message)) {
-          print('⏭ Skipped duplicate loads/setLoads payload');
+          debugPrint('⏭ Skipped duplicate loads/setLoads payload');
           return;
         }
         // The board republishes the whole retained load list after every
@@ -1043,7 +1042,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         // Treat the list like any echo: skip the rebuild while any load has
         // a recent local command in flight.
         if (_echoSuppressedAny()) {
-          print('⏭ Skipped loads/setLoads rebuild (local command in flight)');
+          debugPrint('⏭ Skipped loads/setLoads rebuild (local command in flight)');
           return;
         }
         _loads.clear();
@@ -1225,7 +1224,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         }
 
         notifyListeners();
-        print('✅ Loaded ${_loads.length} loads from OKAS');
+        debugPrint('✅ Loaded ${_loads.length} loads from OKAS');
       }
 
       // Handle rooms updates - board is the source of truth, replace list
@@ -1234,7 +1233,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         // processed (retained publish + getRooms reply arrive back-to-back
         // on fresh install).
         if (_isDuplicatePayload(topic, message)) {
-          print('⏭ Skipped duplicate rooms/set payload');
+          debugPrint('⏭ Skipped duplicate rooms/set payload');
           return;
         }
         final roomsData = data['rooms'] as List<dynamic>;
@@ -1258,7 +1257,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         // Replace entire rooms list to avoid duplicates
         RoomService.instance.replaceRooms(newRooms);
         _roomsPrimed = true;
-        print('✅ Loaded ${newRooms.length} rooms from OKAS');
+        debugPrint('✅ Loaded ${newRooms.length} rooms from OKAS');
       }
 
       // App scenes - the board's retained mirror of the app's scene list.
@@ -1277,7 +1276,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         // drops would otherwise fight the optimistic drag value and make the
         // slider bounce between 0 and 100.
         if (_echoSuppressed(ldId)) {
-          print('⏭ Suppressed echo for load $ldId (user interacting)');
+          debugPrint('⏭ Suppressed echo for load $ldId (user interacting)');
           return;
         }
 
@@ -1402,14 +1401,14 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
             final before = _lastStatusHash[ldId];
             final after = _normalizePayload(message);
             if (before == after) {
-              print('⏭ Skipped duplicate status for load $ldId');
+              debugPrint('⏭ Skipped duplicate status for load $ldId');
               return;
             }
             _lastStatusHash[ldId] = after;
           }
 
           notifyListeners();
-          print('✅ Status update for load $ldId');
+          debugPrint('✅ Status update for load $ldId');
         }
       }
 
@@ -1417,7 +1416,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
       if (topic == 'command/cmdAck') {
         final ldId = data['ldId'] as int?;
         final status = data['sts'] as String?;
-        print('Command acknowledgment for load $ldId: $status');
+        debugPrint('Command acknowledgment for load $ldId: $status');
 
         if (status == 'executed' && data.containsKey('cSt')) {
           final cSt = data['cSt'] as Map<String, dynamic>?;
@@ -1457,7 +1456,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         }
       }
     } catch (e) {
-      print('Error handling message: $e');
+      debugPrint('Error handling message: $e');
     }
   }
 
@@ -1579,7 +1578,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void sendCommand(String loadId, String command) {
-    print('Sending to OKAS: loadId=$loadId, command=$command');
+    debugPrint('Sending to OKAS: loadId=$loadId, command=$command');
 
     final load = _loads[loadId];
     if (load != null) {
@@ -1651,7 +1650,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
       }
 
       final message = json.encode({'ldId': ldId, 'typ': loadType, 'cmd': cmd});
-      print('Publishing to command/sndCmd: $message');
+      debugPrint('Publishing to command/sndCmd: $message');
       publish('command/sndCmd', message);
 
       if (_loads.containsKey(loadId)) {
@@ -1679,9 +1678,9 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
           if (ldId != null) _noteLocalCommand(ldId.toString());
         }
         _client!.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
-        print('📤 OKAS Command to $topic');
+        debugPrint('📤 OKAS Command to $topic');
       } catch (e) {
-        print('Error publishing: $e');
+        debugPrint('Error publishing: $e');
       }
     }
   }
@@ -1699,9 +1698,9 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
           builder.payload!,
           retain: true,
         );
-        print('📤 OKAS Retained to $topic');
+        debugPrint('📤 OKAS Retained to $topic');
       } catch (e) {
-        print('Error publishing retained: $e');
+        debugPrint('Error publishing retained: $e');
       }
     }
   }

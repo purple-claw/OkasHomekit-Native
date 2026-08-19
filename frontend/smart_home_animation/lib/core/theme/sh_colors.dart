@@ -51,10 +51,10 @@ abstract class SHColors {
   static const Color selectedColor = Color(0xFFBDF8FF);
 
   // ---- Soft status variants (12% alpha) for subtle status pills/badges ----
-  static Color successSoft(Color base) => base.withOpacity(0.16);
-  static Color warningSoft(Color base) => base.withOpacity(0.16);
-  static Color dangerSoft(Color base) => base.withOpacity(0.16);
-  static Color primarySoft(Color base) => base.withOpacity(0.18);
+  static Color successSoft(Color base) => base.withValues(alpha: 0.16);
+  static Color warningSoft(Color base) => base.withValues(alpha: 0.16);
+  static Color dangerSoft(Color base) => base.withValues(alpha: 0.16);
+  static Color primarySoft(Color base) => base.withValues(alpha: 0.18);
 
   // ---- Background gradient (kept from Figma, slightly tuned) ----
   static const Gradient backgroundColor = LinearGradient(
@@ -155,7 +155,7 @@ abstract class SHColors {
   // ---- Elevation tiers (replaces single softShadow) ----
   static List<BoxShadow> get shadowSubtle => [
     BoxShadow(
-      color: Colors.black.withOpacity(0.16),
+      color: Colors.black.withValues(alpha: 0.16),
       blurRadius: 12,
       offset: const Offset(0, 4),
     ),
@@ -163,7 +163,7 @@ abstract class SHColors {
 
   static List<BoxShadow> get shadowCard => [
     BoxShadow(
-      color: Colors.black.withOpacity(0.28),
+      color: Colors.black.withValues(alpha: 0.28),
       blurRadius: 22,
       offset: const Offset(0, 12),
     ),
@@ -171,7 +171,7 @@ abstract class SHColors {
 
   static List<BoxShadow> get shadowRaised => [
     BoxShadow(
-      color: Colors.black.withOpacity(0.4),
+      color: Colors.black.withValues(alpha: 0.4),
       blurRadius: 32,
       offset: const Offset(0, 18),
     ),
@@ -179,7 +179,7 @@ abstract class SHColors {
 
   static List<BoxShadow> get shadowSheet => [
     BoxShadow(
-      color: Colors.black.withOpacity(0.5),
+      color: Colors.black.withValues(alpha: 0.5),
       blurRadius: 28,
       offset: const Offset(0, -12),
     ),
@@ -189,7 +189,7 @@ abstract class SHColors {
   /// 24px-blur, 30% opacity recipe from the design notes.
   static List<BoxShadow> glow(Color color, {double opacity = 0.30}) => [
     BoxShadow(
-      color: color.withOpacity(opacity),
+      color: color.withValues(alpha: opacity),
       blurRadius: 24,
       spreadRadius: 0,
       offset: Offset.zero,
@@ -207,12 +207,12 @@ abstract class SHColors {
     bool premium = false,
   }) {
     final borderColor = active
-        ? (accent ?? primary).withOpacity(0.55)
+        ? (accent ?? primary).withValues(alpha: 0.55)
         : premium
-        ? champagne.withOpacity(0.4)
-        : Colors.white.withOpacity(0.12);
+        ? champagne.withValues(alpha: 0.4)
+        : Colors.white.withValues(alpha: 0.12);
     return BoxDecoration(
-      color: elevatedCardColor.withOpacity(active ? 0.72 : 0.56),
+      color: elevatedCardColor.withValues(alpha: active ? 0.72 : 0.56),
       gradient: active
           ? activeCardGradient
           : premium

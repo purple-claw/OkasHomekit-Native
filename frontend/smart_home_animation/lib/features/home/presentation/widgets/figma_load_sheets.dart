@@ -137,7 +137,7 @@ class FigmaLoadSheet extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.black.withValues(alpha: 0.5),
               blurRadius: 28,
               offset: const Offset(0, -12),
             ),
@@ -154,7 +154,7 @@ class FigmaLoadSheet extends StatelessWidget {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 18),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.34),
+                  color: Colors.white.withValues(alpha: 0.34),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -174,7 +174,7 @@ class FigmaLoadSheet extends StatelessWidget {
                     Switch(
                       value: isOn,
                       onChanged: onToggle,
-                      activeColor: SHColors.green,
+                      activeThumbColor: SHColors.green,
                       inactiveThumbColor: Colors.white54,
                     ),
                 ],
@@ -282,7 +282,7 @@ class FigmaSlider extends StatelessWidget {
           inactiveTrackColor: inactiveColor ?? SHColors.trackColor,
           thumbColor: Colors.white,
           thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
-          overlayColor: activeColor.withOpacity(0.16),
+          overlayColor: activeColor.withValues(alpha: 0.16),
           overlayShape: const RoundSliderOverlayShape(overlayRadius: 18),
         ),
         child: Slider(
@@ -340,10 +340,10 @@ class CurtainVisualization extends StatelessWidget {
                 heightFactor: 1,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.55),
+                    color: Colors.black.withValues(alpha: 0.55),
                     border: Border(
                       right: BorderSide(
-                        color: SHColors.primary.withOpacity(0.7),
+                        color: SHColors.primary.withValues(alpha: 0.7),
                         width: 1,
                       ),
                     ),
@@ -358,10 +358,10 @@ class CurtainVisualization extends StatelessWidget {
                 heightFactor: 1,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.55),
+                    color: Colors.black.withValues(alpha: 0.55),
                     border: Border(
                       left: BorderSide(
-                        color: SHColors.primary.withOpacity(0.7),
+                        color: SHColors.primary.withValues(alpha: 0.7),
                         width: 1,
                       ),
                     ),
@@ -466,7 +466,7 @@ class RgbGamutPicker extends StatelessWidget {
                       saturation,
                       1,
                     ).toColor();
-                    onChanged(color.red, color.green, color.blue);
+                    onChanged((color.r * 255).round(), (color.g * 255).round(), (color.b * 255).round());
                   }
 
                   return GestureDetector(
@@ -505,7 +505,7 @@ class RgbGamutPicker extends StatelessWidget {
                                   color: currentColor,
                                   shadows: [
                                     Shadow(
-                                      color: Colors.black.withOpacity(0.4),
+                                      color: Colors.black.withValues(alpha: 0.4),
                                       blurRadius: 6,
                                     ),
                                   ],
@@ -624,7 +624,7 @@ class TunablePicker extends StatelessWidget {
                           ),
                           borderRadius: BorderRadius.circular(24),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.18),
+                            color: Colors.white.withValues(alpha: 0.18),
                           ),
                         ),
                       ),
@@ -638,7 +638,7 @@ class TunablePicker extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.3),
+                                color: Colors.black.withValues(alpha: 0.3),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
                               ),
@@ -717,12 +717,12 @@ class FigmaSegmentedOptions<T> extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: active
                       ? SHColors.primary
-                      : Colors.white.withOpacity(0.08),
+                      : Colors.white.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(SHColors.radiusMd),
                   border: Border.all(
                     color: active
                         ? SHColors.primary
-                        : Colors.white.withOpacity(0.12),
+                        : Colors.white.withValues(alpha: 0.12),
                   ),
                 ),
                 alignment: Alignment.center,

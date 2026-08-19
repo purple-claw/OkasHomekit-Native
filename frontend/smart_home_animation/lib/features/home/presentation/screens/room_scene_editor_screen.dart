@@ -394,7 +394,7 @@ class _RoomSceneEditorScreenState extends State<RoomSceneEditorScreen> {
               icon: const Icon(Icons.delete_outline, color: SHColors.rose),
               onPressed: () async {
                 await RoomSceneService.instance.deleteScene(widget.existing!.id);
-                if (mounted) Navigator.pop(context);
+                if (context.mounted) Navigator.pop(context);
               },
             ),
           TextButton(

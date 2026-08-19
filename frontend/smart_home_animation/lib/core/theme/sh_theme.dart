@@ -15,11 +15,9 @@ abstract class SHTheme {
       secondary: SHColors.secondary,
       tertiary: SHColors.tertiary,
       surface: SHColors.cardColor,
-      background: SHColors.black,
       onPrimary: Colors.white,
       onSecondary: Colors.white,
       onSurface: SHColors.textColor,
-      onBackground: SHColors.textColor,
       error: SHColors.rose,
     ),
     textTheme: GoogleFonts.interTextTheme(
@@ -154,7 +152,7 @@ abstract class SHTheme {
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: SHColors.textColor,
-        side: BorderSide(color: Colors.white.withOpacity(0.18)),
+        side: BorderSide(color: Colors.white.withValues(alpha: 0.18)),
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(SHColors.radiusMd),
