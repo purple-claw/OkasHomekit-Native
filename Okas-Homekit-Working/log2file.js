@@ -78,6 +78,8 @@ put2File = (typ, txt) => {
 }
 
 (module.exports = () => {
+    // Opt-in debug (OKAS_DEBUG=1); a busy bus shouldn't write a novel into the log.
+    const dbgOn = String(process.env.OKAS_DEBUG || '').trim().toLowerCase() === '1';
     dbg = {
         "Inf": (t) => {
             put2File("Info", t);
@@ -87,6 +89,9 @@ put2File = (typ, txt) => {
         },
         "Wrn": (t) => {
             put2File("Warn", t);
+        },
+        "Dbg": (t) => {
+            if (dbgOn) put2File("Debug", t);
         },
     }
 })();

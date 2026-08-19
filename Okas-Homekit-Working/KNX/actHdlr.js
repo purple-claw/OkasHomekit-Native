@@ -1,10 +1,4 @@
-// KNX action handlers — HomeKit / mobile commands -> KNX write commands.
-//
-// Previously these wrote directly to `knx` Datapoint objects. Now they publish
-// to the Python xknx bridge via knxCmd() (KNX/knxBridge.js). Signatures and the
-// { ok, err } return shape are unchanged, so HkB.js and Mqtt/mqttClnt.js keep
-// working without modification. Cached values in knxLod[lNm].Val are still
-// updated optimistically; the authoritative state arrives back as bus feedback.
+// HomeKit / mobile commands -> KNX writes via the Python bridge; API shape unchanged.
 
 require('./knxBridge');
 
@@ -73,12 +67,7 @@ require('./knxBridge');
                     knxLod[lNm].Val.Tmc = 0;
                     knxLod[lNm].Val.Tmv = 0;
                 } else if (knxLod[lNm].Val.Tmc === 0) {
-                    // Turning the HVAC back on without a mode set would leave
-                    // the relay latched but no Cool/Heat/Auto command on the
-                    // bus, so the unit never actually runs. Re-apply the last
-                    // known mode (falling back to COOL) so the AC starts
-                    // running immediately when toggled on via the Fanv2.On
-                    // tile or the mobile app.
+                    // Powering HVAC on without a mode leaves the relay latched and nothing running — re-apply the last mode.
                     const resumeMode = knxLod[lNm].Val.Tmc || 1; // 1 = COOL
                     dbg.Inf(`HVAC toggle-on without mode - resuming ${resumeMode}`);
                     await knxCmd(lNm, 'Tmc', resumeMode);
@@ -87,9 +76,7 @@ require('./knxBridge');
                 }
             }
             dbg.Inf(`Turn-${val ? 'On' : 'Off'} sent to ${lNm}.`);
-            // Push state to HomeKit + MQTT immediately so the Home app and
-            // mobile app see it without waiting for bus feedback (many KNX
-            // devices do not echo status telegrams).
+            // Push to HomeKit + MQTT now; many KNX devices can't be bothered to echo status.
             const hkSvc = hkbAcc[lNm] && hkbAcc[lNm][0];
             if (hkSvc) {
                 try {
@@ -154,9 +141,7 @@ require('./knxBridge');
             }
             knxLod[lNm].Val.Tuc = val;
             dbg.Inf(`Color Temperature-${val}K sent to ${lNm}.`);
-            // Convert Kelvin to Mired for HomeKit and push immediately.
-            // Also update knxLod.Tuv so the get callback returns the right
-            // value even if no bus feedback arrives.
+            // Kelvin->mired for HomeKit; cache it too, in case the bus stays silent.
             const safeKel = Number(val) > 0 ? Number(val) : 2000;
             const miredVal = Math.floor(1000000 / safeKel);
             knxLod[lNm].Val.Tuv = miredVal;
@@ -208,15 +193,9 @@ require('./knxBridge');
 
     Fsp = async (lNm, val) => {
         try {
-            // Straight 0..255 pass-through. The old "1-5 scale" auto-detect
-            // corrupted real low speeds: dragging a slider to 1-5% produced
-            // 153-255 on the bus (1-5 mapped to /5*255), so the fan snapped
-            // high whenever the user aimed low.
+            // Real 0..255 pass-through; the old 1-5 "auto-detect" turned a 5% slider into 255 bus.
             let fnSpd = Math.min(255, Math.max(0, Number(val) || 0));
-            // Speed writes do not latch the relay on KNX fan coils. Manage
-            // the edge here (speed>0 => on, 0 => off) so the app can send
-            // fSp alone — the same pattern as bri for dimmers — instead of
-            // re-sending swt on every slider tick.
+            // Fan coils don't latch on speed writes; manage the edge here (speed>0 => on).
             if (fnSpd > 0 && !knxLod[lNm].Val.Sta) {
                 const onRes = await Swt(lNm, 1);
                 if (!onRes.ok) return onRes;
@@ -254,16 +233,12 @@ require('./knxBridge');
 
     Tmd = async (lNm, val) => {
         try {
-            // Convert string mode to numeric if needed. Values follow the
-            // HomeKit TargetHeatingCoolingState enum so the bus representation
-            // matches what HomeKit writes back: 0=OFF, 1=HEAT, 2=COOL, 3=AUTO.
-            // (DRY has no HomeKit equivalent, so we keep the bus at COOL.)
+            // Mode strings -> HomeKit enum numbers, so the bus matches what iOS wrote back (DRY stays COOL).
             if (typeof val === 'string') {
                 const modeMap = { 'cool': 2, 'heat': 1, 'auto': 3, 'dry': 2 };
                 val = modeMap[val.toLowerCase()] ?? 2;
             }
-            // HomeKit TargetHeatingCoolingState: 0=OFF, 1=COOL, 2=HEAT, 3=AUTO
-            // When OFF is selected, also turn off the HVAC switch
+            // HomeKit modes 0=OFF,1=COOL,2=HEAT,3=AUTO; OFF also kills the HVAC switch.
             if (val === 0) {
                 dbg.Inf(`HVAC OFF mode - turning off ${lNm}`);
                 await Swt(lNm, 0);
@@ -271,11 +246,7 @@ require('./knxBridge');
                 knxLod[lNm].Val.Tmc = 0;
                 knxLod[lNm].Val.Tmv = 0;
             } else {
-                // Picking a Cool/Heat/Auto mode implicitly means "turn the AC
-                // on". Without this Swt(lNm, 1) call the Tmc write would
-                // change the bus mode but leave the relay off, so the AC
-                // never actually starts — HomeKit shows the mode change but
-                // the unit stays off (and the mobile app sees isOn=false).
+                // A mode implies "the AC is on"; otherwise you changed the mode of a corpse.
                 const wasOff = !knxLod[lNm].Val.Sta;
                 if (wasOff) {
                     dbg.Inf(`HVAC mode ${val} - turning on ${lNm} relay`);
@@ -311,20 +282,13 @@ require('./knxBridge');
     };
 
     Scn = async (lNm, val) => {
-        // Use the value the caller (mobile app / HomeKit) passed in.
-        // Previously this line overwrote it with the cached Val.Scn which
-        // is 0 for every scene that was never triggered — so every scene
-        // write sent 0 to DPT17.001 and failed serialization. Fall back
-        // to the cached value only when the caller didn't supply one.
+        // Caller's value wins; the cached Scn is 0 until triggered, and anything sent as 0 fails DPT17.001.
         if (val === undefined || val === null) {
             val = knxLod[lNm].Val.Scn;
         }
         dbg.Inf(`Scene Trigger: ${lNm} called with value: ${val}`);
         try {
-            // xknx DPTSceneNumber (17.001) accepts 1-based scene numbers
-            // (1-64) and encodes the raw bus byte as value-1 internally.
-            // Send the 1-based value straight through — do NOT subtract 1
-            // here (that double-decoding produced an out-of-range write).
+            // DPT17.001 is 1-based; send as-is — subtracting again double-decodes into out-of-range.
             const busVal = Number(val);
             if (!Number.isFinite(busVal) || busVal < 1 || busVal > 64) {
                 dbg.Err(`Scene ${lNm}: value ${val} out of range (1-64).`);

@@ -1,17 +1,8 @@
 let KNXdata = { prjNm: "", knxIp: "", knxPort: 3671, loads: [] };
 let editIndex = -1;
-// sessionStorage key for the in-progress configuration. The three tab pages
-// (index.html, logMgr.html, deviceInfo.html) are separate HTML documents so
-// navigating between them causes a full page reload; without this cache the
-// uncommitted `KNXdata` would be lost on every navigation. We persist after
-// every mutation and rehydrate on script init so the user can move freely
-// between tabs while editing.
+// Tabs are separate documents; without this sessionStorage cache, navigating = losing your edits.
 const KNX_SESSION_KEY = "okas_knx_session_v1";
-// Per-type Group Address definitions. The order in each list IS the
-// on-bus schema — `gAdd[i]` is persisted at index i and mapped to the
-// fixed GA key by makFile.php (e.g. HVAC: [Swt, Sta, Trm, Tsp, Fsc,
-// Fsv, Tmc, Tmv]). Changing the order here would silently swap bus
-// addresses on existing configs, so DO NOT reorder.
+// The order IS the on-bus schema (gAdd[i] -> GA key via makFile.php); reorder here, silently swap addresses.
 let lTyp2GA = {
     Switch:   ["Swt: Control", "Swt: Status"],
     Dimmer:   ["Swt: Control", "Swt: Status", "Dimming", "Bri: Control", "Bri: Value"],
@@ -23,10 +14,7 @@ let lTyp2GA = {
     Curtain:  ["Movement", "Movement Value", "Stop", "Position Control", "Position Value"],
 };
 
-// Visual split between the Group Address panel and the Additional Settings
-// panel, keyed by GA label. Labels listed here are rendered under
-// "Additional Settings"; everything else stays under "Group Addresses".
-// The persisted `gAdd` array order is unchanged — this split is purely UI.
+// Pure-UI split: these labels go under "Additional Settings"; gAdd order stays put.
 let lTyp2GAExtra = {
     HVAC:    { "Room Temperature": true },
     Curtain: { "Movement Value": true, "Position Control": true, "Position Value": true },
@@ -43,17 +31,14 @@ let expandedLoadTypes = {
     HVAC: false
 };
 
-// Persist the current KNXdata snapshot to sessionStorage. Called after every
-// mutation (add/edit/delete load, project metadata change). Safe to call when
-// sessionStorage is unavailable (private-mode Safari, etc.) — falls through.
+// Persist after every mutation; private-mode Safari without storage falls through quietly.
 function persistKNXSession() {
     try {
         sessionStorage.setItem(KNX_SESSION_KEY, JSON.stringify(KNXdata));
     } catch (_) { /* sessionStorage unavailable, ignore */ }
 }
 
-// Rehydrate KNXdata from sessionStorage if a prior snapshot exists, then
-// mirror the values into the form fields. Returns true if anything was loaded.
+// Rehydrate the form from a prior snapshot, if any; true when something was loaded.
 function rehydrateKNXSession() {
     let raw;
     try {
@@ -78,8 +63,7 @@ function rehydrateKNXSession() {
     }
 }
 
-// Drop the cached snapshot — used after a successful "Finish" save or after
-// an explicit restore from file so stale data never lingers across sessions.
+// Drop the cache after a saved config; stale snapshots are how ghosts get resurrected.
 function clearKNXSession() {
     try { sessionStorage.removeItem(KNX_SESSION_KEY); } catch (_) { /* ignore */ }
 }
@@ -123,9 +107,7 @@ function valGA(lt, id) {
     }
 }
 
-// Decide whether the field at the given GA index is optional based on the
-// current load type's `lTyp2GAExtra` split. Used to suppress the required-
-// field toast when the user leaves an Additional Settings field blank.
+// Optional = no required-toast when an Additional Settings field is blank.
 function isOptionalGA(ldTyp, idx) {
     const list = lTyp2GA[ldTyp] || [];
     const extras = lTyp2GAExtra[ldTyp] || {};
@@ -134,10 +116,7 @@ function isOptionalGA(ldTyp, idx) {
 
 function isGA(fnc, ga, optional = false) {
     return new Promise((res) => {
-        // Optional fields may be left blank — the load is still valid with
-        // an empty group address; the bridge just won't act on that slot.
-        // The on-bus schema (gAdd[i] index -> GA key via makFile.php) is
-        // preserved because the input id (ga${i}) is still positional.
+        // Blank extra = "no GA for this slot"; the positional id (ga${i}) keeps the schema intact.
         if (optional && (ga == null || ga.trim() === "")) {
             res("cnt");
             return;
@@ -272,9 +251,7 @@ function prepPrj() {
     return true;
 }
 
-// Mirror the three project-metadata inputs into KNXdata and persist. Called
-// on blur so navigating away (which triggers the page reload) keeps the
-// values even if the user never pressed "Finish".
+// Metadata saved on blur — navigating away reloads the page, and reloads eat unsaved input.
 function updPrjMeta() {
     KNXdata.prjNm = document.getElementById("prjNm").value;
     KNXdata.knxIp = document.getElementById("knxIp").value;
@@ -339,10 +316,7 @@ function updFields(id) {
     let gaList = lTyp2GA[ldTyp] || [];
     let extraGaSet = lTyp2GAExtra[ldTyp] || {};
 
-    // Build the GA inputs and partition them into the Group Addresses panel
-    // and the Additional Settings panel. The input id (`ga${idx}`) keeps
-    // its original index in `gaList` so the persisted `gAdd` array order
-    // matches what makFile.php expects — the visual split is purely UI.
+    // Input id (ga${idx}) keeps its original index — panels are cosmetic, the array order is contract.
     let primaryFields = [];
     let extraGaFields = [];
     gaList.forEach((v, i) => {
@@ -471,11 +445,7 @@ async function saveLoad(more) {
         return;
     }
     let ldTyp = document.getElementById("loadType").value;
-    // GA inputs split into "primary" (Group Addresses panel — must be
-    // filled) and "extra" (Additional Settings panel — may be left
-    // blank). The persisted gAdd array still uses the original positional
-    // index so the on-bus schema (lTyp2GA[ldTyp][i] -> GA key) is
-    // unchanged regardless of which panel the input lives in.
+    // "Primary" must be filled, "extra" may be blank; both keep their positional index — the schema doesn't care about panels.
     let extraGaSet = lTyp2GAExtra[ldTyp] || {};
     let grpArr = [];
     for (let i = 0; i < lTyp2GA[ldTyp].length; i++) {
@@ -491,9 +461,7 @@ async function saveLoad(more) {
             bootstrap.Modal.getInstance(document.getElementById("loadModal")).hide();
             break;
         } else if (tSta == "cnt") {
-            // Optional fields round-trip as empty strings — the PHP
-            // schema still maps gAdd[i] to the same key, so leaving
-            // an extra blank just means "no group address for this slot".
+            // Blanks round-trip as empty strings; gAdd[i] still maps to the same key.
             grpArr.push(extraGaSet[v] ? tVal : tVal);
             continue;
         }
@@ -627,8 +595,7 @@ async function donCnf() {
         showError("Error sending Configuration Data to System.");
         return;
     }
-    // Configuration successfully written to the board — drop the in-memory
-    // session cache so the next page load starts clean.
+    // Config saved — drop the session cache so the next load starts clean, not haunted.
     clearKNXSession();
 
     const choice = await showConfirmDialog(
@@ -649,8 +616,7 @@ async function donCnf() {
 setBackupAvailability();
 rehydrateKNXSession();
 shwLds();
-// Persist project metadata on blur so navigating between tabs keeps the
-// in-progress inputs even before the user presses "Finish".
+// Blur-save the metadata too; tab-hopping without it is how configs get eaten.
 ["prjNm", "knxIp", "knxPort"].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.addEventListener("blur", updPrjMeta);

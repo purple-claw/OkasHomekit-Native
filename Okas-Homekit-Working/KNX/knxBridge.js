@@ -1,13 +1,4 @@
-// KNX bridge (Node.js side) — the MQTT link to the Python xknx process.
-//
-// All KNX bus I/O lives in KNX/knx_bridge.py now. This module is how the
-// HomeKit side reaches it:
-//   * knxCmd()      publishes write commands  -> okas/knx/cmd   (JS -> Python)
-//   * okas/knx/state feedback from the bus     -> applyKnxState  (Python -> JS)
-//   * okas/knx/conn  KNX link status           -> global isCon   (Python -> JS)
-//
-// This is a separate MQTT client from Mqtt/mqttClnt.js (the mobile-app API);
-// keeping the internal KNX channel isolated avoids coupling the two concerns.
+// Node's MQTT link to the Python xknx bridge: knxCmd() out, state/conn back in.
 
 const mqtt = require('mqtt');
 require('../log2file');
@@ -32,9 +23,7 @@ require('./repHdlr');
     let wasCntd = false;
     let lstErrLog = 0;
 
-    // Publish a KNX write command to the Python bridge.
-    //   dp:  datapoint key (e.g. 'Swt', 'Bri', 'Clc') — used to resolve GA + DPT.
-    // Returns { ok, err } so the action handlers can report success synchronously.
+    // KNX write via the Python bridge; returns { ok, err } so handlers stay synchronous.
     global.knxCmd = (lNm, dp, val) => {
         const load = knxLod[lNm];
         if (!load || !load.GA || !load.GA[dp]) {
@@ -78,8 +67,7 @@ require('./repHdlr');
                 connectTimeout: 10000
             });
 
-            // Don't let a missing broker block HomeKit startup — resolve once and
-            // keep retrying in the background (reconnectPeriod).
+            // A missing broker must not block HomeKit startup; retry in the background.
             startupTmr = setTimeout(() => {
                 dbg.Wrn('KNX bridge: broker not reachable yet - continuing, retrying in background.');
                 settle(false);

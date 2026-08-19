@@ -3,11 +3,7 @@ const AES_KEY = Buffer.from('OKAS_AUTH_2025_C', 'utf8');
 const CTR_IV = Buffer.alloc(16);
 
 (module.exports = () => {
-    // HAP-R2 setup-code check digit (HomeKit Accessory Protocol spec).
-    // Apple's Home app rejects any 8-digit PIN whose 8th digit does not
-    // match this formula — a QR or manual entry with a bad check digit
-    // fails with "Unable to Add Accessory" / "Incorrect PIN". The first
-    // 7 digits are the raw value; the 8th is derived:
+    // HAP-R2 check digit (8th digit); wrong sum = "Unable to Add Accessory".
     //   sum = d1*3 + d2*1 + d3*3 + d4*1 + d5*3 + d6*1 + d7*3
     //   check = (10 - (sum % 10)) % 10
     const addCheckDigit = (pin) => {
@@ -26,16 +22,14 @@ const CTR_IV = Buffer.alloc(16);
             .digest('hex');
         const num = parseInt(hash.slice(0, 16), 16);
         const result = num % 100000000;
-        // Replace the last digit with the HAP check digit so the PIN is
-        // accepted by Apple's Home app.
+        // Stamp the check digit or Apple's Home app spits the PIN back out.
         return addCheckDigit(result.toString().padStart(8, '0'));
     };
 
     const normMac = (mac) => Buffer.from(mac.toLowerCase().replace(/[^a-f0-9]/g, ''), 'hex');
 
     global.genAuthToken = (mac) => {
-        // The AuthService is the authority for the owner token. If it has
-        // already started (and written the token to loadData.json), use that.
+        // AuthService owns the token; if it already wrote loadData.json, take that.
         if (typeof global.getOwnerToken === 'function') {
             const ownerToken = global.getOwnerToken();
             if (ownerToken) return ownerToken;

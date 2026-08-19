@@ -24,7 +24,8 @@ TPC_WATCHDOG_STATUS = "okas/watchdog/status"
 TPC_WATCHDOG_CMD = "okas/watchdog/cmd"
 
 # Thresholds
-DISCONNECT_THRESHOLD_SEC = 10  # Restart if disconnected for > 10 seconds
+# The bridge self-retries for 2 minutes; restarting at 10s was restart-storming the board.
+DISCONNECT_THRESHOLD_SEC = 60  # Restart if disconnected for > 60 seconds
 CHECK_INTERVAL_SEC = 5        # Check every 5 seconds
 
 # Services to monitor/restart
@@ -137,8 +138,8 @@ class Watchdog:
         
         time.sleep(3)
         
-        # Start services in order
-        for svc in SERVICES:
+        # Broker first; the others just connect to it.
+        for svc in reversed(SERVICES):
             try:
                 self._log(f"Starting {svc}...")
                 subprocess.run(["systemctl", "start", svc], check=False, capture_output=True)

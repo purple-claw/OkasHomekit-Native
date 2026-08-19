@@ -1,8 +1,7 @@
 
 let isPrep = false;
 
-// Build the in-memory load model (knxLod). No KNX Datapoint objects are
-    // created here anymore — the Python xknx bridge owns all bus I/O. 
+// In-memory load model (knxLod); Python owns the bus now, no Datapoint objects here. 
 
 (module.exports = () => {
     prepLoads = async () => {

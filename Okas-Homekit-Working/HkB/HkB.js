@@ -31,15 +31,7 @@ const path = require('path');
         });
     };
 
-    // Selective reset: only remove the AccessoryInfo files (which hold the
-    // long-term SRP keys), NOT the IdentifierCache files (which iOS relies
-    // on to re-discover the bridge after a soft reset). Wiping the entire
-    // persist folder on every transient disconnect used to leave iOS in
-    // an inconsistent state — it still had the bridge cached but the
-    // bridge had no keys to respond with, so every re-add failed until
-    // the user manually forgot the bridge in the Home app and rebooted
-    // the board. Keeping IdentifierCache around preserves the bridge's
-    // identity across restarts.
+    // Wipe only the SRP keys, never IdentifierCache — iOS re-adds fail until you forget the bridge.
     const rmPairingOnly = async () => {
         return new Promise((resolve) => {
             if (!fs.existsSync(prstPth)) { resolve(false); return; }
@@ -106,8 +98,7 @@ const path = require('path');
                 if (loadData.length > 0 && loadData[0]) {
                     if (loadData[0].pinCode && loadData[0].pinCode !== pinCode) {
                         dbg.Inf('PIN code changed - clearing pairing keys (identity preserved).');
-                        // Keep IdentifierCache around so iOS still recognises
-                        // the bridge after a PIN change.
+                        // Keep IdentifierCache so iOS still knows the bridge after a PIN change.
                         rmPairingOnly();
                     }
                     loadData[0].pinCode = pinCode;
@@ -127,21 +118,6 @@ const path = require('path');
         });
     };
 
-    const gtCctRngMird = (acy) => {
-        let kMin = Number(acy.Kmn);
-        let kMax = Number(acy.Kmx);
-        if (!Number.isFinite(kMin) || kMin <= 0) kMin = 2000;
-        if (!Number.isFinite(kMax) || kMax <= 0) kMax = 6500;
-        if (kMax < kMin) {
-            const temp = kMin;
-            kMin = kMax;
-            kMax = temp;
-        }
-        const mrdMn = Math.floor(1000000 / kMax);
-        const mrdMx = Math.floor(1000000 / kMin);
-        return { kMin, kMax, mrdMn, mrdMx };
-    };
-
     const clmpNum = (value, min, max) => {
         if (!Number.isFinite(value)) return min;
         return Math.min(max, Math.max(min, value));
@@ -151,22 +127,14 @@ const path = require('path');
         return new Promise(async (r) => {
             PINcode = getPC((ldArr[0].prjNm).replace(/[^a-zA-Z0-9]/g, '').toUpperCase());
             PINcode = `${PINcode.slice(0, 3)}-${PINcode.slice(3, 5)}-${PINcode.slice(5)}`;
-            // HAP spec requires the SerialNumber to contain only letters and
-            // digits. The previous value `OhKnx-c8:63:14:73:d4:26` carried
-            // colons, which caused some iOS builds to silently drop the
-            // bridge during the "Add Accessory" flow. Strip the separators
-            // so the serial is purely alphanumeric and globally unique.
+            // HAP serials are alphanumeric-only; those colons made iOS silently drop the bridge.
             const cleanMac = ((ldArr[0].mac).replace(/[^a-fA-F0-9]/g, '')).toUpperCase();
             let mac = cleanMac.substr(-6);
 
             const AUTH_TOKEN = genAuthToken(ldArr[0].mac);
             ldArr[0].authToken = AUTH_TOKEN;
 
-            // The HAP SetupID is a 4-character alphanumeric identifier
-            // embedded in the QR code. Derive it deterministically from
-            // the MAC so the QR stays stable across restarts (iOS caches
-            // it) and unique per board (so two boards in range don't
-            // collide on the default "9P7F" that hap-nodejs falls back to).
+            // SetupID derived from the MAC: stable per board, unique per board, not everyone's "9P7F".
             const setupID = cleanMac.slice(-4)
                 .replace(/[^A-Z0-9]/g, 'X')
                 .padEnd(4, 'X');
@@ -199,16 +167,7 @@ const path = require('path');
             });
 
             bridge.on('unpaired', async () => {
-                // iOS Home fires "unpaired" not just when the user explicitly
-                // removes the bridge but also when the pairing session times
-                // out or after a network blip during add. Wiping the entire
-                // persist folder on those transient events used to leave iOS
-                // in a state where it still remembered the bridge identity
-                // (SetupID+MAC cached in IdentifierCache) but the bridge had
-                // discarded its SRP keys — every re-add failed until the user
-                // manually forgot the bridge in Home and rebooted the board.
-                // Clear only the AccessoryInfo (keys) and let iOS keep the
-                // cached identity so the next add goes through cleanly.
+                // "Unpaired" also fires on timeouts/blips; clear keys only, keep the cached identity or re-add loops forever.
                 dbg.Inf('HomeKit device unpaired - clearing pairing keys (identity preserved).');
                 clntCnctd = false;
                 await rmPairingOnly();
@@ -228,12 +187,7 @@ const path = require('path');
                 pincode: PINcode,
                 port: 62648,
                 category: Categories.BRIDGE,
-                // Derive the SetupID from the MAC so each board has a
-                // unique, stable QR-code identifier. The default that
-                // hap-nodejs picks ("9P7F") is shared with thousands of
-                // other HAP devices in iOS's mDNS cache, which is one of
-                // the reasons iOS Home sometimes refuses to "Add Accessory"
-                // and the user has to reset the board.
+                // A million bridges sharing hap-nodejs's "9P7F" is why iOS sometimes says no.
                 setupID: setupID,
             });
             
@@ -354,7 +308,7 @@ const path = require('path');
                                 break;
                             case 4: // Color Temperature
                                 isCar = isCar || true;
-                                const cctRng = gtCctRngMird(acy);
+                                const cctRng = cctRange(acy);
                                 Svc
                                     .addCharacteristic(Characteristic.ColorTemperature)
                                     .setProps({
@@ -604,18 +558,11 @@ const path = require('path');
                                         callback(null, false);
                                     })
                                     .on('set', (val, callback) => {
-                                        Scn(acy.Nm, val);
+                                        // HomeKit sends a boolean; the config knows the scene number.
+                                        Scn(acy.Nm, knxLod[acy.Nm].Val.Scn);
                                         callback(null);
                                     });
                                 break; 
-                            // case 17: // Scene | Trigger
-                            //     isCar = isCar || true;
-                            //     Svc
-                            //         .getCharacteristic(Characteristic.ProgrammableSwitchEvent)
-                            //         .on('change', (evt) => {
-                            //             Scn(acy.Nm, evt.newValue);
-                            //         });
-                            //     break;
                         }
                     });
                     hkbAcc[acy.Nm].push(Svc);

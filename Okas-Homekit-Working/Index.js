@@ -11,19 +11,13 @@ require("./KNX/repHdlr");
 require("./Mqtt/mqttClnt");
 const { startAuthService, stopAuthService } = require("./Auth/authService");
 
-// KNX bus I/O now lives in the Python process (KNX/knx_bridge.py). This Node
-// service runs HomeKit + the mobile MQTT API + authentication and reaches the
-// bus over MQTT:
-//   commands  -> okas/knx/cmd   (JS -> Python)
-//   feedback  <- okas/knx/state (Python -> JS)
-//   link state<- okas/knx/conn  (Python -> JS -> global isCon)
+// Bus I/O moved to the Python bridge; here we just talk MQTT (cmd out, state/conn in).
 
 async function initialize() {
     dbg.Inf("Starting OKAS HomeKit service...");
     if (!(await chkFile())) { dbg.Err("Data file check failed. Aborting."); return; }
     if (!(await makLdArr())) { dbg.Err("Failed to process load data. Aborting."); return; }
-    // Start the authentication service before anything else — it publishes the
-    // owner token to loadData.json that HomeKit and the web UI depend on.
+    // Auth first — it publishes the owner token HomeKit and the web UI depend on.
     try {
         startAuthService();
         dbg.Inf("OKAS-Secure Service started.");
@@ -33,8 +27,7 @@ async function initialize() {
     if (!(await prepLoads())) { dbg.Err("Failed to prepare KNX loads. Aborting."); return; }
     else { dbg.Inf("Prepared KNX Loads."); }
 
-    // Build & publish HomeKit first — it is the critical path (iOS Home app) and
-    // hkbAcc must be populated before any KNX feedback is processed.
+    // HomeKit is the critical path; build it before any bus feedback lands.
     dbg.Inf("Preparing HomeKit loads");
     if (!(await bldAcc())) { dbg.Err("Failed to build HomeKit accessories. Aborting."); return; }
     else { dbg.Inf("Prepared HomeKit Loads."); }
@@ -57,8 +50,7 @@ async function initialize() {
     dbg.Inf("Okas HomeKit service started successfully.");
 }
 
-// Keep the service alive: a stray async error (e.g. a KNX/MQTT callback) must be
-// logged, not allowed to exit the process into a systemd restart loop.
+// Log stray async errors; dying into a systemd restart loop is for quitters.
 process.on('unhandledRejection', (reason) => {
     try { dbg.Err(`Unhandled Rejection: ${(reason && reason.stack) ? reason.stack : reason}`); }
     catch (_) { console.error('Unhandled Rejection:', reason); }

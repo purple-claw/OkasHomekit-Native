@@ -1,10 +1,4 @@
-// KNX feedback handler — apply bus state to HomeKit.
-//
-// The Python xknx bridge decodes bus telegrams and forwards { ga, val } over
-// MQTT (okas/knx/state). knxBridge.js hands each one to applyKnxState() here,
-// which updates the matching HomeKit characteristic, refreshes the cached value,
-// and echoes status to the mobile-app MQTT API. `val` is already a decoded
-// primitive (bool / number / {red,green,blue}) — no buffer decoding needed.
+// Bus feedback -> HomeKit + cache + status echo; val arrives decoded, no buffer archaeology.
 
 require('../Mqtt/mqttClnt');
 
@@ -12,19 +6,7 @@ require('../Mqtt/mqttClnt');
 
     const getCctRangeMiredByName = (loadName) => {
         const acy = (ldArr || []).find((v, i) => i > 0 && v.Nm === loadName) || {};
-        let kMin = Number(acy.Kmn);
-        let kMax = Number(acy.Kmx);
-        if (!Number.isFinite(kMin) || kMin <= 0) kMin = 2000;
-        if (!Number.isFinite(kMax) || kMax <= 0) kMax = 6500;
-        if (kMax < kMin) {
-            const temp = kMin;
-            kMin = kMax;
-            kMax = temp;
-        }
-        return {
-            miredMin: Math.floor(1000000 / kMax),
-            miredMax: Math.floor(1000000 / kMin)
-        };
+        return cctRange(acy);
     };
 
     const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
@@ -47,10 +29,7 @@ require('../Mqtt/mqttClnt');
             dbg.Err('MQTT: Error publishing KNX status - ' + e.message);
         }
     };
-    // Expose so mqttHdlCmd() can publish status/{ldId} after a successful
-    // command, not only when bus feedback arrives. Some KNX devices do not
-    // echo a status telegram, and without this the retained per-load topic
-    // would stay stale until a physical change happens on the bus.
+    // Lets commands publish status even when the device never echoes; stale retained topics are lies.
     global.mqttRptSts = mqttRptSts;
 
     // Feedback from the KNX bus (relayed by the Python bridge).
@@ -82,8 +61,7 @@ require('../Mqtt/mqttClnt');
                     break;
                 case 'Bvi':
                     if (!knxLod[lNm].Val.Sta) {
-                        // The device echoes its last level while off; an off
-                        // load's brightness is 0 by definition.
+                        // The device echoes its last level while off; off means 0 by definition.
                         val = 0;
                     }
                     hkSvc.updateCharacteristic(Characteristic.Brightness, val);
@@ -129,8 +107,8 @@ require('../Mqtt/mqttClnt');
                         dbg.Wrn(`${lNm} reported invalid Color Temperature '${val}'. Ignoring update.`);
                         break;
                     }
-                    const cctRange = getCctRangeMiredByName(lNm);
-                    val = clamp(Math.floor(1000000 / val), cctRange.miredMin, cctRange.miredMax);
+                    const rng = getCctRangeMiredByName(lNm);
+                    val = clamp(Math.floor(1000000 / val), rng.mrdMn, rng.mrdMx);
                     hkSvc.updateCharacteristic(Characteristic.ColorTemperature, val);
                     knxLod[lNm].Val[lTp] = val;
                     break;

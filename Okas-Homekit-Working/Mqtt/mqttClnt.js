@@ -1,4 +1,3 @@
-const { loadDirectory } = require('hap-nodejs');
 const mqtt = require('mqtt');
 require("../log2file");
 require("../Data/iData");
@@ -78,9 +77,7 @@ require("../KNX/actHdlr");
         }
     };
 
-    // App scenes (app 'app/scenes') - persistent mirror of the mobile app's
-    // scene list. The app publishes it retained; the backend keeps a disk
-    // copy so a cleared broker or app storage never loses the scenes.
+    // Retained mirror + disk copy of the app's scenes; broker clears or app wipes, we still have them.
     const SCENES_FILE = path.join(__dirname, '..', 'Data', 'appScenes.json');
 
     global.appScenes = [];
@@ -115,17 +112,7 @@ require("../KNX/actHdlr");
         saveAppScenes();
     };
 
-    // Rooms and app scenes reference loads by their positional id in
-    // loadData.json (loads: ["4","5"] = entries 4 and 5 of ldArr). A new
-    // configuration upload (makFile.php) is a FULL RESET — the previous
-    // rooms/scenes must be discarded entirely, not preserved. The PHP
-    // upload drops a marker file (Data/.configReset); this runs at MQTT
-    // connect (after the new loadData.json is in place) and wipes:
-    //   - rooms.json / appScenes.json on disk
-    //   - the retained rooms/set, app/scenes and every status/{ldId}
-    //     retained topic on the broker (stale from the old config)
-    // Then the retained rooms/set is republished empty so the mobile app
-    // (which subscribes after connect) immediately sees an empty home.
+    // A fresh config upload (makFile.php) is a FULL RESET: wipe rooms/scenes files and retained topics, then republish an empty home.
     const resetBoardState = () => {
         const marker = path.join(__dirname, '..', 'Data', '.configReset');
         if (!fs.existsSync(marker)) return;
@@ -152,12 +139,7 @@ require("../KNX/actHdlr");
         }
     };
 
-    // Clears EVERY retained status/{ldId} topic, including topics left
-    // behind by the previous config (the new load list may be shorter, so
-    // the reset must not assume status/1..status/N). Enumerates the broker
-    // by subscribing to status/# once, collecting the retained messages
-    // the broker sends on subscribe, then clears each by publishing a
-    // zero-length retained payload.
+    // Nuke EVERY retained status/{ldId} — old configs may have left orphans; enumerate status/#, then clear each.
     const clearRetainedStatusTopics = () => {
         const collected = new Set();
         let done = false;
@@ -174,8 +156,7 @@ require("../KNX/actHdlr");
                 finish();
                 return;
             }
-            // Retained messages are delivered synchronously right after
-            // SUBACK, so give them one event-loop turn to arrive.
+            // Retained messages race SUBACK; give the event loop one turn to deliver.
             setTimeout(() => {
                 mqttClnt.removeListener('message', collector);
                 collected.forEach((t) => {
@@ -190,11 +171,7 @@ require("../KNX/actHdlr");
     };
 
     global.mqttGetRooms = (pld) => {
-        // rooms/set is published with retain=true so that a brand-new
-        // mobile app that subscribes receives the last-known room list
-        // immediately without first sending rooms/get. Without this the
-        // new client had to wait for a round-trip — and any room create
-        // during that window would be wiped by the late rooms/set reply.
+        // Retain rooms/set so new subscribers see the list now; a late reply would wipe a fresh create.
         mqttPub(TPCS.PUB.ST_ROOMS, { rooms: global.rooms }, true);
     };
 
@@ -211,8 +188,7 @@ require("../KNX/actHdlr");
         } else {
             dbg.Wrn('MQTT: Delete room - id not found: ' + pld.id);
         }
-        // Update the retained rooms/set cache so new subscribers get the
-        // latest list immediately and no orphan rooms linger.
+        // Keep the retained rooms cache fresh; new subscribers hate empty lists.
         mqttPub(TPCS.PUB.ST_ROOMS, { rooms: global.rooms }, true);
     };
 
@@ -221,9 +197,7 @@ require("../KNX/actHdlr");
             dbg.Err('MQTT: Invalid room data');
             return;
         }
-        // Merge partial updates (e.g. a favorite-only toggle) over any
-        // existing room instead of replacing it wholesale, so fields the
-        // client did not send (imagePath, createdAt, loads) are preserved.
+        // Merge partials over the existing room; don't nuke fields the client didn't send.
         const existingIdx = global.rooms.findIndex(r => r.id === (pld.id || ''));
         const existing = existingIdx >= 0 ? global.rooms[existingIdx] : null;
         const room = {
@@ -244,9 +218,7 @@ require("../KNX/actHdlr");
             dbg.Inf('MQTT: Added room: ' + room.name);
         }
         saveRooms();
-        // Retain so a brand-new subscriber gets the updated list instantly
-        // — without retain, a new app session that subscribes between
-        // delete+add windows would not see the new room.
+        // Retain it, or a subscriber joining between delete+add never sees the room.
         mqttPub(TPCS.PUB.ST_ROOMS, { rooms: global.rooms }, true);
     };
 
@@ -264,17 +236,11 @@ require("../KNX/actHdlr");
         return 'status/' + idx;
     };
 
-    // Per-load dim-write coalescing: KNX dimmers drop absolute-dim writes
-    // that land while the relay is still settling, and restart their ramp on
-    // every mid-ramp write. A fast slider drag therefore oscillated the light
-    // (0<->100) because each tick hit the bus. Only ONE write per settle
-    // window reaches the bus — always the latest requested value.
+    // Coalesce absolute-dim writes: KNX dimmers drop writes mid-settle and restart the ramp — one latest write per settle window, or slider drags strobe the light.
     const dimTmr = {};
     const dimPending = {};
 
-    // Shared flush for coalesced dim writes (slider drags AND the 100%
-    // relatch the swt act triggers). RGB also re-sends Hue/Sat after the
-    // final write so the colour doesn't drift on the dimmer.
+    // Shared flush for coalesced writes; RGB re-sends Hue/Sat after, or the colour drifts.
     const scheduleDimFlush = (lNm) => {
         if (dimTmr[lNm]) return;
         dimTmr[lNm] = setTimeout(async () => {
@@ -294,14 +260,11 @@ require("../KNX/actHdlr");
             types: ['Switch', 'Dimmer', 'RGB', 'Tunable', 'HVAC', 'Fan'],
             act: async (lNm, val) => {
                 if (['Dimmer', 'RGB', 'Tunable'].includes(knxLod[lNm].Typ)) {
-                    // Latch the relay first, then drive brightness so the UI
-                    // slider follows: ON snaps to 100%, OFF drops to 0%.
+                    // Relay first, then brightness: ON snaps to 100%, OFF drops to 0%.
                     const swtRes = await Swt(lNm, val);
                     if (!swtRes.ok) return swtRes;
                     if (val) {
-                        // Route the relatch through the coalescer too: the app
-                        // used to pair swt:true with every bri tick, and each
-                        // swt would otherwise re-write 100% to the bus.
+                        // Route the relatch through the coalescer too; the old pairing re-wrote 100% on every tick.
                         knxLod[lNm].Val.Bri = 100;
                         knxLod[lNm].Val.Bvi = 100;
                         dimPending[lNm] = 100;
@@ -321,8 +284,7 @@ require("../KNX/actHdlr");
                 if (val > 0 && !knxLod[lNm].Val.Sta) {
                     const onRes = await Swt(lNm, 1);
                     if (!onRes.ok) return onRes;
-                    // KNX dimmers drop a dim write that lands while the relay
-                    // is still settling and power on at 100% instead.
+                    // Settling relays drop dim writes and power on at 100% — hence the coalescer.
                     await new Promise((r) => setTimeout(r, 400));
                 } else if (val <= 0 && knxLod[lNm].Val.Sta) {
                     const offRes = await Swt(lNm, 0);
@@ -347,16 +309,11 @@ require("../KNX/actHdlr");
         'cTp': {
             types: ['Tunable'],
             act: async (lNm, val) => {
-                // Tuning an OFF load must start it, but throu the relay
-                // directly (no 100% relatch) — the app no longer pairs swt
-                // with cTp, so without this a kelvin drag on an off light
-                // wrote colour temp to an actuator that ignores it.
+                // Tuning an OFF load must start it straight through the relay (no 100% relatch) — the app no longer pairs swt with cTp.
                 if (!knxLod[lNm].Val.Sta) {
                     const onRes = await Swt(lNm, 1);
                     if (!onRes.ok) return onRes;
-                    // Let the relay settle, then restore brightness through
-                    // the coalescer so the light powers to 100% instead of
-                    // sitting at the actuator's raw power-on level.
+                    // Let the relay settle, then restore brightness through the coalescer — raw power-on 100% is not a feature.
                     await new Promise((r) => setTimeout(r, 400));
                     dimPending[lNm] = knxLod[lNm].Val.Bri || 100;
                     scheduleDimFlush(lNm);
@@ -422,16 +379,14 @@ require("../KNX/actHdlr");
                 dbg.Inf('MQTT: Connected to Broker...');
                 bldLdIdx();
                 const sbTpcs = Object.values(TPCS.SUB);
-                // Runs on first connect AND every auto-reconnect, so subscriptions
-                // are always restored after the broker returns.
+                // Runs on connect AND on every reconnect — subscriptions must survive broker holidays.
                 mqttClnt.subscribe(sbTpcs, { qos: 1 }, (err) => {
                     if (err) {
                         dbg.Err('MQTT: Subscription Error - ' + err.message);
                         settle(false);
                     } else {
                         dbg.Inf('MQTT: Subscribed to - ' + sbTpcs.join(', '));
-                        // Re-seed the broker's retained app/scenes cache from
-                        // disk, so scenes survive a broker persistence loss.
+                        // Re-seed the retained scenes from disk; broker amnesia is not a data-loss excuse.
                         if (global.appScenes && global.appScenes.length) {
                             mqttPub(TPCS.PUB.APP_SCENES, global.appScenes, true);
                         }
@@ -461,8 +416,7 @@ require("../KNX/actHdlr");
 
             mqttClnt.on('close', () => {
                 isMqttCntd = false;
-                // Only log a real drop from a connected state, not every retry
-                // while the broker is simply absent (avoids 5s log spam).
+                // Log a real drop only; an absent broker shouting every 5s is noise.
                 if (wasCntd) {
                     dbg.Inf('MQTT: Disconnected from Broker...');
                     wasCntd = false;
@@ -485,12 +439,9 @@ require("../KNX/actHdlr");
         delete logPayload.authToken;
         delete logPayload.token;
         delete logPayload.commandToken;
-        dbg.Inf('MQTT: Message on [' + tp + '] ' + o2S(logPayload));
+        dbg.Dbg('MQTT: Message on [' + tp + '] ' + o2S(logPayload));
 
-        // The Mosquitto account remains shared for backwards compatibility.
-        // Authorization is therefore mandatory for every operation that can
-        // reveal loads or change a KNX value. A revoked/expired guest is
-        // rejected even if it still has a live MQTT connection.
+        // Shared broker account, so every state-revealing or KNX-writing op needs auth; revoked guests get bounced.
         if ([TPCS.SUB.GT_LDS, TPCS.SUB.SND_CMD].includes(tp)) {
             const principal = typeof global.authorizeMqttPayload === 'function'
                 ? global.authorizeMqttPayload(pld)
@@ -505,10 +456,7 @@ require("../KNX/actHdlr");
                 return;
             }
         }
-        // Room mutation (add/delete) is admin-only. Guests may view the
-        // room list (rooms/get) and control loads, but must not be able to
-        // restructure the home. `authorizeMqttPayload` returns the
-        // principal; only role === 'admin' may pass here.
+        // Room mutation is admin-only; guests may look and poke loads, not redecorate.
         if ([TPCS.SUB.ADD_ROOM, TPCS.SUB.DEL_ROOM].includes(tp)) {
             const principal = typeof global.authorizeMqttPayload === 'function'
                 ? global.authorizeMqttPayload(pld)
@@ -579,7 +527,7 @@ require("../KNX/actHdlr");
             if (err) {
                 dbg.Err('MQTT: Publish Failed on [' + tp + '] - ' + err.message);
             } else {
-                dbg.Inf('MQTT: Published to [' + tp + ']' + (retain ? ' (retained)' : ''));
+                dbg.Dbg('MQTT: Published to [' + tp + ']' + (retain ? ' (retained)' : ''));
             }
         });
         return true;
@@ -615,7 +563,7 @@ require("../KNX/actHdlr");
                 lds: lds,
                 ts: Date.now()
             }, true);
-            dbg.Inf('MQTT: Published ' + lds.length + ' loads to loads/setLoads');
+            dbg.Dbg('MQTT: Published ' + lds.length + ' loads to loads/setLoads');
         } catch (e) {
             dbg.Err('MQTT: Error Building Load List - ' + e.message);
         }
@@ -721,10 +669,7 @@ require("../KNX/actHdlr");
             stsMsg.err = eMsg;
         }
         mqttPub(TPCS.PUB.CMD_ACK, stsMsg);
-        // Refresh the retained per-load topic immediately so subscribers
-        // (mobile app, dashboards) see the new state without waiting for
-        // bus feedback. KNX devices that don't echo status would otherwise
-        // leave status/{ldId} stale.
+        // Refresh the retained topic right away; devices that never echo would leave subscribers staring at lies.
         if (scs && typeof global.mqttRptSts === 'function') {
             global.mqttRptSts(lNm);
         }

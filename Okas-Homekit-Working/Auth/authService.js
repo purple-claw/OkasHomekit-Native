@@ -16,7 +16,6 @@ const COMMAND_SESSION_TTL_MS = 12 * 60 * 60 * 1000;
 const TOKEN_LENGTH = 8;
 const TOKEN_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 // Password hashing parameters — scrypt is built into Node, no extra deps,
-// and tuned to be slow enough to resist brute force on a small device.
 const SCRYPT_KEYLEN = 32;
 const SCRYPT_OPTS = { N: 16384, r: 8, p: 1 };
 const MIN_PASSWORD_LENGTH = 8;
@@ -27,16 +26,13 @@ function tokenHash(token, salt) {
     return crypto.scryptSync(token, salt, TOKEN_LENGTH, SCRYPT_OPTS).toString('base64url');
 }
 function passwordHash(password, salt) {
-    // scrypt provides built-in memory-hardness for password hashing —
-    // no external deps, and the salt + cost are stored alongside the
-    // principal so a future upgrade can re-derive the same key.
+    // Salt + cost ride along with the principal; future upgrades can still verify.
     return crypto.scryptSync(password, salt, SCRYPT_KEYLEN, SCRYPT_OPTS).toString('base64url');
 }
 function isStrongPassword(password) {
     if (typeof password !== 'string') return false;
     if (password.length < MIN_PASSWORD_LENGTH || password.length > MAX_PASSWORD_LENGTH) return false;
-    // Require at least 3 of 4 character classes — a sane default that
-    // still keeps passwords usable.
+    // 3 of 4 character classes minimum; "password1" stays outside.
     const has = {
         lower: /[a-z]/.test(password),
         upper: /[A-Z]/.test(password),
@@ -178,10 +174,7 @@ class AuthService {
             expiresAt,
             revokedAt: null,
         };
-        // Admin principals carry email + password credentials in addition
-        // to the legacy token. Either path can authenticate — the mobile
-        // app uses email+password; the web User Management page can use
-        // either, and existing token-based admin logins keep working.
+        // Email+password for the app, legacy token for old clients; the web page takes either.
         if (role === 'admin') {
             principal.email = email;
             principal.passwordHash = passwordHash;
@@ -190,19 +183,14 @@ class AuthService {
         return principal;
     }
 
-    /// Returns true if the board has an admin principal with email+password
-    /// credentials configured. The mobile app and the User Management page
-    /// use this to decide whether to show the registration form or the
-    /// login form.
+    /// True when an email+password admin exists; decides register-vs-login.
     hasAdminAccount() {
         if (!this.store) return false;
         const admin = this.store.principals.find((p) => p.role === 'admin' && !p.revokedAt);
         return !!(admin && admin.email && admin.passwordHash);
     }
 
-    /// First-time admin registration. Allowed only when no admin with
-    /// email+password credentials exists yet. Returns the created admin
-    /// principal (without secrets).
+    /// First-time admin registration; only when no email+password admin exists.
     registerAdmin({ email, password, label }) {
         this.expirePrincipals();
         if (this.hasAdminAccount()) {
@@ -215,8 +203,7 @@ class AuthService {
         // Reuse the first admin principal — there is exactly one admin.
         let admin = this.store.principals.find((p) => p.role === 'admin' && !p.revokedAt);
         if (!admin) {
-            // Generate a placeholder token; the admin is authenticated by
-            // email+password from now on, the token is kept for back-compat.
+            // Placeholder token for back-compat; email+password is the key now.
             const token = randomToken();
             admin = this.makePrincipal({
                 role: 'admin',
@@ -234,9 +221,7 @@ class AuthService {
         return publicPrincipal(admin);
     }
 
-    /// Email+password login. The body of the request carries the email and
-    /// password; we look up the admin principal by email and verify the
-    /// scrypt hash.
+    /// Email+password login: find by email, verify the scrypt hash.
     loginWithPassword({ email, password }) {
         this.expirePrincipals();
         if (typeof email !== 'string' || typeof password !== 'string') {
@@ -246,8 +231,7 @@ class AuthService {
             (p) => p.role === 'admin' && !p.revokedAt && p.email && p.email === email.toLowerCase().trim()
         );
         if (!admin || !admin.passwordHash) {
-            // Always run scrypt to keep timing constant — this prevents an
-            // attacker from detecting which email is registered.
+            // Hash even on unknown emails; timing leaks are how accounts get pwned.
             crypto.scryptSync(password, 'fallback-salt', SCRYPT_KEYLEN, SCRYPT_OPTS);
             throw this.httpError(401, 'Invalid email or password.');
         }
@@ -258,8 +242,7 @@ class AuthService {
         return this.issueSession(admin);
     }
 
-    /// Change the admin password. Requires the current password. The
-    /// current command token is also re-issued with the new credentials.
+    /// Change password; current one required, command token re-issued after.
     changePassword({ currentPassword, newPassword, commandToken }) {
         this.expirePrincipals();
         const admin = this.findAdminByCommandToken(commandToken);
@@ -282,18 +265,14 @@ class AuthService {
         return publicPrincipal(admin);
     }
 
-    /// Find the admin that issued the supplied command token (used to
-    /// gate change-password and other admin-only operations).
+    /// Finds the principal behind a command token — gates admin-only ops.
     findAdminByCommandToken(commandToken) {
         const principal = this.verifyCommandToken(commandToken);
         if (!principal || principal.role !== 'admin' || principal.revokedAt) return null;
         return principal;
     }
 
-    /// Zero-cost password recovery: the board owner resets the admin
-    /// password by presenting the owner access token (the token stored in
-    /// loadData.json). No mail server required — the "email" step is the
-    /// physical access token the programmer configured.
+    /// Owner token resets the password; "email" here is the hardware in your hand.
     resetPassword({ token, newPassword }) {
         const admin = this.validPrincipalForToken(token);
         if (!admin || admin.role !== 'admin') {
@@ -310,9 +289,7 @@ class AuthService {
         return publicPrincipal(admin);
     }
 
-    /// Change the admin email. Programmer-only operation, gated by the
-    /// owner access token (the same physical token used for password
-    /// resets). The email is just an identifier — no mail server involved.
+    /// Change admin email via owner token; it's an identifier, not a mailbox.
     changeEmail({ token, email }) {
         const admin = this.validPrincipalForToken(token);
         if (!admin || admin.role !== 'admin') {
@@ -325,8 +302,7 @@ class AuthService {
         return publicPrincipal(admin);
     }
 
-    /// Change the admin display name (shown in the mobile app home
-    /// greeting, e.g. "Hi, Alex"). Programmer-only, owner token gated.
+    /// Display name in the mobile greeting; owner token, because branding is serious.
     changeLabel({ token, label }) {
         const admin = this.validPrincipalForToken(token);
         if (!admin || admin.role !== 'admin') {
@@ -342,8 +318,7 @@ class AuthService {
         return publicPrincipal(admin);
     }
 
-    /// Issue a fresh session for an admin (commandToken + mqtt creds).
-    /// Used by both `exchange` (legacy token) and `loginWithPassword`.
+    /// Fresh session (commandToken + MQTT creds); shared by both login paths.
     issueSession(principal) {
         const session = {
             success: true,
@@ -351,11 +326,7 @@ class AuthService {
             commandToken: this.issueCommandToken(principal),
             mqtt: this.mqttCredentials(principal),
         };
-        // The board never yields the raw admin token back after an
-        // email+password login, but the guest-management APIs require an
-        // admin access token in the Bearer header. Surface the owner token
-        // (the admin's access token) so an email-logged-in session can
-        // still manage guests.
+        // Email logins don't get the raw token, but guest APIs demand one — surface the owner token.
         if (principal.role === 'admin') session.accessToken = this.getOwnerToken();
         return session;
     }
@@ -546,9 +517,7 @@ class AuthService {
             if (request.method === 'OPTIONS') return this.respond(response, 204, null);
             const url = new URL(request.url, 'http://localhost');
             if (request.method === 'GET' && url.pathname === '/api/health') return this.respond(response, 200, { success: true });
-            // Status endpoint lets the mobile app and the User Management
-            // page decide whether to show registration or the login form.
-            // No secrets returned.
+            // Tells the UIs register-vs-login; no secrets in the answer.
             if (request.method === 'GET' && url.pathname === '/api/auth/status') {
                 return this.respond(response, 200, {
                     success: true,

@@ -38,9 +38,7 @@ from xknx.telegram.apci import GroupValueResponse, GroupValueWrite
 from xknx.tools import group_value_read, group_value_write
 from xknx.dpt import DPTArray, DPTBase, DPTBinary
 
-# ---------------------------------------------------------------------------
-# Paths & MQTT configuration
-# ---------------------------------------------------------------------------
+# ── Paths & MQTT configuration ──
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_FILE = os.path.join(BASE_DIR, "Data", "loadData.json")
 
@@ -54,12 +52,10 @@ TPC_STATE = "okas/knx/state"  # Python -> Node : { ga, val }
 TPC_CONN = "okas/knx/conn"    # Python -> Node : { connected } (retained)
 TPC_SYNC = "okas/knx/sync"    # Node -> Python : {} -> re-read all status GAs
 
-# GA-key roles: keys whose telegrams carry live status/feedback. These are the
-# datapoints Python actively reads on connect (the old `autoread: true`).
+# GA keys carrying live feedback; these are the datapoints Python autoreads on connect.
 STATUS_KEYS = {"Sta", "Bvi", "Clv", "Tuv", "Trm", "Fsv", "Tmv", "Mvi", "Pvi"}
 
-# The KNX datapoint types, keyed exactly like Data/iData.js `dptObj`. Kept here
-# (instead of importing from the JS side) so the Python process is standalone.
+# DPT map mirrors Data/iData.js `dptObj`; duplicated on purpose, Python stands alone.
 DPT_OBJ = {
     "Swt": "1.001", "Sta": "1.001",
     "Dim": "3.007",
@@ -103,8 +99,7 @@ def to_primitive(val, payload):
         ev = val.value
         if isinstance(ev, (bool, int, float)):
             return ev
-        # Non-numeric enum (e.g. HVAC mode name) -> fall back to the raw KNX byte
-        # so downstream numeric handling (mode index) stays consistent.
+        # Non-numeric enum (e.g. HVAC mode name) -> the raw KNX byte keeps numeric handlers sane.
         if isinstance(payload, DPTBinary):
             return int(payload.value)
         if isinstance(payload, DPTArray):
@@ -199,11 +194,7 @@ class KnxBridge:
         if self.loop:
             self.loop.call_soon_threadsafe(self._do_write, ga, val, dpt, label)
 
-    # DPT ranges for the value types this bridge writes. Values outside the
-    # DPT's legal range previously produced ERROR log spam on every write
-    # (e.g. bri=999 → "Could not serialize DPTScaling value=999"). Clamping
-    # here keeps the bus sane and the logs clean — the mobile app may still
-    # send out-of-range values when sliders/steppers are dragged hard.
+    # Clamp to DPT ranges; the app drags sliders hard and the bus (and the logs) hate 999.
     DPT_RANGES = {
         "1.001": (0, 1),    # boolean switch
         "1.008": (0, 1),    # move
@@ -280,11 +271,8 @@ class KnxBridge:
                                                 self._schedule_autoread)
         log.info("MQTT: sync requested -> re-reading status GAs (coalesced).")
 
-    # ------------------------------------------------------- xknx callbacks ---
-    # NOTE: xknx invokes these SYNCHRONOUSLY (it does not await them and does not
-    # schedule coroutines). They must be plain `def` — an `async def` here would
-    # just create an un-awaited coroutine and silently do nothing (no feedback,
-    # and the KNX-connected status would never publish -> Node stays isCon=false).
+    # ── xknx callbacks ──
+    # xknx calls these SYNCHRONOUSLY — an `async def` here silently does nothing (no feedback, isCon stays false).
     def _on_telegram(self, telegram):
         payload = telegram.payload
         if not isinstance(payload, (GroupValueWrite, GroupValueResponse)):
@@ -307,10 +295,7 @@ class KnxBridge:
         connected = str(getattr(state, "name", state)).upper() == "CONNECTED"
         now = asyncio.get_event_loop().time() if self.loop else 0.0
 
-        # Debounce flapping tunnels. xknx can pulse CONNECTED→DISCONNECTED in
-        # tight loops while the gateway is unreachable; we only forward a state
-        # change to MQTT if (a) it's the first one in this window, or (b) the
-        # last change is older than STATE_STABLE_SECONDS.
+        # Debounce flapping tunnels; forward only first-or-STATE_STABLE_SECONDS-old changes.
         if connected == self._stable_connected:
             # Mirror internal flag without re-publishing.
             self.knx_connected = connected
@@ -329,8 +314,7 @@ class KnxBridge:
             # One autoread per real reconnect — skip subsequent pulses.
             if not self._autoread_done_for_session and self.loop:
                 self._autoread_done_for_session = True
-                # Give the tunnel time to settle, then pull current states.
-                # Longer delay on initial connect to let IP interface fully initialize.
+                # Let the tunnel settle, then pull current states; interfaces wake up slowly.
                 self.loop.call_later(5, self._schedule_autoread)
         else:
             # Real disconnect — arm the next reconnect to issue another read.
@@ -374,17 +358,13 @@ class KnxBridge:
         log.info("Starting KNX bridge (type=%s, gateway=%s:%s) ...",
                  conn["type"].name, conn.get("gateway_ip"), conn.get("gateway_port"))
 
-        # Retry loop: the gateway may be temporarily unreachable (Secure-only
-        # enforcement, slot exhaustion, booting up, etc).  Instead of crashing
-        # and forcing systemd to restart us every N seconds, we wait with
-        # exponential backoff and only give up on SIGINT/SIGTERM.
+        # Retry with exponential backoff instead of crash-looping systemd; give up only on SIGINT/SIGTERM.
         retry_delay = 2  # seconds
         max_retry = 120  # 2 min cap
         first_attempt = True
         while not stop.is_set():
             try:
-                # Fresh connection → let the next real CONNECTED trigger an
-                # autoread pass.
+                # Fresh connection; the next real CONNECTED triggers the autoread pass.
                 self._stable_connected = False
                 self._last_state_change = 0.0
                 self._autoread_done_for_session = False
@@ -401,9 +381,7 @@ class KnxBridge:
                 else:
                     log.debug("KNX connect still failing (%s). Next retry in %ds.", exc, retry_delay)
                 self._publish_conn(False)
-                # Tear down xknx state so the next iteration starts fresh.
-                # Bound the teardown so a stuck DISCONNECT_RESPONSE handshake
-                # (gateway unreachable) cannot wedge the retry loop.
+                # Tear down cleanly and bounded; a stuck DISCONNECT handshake mustn't wedge the retry loop.
                 try:
                     await asyncio.wait_for(self.xknx.stop(), timeout=5.0)
                 except asyncio.TimeoutError:
@@ -428,9 +406,7 @@ class KnxBridge:
             self.mqtt.disconnect()
 
 
-# ---------------------------------------------------------------------------
-# Config loading
-# ---------------------------------------------------------------------------
+# ── Config loading ──
 _CONN_TYPES = {
     "tcp": ConnectionType.TUNNELING_TCP,
     "udp": ConnectionType.TUNNELING,
@@ -448,11 +424,7 @@ def load_config():
     project = data[0] or {}
     loads = [x for x in data[1:] if isinstance(x, dict) and x.get("GA")]
 
-    # Connection: default to UDP tunnelling (v1). Unlike the old Node `knx`
-    # library, xknx adopts the individual address the interface assigns at
-    # connect time (it doesn't send a fixed/foreign source address), so v1 works.
-    # Override to 'tcp' (tunnelling v2, ETS-style) via loadData `knxConn` or env
-    # if the interface rejects UDP.
+    # UDP tunnelling v1 by default; xknx adopts the address the interface assigns (v1 just works), 'tcp' is the escape hatch.
     conn_kind = str(os.environ.get("KNX_CONN", project.get("knxConn", "udp"))).lower()
     conn_type = _CONN_TYPES.get(conn_kind, ConnectionType.TUNNELING)
 
@@ -464,9 +436,8 @@ def load_config():
         "individual_address": IndividualAddress(ia) if ia else None,
     }
 
-    # ── KNX IP Secure ────────────────────────────────────────────────────────
-    # The eElectron "IP-KNX Secure Interface" enforces Secure tunnelling.
-    # Provide credentials via loadData.json or environment variables.
+    # ── KNX IP Secure ──
+    # The eElectron enforces Secure tunnelling; credentials come from loadData.json or env.
     secure = None
     device_auth = os.environ.get(
         "KNX_DEVICE_AUTH", project.get("knxDeviceAuth")

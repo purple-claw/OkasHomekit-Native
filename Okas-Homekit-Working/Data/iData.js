@@ -6,6 +6,25 @@
     global.ldArr = [];
     global.ga2Ld = {};
     global.bridge = "";
+
+    // Kelvin->mired, once — two files re-implementing this was two too many.
+    global.cctRange = (acy) => {
+        let kMin = Number(acy.Kmn);
+        let kMax = Number(acy.Kmx);
+        if (!Number.isFinite(kMin) || kMin <= 0) kMin = 2000;
+        if (!Number.isFinite(kMax) || kMax <= 0) kMax = 6500;
+        if (kMax < kMin) {
+            const temp = kMin;
+            kMin = kMax;
+            kMax = temp;
+        }
+        return {
+            kMin, kMax,
+            mrdMn: Math.floor(1000000 / kMax),
+            mrdMx: Math.floor(1000000 / kMin)
+        };
+    };
+
     dptObj = {
         "Swt": "DPT1.001",
         "Sta": "DPT1.001",

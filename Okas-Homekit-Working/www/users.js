@@ -1,11 +1,4 @@
-// www/users.js
-// User Management page — programmer-only.
-// First-time setup creates the owner's email+password. On an existing
-// board the page shows the owner profile and lets the programmer change
-// the owner email or reset the owner password. Both authenticated by the
-// physical board access token, supplied server-side by ownerCredentials.php
-// (the browser never sees it). Guest accounts are managed exclusively
-// from the owner's mobile app and are intentionally not present here.
+// Programmer page: set up the owner's email+password, or change email / reset password on existing boards — all via the physical access token (ownerCredentials.php, browser never sees it). Guests are mobile-app territory, not this page.
 
 (() => {
     // ---- Helpers ----
@@ -45,8 +38,7 @@
         if (!status.hasAdmin) {
             setVisible(document.getElementById('setupSection'), true);
             setVisible(document.getElementById('adminSection'), false);
-            // Bump the script handle if previously the page showed the
-            // admin sections (edge: fresh board after a reset).
+            // Bump the handle if the page previously showed admin sections (edge: fresh board).
             document.getElementById('setupEmail').focus();
             return;
         }
