@@ -103,6 +103,22 @@ class QuickSelectService extends ChangeNotifier {
     }
   }
 
+  /// Wipes all pinned shortcuts. Called on broker (re)connect, next to
+  /// RoomService.clearRooms(), so quick-select chips never reference loads
+  /// from a previous board configuration. The user re-pins loads after a
+  /// config upload.
+  Future<void> clearAll() async {
+    if (_byRoom.isEmpty) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_storageKey);
+      return;
+    }
+    _byRoom.clear();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_storageKey);
+    notifyListeners();
+  }
+
   Future<void> _save() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(

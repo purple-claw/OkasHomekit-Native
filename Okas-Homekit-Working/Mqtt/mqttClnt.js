@@ -47,7 +47,7 @@ require("../KNX/actHdlr");
             ldIdx[v.Nm] = i;
         });
         dbg.Inf('MQTT: Load index built — ' + Object.keys(ldIdx).length + ' loads mapped.');
-        reconcileRoomsWithLoads();
+        resetBoardState();
     };
 
     // Room management - persistent storage
@@ -111,87 +111,81 @@ require("../KNX/actHdlr");
             dbg.Err('MQTT: Invalid app scenes payload');
             return;
         }
-        // The app mirrors its scene list to the board (retained), but that
-        // copy may be stale after a config upload — the app still holds
-        // scenes referencing load ids that no longer exist. The broker also
-        // delivers this retained message back to the board on subscribe
-        // (the board subscribes to app/scenes), so pruning must happen here
-        // on EVERY accepted payload, not just at startup, or a stale list
-        // overwrites the reconciled one.
-        global.appScenes = pruneStaleSceneLoads(pld);
+        global.appScenes = pld;
         saveAppScenes();
     };
 
-    // Shared prune for app scenes: drop entries whose loadId does not map
-    // to the current loadData.json config. Applied when the board accepts
-    // an app/scenes payload AND during startup reconciliation.
-    const pruneStaleSceneLoads = (scenes) => {
-        if (!ldArr || !Array.isArray(ldArr) || ldArr.length < 2) return scenes;
-        const validIds = new Set();
-        for (let i = 1; i < ldArr.length; i++) validIds.add(String(i));
-        let changed = false;
-        const pruned = scenes.map((scene) => {
-            if (!scene || !Array.isArray(scene.loads)) return scene;
-            const kept = scene.loads.filter((s) => s && validIds.has(String(s.loadId)));
-            if (kept.length !== scene.loads.length) {
-                dbg.Wrn('MQTT: Scene "' + scene.name + '" had ' + scene.loads.length +
-                    ' loads, pruned to ' + kept.length + ' (config changed).');
-                changed = true;
-                return { ...scene, loads: kept };
-            }
-            return scene;
-        });
-        if (changed) dbg.Inf('MQTT: App scene list reconciled with current load configuration.');
-        return pruned;
-    };
-
     // Rooms and app scenes reference loads by their positional id in
-    // loadData.json (loads: ["4","5"] = entries 4 and 5 of ldArr). When a
-    // new configuration is uploaded (makFile.php rewrites loadData.json and
-    // restarts the service) those ids can point at loads that no longer
-    // exist — e.g. a room referencing ids 9-21 after the new config only
-    // defines 8 loads. Without this, the room list survives but every room
-    // silently loses its loads (or worse, controls the WRONG load when the
-    // index shifts). Prune invalid ids and republish the retained rooms/set
-    // so the app immediately sees the corrected membership.
-    const reconcileRoomsWithLoads = () => {
-        // ldArr[0] is the project header, so valid load ids are 1..len-1.
-        // If the config has not loaded yet (or failed), do NOT prune —
-        // wiping every room's loads would be worse than leaving stale ids.
-        if (!ldArr || !Array.isArray(ldArr) || ldArr.length < 2) {
-            dbg.Wrn('MQTT: Skipping room reconciliation - load config not ready.');
-            return;
-        }
-        const validIds = new Set();
-        for (let i = 1; i < ldArr.length; i++) validIds.add(String(i));
-        let changed = false;
+    // loadData.json (loads: ["4","5"] = entries 4 and 5 of ldArr). A new
+    // configuration upload (makFile.php) is a FULL RESET — the previous
+    // rooms/scenes must be discarded entirely, not preserved. The PHP
+    // upload drops a marker file (Data/.configReset); this runs at MQTT
+    // connect (after the new loadData.json is in place) and wipes:
+    //   - rooms.json / appScenes.json on disk
+    //   - the retained rooms/set, app/scenes and every status/{ldId}
+    //     retained topic on the broker (stale from the old config)
+    // Then the retained rooms/set is republished empty so the mobile app
+    // (which subscribes after connect) immediately sees an empty home.
+    const resetBoardState = () => {
+        const marker = path.join(__dirname, '..', 'Data', '.configReset');
+        if (!fs.existsSync(marker)) return;
+        try {
+            fs.unlinkSync(marker);
+            dbg.Inf('MQTT: Config reset marker found - wiping previous rooms/scenes.');
 
-        (global.rooms || []).forEach((room) => {
-            if (!room || !Array.isArray(room.loads)) return;
-            const pruned = room.loads.filter((id) => validIds.has(String(id)));
-            if (pruned.length !== room.loads.length) {
-                dbg.Wrn('MQTT: Room "' + room.name + '" had ' + room.loads.length +
-                    ' loads, pruned to ' + pruned.length + ' (config changed).');
-                room.loads = pruned;
-                changed = true;
-            }
-        });
-
-        // App scenes carry the same positional load ids — prune those too
-        // so a stale scene cannot be replayed against the wrong load.
-        const prunedScenes = pruneStaleSceneLoads(global.appScenes || []);
-        if (prunedScenes !== global.appScenes) {
-            global.appScenes = prunedScenes;
-            changed = true;
-        }
-
-        if (changed) {
+            global.rooms = [];
+            global.appScenes = [];
             saveRooms();
             saveAppScenes();
-            // Push the corrected list to the broker so the mobile app's
-            // replaceRooms() updates immediately (retained for new clients).
-            mqttPub(TPCS.PUB.ST_ROOMS, { rooms: global.rooms }, true);
-            dbg.Inf('MQTT: Rooms reconciled with current load configuration.');
+            // Also drop the historical backup so no stale copy can return.
+            try { fs.unlinkSync(ROOMS_FILE + '.bak'); } catch (e) { /* no backup */ }
+
+            if (mqttClnt && isMqttCntd) {
+                // Clear the retained room/scene lists.
+                mqttPub(TPCS.PUB.ST_ROOMS, { rooms: [] }, true);
+                mqttPub(TPCS.PUB.APP_SCENES, [], true);
+                clearRetainedStatusTopics();
+            }
+            dbg.Inf('MQTT: Board state reset complete - ready for fresh configuration.');
+        } catch (e) {
+            dbg.Err('MQTT: Config reset failed - ' + e.message);
+        }
+    };
+
+    // Clears EVERY retained status/{ldId} topic, including topics left
+    // behind by the previous config (the new load list may be shorter, so
+    // the reset must not assume status/1..status/N). Enumerates the broker
+    // by subscribing to status/# once, collecting the retained messages
+    // the broker sends on subscribe, then clears each by publishing a
+    // zero-length retained payload.
+    const clearRetainedStatusTopics = () => {
+        const collected = new Set();
+        let done = false;
+        const finish = () => {
+            if (done) return;
+            done = true;
+            try { mqttClnt.unsubscribe('status/#'); } catch (e) { /* ignore */ }
+            dbg.Inf('MQTT: Cleared ' + collected.size + ' stale status topics.');
+        };
+        mqttClnt.on('message', collector);
+        mqttClnt.subscribe('status/#', { qos: 0 }, (err) => {
+            if (err) {
+                mqttClnt.removeListener('message', collector);
+                finish();
+                return;
+            }
+            // Retained messages are delivered synchronously right after
+            // SUBACK, so give them one event-loop turn to arrive.
+            setTimeout(() => {
+                mqttClnt.removeListener('message', collector);
+                collected.forEach((t) => {
+                    mqttClnt.publish(t, Buffer.alloc(0), { qos: 1, retain: true });
+                });
+                finish();
+            }, 500);
+        });
+        function collector(tp, msg) {
+            if (tp.startsWith('status/')) collected.add(tp);
         }
     };
 

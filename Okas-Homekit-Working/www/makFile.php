@@ -124,6 +124,14 @@ if ($inDat) {
         echo $rslt;
         $oData = o2S($ldData);
         file_put_contents($file, $oData);
+        // A configuration upload is a full factory reset: the previous
+        // rooms, app scenes, per-load status cache, and the broker's
+        // retained state must all be discarded. The Node service performs
+        // the actual wipe (it knows every topic and file involved), so we
+        // just drop a marker file it checks at startup. Writing this AFTER
+        // loadData.json guarantees the new config is in place before the
+        // wipe runs — no window where the wipe and a stale load list mix.
+        file_put_contents(__DIR__ . '/../Data/.configReset', date('c'));
         sleep(2);
         // Restart KNX bridge first (must reconnect to new gateway), then HomeKit service
         exec("sudo /usr/bin/systemctl restart OhKnxKnx.service");

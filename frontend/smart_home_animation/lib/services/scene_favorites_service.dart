@@ -130,6 +130,20 @@ class SceneFavoritesService extends ChangeNotifier {
     }
   }
 
+  /// Wipes all favorite scene shortcuts. Called on broker (re)connect so
+  /// favorites never reference scenes from a previous board configuration.
+  Future<void> clearAll() async {
+    if (_favorites.isEmpty) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_storageKey);
+      return;
+    }
+    _favorites.clear();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_storageKey);
+    notifyListeners();
+  }
+
   Future<void> _save() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(

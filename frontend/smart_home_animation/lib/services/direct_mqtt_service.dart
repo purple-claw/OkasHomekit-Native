@@ -12,8 +12,10 @@ import 'package:network_info_plus/network_info_plus.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/music_info.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/smart_device.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/smart_room.dart';
+import 'package:smart_home_animation/services/quick_select_service.dart';
 import 'package:smart_home_animation/services/room_scene_service.dart';
 import 'package:smart_home_animation/services/room_service.dart';
+import 'package:smart_home_animation/services/scene_favorites_service.dart';
 
 // Note: We're not using multicast_dns due to API issues
 // Instead, we'll use network scanning and hostname resolution
@@ -821,6 +823,8 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         // on subscribe) will populate the real list via `replaceRooms`.
         RoomService.instance.clearRooms();
         RoomSceneService.instance.clearAll();
+        QuickSelectService.instance.clearAll();
+        SceneFavoritesService.instance.clearAll();
         RoomSceneService.instance.attachMqtt(this);
         _roomsPrimed = false;
         _requestAllLoads();
@@ -853,6 +857,8 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
         _brokerAttempts.add('Reconnected to MQTT $host:$port');
         notifyListeners();
         RoomSceneService.instance.attachMqtt(this);
+        QuickSelectService.instance.clearAll();
+        SceneFavoritesService.instance.clearAll();
         _requestAllLoads();
         _requestAllRooms();
       };
