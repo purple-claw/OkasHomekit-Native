@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rooms | Okas Configuration</title>
+  <link rel="icon" type="image/png" href="./assets/Config.png" />
+  <link href="./assets/bootstrap.min.css" rel="stylesheet" />
+  <link href="./style.css?v=20260820" rel="stylesheet" />
+</head>
+
+<body>
+  <div class="app">
+    <header class="app-header">
+      <div class="logo-container">
+        <a href="index.html" aria-label="OKAS Home">
+          <img src="./assets/Okas Logo.png" alt="OKAS" class="app-logo" />
+        </a>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Primary">
+      <a class="tab" href="index.html">Configuration</a>
+      <a class="tab active" href="rooms.html">Rooms</a>
+      <a class="tab" href="users.html">User Management</a>
+      <a class="tab" href="logMgr.html">Log Manager</a>
+      <a class="tab" href="deviceInfo.html">Device Information</a>
+    </nav>
+
+    <main class="tab-content rooms-page">
+      <div class="rooms-pane">
+        <section class="room-editor-card" aria-labelledby="roomEditorTitle">
+          <div class="rooms-card-header">
+            <h2 id="roomEditorTitle">Room Editor</h2>
+            <span class="editor-mode" id="editorMode">Add Room</span>
+          </div>
+          <p class="section-lead" id="editorLead">Name the room and pick the loads that live in it.</p>
+          <input type="hidden" id="roomEditIndex" value="" />
+
+          <div class="config-field">
+            <label for="roomName">Room Name</label>
+            <input type="text" id="roomName" placeholder="e.g. Living Room" maxlength="20" tabindex="1" />
+          </div>
+
+          <div class="modal-field-group">
+            <label class="group-label" for="roomLoadList">Loads Assigned to the Room.</label>
+            <div id="roomLoadList" class="room-load-list room-load-list-card" tabindex="2"></div>
+          </div>
+
+          <div class="rooms-editor-actions">
+            <button type="button" class="btn-cancel" onclick="newRoom()" tabindex="3">New Room</button>
+            <button type="button" class="btn-save" onclick="saveRoom()" tabindex="4">Save Room</button>
+          </div>
+        </section>
+
+        <section class="room-registry-card" aria-labelledby="roomsTitle">
+          <div class="rooms-card-header">
+            <h2 id="roomsTitle">Saved Rooms</h2>
+            <span class="room-count" id="roomCount">0</span>
+          </div>
+          <div class="room-cards" id="roomCan"></div>
+        </section>
+      </div>
+
+      <section class="room-detail-card" aria-labelledby="detailTitle">
+        <div class="rooms-card-header">
+          <h2 id="detailTitle">All Loads</h2>
+          <span class="room-count" id="detailCount"></span>
+        </div>
+        <p class="section-lead" id="detailLead">Click load cards on the right to assign them to the room being edited.</p>
+        <div class="type-groups" id="typeCan"></div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="app-footer">
+    &copy; Miantic AV Distribution Pvt. Ltd.
+  </footer>
+
+  <div class="modal fade" id="genModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="gmTitle">Error</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center" id="eModTxt">
+          This is an error alert message.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-save" id="cYESbtn">Correct Entry</button>
+          <button type="button" class="btn-delete" data-bs-dismiss="modal" id="cNObtn">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./assets/bootstrap.bundle.min.js"></script>
+  <script src="./dialog.js?v=20260820"></script>
+  <script src="rooms.js"></script>
+</body>
+
+</html>

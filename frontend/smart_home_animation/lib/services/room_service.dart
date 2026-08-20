@@ -108,27 +108,6 @@ class RoomService {
     await prefs.setString('saved_rooms', roomsJson);
   }
 
-  Future<void> addRoom(Room room) async {
-    _rooms.add(room);
-    await saveRooms();
-    _notifyListeners();
-  }
-
-  Future<void> updateRoom(Room room) async {
-    final index = _rooms.indexWhere((r) => r.id == room.id);
-    if (index >= 0) {
-      _rooms[index] = room;
-      await saveRooms();
-      _notifyListeners();
-    }
-  }
-
-  Future<void> deleteRoom(String roomId) async {
-    _rooms.removeWhere((r) => r.id == roomId);
-    await saveRooms();
-    _notifyListeners();
-  }
-
   /// Wipes the local cache and persistent storage. Used when the app
   /// reconnects to the MQTT broker so we don't briefly show rooms that
   /// belong to a previous board. The board will repopulate via `rooms/set`.

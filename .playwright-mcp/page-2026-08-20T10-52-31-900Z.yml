@@ -1,0 +1,46 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - link "OKAS Home" [ref=e5] [cursor=pointer]:
+        - /url: index.html
+        - img "OKAS" [ref=e6]
+    - navigation "Primary" [ref=e7]:
+      - link "Configuration" [ref=e8] [cursor=pointer]:
+        - /url: index.html
+      - link "Rooms" [ref=e9] [cursor=pointer]:
+        - /url: rooms.html
+      - link "User Management" [ref=e10] [cursor=pointer]:
+        - /url: users.html
+      - link "Log Manager" [ref=e11] [cursor=pointer]:
+        - /url: logMgr.html
+      - link "Device Information" [ref=e12] [cursor=pointer]:
+        - /url: deviceInfo.html
+    - main [ref=e13]:
+      - generic [ref=e14]:
+        - region [ref=e15]:
+          - generic [ref=e16]:
+            - heading "Room Editor" [level=2] [ref=e17]
+            - generic [ref=e18]: Add Room
+          - paragraph [ref=e19]: Name the room and pick the loads that live in it.
+          - generic [ref=e20]:
+            - generic [ref=e21]: Room Name
+            - textbox "Room Name" [ref=e22]:
+              - /placeholder: e.g. Living Room
+          - generic [ref=e23]:
+            - generic [ref=e24]: Loads in this Room
+            - generic [ref=e25]: No loads configured yet.
+          - generic [ref=e27]:
+            - button "New Room" [ref=e28] [cursor=pointer]
+            - button "Save Room" [ref=e29] [cursor=pointer]
+        - region [ref=e30]:
+          - generic [ref=e31]:
+            - heading "Saved Rooms" [level=2] [ref=e32]
+            - generic [ref=e33]: "0"
+          - generic [ref=e34]: No rooms yet — name one above.
+      - region [ref=e37]:
+        - heading "Room Loads" [level=2] [ref=e39]
+        - paragraph [ref=e40]: Pick a room on the left to see everything it controls.
+        - generic [ref=e42]:
+          - generic [ref=e43]: No room selected
+          - generic [ref=e44]: Click a room card to inspect its loads.
+  - contentinfo [ref=e45]: © Miantic AV Distribution Pvt. Ltd.

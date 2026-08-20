@@ -1,0 +1,114 @@
+- generic [active] [ref=f10e1]:
+  - generic [ref=f10e2]:
+    - banner [ref=f10e3]:
+      - link "OKAS Home" [ref=f10e5] [cursor=pointer]:
+        - /url: index.html
+        - img "OKAS" [ref=f10e6]
+    - navigation "Primary" [ref=f10e7]:
+      - link "Configuration" [ref=f10e8] [cursor=pointer]:
+        - /url: index.html
+      - link "Rooms" [ref=f10e9] [cursor=pointer]:
+        - /url: rooms.html
+      - link "User Management" [ref=f10e10] [cursor=pointer]:
+        - /url: users.html
+      - link "Log Manager" [ref=f10e11] [cursor=pointer]:
+        - /url: logMgr.html
+      - link "Device Information" [ref=f10e12] [cursor=pointer]:
+        - /url: deviceInfo.html
+    - main [ref=f10e13]:
+      - generic [ref=f10e14]:
+        - region [ref=f10e15]:
+          - generic [ref=f10e16]:
+            - heading "Room Editor" [level=2] [ref=f10e17]
+            - generic [ref=f10e18]: Add Room
+          - paragraph [ref=f10e19]: Name the room and pick the loads that live in it.
+          - generic [ref=f10e20]:
+            - generic [ref=f10e21]: Room Name
+            - textbox "Room Name" [ref=f10e22]:
+              - /placeholder: e.g. Living Room
+          - generic [ref=f10e23]:
+            - generic [ref=f10e24]: Loads in this Room
+            - generic [ref=f10e25]:
+              - generic [ref=f10e26]:
+                - generic [ref=f10e27]: Switch
+                - generic [ref=f10e29]:
+                  - generic [ref=f10e30] [cursor=pointer]:
+                    - checkbox "SofaLights Switch" [ref=f10e31]
+                    - generic [ref=f10e32]: SofaLights
+                    - generic [ref=f10e33]: Switch
+                  - generic [ref=f10e34] [cursor=pointer]:
+                    - checkbox "Bedside Lamp Switch" [ref=f10e35]
+                    - generic [ref=f10e36]: Bedside Lamp
+                    - generic [ref=f10e37]: Switch
+              - generic [ref=f10e38]:
+                - generic [ref=f10e39]: Dimmer
+                - generic [ref=f10e42] [cursor=pointer]:
+                  - checkbox "Ceiling Dim Dimmer" [ref=f10e43]
+                  - generic [ref=f10e44]: Ceiling Dim
+                  - generic [ref=f10e45]: Dimmer
+              - generic [ref=f10e46]:
+                - generic [ref=f10e47]: RGB
+                - generic [ref=f10e50] [cursor=pointer]:
+                  - checkbox "TV Strip RGB RGB" [ref=f10e51]
+                  - generic [ref=f10e52]: TV Strip RGB
+                  - generic [ref=f10e53]: RGB
+              - generic [ref=f10e54]:
+                - generic [ref=f10e55]: Fan
+                - generic [ref=f10e58] [cursor=pointer]:
+                  - checkbox "Kitchen Fan Fan" [ref=f10e59]
+                  - generic [ref=f10e60]: Kitchen Fan
+                  - generic [ref=f10e61]: Fan
+              - generic [ref=f10e62]:
+                - generic [ref=f10e63]: Curtain
+                - generic [ref=f10e66] [cursor=pointer]:
+                  - checkbox "Window Curtain Curtain" [ref=f10e67]
+                  - generic [ref=f10e68]: Window Curtain
+                  - generic [ref=f10e69]: Curtain
+              - generic [ref=f10e70]:
+                - generic [ref=f10e71]: Scene
+                - generic [ref=f10e74] [cursor=pointer]:
+                  - checkbox "Scene Goodnight Scene" [ref=f10e75]
+                  - generic [ref=f10e76]: Scene Goodnight
+                  - generic [ref=f10e77]: Scene
+              - generic [ref=f10e78]:
+                - generic [ref=f10e79]: HVAC
+                - generic [ref=f10e82] [cursor=pointer]:
+                  - checkbox "AC Master HVAC" [ref=f10e83]
+                  - generic [ref=f10e84]: AC Master
+                  - generic [ref=f10e85]: HVAC
+          - generic [ref=f10e86]:
+            - button "New Room" [ref=f10e87] [cursor=pointer]
+            - button "Save Room" [ref=f10e88] [cursor=pointer]
+        - region [ref=f10e89]:
+          - generic [ref=f10e90]:
+            - heading "Saved Rooms" [level=2] [ref=f10e91]
+            - generic [ref=f10e92]: "2"
+          - generic [ref=f10e93]:
+            - button "Living Room Delete Living Room 6 loads Switch Dimmer RGB Fan Curtain" [ref=f10e94] [cursor=pointer]:
+              - generic [ref=f10e95]:
+                - generic [ref=f10e96]: Living Room
+                - button "Delete Living Room" [ref=f10e97]: ×
+              - generic [ref=f10e98]:
+                - generic [ref=f10e99]: 6 loads
+                - generic [ref=f10e100]:
+                  - generic "Switch" [ref=f10e101]
+                  - generic "Dimmer" [ref=f10e102]
+                  - generic "RGB" [ref=f10e103]
+                  - generic "Fan" [ref=f10e104]
+                  - generic "Curtain" [ref=f10e105]
+            - button "Bedroom Delete Bedroom 2 loads HVAC Switch" [ref=f10e106] [cursor=pointer]:
+              - generic [ref=f10e107]:
+                - generic [ref=f10e108]: Bedroom
+                - button "Delete Bedroom" [ref=f10e109]: ×
+              - generic [ref=f10e110]:
+                - generic [ref=f10e111]: 2 loads
+                - generic [ref=f10e112]:
+                  - generic "HVAC" [ref=f10e113]
+                  - generic "Switch" [ref=f10e114]
+      - region [ref=f10e115]:
+        - heading "Room Loads" [level=2] [ref=f10e117]
+        - paragraph [ref=f10e118]: Pick a room on the left to see everything it controls.
+        - generic [ref=f10e120]:
+          - generic [ref=f10e121]: No room selected
+          - generic [ref=f10e122]: Click a room card to inspect its loads.
+  - contentinfo [ref=f10e123]: © Miantic AV Distribution Pvt. Ltd.

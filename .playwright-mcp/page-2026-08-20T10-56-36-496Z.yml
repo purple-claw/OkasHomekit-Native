@@ -1,0 +1,92 @@
+- generic [active] [ref=f15e1]:
+  - generic [ref=f15e2]:
+    - banner [ref=f15e3]:
+      - link "OKAS Home" [ref=f15e5] [cursor=pointer]:
+        - /url: index.html
+        - img "OKAS" [ref=f15e6]
+    - navigation "Primary" [ref=f15e7]:
+      - link "Configuration" [ref=f15e8] [cursor=pointer]:
+        - /url: index.html
+      - link "Rooms" [ref=f15e9] [cursor=pointer]:
+        - /url: rooms.html
+      - link "User Management" [ref=f15e10] [cursor=pointer]:
+        - /url: users.html
+      - link "Log Manager" [ref=f15e11] [cursor=pointer]:
+        - /url: logMgr.html
+      - link "Device Information" [ref=f15e12] [cursor=pointer]:
+        - /url: deviceInfo.html
+    - main [ref=f15e13]:
+      - generic [ref=f15e14]:
+        - region [ref=f15e15]:
+          - heading "Configuration" [level=2] [ref=f15e16]
+          - generic [ref=f15e17]:
+            - generic [ref=f15e18]: Project Name
+            - textbox "Project Name" [ref=f15e19]:
+              - /placeholder: Enter Project Name
+              - text: Test House
+          - generic [ref=f15e20]:
+            - generic [ref=f15e21]: KNX Gateway IP Address
+            - textbox "KNX Gateway IP Address" [ref=f15e22]:
+              - /placeholder: 192.168.26.45
+              - text: 192.168.26.45
+          - generic [ref=f15e23]:
+            - generic [ref=f15e24]: KNX UDP Port No.
+            - spinbutton "KNX UDP Port No." [ref=f15e25]: "3671"
+          - generic [ref=f15e26]:
+            - button "Restore" [ref=f15e27] [cursor=pointer]
+            - button "Backup" [ref=f15e28] [cursor=pointer]
+            - button "Finish" [ref=f15e29] [cursor=pointer]
+        - region [ref=f15e30]:
+          - generic [ref=f15e31]:
+            - heading "Available Loads" [level=2] [ref=f15e32]
+            - button "+ Add Load" [ref=f15e33] [cursor=pointer]
+          - generic [ref=f15e34]:
+            - generic [ref=f15e35]:
+              - button "Switch (2)" [expanded] [ref=f15e36] [cursor=pointer]:
+                - generic [ref=f15e37]:
+                  - generic [ref=f15e39]: Switch
+                  - generic [ref=f15e40]: (2)
+              - generic [ref=f15e42]:
+                - button "SofaLights - [Switch] 1/1/1, 1/1/2 Edit Delete" [ref=f15e43] [cursor=pointer]:
+                  - generic [ref=f15e44]:
+                    - generic [ref=f15e45]: SofaLights - [Switch]
+                    - generic [ref=f15e46]: 1/1/1, 1/1/2
+                  - generic [ref=f15e47]:
+                    - button "Edit" [ref=f15e48]
+                    - button "Delete" [ref=f15e49]
+                - button "Bedside Lamp - [Switch] 1/1/5, 1/1/6 Edit Delete" [ref=f15e50] [cursor=pointer]:
+                  - generic [ref=f15e51]:
+                    - generic [ref=f15e52]: Bedside Lamp - [Switch]
+                    - generic [ref=f15e53]: 1/1/5, 1/1/6
+                  - generic [ref=f15e54]:
+                    - button "Edit" [ref=f15e55]
+                    - button "Delete" [ref=f15e56]
+            - button "Dimmer (1)" [ref=f15e58] [cursor=pointer]:
+              - generic [ref=f15e59]:
+                - generic [ref=f15e61]: Dimmer
+                - generic [ref=f15e62]: (1)
+            - button "Tunable (0)" [ref=f15e64] [cursor=pointer]:
+              - generic [ref=f15e65]:
+                - generic [ref=f15e67]: Tunable
+                - generic [ref=f15e68]: (0)
+            - button "RGB (1)" [ref=f15e70] [cursor=pointer]:
+              - generic [ref=f15e71]:
+                - generic [ref=f15e73]: RGB
+                - generic [ref=f15e74]: (1)
+            - button "Fan (1)" [ref=f15e76] [cursor=pointer]:
+              - generic [ref=f15e77]:
+                - generic [ref=f15e79]: Fan
+                - generic [ref=f15e80]: (1)
+            - button "Curtain (1)" [ref=f15e82] [cursor=pointer]:
+              - generic [ref=f15e83]:
+                - generic [ref=f15e85]: Curtain
+                - generic [ref=f15e86]: (1)
+            - button "Scene (1)" [ref=f15e88] [cursor=pointer]:
+              - generic [ref=f15e89]:
+                - generic [ref=f15e91]: Scene
+                - generic [ref=f15e92]: (1)
+            - button "HVAC (1)" [ref=f15e94] [cursor=pointer]:
+              - generic [ref=f15e95]:
+                - generic [ref=f15e97]: HVAC
+                - generic [ref=f15e98]: (1)
+  - contentinfo [ref=f15e99]: © Miantic AV Distribution Pvt. Ltd.

@@ -11,7 +11,6 @@ import 'package:smart_home_animation/core/shared/domain/entities/device.dart';
 import 'package:smart_home_animation/core/shared/domain/entities/room.dart';
 import 'package:smart_home_animation/core/shared/presentation/widgets/room_image.dart';
 import 'package:smart_home_animation/core/shared/presentation/widgets/glass_panel.dart';
-import 'package:smart_home_animation/features/home/presentation/screens/add_room_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/profile_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/scene_screen.dart';
 import 'package:smart_home_animation/features/home/presentation/screens/room_loads_screen.dart';
@@ -109,10 +108,6 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _rooms = uniqueRooms.values.toList();
     });
-  }
-
-  void _addRoom(dynamic roomData) {
-    _loadAllRooms();
   }
 
   void pageListener() {
@@ -225,8 +220,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _buildAddRoomButton(),
-                    const SizedBox(width: 10),
                     _buildHousePowerButton(),
                   ],
                 ),
@@ -609,35 +602,6 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.edit, size: 22, color: Colors.white),
-              title: const Text(
-                'Edit Room',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(dialogContext);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => AddRoomScreen(
-                      roomToEdit: {
-                        'id': room.id,
-                        'name': room.name,
-                        'imagePath':
-                            serviceRoom?.imagePath ?? room.wallpaperUrl,
-                        'loads': serviceRoom?.loadIds ??
-                            room.devices.map((d) => d.id).toList(),
-                      },
-                    ),
-                  ),
-                );
-              },
-            ),
-            ListTile(
               leading: Icon(
                 room.isFavorite
                     ? Icons.star_rounded
@@ -663,54 +627,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ).setFavoriteRoom(room.id, next);
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.delete, size: 22, color: Colors.red),
-              title: const Text(
-                'Delete Room',
-                style: TextStyle(
-                  color: Colors.red,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(dialogContext);
-                _confirmDeleteRoom(context, room);
-              },
-            ),
           ],
         ),
-      ),
-    );
-  }
-
-  void _confirmDeleteRoom(BuildContext context, Room room) {
-    final mqttService = Provider.of<DirectMQTTService>(context, listen: false);
-    showDialog(
-      context: context,
-      builder: (context) => FrostedAlertDialog(
-        title: const Text(
-          'Delete Room?',
-          style: TextStyle(color: Colors.white),
-        ),
-        content: Text(
-          'Are you sure you want to delete "${room.name}"?',
-          style: TextStyle(color: Colors.white70),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              RoomService.instance.deleteRoom(room.id);
-              mqttService.deleteRoom(room.id);
-            },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
-          ),
-        ],
       ),
     );
   }
@@ -801,58 +719,6 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         );
       },
-    );
-  }
-
-  Widget _buildAddRoomButton() {
-    return GestureDetector(
-      onTap: () async {
-        final result = await Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const AddRoomScreen()),
-        );
-        if (result != null) {
-          _addRoom(result);
-          if (mounted) setState(() {});
-        }
-      },
-      // Frosted-glass pill: blurs the background behind the button so it
-      // reads as glassmorphism, matching the category chips in the room
-      // load screen.
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(18),
-        child: BackdropFilter(
-          filter: ui.ImageFilter.blur(
-            sigmaX: 10,
-            sigmaY: 10,
-          ),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.07),
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.16),
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.add_circle_outline, color: Colors.white, size: 20),
-                const SizedBox(width: 8),
-                Text(
-                  "Add Room",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

@@ -112,24 +112,27 @@ require("../KNX/actHdlr");
         saveAppScenes();
     };
 
-    // A fresh config upload (makFile.php) is a FULL RESET: wipe rooms/scenes files and retained topics, then republish an empty home.
+    // A fresh config upload (makFile.php) swaps the load list AND the rooms:
+    // rooms are part of the uploaded config now (Data/rooms.json written by
+    // PHP), so they survive the reset. App scenes, the per-load status cache,
+    // and the broker's retained state are still wiped, then re-seeded from
+    // the new files — no window where a stale list and a fresh config mix.
     const resetBoardState = () => {
         const marker = path.join(__dirname, '..', 'Data', '.configReset');
         if (!fs.existsSync(marker)) return;
         try {
             fs.unlinkSync(marker);
-            dbg.Inf('MQTT: Config reset marker found - wiping previous rooms/scenes.');
+            dbg.Inf('MQTT: Config reset marker found - wiping previous app scenes/status.');
 
-            global.rooms = [];
             global.appScenes = [];
-            saveRooms();
             saveAppScenes();
-            // Also drop the historical backup so no stale copy can return.
-            try { fs.unlinkSync(ROOMS_FILE + '.bak'); } catch (e) { /* no backup */ }
+            // Rooms now live in the config; reload what makFile.php wrote.
+            loadRooms();
 
             if (mqttClnt && isMqttCntd) {
-                // Clear the retained room/scene lists.
-                mqttPub(TPCS.PUB.ST_ROOMS, { rooms: [] }, true);
+                // Republish the configured rooms (not an empty home) and
+                // clear the retained scene/status topics.
+                mqttPub(TPCS.PUB.ST_ROOMS, { rooms: global.rooms }, true);
                 mqttPub(TPCS.PUB.APP_SCENES, [], true);
                 clearRetainedStatusTopics();
             }

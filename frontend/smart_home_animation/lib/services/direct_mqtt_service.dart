@@ -932,18 +932,6 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
-  void addRoom(Map<String, dynamic> roomData) {
-    publish('rooms/add', json.encode(roomData));
-  }
-
-  void deleteRoom(String roomId) {
-    publish('rooms/delete', json.encode({'id': roomId}));
-  }
-
-  void updateRoom(Map<String, dynamic> roomData) {
-    publish('rooms/add', json.encode(roomData));
-  }
-
   void getRooms() {
     publish('rooms/get', '{}');
   }

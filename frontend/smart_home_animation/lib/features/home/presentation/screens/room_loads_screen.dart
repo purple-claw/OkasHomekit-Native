@@ -12,10 +12,8 @@ import 'package:smart_home_animation/services/quick_select_service.dart';
 import 'package:smart_home_animation/services/room_scene_service.dart';
 import 'package:smart_home_animation/services/room_service.dart';
 import 'package:smart_home_animation/services/scene_favorites_service.dart';
-import 'package:smart_home_animation/services/token_auth_service.dart';
 import '../widgets/load_grid_card.dart';
 import '../widgets/figma_load_sheets.dart';
-import 'add_room_screen.dart';
 import 'room_scene_editor_screen.dart';
 import 'package:smart_home_animation/core/shared/presentation/widgets/glass_panel.dart';
 
@@ -184,11 +182,6 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
                 );
               },
             ),
-            if (context.watch<TokenAuthService>().isAdmin)
-              IconButton(
-                icon: const Icon(Icons.more_vert, color: Colors.white),
-                onPressed: () => _showRoomEditMenu(context),
-              ),
           ],
         ),
         body: Column(
@@ -1315,91 +1308,6 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
             ),
           );
         },
-      ),
-    );
-  }
-
-  void _showRoomEditMenu(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) => FrostedAlertDialog(
-        backgroundColor: SHColors.elevatedCardColor,
-        title: Text(
-          widget.room.name,
-          style: const TextStyle(color: Colors.white),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.edit, color: Colors.white),
-              title: const Text(
-                'Edit Room',
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () {
-                Navigator.pop(ctx);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => AddRoomScreen(
-                      roomToEdit: {
-                        'id': widget.room.id,
-                        'name': widget.room.name,
-                        'imagePath': widget.room.imagePath,
-                        'loads': widget.room.loadIds,
-                      },
-                    ),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text(
-                'Delete Room',
-                style: TextStyle(color: Colors.red),
-              ),
-              onTap: () {
-                Navigator.pop(ctx);
-                _confirmDeleteRoom();
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _confirmDeleteRoom() {
-    final mqttService = Provider.of<DirectMQTTService>(context, listen: false);
-    showDialog(
-      context: context,
-      builder: (ctx) => FrostedAlertDialog(
-        backgroundColor: SHColors.elevatedCardColor,
-        title: const Text(
-          'Delete Room?',
-          style: TextStyle(color: Colors.white),
-        ),
-        content: Text(
-          'Are you sure you want to delete "${widget.room.name}"?',
-          style: TextStyle(color: Colors.white70),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              RoomService.instance.deleteRoom(widget.room.id);
-              mqttService.deleteRoom(widget.room.id);
-              Navigator.pop(context);
-            },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
-          ),
-        ],
       ),
     );
   }

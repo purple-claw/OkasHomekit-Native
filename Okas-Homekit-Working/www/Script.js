@@ -1,4 +1,4 @@
-let KNXdata = { prjNm: "", knxIp: "", knxPort: 3671, loads: [] };
+let KNXdata = { prjNm: "", knxIp: "", knxPort: 3671, loads: [], rooms: [] };
 let editIndex = -1;
 // Tabs are separate documents; without this sessionStorage cache, navigating = losing your edits.
 const KNX_SESSION_KEY = "okas_knx_session_v1";
@@ -52,7 +52,8 @@ function rehydrateKNXSession() {
             prjNm: cached.prjNm ?? "",
             knxIp: cached.knxIp ?? "",
             knxPort: cached.knxPort ?? 3671,
-            loads: cached.loads
+            loads: cached.loads,
+            rooms: cached.rooms ?? []
         };
         document.getElementById("prjNm").value = KNXdata.prjNm || "";
         document.getElementById("knxIp").value = KNXdata.knxIp || "192.168.26.45";
@@ -171,6 +172,7 @@ function rstKNXinfo() {
     KNXdata.knxIp = "";
     KNXdata.knxPort = 3671;
     KNXdata.loads = [];
+    KNXdata.rooms = [];
     document.getElementById("prjNm").value = "";
     document.getElementById("knxIp").value = "192.168.26.45";
     document.getElementById("knxPort").value = 3671;
@@ -572,6 +574,14 @@ function cnfDel() {
 
 function delLoad() {
     KNXdata.loads.splice(editIndex, 1);
+    // Board load indices are positional: deleting a load shifts every
+    // room reference past it. Keep room assignments consistent.
+    const removedIdx = editIndex + 1;
+    KNXdata.rooms.forEach((room) => {
+        room.loads = (room.loads || [])
+            .filter((idx) => idx !== removedIdx)
+            .map((idx) => (idx > removedIdx ? idx - 1 : idx));
+    });
     editIndex = -1;
     persistKNXSession();
     shwLds();

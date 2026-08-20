@@ -1,0 +1,126 @@
+- generic [active] [ref=f10e1]:
+  - generic [ref=f10e2]:
+    - banner [ref=f10e3]:
+      - link "OKAS Home" [ref=f10e5] [cursor=pointer]:
+        - /url: index.html
+        - img "OKAS" [ref=f10e6]
+    - navigation "Primary" [ref=f10e7]:
+      - link "Configuration" [ref=f10e8] [cursor=pointer]:
+        - /url: index.html
+      - link "Rooms" [ref=f10e9] [cursor=pointer]:
+        - /url: rooms.html
+      - link "User Management" [ref=f10e10] [cursor=pointer]:
+        - /url: users.html
+      - link "Log Manager" [ref=f10e11] [cursor=pointer]:
+        - /url: logMgr.html
+      - link "Device Information" [ref=f10e12] [cursor=pointer]:
+        - /url: deviceInfo.html
+    - main [ref=f10e13]:
+      - generic [ref=f10e14]:
+        - region [ref=f10e15]:
+          - generic [ref=f10e16]:
+            - heading "Room Editor" [level=2] [ref=f10e17]
+            - generic [ref=f10e18]: Editing Room
+          - paragraph [ref=f10e19]: Click Save Room to apply the changes.
+          - generic [ref=f10e20]:
+            - generic [ref=f10e21]: Room Name
+            - textbox "Room Name" [ref=f10e22]:
+              - /placeholder: e.g. Living Room
+              - text: Kitchen
+          - generic [ref=f10e23]:
+            - generic [ref=f10e24]: Loads in this Room
+            - generic [ref=f10e25]:
+              - generic [ref=f10e124]:
+                - generic [ref=f10e125]: Switch
+                - generic [ref=f10e127]:
+                  - generic [ref=f10e128] [cursor=pointer]:
+                    - checkbox "SofaLights Switch" [ref=f10e129]
+                    - generic [ref=f10e130]: SofaLights
+                    - generic [ref=f10e131]: Switch
+                  - generic [ref=f10e132] [cursor=pointer]:
+                    - checkbox "Bedside Lamp Switch" [ref=f10e133]
+                    - generic [ref=f10e134]: Bedside Lamp
+                    - generic [ref=f10e135]: Switch
+              - generic [ref=f10e136]:
+                - generic [ref=f10e137]: Dimmer
+                - generic [ref=f10e140] [cursor=pointer]:
+                  - checkbox "Ceiling Dim Dimmer" [ref=f10e141]
+                  - generic [ref=f10e142]: Ceiling Dim
+                  - generic [ref=f10e143]: Dimmer
+              - generic [ref=f10e144]:
+                - generic [ref=f10e145]: RGB
+                - generic [ref=f10e148] [cursor=pointer]:
+                  - checkbox "TV Strip RGB RGB" [ref=f10e149]
+                  - generic [ref=f10e150]: TV Strip RGB
+                  - generic [ref=f10e151]: RGB
+              - generic [ref=f10e152]:
+                - generic [ref=f10e153]: Fan
+                - generic [ref=f10e156] [cursor=pointer]:
+                  - checkbox "Kitchen Fan Fan" [checked] [ref=f10e157]
+                  - generic [ref=f10e158]: Kitchen Fan
+                  - generic [ref=f10e159]: Fan
+              - generic [ref=f10e160]:
+                - generic [ref=f10e161]: Curtain
+                - generic [ref=f10e164] [cursor=pointer]:
+                  - checkbox "Window Curtain Curtain" [checked] [ref=f10e165]
+                  - generic [ref=f10e166]: Window Curtain
+                  - generic [ref=f10e167]: Curtain
+              - generic [ref=f10e168]:
+                - generic [ref=f10e169]: Scene
+                - generic [ref=f10e172] [cursor=pointer]:
+                  - checkbox "Scene Goodnight Scene" [ref=f10e173]
+                  - generic [ref=f10e174]: Scene Goodnight
+                  - generic [ref=f10e175]: Scene
+              - generic [ref=f10e176]:
+                - generic [ref=f10e177]: HVAC
+                - generic [ref=f10e180] [cursor=pointer]:
+                  - checkbox "AC Master HVAC" [ref=f10e181]
+                  - generic [ref=f10e182]: AC Master
+                  - generic [ref=f10e183]: HVAC
+          - generic [ref=f10e86]:
+            - button "New Room" [ref=f10e87] [cursor=pointer]
+            - button "Save Room" [ref=f10e88] [cursor=pointer]
+        - region [ref=f10e89]:
+          - generic [ref=f10e90]:
+            - heading "Saved Rooms" [level=2] [ref=f10e91]
+            - generic [ref=f10e92]: "2"
+          - generic [ref=f10e93]:
+            - button "Bedroom Delete Bedroom 2 loads HVAC Switch" [ref=f10e243] [cursor=pointer]:
+              - generic [ref=f10e244]:
+                - generic [ref=f10e245]: Bedroom
+                - button "Delete Bedroom" [ref=f10e246]: ×
+              - generic [ref=f10e247]:
+                - generic [ref=f10e248]: 2 loads
+                - generic [ref=f10e249]:
+                  - generic "HVAC" [ref=f10e250]
+                  - generic "Switch" [ref=f10e251]
+            - button "Kitchen Delete Kitchen 2 loads Fan Curtain" [ref=f10e252] [cursor=pointer]:
+              - generic [ref=f10e253]:
+                - generic [ref=f10e254]: Kitchen
+                - button "Delete Kitchen" [ref=f10e255]: ×
+              - generic [ref=f10e256]:
+                - generic [ref=f10e257]: 2 loads
+                - generic [ref=f10e258]:
+                  - generic "Fan" [ref=f10e259]
+                  - generic "Curtain" [ref=f10e260]
+      - region [ref=f10e115]:
+        - generic [ref=f10e116]:
+          - heading "Room Loads" [level=2] [ref=f10e117]
+          - generic [ref=f10e214]: 2 loads
+        - paragraph [ref=f10e118]: Everything Kitchen controls, grouped by load type.
+        - generic [ref=f10e119]:
+          - generic [ref=f10e261]:
+            - generic [ref=f10e262]:
+              - generic [ref=f10e264]: Fan
+              - generic [ref=f10e265]: "1"
+            - generic [ref=f10e267]:
+              - generic [ref=f10e268]: Kitchen Fan
+              - generic [ref=f10e269]: 4/1/1, 4/1/2, 4/1/3, 4/1/4
+          - generic [ref=f10e270]:
+            - generic [ref=f10e271]:
+              - generic [ref=f10e273]: Curtain
+              - generic [ref=f10e274]: "1"
+            - generic [ref=f10e276]:
+              - generic [ref=f10e277]: Window Curtain
+              - generic [ref=f10e278]: 5/1/1, 5/1/2, 5/1/3, 5/1/4, 5/1/5
+  - contentinfo [ref=f10e123]: © Miantic AV Distribution Pvt. Ltd.

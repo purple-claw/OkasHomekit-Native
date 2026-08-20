@@ -124,13 +124,56 @@ if ($inDat) {
         echo $rslt;
         $oData = o2S($ldData);
         file_put_contents($file, $oData);
-        // A configuration upload is a full factory reset: the previous
-        // rooms, app scenes, per-load status cache, and the broker's
-        // retained state must all be discarded. The Node service performs
-        // the actual wipe (it knows every topic and file involved), so we
-        // just drop a marker file it checks at startup. Writing this AFTER
-        // loadData.json guarantees the new config is in place before the
-        // wipe runs — no window where the wipe and a stale load list mix.
+        // Rooms are part of the uploaded configuration now. The full list
+        // comes from the web page; imagePath (mobile-only feature) and
+        // isFavorite are app-owned, so merge them back from the previous
+        // file when a room keeps its name.
+        if (isset($inDat->rooms) && is_array($inDat->rooms)) {
+            $roomsFile = "../Data/rooms.json";
+            $oldRooms = [];
+            if (file_exists($roomsFile)) {
+                $old = s2O(file_get_contents($roomsFile));
+                if (is_array($old)) $oldRooms = $old;
+            }
+            $newRooms = [];
+            foreach ($inDat->rooms as $r) {
+                if (!isset($r->name) || trim($r->name) === "") continue;
+                $name = trim($r->name);
+                $oldRoom = null;
+                foreach ($oldRooms as $o) {
+                    if (isset($o->name) && $o->name === $name) { $oldRoom = $o; break; }
+                }
+                $lds = [];
+                if (isset($r->loads) && is_array($r->loads)) {
+                    foreach ($r->loads as $ld) {
+                        $l = (int)$ld;
+                        if ($l > 0) $lds[] = $l;
+                    }
+                }
+                $newRooms[] = (object)[
+                    "id" => ($oldRoom && isset($oldRoom->id)) ? $oldRoom->id : $name,
+                    "name" => $name,
+                    "imagePath" => ($oldRoom && isset($oldRoom->imagePath)) ? $oldRoom->imagePath : null,
+                    "loads" => array_values(array_unique($lds)),
+                    "createdAt" => ($oldRoom && isset($oldRoom->createdAt)) ? $oldRoom->createdAt : date("c"),
+                    "isFavorite" => ($oldRoom && isset($oldRoom->isFavorite)) ? $oldRoom->isFavorite : false
+                ];
+            }
+            // Write via temp+rename: the file may be node-owned (app room
+            // image/favorite updates) — overwriting in place would hit a
+            // permission wall. Rename only needs dir write access, which
+            // www-data has.
+            $tmpF = $roomsFile . '.tmp';
+            file_put_contents($tmpF, o2S($newRooms));
+            rename($tmpF, $roomsFile);
+        }
+        // A configuration upload is a full factory reset of everything
+        // EXCEPT rooms — rooms ride along in the uploaded config, so the
+        // Node service only wipes app scenes, the per-load status cache,
+        // and the broker's retained state. We just drop a marker file it
+        // checks at startup. Writing this AFTER loadData.json/rooms.json
+        // guarantees the new config is in place before the wipe runs —
+        // no window where the wipe and a stale load list mix.
         file_put_contents(__DIR__ . '/../Data/.configReset', date('c'));
         sleep(2);
         // Restart KNX bridge first (must reconnect to new gateway), then HomeKit service
