@@ -317,6 +317,17 @@ class TokenAuthService extends ChangeNotifier {
     _decodeResponse(response);
   }
 
+  Future<String> getGuestToken(String guestId) async {
+    _requireAdmin();
+    final response = await http
+        .get(_apiUri('/api/auth/guests/$guestId/token'), headers: _authHeaders())
+        .timeout(const Duration(seconds: 10));
+    final data = _decodeResponse(response);
+    final token = data['token'] as String?;
+    if (token == null || token.isEmpty) throw const AuthApiException('Token not available for this guest.');
+    return token;
+  }
+
   Future<String?> _discoverBoardIp() async {
     try {
       final devices = await MDNSDiscovery().discoverOKASDevice();

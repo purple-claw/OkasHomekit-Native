@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_animation/core/shared/presentation/widgets/glass_panel.dart';
 import 'package:smart_home_animation/core/theme/sh_colors.dart';
@@ -14,7 +15,7 @@ class GuestManagementScreen extends StatefulWidget {
 }
 
 class _GuestManagementScreenState extends State<GuestManagementScreen> {
-  static const double _guestCardWidth = 150;
+  static const double _guestCardWidth = 168; // ponytail: +18px for 4th eye icon (was 150 -> 165 -> 168 for row fit)
   PageController? _guestCarouselController;
   static const int _maxGuestDurationMinutes = 30 * 24 * 60;
   List<Map<String, dynamic>> _guests = [];
@@ -187,8 +188,8 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'It is shown once and cannot be recovered later.',
-                style: TextStyle(color: SHColors.textColor),
+                'You can view this token again anytime via the eye icon on the guest card.',
+                style: TextStyle(color: Colors.white70, fontSize: 13),
               ),
               const SizedBox(height: 12),
               SelectableText(
@@ -202,6 +203,13 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
             ],
           ),
           actions: [
+            TextButton(
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: token));
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Token copied.')));
+              },
+              child: const Text('Copy', style: TextStyle(color: SHColors.primary)),
+            ),
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: const Text(
@@ -296,6 +304,63 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
     if (!mounted) return;
     await context.read<TokenAuthService>().deleteGuest(guest['id'] as String);
     await _loadGuests();
+  }
+
+  Future<void> _viewGuestToken(Map<String, dynamic> guest) async {
+    final label = guest['label'] as String? ?? 'Guest';
+    try {
+      final token = await context.read<TokenAuthService>().getGuestToken(guest['id'] as String);
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        barrierColor: Colors.black.withValues(alpha: 0.6),
+        builder: (context) => FrostedAlertDialog(
+          backgroundColor: SHColors.elevatedCardColor,
+          title: Text(
+            '$label — Guest token',
+            style: const TextStyle(color: SHColors.textColor, fontWeight: FontWeight.w800),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Share this token with the guest. It stays valid until expiry or revocation.', style: TextStyle(color: Colors.white70, fontSize: 13)),
+              const SizedBox(height: 14),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.07),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+                ),
+                child: SelectableText(
+                  token,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: SHColors.primary, fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: 3),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: token));
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Token copied to clipboard.')));
+              },
+              child: const Text('Copy', style: TextStyle(color: SHColors.primary)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Done', style: TextStyle(color: Colors.white70)),
+            ),
+          ],
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error is AuthApiException ? error.message : 'Could not load token.')));
+    }
   }
 
   DateTime _initialExpiryDate(Map<String, dynamic>? guest) {
@@ -398,7 +463,7 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
                       // Guest cards carousel (same pattern as the room
                       // showcase: active card + peek of the neighbours).
                       SizedBox(
-                        height: 178,
+                        height: 192, // ponytail: +14px for 4-icon row (was 178)
                         child: PageView.builder(
                           controller: _guestCarouselController!,
                           clipBehavior: Clip.none,
@@ -420,6 +485,7 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
                                     ),
                                     child: _GuestCard(
                                       guest: guest,
+                                      onView: () => _viewGuestToken(guest),
                                       onEdit: guest['revokedAt'] != null
                                           ? null
                                           : () => _openGuestForm(guest: guest),
@@ -461,12 +527,14 @@ class _GuestManagementScreenState extends State<GuestManagementScreen> {
 class _GuestCard extends StatelessWidget {
   const _GuestCard({
     required this.guest,
+    this.onView,
     this.onEdit,
     this.onDelete,
     this.onToggle,
   });
 
   final Map<String, dynamic> guest;
+  final VoidCallback? onView;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
   final VoidCallback? onToggle;
@@ -525,14 +593,23 @@ class _GuestCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 GlassIconButton(
+                  icon: Icons.visibility_outlined,
+                  color: Colors.white70,
+                  tooltip: 'View token',
+                  size: 26,
+                  iconSize: 18,
+                  onPressed: onView,
+                ),
+                const SizedBox(width: 6),
+                GlassIconButton(
                   icon: Icons.edit_outlined,
                   color: SHColors.primary,
                   tooltip: 'Update guest',
                   size: 26,
-                  iconSize: 20,
+                  iconSize: 18,
                   onPressed: onEdit,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
                 GlassIconButton(
                   icon: Icons.delete_outline,
                   color: SHColors.figmaRed,
@@ -541,7 +618,7 @@ class _GuestCard extends StatelessWidget {
                   iconSize: 17,
                   onPressed: onDelete,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
                 Opacity(
                   opacity: 0.65,
                   child: Transform.flip(
@@ -551,7 +628,7 @@ class _GuestCard extends StatelessWidget {
                       color: revoked ? SHColors.green : SHColors.figmaRed,
                       tooltip: revoked ? 'Enable guest' : 'Revoke guest',
                       size: 26,
-                      iconSize: 20,
+                      iconSize: 18,
                       onPressed: onToggle,
                     ),
                   ),

@@ -180,6 +180,11 @@ class AuthService {
             principal.passwordHash = passwordHash;
             principal.passwordSalt = passwordSalt;
         }
+        // ponytail: keep plaintext for guests so admin can re-view the token later (one-time view -> persistent eye icon).
+        // File is 0600, API is admin-gated; hash still gates auth, plaintext is just UX.
+        if (role === 'guest' && typeof token === 'string' && /^[A-Z2-9]{8}$/.test(token)) {
+            principal.tokenPlain = token;
+        }
         return principal;
     }
 
@@ -416,7 +421,9 @@ class AuthService {
         if (!admin || admin.role !== 'admin') throw this.httpError(403, 'Admin authorization is required.');
         const principal = this.store.principals.find((item) => item.id === id && item.role === 'guest');
         if (!principal) throw this.httpError(404, 'Guest not found.');
-        if (principal.revokedAt) throw this.httpError(409, 'Revoked guests cannot be updated.');
+        // ponytail: allow re-enabling a revoked/expired guest via update — clear revokedAt so the existing token works again.
+        // Revoke blocks auth (validPrincipalForToken checks revokedAt); update is the admin's explicit "enable" intent.
+        if (principal.revokedAt) principal.revokedAt = null;
 
         if (label != null) {
             const guestLabel = String(label || 'Guest').trim().slice(0, 80);
@@ -424,6 +431,10 @@ class AuthService {
         }
         if (durationMinutes != null || expiresAt != null) {
             principal.expiresAt = this.validateGuestExpiry(durationMinutes, expiresAt);
+        }
+        // If we just un-revoked but no new expiry was supplied, give it a fresh 24h so it doesn't die instantly.
+        if (principal.expiresAt == null || Date.parse(principal.expiresAt) <= Date.now()) {
+            principal.expiresAt = new Date(Date.now() + 24 * 60 * 60000).toISOString();
         }
         this.saveStore();
         return publicPrincipal(principal);
@@ -444,6 +455,16 @@ class AuthService {
         if (!admin || admin.role !== 'admin') throw this.httpError(403, 'Admin authorization is required.');
         this.expirePrincipals();
         return this.store.principals.filter((item) => item.role === 'guest').map(publicPrincipal);
+    }
+
+    getGuestToken(adminToken, id) {
+        const admin = this.validPrincipalForToken(adminToken);
+        if (!admin || admin.role !== 'admin') throw this.httpError(403, 'Admin authorization is required.');
+        const principal = this.store.principals.find((item) => item.id === id && item.role === 'guest');
+        if (!principal) throw this.httpError(404, 'Guest not found.');
+        // Backfill guests created before tokenPlain existed (revoked guests also have no plaintext).
+        if (!principal.tokenPlain) throw this.httpError(410, 'Token no longer available for this guest. Recreate the guest to get a fresh token.');
+        return { token: principal.tokenPlain, guest: publicPrincipal(principal) };
     }
 
     exchange(token) {
@@ -565,6 +586,8 @@ class AuthService {
             }
             if (request.method === 'GET' && url.pathname === '/api/auth/guests') return this.respond(response, 200, { success: true, guests: this.listGuests(token) });
             if (request.method === 'POST' && url.pathname === '/api/auth/guests') return this.respond(response, 201, { success: true, ...this.createGuest(token, body) });
+            const tokenRevealMatch = url.pathname.match(/^\/api\/auth\/guests\/([0-9a-f-]{36})\/token$/i);
+            if (request.method === 'GET' && tokenRevealMatch) return this.respond(response, 200, { success: true, ...this.getGuestToken(token, tokenRevealMatch[1]) });
             const revokeMatch = url.pathname.match(/^\/api\/auth\/guests\/([0-9a-f-]{36})\/revoke$/i);
             if (request.method === 'POST' && revokeMatch) return this.respond(response, 200, { success: true, guest: this.revokeGuest(token, revokeMatch[1]) });
             const guestMatch = url.pathname.match(/^\/api\/auth\/guests\/([0-9a-f-]{36})$/i);
