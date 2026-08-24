@@ -546,6 +546,9 @@ function shwLds() {
     }).join("");
 
     setBackupAvailability();
+    if (typeof refreshCfgSummary === 'function') refreshCfgSummary();
+    const s3 = document.getElementById('stage3');
+    if (s3 && !s3.hidden && typeof renderStudio === 'function') renderStudio();
 }
 
 function editLoad() {
@@ -589,6 +592,332 @@ function delLoad() {
     bootstrap.Modal.getInstance(document.getElementById("deleteModal")).hide();
 }
 
+// ============ Single-page flow: Stage 1 Project · Stage 2 ETS Review · Stage 3 Rooms & Loads ============
+let etsDraft = null; // {prjNm, loads:[{ldNm,ldTyp,gAdd,_inc,...}], rooms:[{name,loads:[1-based],_inc}]}
+let studioSel = 0;   // selected KNXdata.rooms index; '__unassigned__' for the pseudo-room
+
+const LD_HUES = { Switch:'#00afd2', Dimmer:'#f0a000', RGB:'#8e5bd6', Tunable:'#e8590c',
+                  HVAC:'#0ca678', Scene:'#3b82f6', Fan:'#5c7cfa', Curtain:'#d63384' };
+const hueOf = (t) => LD_HUES[t] || '#00afd2';
+
+function showStage(n) {
+    [1, 2, 3].forEach((i) => {
+        document.getElementById('stage' + i).hidden = i !== n;
+    });
+    document.querySelectorAll('.bus-seg').forEach((seg) => {
+        const v = Number(seg.dataset.seg);
+        seg.classList.toggle('is-on', v === n);
+        seg.classList.toggle('is-done', v < n);
+    });
+    if (n === 1) refreshCfgSummary();
+    if (n === 3) renderStudio();
+}
+
+function backToStage1() { showStage(1); }
+
+function refreshCfgSummary() {
+    const box = document.getElementById('cfgSummary');
+    const nL = KNXdata.loads.length;
+    const nR = KNXdata.rooms.length;
+    if (!nL && !nR) { box.hidden = true; return; }
+    box.hidden = false;
+    const typeCounts = {};
+    KNXdata.loads.forEach((l) => { typeCounts[l.ldTyp] = (typeCounts[l.ldTyp] || 0) + 1; });
+    box.innerHTML =
+        `<span class="sum-chip"><b>${nL}</b> load${nL === 1 ? '' : 's'} configured</span>` +
+        `<span class="sum-chip"><b>${nR}</b> room${nR === 1 ? '' : 's'}</span>` +
+        Object.entries(typeCounts).map(([t, c]) =>
+            `<span class="sum-chip ld-hue-${t}" style="--hue:${hueOf(t)}">
+                <span class="rail-dot" style="--hue:${hueOf(t)}"></span><b style="font-size:14px">${c}</b> ${escHtml(t)}</span>`
+        ).join('');
+}
+
+// ---------------- Upload ETS ----------------
+function uploadEts() {
+    document.getElementById('etsInp').click();
+}
+
+document.getElementById('etsInp').addEventListener('change', function () {
+    if (!this.files || !this.files.length) return;
+    const file = this.files[0];
+    this.value = '';
+    if (!file.name.toLowerCase().endsWith('.knxproj')) {
+        showError('Please select a .knxproj ETS project file.', { title: 'Validation Error' });
+        return;
+    }
+    const btn = document.querySelector('.btn-primary-glass');
+    const orig = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Converting…';
+    const fd = new FormData();
+    fd.append('etsfile', file);
+    fetch(window.location.origin + '/uploadEts.php', { method: 'POST', body: fd })
+        .then((r) => r.json().catch(() => ({ ok: false, err: 'Invalid server response.' })))
+        .then((res) => {
+            if (!res.ok) {
+                showError(res.err || 'Conversion failed.', { title: 'ETS Import' });
+                return;
+            }
+            etsDraft = res.draft;
+            etsDraft.loads.forEach((ld) => { ld._inc = true; });
+            etsDraft.rooms.forEach((rm) => { rm._inc = true; });
+            if (document.getElementById('prjNm').value.trim() === '' && etsDraft.prjNm) {
+                document.getElementById('prjNm').value = etsDraft.prjNm;
+                updPrjMeta();
+            }
+            renderReview();
+            showStage(2);
+        })
+        .catch((e) => showError('Upload failed: ' + e.message, { title: 'ETS Import' }))
+        .finally(() => { btn.disabled = false; btn.textContent = orig; });
+});
+
+// ---------------- Stage 2 · review ----------------
+function renderReview() {
+    const incLoads = etsDraft.loads.filter((l) => l._inc).length;
+    const incRooms = etsDraft.rooms.filter((r) => r._inc).length;
+    document.getElementById('revLead').textContent =
+        'Everything below came from the ETS project. Tick what to keep, rename anything — names are what you will see in the app.';
+    document.getElementById('revCounts').innerHTML =
+        `<span class="rev-count">${incRooms} room${incRooms === 1 ? '' : 's'}</span>` +
+        `<span class="rev-count">${incLoads} load${incLoads === 1 ? '' : 's'} kept</span>`;
+    document.getElementById('revContinueBtn').disabled = incLoads === 0;
+
+    document.getElementById('revBody').innerHTML = etsDraft.rooms.map((rm, ri) => {
+        const chips = rm.loads.map((boardIdx) => {
+            const ld = etsDraft.loads[boardIdx - 1];
+            if (!ld) return '';
+            return `<label class="rev-chip ld-hue-${ld.ldTyp}${ld._inc ? '' : ' off'}" data-r="${ri}" data-l="${boardIdx}">
+                <input type="checkbox" data-act="ldinc" ${ld._inc ? 'checked' : ''}>
+                <span class="dot" style="--hue:${hueOf(ld.ldTyp)}"></span>
+                <input class="ets-name" value="${escHtml(ld.ldNm)}" data-act="ldname" title="Rename load">
+                <span class="ldtyp">${escHtml(ld.ldTyp)}</span>
+            </label>`;
+        }).join('');
+        return `<div class="rev-room" data-room="${ri}">
+            <div class="rev-room-head">
+                <input type="checkbox" data-act="rminc" ${rm._inc ? 'checked' : ''} title="Include this room">
+                <input class="rev-room-name" value="${escHtml(rm.name)}" data-act="rmname" title="Rename room">
+                <button type="button" class="rev-drop" data-act="rmexclude">Exclude room</button>
+            </div>
+            <div class="rev-chips">${chips}</div>
+        </div>`;
+    }).join('');
+}
+
+document.getElementById('revBody').addEventListener('change', function (e) {
+    const t = e.target;
+    const act = t.dataset.act;
+    if (!act) return;
+    const roomEl = t.closest('.rev-room');
+    const ri = Number(roomEl.dataset.room);
+    const rm = etsDraft.rooms[ri];
+    if (act === 'rminc') {
+        rm._inc = t.checked;
+        rm.loads.forEach((b) => { etsDraft.loads[b - 1]._inc = t.checked; });
+    } else if (act === 'ldinc') {
+        const chip = t.closest('.rev-chip');
+        etsDraft.loads[Number(chip.dataset.l) - 1]._inc = t.checked;
+        renderReview();
+        return;
+    } else if (act === 'rmname') {
+        rm.name = t.value.trim() || rm.name;
+    } else if (act === 'ldname') {
+        const chip = t.closest('.rev-chip');
+        etsDraft.loads[Number(chip.dataset.l) - 1].ldNm = t.value.trim() || etsDraft.loads[Number(chip.dataset.l) - 1].ldNm;
+    }
+    if (act === 'rminc') renderReview();
+    else updateRevCounts();
+});
+function updateRevCounts() {
+    const incLoads = etsDraft.loads.filter((l) => l._inc).length;
+    const incRooms = etsDraft.rooms.filter((r) => r._inc).length;
+    document.getElementById('revCounts').innerHTML =
+        `<span class="rev-count">${incRooms} room${incRooms === 1 ? '' : 's'}</span>` +
+        `<span class="rev-count">${incLoads} load${incLoads === 1 ? '' : 's'} kept</span>`;
+    document.getElementById('revContinueBtn').disabled = incLoads === 0;
+}
+document.getElementById('revBody').addEventListener('click', function (e) {
+    if (e.target.closest('[data-act="rmexclude"]')) {
+        const ri = Number(e.target.closest('.rev-room').dataset.room);
+        etsDraft.rooms[ri]._inc = false;
+        etsDraft.rooms[ri].loads.forEach((b) => { etsDraft.loads[b - 1]._inc = false; });
+        renderReview();
+    }
+});
+
+function uniqueLoadName(base, taken) {
+    let nm = base.trim() || 'Load';
+    if (!taken.has(nm)) { taken.add(nm); return nm; }
+    for (let i = 2; ; i++) {
+        const cand = `${nm} (${i})`;
+        if (!taken.has(cand)) { taken.add(cand); return cand; }
+    }
+}
+
+function continueReview() {
+    const taken = new Set(KNXdata.loads.map((l) => l.ldNm));
+    const idxMap = new Map();
+    let n = 0;
+    etsDraft.loads.forEach((ld, i) => {
+        if (!ld._inc) return;
+        const clean = { ldNm: uniqueLoadName(ld.ldNm, taken), ldTyp: ld.ldTyp, gAdd: ld.gAdd };
+        ['Scn', 'Kmn', 'Kmx', 'Tmn', 'Tmx', 'Smx', 'Fst'].forEach((k) => {
+            if (ld[k] !== undefined && ld[k] !== '') clean[k] = ld[k];
+        });
+        KNXdata.loads.push(clean);
+        idxMap.set(i + 1, KNXdata.loads.length);
+        n++;
+    });
+    let roomsAdded = 0;
+    etsDraft.rooms.forEach((rm) => {
+        if (!rm._inc) return;
+        const idxs = rm.loads.map((b) => idxMap.get(b)).filter(Boolean);
+        if (!idxs.length) return;
+        KNXdata.rooms.push({ id: rm.name, name: rm.name, imagePath: null, loads: idxs,
+            createdAt: new Date().toISOString(), isFavorite: false });
+        roomsAdded++;
+    });
+    persistKNXSession();
+    shwLds();
+    studioSel = Math.max(0, KNXdata.rooms.length - roomsAdded); // land on first imported room
+    showStage(3);
+    showInfo(`Imported ${n} load(s) into ${roomsAdded} room(s). Review, rename or remove anything, then press Finish.`, { title: 'ETS Imported' });
+}
+
+// ---------------- Stage 3 · rooms & loads studio ----------------
+function unassignedBoardIdxs() {
+    const assigned = new Set();
+    KNXdata.rooms.forEach((r) => (r.loads || []).forEach((b) => assigned.add(b)));
+    const out = [];
+    KNXdata.loads.forEach((l, i) => { if (!assigned.has(i + 1)) out.push(i + 1); });
+    return out;
+}
+
+function renderStudio() {
+    // Rail
+    const rail = document.getElementById('railList');
+    const items = [];
+    KNXdata.rooms.forEach((rm, i) => {
+        const first = rm.loads && rm.loads.length ? KNXdata.loads[rm.loads[0] - 1] : null;
+        const hue = hueOf(first ? first.ldTyp : 'Switch');
+        items.push(`<button type="button" class="rail-item${studioSel === i ? ' active' : ''}"
+            style="--hue:${hue}" data-rail="${i}">
+            <span class="rail-dot"></span>
+            <span class="rail-name">${escHtml(rm.name)}</span>
+            <span class="rail-count">${(rm.loads || []).length}</span>
+        </button>`);
+    });
+    const un = unassignedBoardIdxs();
+    items.push(`<button type="button" class="rail-item${studioSel === '__unassigned__' ? ' active' : ''}"
+        style="--hue:#8fa3b0" data-rail="__unassigned__">
+        <span class="rail-dot"></span>
+        <span class="rail-name">Unassigned</span>
+        <span class="rail-count">${un.length}</span>
+    </button>`);
+    rail.innerHTML = items.join('');
+
+    // Info strip
+    const nL = KNXdata.loads.length, nR = KNXdata.rooms.length;
+    document.getElementById('studioInfo').textContent =
+        `${nL} load${nL === 1 ? '' : 's'} across ${nR} room${nR === 1 ? '' : 's'} — nothing reaches the board until you press Finish.`;
+
+    // Main pane
+    const head = document.getElementById('roomHead');
+    const grid = document.getElementById('tileGrid');
+    if (studioSel === '__unassigned__') {
+        head.innerHTML = `<input class="room-title" value="Unassigned" disabled>
+            <span class="room-meta">${un.length} load${un.length === 1 ? '' : 's'} not in any room yet</span>`;
+        grid.innerHTML = un.length ? un.map(tileHtml).join('') :
+            `<div class="studio-empty"><b>All loads are placed</b>Every load belongs to a room.</div>`;
+    } else {
+        const rm = KNXdata.rooms[studioSel];
+        if (!rm) { studioSel = '__unassigned__'; renderStudio(); return; }
+        head.innerHTML = `
+            <input class="room-title" value="${escHtml(rm.name)}" data-act="roomtitle" title="Rename room">
+            <span class="room-meta">${(rm.loads || []).length} load${(rm.loads || []).length === 1 ? '' : 's'} in this room</span>
+            <span class="room-actions">
+                <button type="button" class="btn-cancel" data-act="delroom">Remove Room</button>
+            </span>`;
+        grid.innerHTML = (rm.loads || []).length ? rm.loads.map(tileHtml).join('') :
+            `<div class="studio-empty"><b>This room is empty</b>Add loads from the toolbar, or assign them to a room after uploading the configuration.</div>`;
+    }
+}
+
+function tileHtml(boardIdx) {
+    const ld = KNXdata.loads[boardIdx - 1];
+    if (!ld) return '';
+    const hue = hueOf(ld.ldTyp);
+    const ga = (ld.gAdd || []).filter(Boolean).join('  ·  ') || 'No group addresses';
+    return `<div class="load-tile ld-hue-${ld.ldTyp}" style="--hue:${hue}" data-bidx="${boardIdx}">
+        <button type="button" class="tile-del" data-act="delltile" title="Delete load">×</button>
+        <div class="tile-top"><span class="tile-dot"></span><span class="tile-type">${escHtml(ld.ldTyp)}</span></div>
+        <input class="tile-name" value="${escHtml(ld.ldNm)}" data-act="tilename" title="Rename load">
+        <div class="tile-ga" title="${escHtml(ga)}">${escHtml(ga)}</div>
+    </div>`;
+}
+
+document.getElementById('railList').addEventListener('click', function (e) {
+    const item = e.target.closest('.rail-item');
+    if (!item) return;
+    const v = item.dataset.rail;
+    studioSel = v === '__unassigned__' ? '__unassigned__' : Number(v);
+    renderStudio();
+});
+
+document.getElementById('stage3').addEventListener('change', function (e) {
+    const act = e.target.dataset.act;
+    if (act === 'roomtitle') {
+        const rm = KNXdata.rooms[studioSel];
+        const nm = e.target.value.trim();
+        if (rm && nm) { rm.name = nm; rm.id = nm; persistKNXSession(); renderStudio(); }
+    } else if (act === 'tilename') {
+        const bidx = Number(e.target.closest('.load-tile').dataset.bidx);
+        const nm = e.target.value.trim();
+        if (nm) { KNXdata.loads[bidx - 1].ldNm = nm; persistKNXSession(); refreshCfgSummary(); }
+    }
+});
+
+document.getElementById('stage3').addEventListener('click', function (e) {
+    const btn = e.target.closest('[data-act]');
+    if (!btn) return;
+    if (btn.dataset.act === 'delltile') {
+        const bidx = Number(btn.closest('.load-tile').dataset.bidx);
+        const ld = KNXdata.loads[bidx - 1];
+        showConfirmDialog(`Delete load "${ld.ldNm}"? This removes it from the configuration.`, {
+            title: 'Delete Load', confirmText: 'Delete', cancelText: 'Keep'
+        }).then((choice) => {
+            if (choice !== 'confirm') return;
+            removeLoadAt(bidx - 1);
+        });
+    } else if (btn.dataset.act === 'delroom') {
+        const rm = KNXdata.rooms[studioSel];
+        showConfirmDialog(`Remove room "${rm.name}"? Its ${rm.loads.length} load(s) stay in the configuration as Unassigned.`, {
+            title: 'Remove Room', confirmText: 'Remove', cancelText: 'Cancel'
+        }).then((choice) => {
+            if (choice !== 'confirm') return;
+            KNXdata.rooms.splice(studioSel, 1);
+            studioSel = Math.min(studioSel, KNXdata.rooms.length - 1);
+            if (studioSel < 0) studioSel = '__unassigned__';
+            persistKNXSession();
+            shwLds(); renderStudio();
+        });
+    }
+});
+
+// Splice a load out of KNXdata and keep every room's 1-based index valid.
+function removeLoadAt(zeroBasedIdx) {
+    KNXdata.loads.splice(zeroBasedIdx, 1);
+    const removedIdx = zeroBasedIdx + 1;
+    KNXdata.rooms.forEach((room) => {
+        room.loads = (room.loads || [])
+            .filter((idx) => idx !== removedIdx)
+            .map((idx) => (idx > removedIdx ? idx - 1 : idx));
+    });
+    persistKNXSession();
+    shwLds(); renderStudio();
+}
+
 async function donCnf() {
     let org = (window.location.origin).toString();
     if (!prepPrj()) return;
@@ -626,6 +955,7 @@ async function donCnf() {
 setBackupAvailability();
 rehydrateKNXSession();
 shwLds();
+showStage(1);
 // Blur-save the metadata too; tab-hopping without it is how configs get eaten.
 ["prjNm", "knxIp", "knxPort"].forEach((id) => {
     const el = document.getElementById(id);

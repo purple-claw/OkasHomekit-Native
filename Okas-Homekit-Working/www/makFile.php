@@ -175,6 +175,11 @@ if ($inDat) {
         // guarantees the new config is in place before the wipe runs —
         // no window where the wipe and a stale load list mix.
         file_put_contents(__DIR__ . '/../Data/.configReset', date('c'));
+        // Config is on the board now — ETS conversion artifacts have no reason
+        // to outlive it. Purge every converter workdir (extracted xmls + JSONs).
+        foreach (glob(sys_get_temp_dir() . '/okas_ets_*', GLOB_ONLYDIR) ?: [] as $old) {
+            exec('rm -rf ' . escapeshellarg($old));
+        }
         sleep(2);
         // Restart KNX bridge first (must reconnect to new gateway), then HomeKit service
         exec("sudo /usr/bin/systemctl restart OhKnxKnx.service");

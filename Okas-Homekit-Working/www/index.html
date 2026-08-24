@@ -7,7 +7,7 @@
   <title>Okas Configuration</title>
   <link rel="icon" type="image/png" href="./assets/Config.png" />
   <link href="./assets/bootstrap.min.css" rel="stylesheet" />
-  <link href="./style.css?v=20260820" rel="stylesheet" />
+  <link href="./style.css?v=20260824b" rel="stylesheet" />
 </head>
 
 <body>
@@ -22,65 +22,114 @@
 
     <nav class="tabs" aria-label="Primary">
       <a class="tab active" href="index.html">Configuration</a>
-      <a class="tab" href="rooms.html">Rooms</a>
       <a class="tab" href="users.html">User Management</a>
       <a class="tab" href="logMgr.html">Log Manager</a>
       <a class="tab" href="deviceInfo.html">Device Information</a>
     </nav>
 
-    <main class="tab-content">
-      <div class="configuration">
-        <section class="config-section" aria-labelledby="configTitle">
-          <h2 id="configTitle">Configuration</h2>
+    <!-- Stage strip: the KNX bus-line progress for the 3-step flow -->
+    <div class="bus-strip" id="busStrip" aria-hidden="true">
+      <span class="bus-seg is-on" data-seg="1"><i>1</i>Project</span>
+      <span class="bus-seg" data-seg="2"><i>2</i>ETS Review</span>
+      <span class="bus-seg" data-seg="3"><i>3</i>Rooms &amp; Loads</span>
+    </div>
+
+    <main class="tab-content cfg-page">
+
+      <!-- ============ STAGE 1 · Project Configuration ============ -->
+      <section class="cfg-stage" id="stage1">
+        <section class="glass-panel cfg-hero" aria-labelledby="cfgTitle">
+          <h2 id="cfgTitle">Project Configuration</h2>
+          <p class="section-lead">Name the project, point it at the KNX gateway, then import the ETS
+            project or manage loads manually.</p>
 
           <div class="config-field">
             <label for="prjNm">Project Name</label>
             <input type="text" id="prjNm" placeholder="Enter Project Name" maxlength="50" />
           </div>
-
-          <div class="config-field">
-            <label for="knxIp">KNX Gateway IP Address</label>
-            <input type="text" id="knxIp" placeholder="192.168.26.45" value="192.168.26.45" pattern="[0-9.]*" oninput="isIP(this)" maxlength="15" />
-          </div>
-
-          <div class="config-field">
-            <label for="knxPort">KNX UDP Port No.</label>
-            <input type="number" id="knxPort" pattern="[0-9]*" placeholder="3671" value="3671" maxlength="5" />
+          <div class="field-row">
+            <div class="config-field">
+              <label for="knxIp">KNX Gateway IP Address</label>
+              <input type="text" id="knxIp" placeholder="192.168.26.45" value="192.168.26.45"
+                pattern="[0-9.]*" oninput="isIP(this)" maxlength="15" />
+            </div>
+            <div class="config-field">
+              <label for="knxPort">KNX UDP Port No.</label>
+              <input type="number" id="knxPort" pattern="[0-9]*" placeholder="3671" value="3671"
+                maxlength="5" />
+            </div>
           </div>
 
           <div id="fPth" class="restore-message"></div>
 
+          <div class="cfg-summary" id="cfgSummary" hidden></div>
+
           <div class="button-row">
-            <button type="button" class="btn-restore" onclick="resDat()">
-              Restore
-            </button>
-            <button type="button" class="btn-backup" id="bkUP" onclick="bkUP()">
-              Backup
-            </button>
-            <button type="button" class="btn-save" onclick="donCnf()">
-              Finish
-            </button>
+            <button type="button" class="btn-primary-glass" onclick="uploadEts()">Upload ETS</button>
+            <button type="button" class="btn-restore" onclick="resDat()">Restore</button>
+            <button type="button" class="btn-backup" id="bkUP" onclick="bkUP()">Backup</button>
           </div>
 
-          <input type="file" id="fInp" style="display: none" accept=".obak,application/json" />
+          <input type="file" id="fInp" style="display:none" accept=".obak,application/json" />
+          <input type="file" id="etsInp" style="display:none" accept=".knxproj" />
+
+          <details class="manual-details" id="manualDetails">
+            <summary>Manual loads (advanced)</summary>
+            <section class="loads-section" id="LdOpts" aria-labelledby="loadsTitle">
+              <div class="loads-header">
+                <h2 id="loadsTitle">Available Loads</h2>
+                <button type="button" class="btn-add-load" onclick="initKNXData()">+ Add Load</button>
+              </div>
+              <div class="loads-accordion" id="loadCan"></div>
+              <div id="edBtn" class="legacy-load-actions" hidden>
+                <button type="button" class="edit-load" onclick="editLoad()">Edit</button>
+                <button type="button" class="delete-load" onclick="cnfDel()">Delete</button>
+              </div>
+            </section>
+          </details>
         </section>
+      </section>
 
-        <section class="loads-section" id="LdOpts" aria-labelledby="loadsTitle">
-          <div class="loads-header">
-            <h2 id="loadsTitle">Available Loads</h2>
-            <button type="button" class="btn-add-load" onclick="initKNXData()">
-              + Add Load
-            </button>
+      <!-- ============ STAGE 2 · ETS Review ============ -->
+      <section class="cfg-stage" id="stage2" hidden>
+        <section class="glass-panel rev-panel" aria-labelledby="revTitle">
+          <div class="rev-head">
+            <div>
+              <h2 id="revTitle">Review ETS Configuration</h2>
+              <p class="section-lead" id="revLead"></p>
+            </div>
+            <div class="rev-counts" id="revCounts"></div>
           </div>
-
-          <div class="loads-accordion" id="loadCan"></div>
-
-          <div id="edBtn" class="legacy-load-actions" hidden>
-            <button type="button" class="edit-load" onclick="editLoad()">Edit</button>
-            <button type="button" class="delete-load" onclick="cnfDel()">Delete</button>
+          <div class="rev-body" id="revBody"></div>
+          <div class="rev-foot">
+            <button type="button" class="btn-cancel" onclick="backToStage1()">Back</button>
+            <button type="button" class="btn-primary-glass" id="revContinueBtn"
+              onclick="continueReview()">Continue →</button>
           </div>
         </section>
-      </div>
+      </section>
+
+      <!-- ============ STAGE 3 · Rooms & Loads Studio ============ -->
+      <section class="cfg-stage" id="stage3" hidden>
+        <div class="studio-topbar">
+          <div class="studio-topbar-info" id="studioInfo"></div>
+          <div class="studio-topbar-actions">
+            <button type="button" class="btn-cancel" onclick="showStage(1)">Project Settings</button>
+            <button type="button" class="btn-backup" onclick="initKNXData()">+ Add Load</button>
+            <button type="button" class="btn-save btn-finish" onclick="donCnf()">Finish ✓</button>
+          </div>
+        </div>
+        <div class="studio">
+          <aside class="studio-rail glass-panel" aria-label="Rooms">
+            <div class="rail-head">Rooms</div>
+            <div id="railList" class="rail-list"></div>
+          </aside>
+          <section class="studio-main glass-panel" aria-label="Room preview">
+            <div class="room-head" id="roomHead"></div>
+            <div class="tile-grid" id="tileGrid"></div>
+          </section>
+        </div>
+      </section>
     </main>
   </div>
 
@@ -163,7 +212,7 @@
           <h5 class="modal-title">Confirm Deletion</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body" id="delModalBody">
           Are you sure you want to delete this load?
         </div>
         <div class="modal-footer">
@@ -198,7 +247,7 @@
 
   <script src="./assets/bootstrap.bundle.min.js"></script>
   <script src="./dialog.js?v=20260820"></script>
-  <script src="Script.js"></script>
+  <script src="Script.js?v=20260824b"></script>
 </body>
 
 </html>
