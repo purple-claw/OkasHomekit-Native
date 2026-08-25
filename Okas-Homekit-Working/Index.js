@@ -63,6 +63,13 @@ process.on('uncaughtException', (err) => {
 initialize();
 
 async function processEnd() {
+    // Graceful close sometimes hangs (broker down, HAP socket stuck) and ate
+    // the full 90s TimeoutStopSec twice. Any stop must finish in 5s — one way
+    // or another.
+    setTimeout(() => {
+        console.error('Graceful shutdown timed out - forcing exit.');
+        process.exit(0);
+    }, 5000).unref();
     await stopAuthService();
     dbg.Inf('Stopping MQTT Service.');
     await discntMqtt();
