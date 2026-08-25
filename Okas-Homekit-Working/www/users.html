@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OKAS Console — User Management</title>
+  <title>User Management</title>
   <link rel="icon" type="image/png" href="./assets/Config.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -44,7 +44,7 @@
     <main class="content">
       <div class="content-head">
         <h1>User Management</h1>
-        <p>Programmer-only owner account management — guests are managed from the owner's mobile app.</p>
+        <p>House Owner account Management.</p>
       </div>
 <div class="users-page" style="display:flex;justify-content:center;width:100%">
         <!-- Programmer-only page. Two states: a brand-new board shows the
@@ -55,10 +55,8 @@
         <section id="setupSection" class="config-section" hidden>
           <h2>First-time setup</h2>
           <p class="config-helper">
-            Create the OKAS owner account. The owner uses this email and
-            password in the mobile app. The password is stored salted and
-            scrypt-hashed on the board &mdash; the actual value never leaves
-            the device.
+            Create the Home Owner account. The owner uses this email and
+            password in the mobile app to Authenticate.
           </p>
           <form id="setupForm" class="config-form" autocomplete="on">
             <div class="config-field">
@@ -72,7 +70,7 @@
                      minlength="8" maxlength="128" autocomplete="new-password"
                      placeholder="At least 8 characters, 3 of: lower / upper / digit / symbol" />
               <small class="config-helper">
-                Must be 8&ndash;128 characters with at least 3 of: lowercase,
+                Must be 8 characters with at least 3 of: lowercase,
                 uppercase, digit, symbol.
               </small>
             </div>
@@ -92,12 +90,12 @@
         <section id="adminSection" class="config-section" hidden>
           <h2>Owner account</h2>
 
-          <p class="config-helper">
+          <!-- <p class="config-helper">
             This page is for the programmer only. Changes are authenticated
             with the physical board access token stored on the device
             &mdash; no owner password is required or requested. Guests are
             managed by the owner from the mobile app.
-          </p>
+          </p> -->
 
           <h3 class="section-subtitle">Change owner name</h3>
           <form id="labelForm" class="config-form" autocomplete="off">
@@ -105,9 +103,9 @@
               <label for="ownerLabel">Display name</label>
               <input type="text" id="ownerLabel" required maxlength="80"
                      placeholder="House Owner" />
-              <small class="config-helper">
+              <!-- <small class="config-helper">
                 Shown in the app home as: <strong>Hi, <span id="labelPreview">&hellip;</span></strong>
-              </small>
+              </small> -->
             </div>
             <div class="config-actions">
               <button type="submit" class="btn-save" id="labelSave">
@@ -131,10 +129,10 @@
           </form>
 
           <h3 class="section-subtitle">Reset owner password</h3>
-          <p class="config-helper">
+          <!-- <p class="config-helper">
             Use this when the owner forgets the password. They'll sign in
             with the new password on their next app visit.
-          </p>
+          </p> -->
           <form id="resetPasswordForm" class="config-form" autocomplete="off">
             <div class="config-field">
               <label for="resetNewPassword">New password</label>

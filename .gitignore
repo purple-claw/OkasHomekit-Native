@@ -98,3 +98,14 @@ Okas-Homekit-Working/package.json
 frontend/__MACOSX
 .playwright-mcp
 Figma
+KNX-Auto-Conversion/board
+KNX-Auto-Conversion/Claude
+KNX-Auto-Conversion/KnxProjects
+KNX-Auto-Conversion/knxprojFiles
+KNX-Auto-Conversion/xmls
+KNX-Auto-Conversion/temp.py
+KNX-Auto-Conversion/okas_loadData.json
+KNX-Auto-Conversion/Objects.txt
+KNX-Auto-Conversion/Miantic Demo Showroom (07-April-26).knxproj
+KNX-Auto-Conversion/knxOut.json.bak
+KNX-Auto-Conversion/__pycache__

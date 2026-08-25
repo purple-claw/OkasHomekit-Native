@@ -206,7 +206,7 @@ button:disabled, input:disabled, select:disabled { cursor: not-allowed; opacity:
 .btn-delete:hover { transform: translateY(-2px); background: rgba(255,93,93,0.18); border-color: rgba(255,93,93,0.7); color: #fff; }
 
 /* ================= INPUTS ================= */
-.config-field { margin-bottom: 18px; }
+.config-field { margin-bottom: 10px; }
 .config-field label, .modal-field label {
   display: block; margin-bottom: 7px;
   color: var(--ink-dim); font-size: 12px; font-weight: 700;
@@ -237,8 +237,10 @@ button:disabled, input:disabled, select:disabled { cursor: not-allowed; opacity:
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .config-helper { color: var(--ink-faint); font-size: 12.5px; line-height: 1.55; }
 .section-subtitle {
-  margin: 26px 0 12px; color: var(--ink);
-  font-size: 13px; font-weight: 750; letter-spacing: 0.07em; text-transform: uppercase;
+  margin: 18px 0 10px; padding-top: 14px;
+  border-top: 1px solid var(--edge);
+  color: var(--ink);
+  font-size: 12.5px; font-weight: 750; letter-spacing: 0.07em; text-transform: uppercase;
 }
 
 /* ================= STAGE 1 · PROJECT ================= */
@@ -526,9 +528,9 @@ button:disabled, input:disabled, select:disabled { cursor: not-allowed; opacity:
   background-position: center;
   background-repeat: no-repeat;
   box-shadow:
-    0 8px 18px color-mix(in srgb, var(--hue) 34%, transparent),
-    inset 0 1px 0 rgba(255,255,255,0.42),
-    inset 0 -2px 5px rgba(0,10,20,0.30);
+    0 4px 10px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255,255,255,0.40),
+    inset 0 -2px 5px rgba(0,10,20,0.28);
 }
 .ld-ico-sm { width: 28px; height: 28px; border-radius: 9px; background-size: 58% 58%, 100% 100%, 100% 100%; }
 .ld-ico-Switch  { --hue:#00afd2; --ico-img:url(assets/icons/switchOn.png); }
@@ -571,8 +573,9 @@ button:disabled, input:disabled, select:disabled { cursor: not-allowed; opacity:
 /* ================= USERS ================= */
 .users-page { display: flex; justify-content: center; }
 .users-page .config-section { width: min(100%, 680px); padding: clamp(24px, 3vw, 34px); animation: rise .5s var(--ease) both; }
-.config-form { display: grid; gap: 4px; }
-.config-actions { display: flex; justify-content: flex-end; margin-top: 16px; }
+.config-form { display: grid; gap: 2px; }
+.config-field small.config-helper, .config-field .config-helper { display: block; margin-top: 5px; }
+.config-actions { display: flex; justify-content: flex-end; margin-top: 10px; }
 
 /* ================= LOG MANAGER ================= */
 .log-manager-page { display: flex; justify-content: center; }

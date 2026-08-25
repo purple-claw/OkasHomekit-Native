@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OKAS Console — Configuration</title>
+  <title>OKAS Console</title>
   <link rel="icon" type="image/png" href="./assets/Config.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -38,14 +38,14 @@
       </nav>
       <div class="sidebar-foot">
         <span class="status-dot" id="boardDot"></span>
-        <span id="boardStatus">Board online</span>
+        <span id="boardStatus">Homekit Online</span>
       </div>
     </aside>
 
     <main class="content">
       <div class="content-head">
         <h1>Configuration</h1>
-        <p>Name the project, point it at the KNX gateway, then import the ETS project.</p>
+        <p>Name the project, import ETS File, Configure Rooms and Load Settings.</p>
       </div>
 
       <div class="bus-strip" id="busStrip" aria-hidden="true">
@@ -58,7 +58,7 @@
       <section class="cfg-stage" id="stage1">
         <section class="cfg-hero glass" aria-labelledby="cfgTitle">
           <h2 id="cfgTitle">Project Configuration</h2>
-          <p class="section-lead">Everything here stays local until you press Finish — then it ships to the board in one shot.</p>
+          <p class="section-lead">Import ETS Project, then configure Rooms and Loads, finally "Finish" to upload configuration..</p>
 
           <div class="config-field">
             <label for="prjNm">Project Name</label>
@@ -92,7 +92,7 @@
           <input type="file" id="etsInp" style="display:none" accept=".knxproj" />
 
           <details class="manual-details" id="manualDetails">
-            <summary>Manual loads (advanced)</summary>
+            <summary>Manual Configuration</summary>
             <section class="loads-section" id="LdOpts" aria-labelledby="loadsTitle">
               <div class="loads-header">
                 <h2 id="loadsTitle">Available Loads</h2>
