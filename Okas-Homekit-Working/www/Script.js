@@ -634,6 +634,30 @@ function refreshCfgSummary() {
 }
 
 // ---------------- Upload ETS ----------------
+// Wipe the working configuration so the flow starts from zero.
+// Deliberately board-safe: the running setup is only replaced by Finish.
+function clearConfig() {
+    if (!KNXdata.loads.length && !KNXdata.rooms.length) {
+        showInfo('The working configuration is already empty.', { title: 'Nothing to Clear' });
+        return;
+    }
+    const nL = KNXdata.loads.length, nR = KNXdata.rooms.length;
+    showConfirmDialog(
+        `Clear the entire working configuration? All ${nL} load${nL === 1 ? '' : 's'} and ${nR} room${nR === 1 ? '' : 's'} in this editor will be removed. ` +
+        'The board keeps running its current setup until you Finish a new one.',
+        { title: 'Reset Configuration', type: 'warning', confirmText: 'Clear Everything', cancelText: 'Keep' }
+    ).then((choice) => {
+        if (choice !== 'confirm') return;
+        rstKNXinfo();
+        clearKNXSession();
+        shwLds();
+        refreshCfgSummary();
+        showStage(1);
+        studioSel = 0;
+        showInfo('Configuration cleared. Upload an ETS project or add loads manually to start again.', { title: 'Cleared' });
+    });
+}
+
 function uploadEts() {
     document.getElementById('etsInp').click();
 }
