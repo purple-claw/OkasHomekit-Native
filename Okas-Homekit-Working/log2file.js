@@ -13,6 +13,15 @@ getTS = (cb) => {
     //delete dt, day, fMnt, month, year, fTim, time, mSec;
 }
 
+// ---- LRU line cap -----------------------------------------------------------
+// Measured on the board: 10k lines ≈ 1.2MB ≈ ~290ms web refresh; trim rewrite ≈ 16ms.
+// Hitting the limit drops the oldest 10% (amortized: one rewrite per ~1000 writes).
+const LOG_LINE_LIMIT = 10000;
+const LOG_TRIM_KEEP = 9000;
+let logLineCount = 0;
+let trimBusy = false;
+const trimQueue = []; // lines arriving mid-trim; flushed after
+
 let logDir = path.join(__dirname, "/www/Logs");
 global.logStream = null;
 let logFile = '';
@@ -40,6 +49,41 @@ delLogs = () => {
     }
 }
 
+// LRU trim: keep the newest LOG_TRIM_KEEP lines. Truncates the SAME inode
+// (never renames) so the open append stream stays valid — same doctrine as
+// delFile.php. Appends made while the trim ran are re-queued and flushed after.
+trimLog = (fPth) => {
+    if (trimBusy) return;
+    trimBusy = true;
+    fs.readFile(fPth, 'utf8', (err, data) => {
+        if (err) { trimBusy = false; return console.error('Log trim read failed:', err.message); }
+        let lines = data.split('\n');
+        if (lines.length && lines[lines.length - 1] === '') lines.pop();
+        const kept = lines.slice(-LOG_TRIM_KEEP);
+        kept.push('');
+        fs.writeFile(fPth, kept.join('\n'), 'utf8', (werr) => {
+            trimBusy = false;
+            if (werr) return console.error('Log trim write failed:', werr.message);
+            logLineCount = LOG_TRIM_KEEP;
+            console.log(`Log LRU: trimmed ${fPth} to ${LOG_TRIM_KEEP} lines`);
+            while (trimQueue.length && isStream(logStream)) {
+                logStream.write(trimQueue.shift() + '\n', 'utf8');
+                logLineCount++;
+            }
+        });
+    });
+}
+
+countLines = (fPth) => {
+    try {
+        const data = fs.readFileSync(fPth, 'utf8');
+        const lines = data.split('\n');
+        return lines.length && lines[lines.length - 1] === '' ? lines.length - 1 : lines.length;
+    } catch (e) {
+        return 0;
+    }
+}
+
 makStream = (fNm) => {
     const fPth = path.join(logDir, fNm);
     logStream = fs.createWriteStream(fPth, { flags: 'a' });
@@ -52,6 +96,11 @@ makStream = (fNm) => {
     }
     //delete fPth;
     logFile = fNm;
+    logLineCount = countLines(fPth);
+    if (logLineCount >= LOG_LINE_LIMIT) {
+        console.log(`Log ${fNm} opens at ${logLineCount} lines (limit ${LOG_LINE_LIMIT}) - trimming`);
+        trimLog(fPth);
+    }
     delLogs();
     console.log(`Logging to: ${fNm}`);
 }
@@ -70,9 +119,14 @@ put2File = (typ, txt) => {
     getTS((ts) => {
         let oTxt = `[${typ}] ${ts}>> ${txt}`;
         console.log(oTxt);
+        // Mid-trim arrivals are queued, not dropped - the trim rewrites a
+        // snapshot and would otherwise swallow them.
+        if (trimBusy) { trimQueue.push(oTxt); return; }
         logStream.write(oTxt + '\n', 'utf8', (e) => {
             if (e) console.error('Failed to append log:', e);
         });
+        logLineCount++;
+        if (logLineCount >= LOG_LINE_LIMIT) trimLog(path.join(logDir, logFile));
         //delete typ, txt, oTxt, ts;
     });
 }
