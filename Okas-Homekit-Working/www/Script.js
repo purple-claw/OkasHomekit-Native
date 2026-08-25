@@ -537,6 +537,7 @@ function shwLds() {
             <button type="button" class="category-header" onclick="toggleLoadCategory('${type}')" aria-expanded="${isExpanded ? "true" : "false"}">
                 <span class="category-title-wrapper">
                     <span class="dropdown-arrow${isExpanded ? " expanded" : ""}" aria-hidden="true"></span>
+                    <i class="ld-ico ld-ico-sm ld-ico-${type}" aria-hidden="true"></i>
                     <span class="category-title">${escHtml(type)}</span>
                     <span class="load-count">(${typeLoads.length})</span>
                 </span>
@@ -628,7 +629,7 @@ function refreshCfgSummary() {
         `<span class="sum-chip"><b>${nR}</b> room${nR === 1 ? '' : 's'}</span>` +
         Object.entries(typeCounts).map(([t, c]) =>
             `<span class="sum-chip ld-hue-${t}" style="--hue:${hueOf(t)}">
-                <span class="rail-dot" style="--hue:${hueOf(t)}"></span><b style="font-size:14px">${c}</b> ${escHtml(t)}</span>`
+                <i class="ld-ico ld-ico-sm ld-ico-${t}" aria-hidden="true"></i><b style="font-size:14px">${c}</b> ${escHtml(t)}</span>`
         ).join('');
 }
 
@@ -689,7 +690,7 @@ function renderReview() {
             if (!ld) return '';
             return `<label class="rev-chip ld-hue-${ld.ldTyp}${ld._inc ? '' : ' off'}" data-r="${ri}" data-l="${boardIdx}">
                 <input type="checkbox" data-act="ldinc" ${ld._inc ? 'checked' : ''}>
-                <span class="dot" style="--hue:${hueOf(ld.ldTyp)}"></span>
+                <i class="ld-ico ld-ico-sm ld-ico-${ld.ldTyp}" aria-hidden="true"></i>
                 <input class="ets-name" value="${escHtml(ld.ldNm)}" data-act="ldname" title="Rename load">
                 <span class="ldtyp">${escHtml(ld.ldTyp)}</span>
             </label>`;
@@ -803,15 +804,15 @@ function renderStudio() {
         const hue = hueOf(first ? first.ldTyp : 'Switch');
         items.push(`<button type="button" class="rail-item${studioSel === i ? ' active' : ''}"
             style="--hue:${hue}" data-rail="${i}">
-            <span class="rail-dot"></span>
+            <i class="ld-ico ld-ico-sm ld-ico-${first ? first.ldTyp : 'Switch'}" aria-hidden="true"></i>
             <span class="rail-name">${escHtml(rm.name)}</span>
             <span class="rail-count">${(rm.loads || []).length}</span>
         </button>`);
     });
     const un = unassignedBoardIdxs();
     items.push(`<button type="button" class="rail-item${studioSel === '__unassigned__' ? ' active' : ''}"
-        style="--hue:#8fa3b0" data-rail="__unassigned__">
-        <span class="rail-dot"></span>
+        style="--hue:#5b7386" data-rail="__unassigned__">
+        <i class="ld-ico ld-ico-sm" style="--hue:#5b7386" aria-hidden="true"></i>
         <span class="rail-name">Unassigned</span>
         <span class="rail-count">${un.length}</span>
     </button>`);
@@ -849,9 +850,9 @@ function tileHtml(boardIdx) {
     if (!ld) return '';
     const hue = hueOf(ld.ldTyp);
     const ga = (ld.gAdd || []).filter(Boolean).join('  ·  ') || 'No group addresses';
-    return `<div class="load-tile ld-hue-${ld.ldTyp}" style="--hue:${hue}" data-bidx="${boardIdx}">
+    return `<div class="load-tile ld-hue-${ld.ldTyp}" style="--hue:${hue};--i:${boardIdx % 12}" data-bidx="${boardIdx}">
         <button type="button" class="tile-del" data-act="delltile" title="Delete load">×</button>
-        <div class="tile-top"><span class="tile-dot"></span><span class="tile-type">${escHtml(ld.ldTyp)}</span></div>
+        <div class="tile-top"><i class="ld-ico ld-ico-${ld.ldTyp}" aria-hidden="true"></i><span class="tile-type">${escHtml(ld.ldTyp)}</span></div>
         <input class="tile-name" value="${escHtml(ld.ldNm)}" data-act="tilename" title="Rename load">
         <div class="tile-ga" title="${escHtml(ga)}">${escHtml(ga)}</div>
     </div>`;

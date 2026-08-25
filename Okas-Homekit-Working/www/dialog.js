@@ -63,8 +63,7 @@
     const showCancel = Boolean(options.showCancel);
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
 
-    const emojiMap = { error: "❌", warning: "⚠️", info: "ℹ️", success: "✅" };
-    titleEl.textContent = (emojiMap[type] || "") + " " + title;
+    titleEl.textContent = title;
     bodyEl.textContent = message;
     setDialogTheme(contentEl, titleEl, type);
 

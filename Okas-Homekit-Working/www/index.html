@@ -4,44 +4,61 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Okas Configuration</title>
+  <title>OKAS Console — Configuration</title>
   <link rel="icon" type="image/png" href="./assets/Config.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="./assets/bootstrap.min.css" rel="stylesheet" />
-  <link href="./style.css?v=20260824b" rel="stylesheet" />
+  <link href="./style.css?v=20260825c" rel="stylesheet" />
 </head>
 
 <body>
-  <div class="app">
-    <header class="app-header">
-      <div class="logo-container">
-        <a href="index.html" aria-label="OKAS Home">
-          <img src="./assets/Okas Logo.png" alt="OKAS" class="app-logo" />
-        </a>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <img src="./assets/Okas Logo.png" alt="OKAS" />
       </div>
-    </header>
+      <nav class="nav-group" aria-label="Primary">
+        <a class="nav-item active" href="index.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>
+          Configuration
+        </a>
+        <a class="nav-item" href="users.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          User Management
+        </a>
+        <a class="nav-item" href="logMgr.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+          Log Manager
+        </a>
+        <a class="nav-item" href="deviceInfo.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+          Device Information
+        </a>
+      </nav>
+      <div class="sidebar-foot">
+        <span class="status-dot" id="boardDot"></span>
+        <span id="boardStatus">Board online</span>
+      </div>
+    </aside>
 
-    <nav class="tabs" aria-label="Primary">
-      <a class="tab active" href="index.html">Configuration</a>
-      <a class="tab" href="users.html">User Management</a>
-      <a class="tab" href="logMgr.html">Log Manager</a>
-      <a class="tab" href="deviceInfo.html">Device Information</a>
-    </nav>
+    <main class="content">
+      <div class="content-head">
+        <h1>Configuration</h1>
+        <p>Name the project, point it at the KNX gateway, then import the ETS project.</p>
+      </div>
 
-    <!-- Stage strip: the KNX bus-line progress for the 3-step flow -->
-    <div class="bus-strip" id="busStrip" aria-hidden="true">
-      <span class="bus-seg is-on" data-seg="1"><i>1</i>Project</span>
-      <span class="bus-seg" data-seg="2"><i>2</i>ETS Review</span>
-      <span class="bus-seg" data-seg="3"><i>3</i>Rooms &amp; Loads</span>
-    </div>
+      <div class="bus-strip" id="busStrip" aria-hidden="true">
+        <span class="bus-seg is-on" data-seg="1"><i>1</i>Project</span>
+        <span class="bus-seg" data-seg="2"><i>2</i>ETS Review</span>
+        <span class="bus-seg" data-seg="3"><i>3</i>Rooms &amp; Loads</span>
+      </div>
 
-    <main class="tab-content cfg-page">
-
-      <!-- ============ STAGE 1 · Project Configuration ============ -->
+      <!-- ============ STAGE 1 · PROJECT ============ -->
       <section class="cfg-stage" id="stage1">
-        <section class="glass-panel cfg-hero" aria-labelledby="cfgTitle">
+        <section class="cfg-hero glass" aria-labelledby="cfgTitle">
           <h2 id="cfgTitle">Project Configuration</h2>
-          <p class="section-lead">Name the project, point it at the KNX gateway, then import the ETS
-            project or manage loads manually.</p>
+          <p class="section-lead">Everything here stays local until you press Finish — then it ships to the board in one shot.</p>
 
           <div class="config-field">
             <label for="prjNm">Project Name</label>
@@ -90,9 +107,9 @@
         </section>
       </section>
 
-      <!-- ============ STAGE 2 · ETS Review ============ -->
+      <!-- ============ STAGE 2 · ETS REVIEW ============ -->
       <section class="cfg-stage" id="stage2" hidden>
-        <section class="glass-panel rev-panel" aria-labelledby="revTitle">
+        <section class="rev-panel glass" aria-labelledby="revTitle">
           <div class="rev-head">
             <div>
               <h2 id="revTitle">Review ETS Configuration</h2>
@@ -109,22 +126,22 @@
         </section>
       </section>
 
-      <!-- ============ STAGE 3 · Rooms & Loads Studio ============ -->
+      <!-- ============ STAGE 3 · ROOMS & LOADS ============ -->
       <section class="cfg-stage" id="stage3" hidden>
         <div class="studio-topbar">
           <div class="studio-topbar-info" id="studioInfo"></div>
           <div class="studio-topbar-actions">
             <button type="button" class="btn-cancel" onclick="showStage(1)">Project Settings</button>
-            <button type="button" class="btn-backup" onclick="initKNXData()">+ Add Load</button>
-            <button type="button" class="btn-save btn-finish" onclick="donCnf()">Finish ✓</button>
+            <button type="button" class="btn-restore" onclick="initKNXData()">+ Add Load</button>
+            <button type="button" class="btn-finish" onclick="donCnf()">Finish ✓</button>
           </div>
         </div>
         <div class="studio">
-          <aside class="studio-rail glass-panel" aria-label="Rooms">
+          <aside class="studio-rail glass" aria-label="Rooms">
             <div class="rail-head">Rooms</div>
             <div id="railList" class="rail-list"></div>
           </aside>
-          <section class="studio-main glass-panel" aria-label="Room preview">
+          <section class="studio-main glass" aria-label="Room preview">
             <div class="room-head" id="roomHead"></div>
             <div class="tile-grid" id="tileGrid"></div>
           </section>
@@ -194,7 +211,7 @@
           <button type="button" class="btn-cancel" data-bs-dismiss="modal">
             Cancel
           </button>
-          <button type="button" tabindex="5" id="sA" class="btn-backup" onclick="saveLoad(true)">
+          <button type="button" tabindex="5" id="sA" class="btn-restore" onclick="saveLoad(true)">
             Save &amp; Add
           </button>
           <button type="button" tabindex="6" class="btn-save" onclick="saveLoad(false)">
@@ -246,8 +263,8 @@
   </div>
 
   <script src="./assets/bootstrap.bundle.min.js"></script>
-  <script src="./dialog.js?v=20260820"></script>
-  <script src="Script.js?v=20260824b"></script>
+  <script src="./dialog.js?v=20260825c"></script>
+  <script src="Script.js?v=20260825c"></script>
 </body>
 
 </html>
