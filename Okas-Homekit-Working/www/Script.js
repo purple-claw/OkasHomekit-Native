@@ -223,7 +223,7 @@ document.getElementById('fInp').addEventListener('change', function () {
                 shwLds();
 
                 fPth.innerHTML = `Successfully imported data from: <b>'${(file.name).replace('.obak', '')}'</b>
-                    ${KNXdata.loads.length ? '<button type="button" id="restoreContinue" class="btn-primary-glass" style="margin-left:12px;padding:8px 18px;min-height:0" onclick="restoreContinue()">Continue →</button>' : ''}`;
+                    ${KNXdata.loads.length ? '<div class="restore-continue-row"><button type="button" id="restoreContinue" class="btn-primary-glass" onclick="restoreContinue()">Continue →</button></div>' : ''}`;
                 if (KNXdata.loads.length) {
                     // land the programmer in the studio, matching the ETS flow
                     window.restoreContinue = () => {
@@ -630,15 +630,15 @@ function refreshCfgSummary() {
     const nR = KNXdata.rooms.length;
     if (!nL && !nR) { box.hidden = true; return; }
     box.hidden = false;
-    const typeCounts = {};
-    KNXdata.loads.forEach((l) => { typeCounts[l.ldTyp] = (typeCounts[l.ldTyp] || 0) + 1; });
-    box.innerHTML =
-        `<span class="sum-chip"><b>${nL}</b> load${nL === 1 ? '' : 's'} configured</span>` +
-        `<span class="sum-chip"><b>${nR}</b> room${nR === 1 ? '' : 's'}</span>` +
-        Object.entries(typeCounts).map(([t, c]) =>
-            `<span class="sum-chip ld-hue-${t}" style="--hue:${hueOf(t)}">
-                <i class="ld-ico ld-ico-sm ld-ico-${t}" aria-hidden="true"></i><b style="font-size:14px">${c}</b> ${escHtml(t)}</span>`
-        ).join('');
+    box.innerHTML = `
+        <div class="stat-card">
+            <div class="stat-num">${nL}</div>
+            <div class="stat-label">Loads Configured</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num">${nR}</div>
+            <div class="stat-label">Room${nR === 1 ? '' : 's'}</div>
+        </div>`;
 }
 
 // ---------------- Upload ETS ----------------

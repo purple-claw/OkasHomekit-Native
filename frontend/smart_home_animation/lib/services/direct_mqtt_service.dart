@@ -950,6 +950,22 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
     );
   }
 
+  /// Pushes a room's new image to the board. The board merges the partial
+  /// (rooms/add) and republishes rooms/set, so every device picks it up.
+  void setRoomImage(String roomId, String imagePath) {
+    final room = RoomService.instance.getRoomById(roomId);
+    publish(
+      'rooms/add',
+      json.encode({
+        'id': roomId,
+        'name': room?.name ?? 'Room',
+        'loads': room?.loadIds ?? <String>[],
+        'imagePath': imagePath,
+        'isFavorite': room?.isFavorite ?? false,
+      }),
+    );
+  }
+
   List<Map<String, dynamic>> getLoadsList() {
     return _loads.values.toList();
   }

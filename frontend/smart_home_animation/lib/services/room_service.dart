@@ -143,6 +143,17 @@ class RoomService {
     }
   }
 
+  /// Updates a room's image path (board URL after upload, or a local path
+  /// when the upload failed — the renderer falls back to local cache).
+  Future<void> setImagePath(String roomId, String? imagePath) async {
+    final index = _rooms.indexWhere((r) => r.id == roomId);
+    if (index >= 0) {
+      _rooms[index] = _rooms[index].copyWith(imagePath: imagePath);
+      await saveRooms();
+      _notifyListeners();
+    }
+  }
+
   Room? get favoriteRoom {
     for (final room in _rooms) {
       if (room.isFavorite) return room;

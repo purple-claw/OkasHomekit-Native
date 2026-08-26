@@ -19,7 +19,9 @@ import 'package:smart_home_animation/features/home/presentation/widgets/figma_lo
 import 'package:smart_home_animation/features/home/presentation/widgets/smart_room_page_view.dart';
 import 'package:smart_home_animation/services/device_provider_wrapper.dart';
 import 'package:smart_home_animation/services/direct_mqtt_service.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:smart_home_animation/services/house_name_service.dart';
+import 'package:smart_home_animation/services/room_image_sync_service.dart';
 import 'package:smart_home_animation/services/room_service.dart' hide Room;
 import 'package:smart_home_animation/services/scene_favorites_service.dart';
 import 'package:smart_home_animation/services/token_auth_service.dart';
@@ -602,6 +604,25 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
+              leading: const Icon(
+                Icons.edit,
+                size: 22,
+                color: Colors.white,
+              ),
+              title: const Text(
+                'Edit Room',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(dialogContext);
+                _editRoomImage(context, room);
+              },
+            ),
+            ListTile(
               leading: Icon(
                 room.isFavorite
                     ? Icons.star_rounded
@@ -631,6 +652,54 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  /// Edit Room: pick a new image from the gallery, upload it to the board
+  /// (so every device sees it), then update local state + MQTT.
+  Future<void> _editRoomImage(BuildContext context, Room room) async {
+    try {
+      final picker = ImagePicker();
+      final xfile = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 70,
+        maxWidth: 1280,
+      );
+      if (xfile == null) return;
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Uploading room image…'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      final url = await RoomImageSyncService.instance
+          .uploadRoomImage(xfile.path)
+          .timeout(const Duration(seconds: 25));
+
+      final path = url ?? xfile.path; // local fallback if the upload failed
+      await RoomService.instance.setImagePath(room.id, path);
+      if (!context.mounted) return;
+      Provider.of<DirectMQTTService>(context, listen: false)
+          .setRoomImage(room.id, path);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            url != null ? 'Room image updated.' : 'Saved on this device (board upload failed).',
+          ),
+        ),
+      );
+    } catch (e) {
+      debugPrint('Edit room image failed: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not update room image.')),
+        );
+      }
+    }
   }
 
   /// Long-press action menu for a favorite card: removes the favorite
