@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="./assets/bootstrap.min.css" rel="stylesheet" />
-  <link href="./style.css?v=20260825c" rel="stylesheet" />
+  <link href="./style.css?v=20260826" rel="stylesheet" />
 </head>
 
 <body>
@@ -48,7 +48,7 @@
         <p>Name the project, import ETS File, Configure Rooms and Load Settings.</p>
       </div>
 
-      <div class="bus-strip" id="busStrip" aria-hidden="true">
+      <div class="bus-strip" id="busStrip">
         <span class="bus-seg is-on" data-seg="1"><i>1</i>Project</span>
         <span class="bus-seg" data-seg="2"><i>2</i>ETS Review</span>
         <span class="bus-seg" data-seg="3"><i>3</i>Rooms &amp; Loads</span>
@@ -87,6 +87,8 @@
             <button type="button" class="btn-backup" id="bkUP" onclick="bkUP()">Backup</button>
             <button type="button" class="btn-delete" onclick="clearConfig()">Clear</button>
           </div>
+
+          <div class="resume-row" id="resumeRow"></div>
 
           <input type="file" id="fInp" style="display:none" accept=".obak,application/json" />
           <input type="file" id="etsInp" style="display:none" accept=".knxproj" />
@@ -160,6 +162,21 @@
     <div class="upload-spinner"></div>
     <div class="up-title">Uploading configuration…</div>
     <div class="up-sub">Hold up, This may take a moment...</div>
+  </div>
+
+  <div class="modal fade" id="moveModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Move Load</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="move-load-name" id="moveLoadName"></div>
+          <div class="move-list" id="moveList"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="modal fade" id="cnfMdl" tabindex="-1" aria-labelledby="cnfMdlLabel" aria-hidden="true">
@@ -272,7 +289,7 @@
 
   <script src="./assets/bootstrap.bundle.min.js"></script>
   <script src="./dialog.js?v=20260825c"></script>
-  <script src="Script.js?v=20260825c"></script>
+  <script src="Script.js?v=20260826"></script>
 </body>
 
 </html>

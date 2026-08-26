@@ -609,6 +609,13 @@ const LD_HUES = { Switch:'#00afd2', Dimmer:'#f0a000', RGB:'#8e5bd6', Tunable:'#e
                   HVAC:'#0ca678', Scene:'#3b82f6', Fan:'#5c7cfa', Curtain:'#d63384' };
 const hueOf = (t) => LD_HUES[t] || '#00afd2';
 
+// Stage unlocks: 2 needs a pending ETS draft, 3 needs at least one load.
+function stageUnlocked(n) {
+    if (n === 1) return true;
+    if (n === 2) return !!etsDraft;
+    return KNXdata.loads.length > 0;
+}
+
 function showStage(n) {
     [1, 2, 3].forEach((i) => {
         document.getElementById('stage' + i).hidden = i !== n;
@@ -617,14 +624,33 @@ function showStage(n) {
         const v = Number(seg.dataset.seg);
         seg.classList.toggle('is-on', v === n);
         seg.classList.toggle('is-done', v < n);
+        seg.classList.toggle('is-locked', !stageUnlocked(v));
     });
     if (n === 1) refreshCfgSummary();
     if (n === 3) renderStudio();
 }
 
+document.querySelectorAll('.bus-seg').forEach((seg) => {
+    seg.addEventListener('click', () => {
+        const v = Number(seg.dataset.seg);
+        if (!stageUnlocked(v)) {
+            showInfo(v === 2
+                ? 'Upload an ETS project first — the review stage opens after a conversion.'
+                : 'Add or import at least one load to open the rooms stage.',
+                { title: 'Stage Locked' });
+            return;
+        }
+        showStage(v);
+    });
+});
+
 function backToStage1() { showStage(1); }
 
 function refreshCfgSummary() {
+    const resume = document.getElementById('resumeRow');
+    resume.innerHTML = (etsDraft && !etsDraft._merged)
+        ? '<button type="button" class="btn-restore resume-btn" onclick="showStage(2)">Resume ETS Review →</button>'
+        : '';
     const box = document.getElementById('cfgSummary');
     const nL = KNXdata.loads.length;
     const nR = KNXdata.rooms.length;
@@ -813,6 +839,8 @@ function continueReview() {
     });
     persistKNXSession();
     shwLds();
+    etsDraft = null; // merged — a stale draft would double-import on resume
+    document.getElementById('resumeRow').innerHTML = '';
     studioSel = Math.max(0, KNXdata.rooms.length - roomsAdded); // land on first imported room
     showStage(3);
     showInfo(`Imported ${n} load(s) into ${roomsAdded} room(s). Review, rename or remove anything, then press Finish.`, { title: 'ETS Imported' });
@@ -883,6 +911,7 @@ function tileHtml(boardIdx) {
     const hue = hueOf(ld.ldTyp);
     const ga = (ld.gAdd || []).filter(Boolean).join('  ·  ') || 'No group addresses';
     return `<div class="load-tile ld-hue-${ld.ldTyp}" style="--hue:${hue};--i:${boardIdx % 12}" data-bidx="${boardIdx}">
+        <button type="button" class="tile-move" data-act="movetile" title="Move to another room">⇄</button>
         <button type="button" class="tile-del" data-act="delltile" title="Delete load">×</button>
         <div class="tile-top"><i class="ld-ico ld-ico-${ld.ldTyp}" aria-hidden="true"></i><span class="tile-type">${escHtml(ld.ldTyp)}</span></div>
         <input class="tile-name" value="${escHtml(ld.ldNm)}" data-act="tilename" title="Rename load">
@@ -911,9 +940,61 @@ document.getElementById('stage3').addEventListener('change', function (e) {
     }
 });
 
+function openMoveDialog(boardIdx) {
+    const ld = KNXdata.loads[boardIdx - 1];
+    const ownerIdx = KNXdata.rooms.findIndex((r) => (r.loads || []).includes(boardIdx));
+    document.getElementById('moveLoadName').textContent = ld.ldNm;
+    const opts = [];
+    KNXdata.rooms.forEach((r, i) => {
+        if (i === ownerIdx) return;
+        opts.push(`<button type="button" class="move-opt" data-target="${i}">
+            <i class="ld-ico ld-ico-sm ld-ico-${(r.loads && r.loads.length ? KNXdata.loads[r.loads[0] - 1].ldTyp : 'Switch')}" aria-hidden="true"></i>
+            <span class="move-opt-name">${escHtml(r.name)}</span>
+            <span class="rail-count">${(r.loads || []).length}</span>
+        </button>`);
+    });
+    if (ownerIdx >= 0) {
+        opts.push(`<button type="button" class="move-opt move-opt-un" data-target="__unassigned__">
+            <i class="ld-ico ld-ico-sm" style="--hue:#5b7386" aria-hidden="true"></i>
+            <span class="move-opt-name">Unassigned</span>
+        </button>`);
+    }
+    document.getElementById('moveList').innerHTML =
+        opts.join('') || '<div class="studio-empty">No other rooms yet — create one first.</div>';
+    const modalEl = document.getElementById('moveModal');
+    document.getElementById('moveList').onclick = (e) => {
+        const btn = e.target.closest('.move-opt');
+        if (!btn) return;
+        const t = btn.dataset.target;
+        bootstrap.Modal.getInstance(modalEl)?.hide();
+        moveLoadToRoom(boardIdx, t === '__unassigned__' ? '__unassigned__' : Number(t));
+    };
+    new bootstrap.Modal(modalEl).show();
+}
+
+function moveLoadToRoom(boardIdx, target) {
+    // remove from current owner (if any)
+    KNXdata.rooms.forEach((r) => {
+        r.loads = (r.loads || []).filter((b) => b !== boardIdx);
+    });
+    if (target !== '__unassigned__') {
+        const room = KNXdata.rooms[target];
+        if (room && !room.loads.includes(boardIdx)) room.loads.push(boardIdx);
+    }
+    persistKNXSession();
+    shwLds();
+    // keep the viewport sensible: if the source room is selected and now empty,
+    // stay on it (empty state shows); otherwise rerender in place.
+    renderStudio();
+}
+
 document.getElementById('stage3').addEventListener('click', function (e) {
     const btn = e.target.closest('[data-act]');
     if (!btn) return;
+    if (btn.dataset.act === 'movetile') {
+        openMoveDialog(Number(btn.closest('.load-tile').dataset.bidx));
+        return;
+    }
     if (btn.dataset.act === 'delltile') {
         const bidx = Number(btn.closest('.load-tile').dataset.bidx);
         const ld = KNXdata.loads[bidx - 1];

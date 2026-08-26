@@ -776,3 +776,44 @@ wc -l /home/iris/Miantic/Okas-Homekit/Okas-Homekit-Working/www/style.css
 @keyframes spin { to { transform: rotate(360deg); } }
 .upload-overlay .up-title { color: var(--ink); font-size: 16px; font-weight: 700; }
 .upload-overlay .up-sub { color: var(--ink-dim); font-size: 13px; }
+
+/* ---- stage navigation: clickable bus segments ---- */
+.bus-seg { cursor: pointer; user-select: none; }
+.bus-seg.is-locked { opacity: 0.42; cursor: not-allowed; }
+.bus-seg:not(.is-locked):hover { border-color: rgba(0, 175, 210, 0.45); color: var(--ink-dim); transform: translateY(-1px); }
+
+/* ---- resume ETS review row (stage 1) ---- */
+.resume-row { display: flex; justify-content: flex-end; margin: 2px 0 18px; }
+.resume-btn { border-color: rgba(0, 175, 210, 0.4); color: var(--cyan); }
+
+/* ---- move-to-room tile button ---- */
+.tile-move {
+  position: absolute; top: 10px; right: 42px;
+  width: 26px; height: 26px; border-radius: 9px;
+  border: 1px solid var(--edge); background: rgba(0,0,0,0.3); color: var(--ink-faint);
+  cursor: pointer; font-size: 13px; line-height: 1;
+  opacity: 0; transition: opacity .2s ease, background .2s ease, color .2s ease, border-color .2s ease;
+}
+.load-tile:hover .tile-move, .load-tile:focus-within .tile-move { opacity: 1; }
+.tile-move:hover { color: var(--cyan); background: rgba(0,175,210,0.16); border-color: rgba(0,175,210,0.5); }
+
+/* ---- move dialog ---- */
+.move-load-name {
+  margin-bottom: 12px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--edge);
+  color: var(--ink-dim); font-size: 13px;
+}
+.move-load-name::before { content: "Moving: "; color: var(--ink-faint); }
+.move-list { display: grid; gap: 7px; max-height: 46vh; overflow-y: auto; }
+.move-opt {
+  display: flex; align-items: center; gap: 11px;
+  width: 100%; text-align: left; cursor: pointer;
+  padding: 10px 12px; border-radius: var(--r-md);
+  border: 1px solid var(--edge);
+  background: rgba(255,255,255,0.035);
+  color: var(--ink); font-size: 13.5px; font-weight: 620;
+  transition: background .18s ease, border-color .18s ease;
+}
+.move-opt:hover { background: rgba(0,175,210,0.10); border-color: rgba(0,175,210,0.45); }
+.move-opt-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.move-opt-un .move-opt-name { color: var(--ink-dim); font-style: italic; }
