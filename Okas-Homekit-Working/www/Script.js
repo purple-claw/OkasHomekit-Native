@@ -222,7 +222,15 @@ document.getElementById('fInp').addEventListener('change', function () {
                 persistKNXSession();
                 shwLds();
 
-                fPth.innerHTML = `Successfully imported data from: <b>'${(file.name).replace('.obak', '')}'</b>`;
+                fPth.innerHTML = `Successfully imported data from: <b>'${(file.name).replace('.obak', '')}'</b>
+                    ${KNXdata.loads.length ? '<button type="button" id="restoreContinue" class="btn-primary-glass" style="margin-left:12px;padding:8px 18px;min-height:0" onclick="restoreContinue()">Continue →</button>' : ''}`;
+                if (KNXdata.loads.length) {
+                    // land the programmer in the studio, matching the ETS flow
+                    window.restoreContinue = () => {
+                        studioSel = 0;
+                        showStage(3);
+                    };
+                }
                 fPth.style.display = 'block';
                 setBackupAvailability();
             } else {
@@ -845,7 +853,7 @@ function renderStudio() {
     // Info strip
     const nL = KNXdata.loads.length, nR = KNXdata.rooms.length;
     document.getElementById('studioInfo').textContent =
-        `${nL} load${nL === 1 ? '' : 's'} across ${nR} room${nR === 1 ? '' : 's'} — nothing reaches the board until you press Finish.`;
+        `${nL} load${nL === 1 ? '' : 's'} across ${nR} room${nR === 1 ? '' : 's'} After Configuring, Press Finish to Complete.`;
 
     // Main pane
     const head = document.getElementById('roomHead');
@@ -947,14 +955,26 @@ async function donCnf() {
     let org = (window.location.origin).toString();
     if (!prepPrj()) return;
 
-    let jsonData = JSON.stringify(KNXdata, null, 2);
-    console.log(jsonData);
-    let response = await fetch(org + "/makFile.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: jsonData
-    });
-    let result = await response.text();
+    // The board writes both config files and restarts services during this
+    // POST (~6s) — show the programmer it is working, not frozen.
+    const ov = document.getElementById('upOverlay');
+    const finBtn = document.querySelector('.btn-finish');
+    ov.hidden = false;
+    if (finBtn) finBtn.disabled = true;
+    let response, result;
+    try {
+        let jsonData = JSON.stringify(KNXdata, null, 2);
+        response = await fetch(org + "/makFile.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: jsonData
+        });
+        result = await response.text();
+    } finally {
+        // overlay covers ONLY the upload; the backup prompt must be clickable
+        ov.hidden = true;
+        if (finBtn) finBtn.disabled = false;
+    }
     if (!result) {
         showError("Error sending Configuration Data to System.");
         return;
@@ -974,7 +994,6 @@ async function donCnf() {
     if (choice === "confirm") {
         bkUP();
     }
-    //delete gmTitle, cYESbtn, cNObtn, eMod, jsonData, response, result, org;
 }
 
 setBackupAvailability();

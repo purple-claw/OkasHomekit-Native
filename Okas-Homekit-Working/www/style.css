@@ -732,3 +732,24 @@ wc -l /home/iris/Miantic/Okas-Homekit/Okas-Homekit-Working/www/style.css
 /* center the standalone panels (wrapper classes were lost in the shell rebuild) */
 .content > .device-info-card,
 .content > .log-manager-card { margin-inline: auto; }
+
+/* ---- Finish upload overlay ---- */
+.upload-overlay {
+  position: fixed; inset: 0; z-index: 3000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 16px;
+  background: rgba(4, 10, 16, 0.74);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: rise .25s ease both;
+}
+.upload-spinner {
+  width: 52px; height: 52px; border-radius: 50%;
+  border: 3px solid rgba(0, 175, 210, 0.16);
+  border-top-color: var(--cyan);
+  animation: spin .85s linear infinite;
+  box-shadow: 0 0 24px rgba(0, 175, 210, 0.18);
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.upload-overlay .up-title { color: var(--ink); font-size: 16px; font-weight: 700; }
+.upload-overlay .up-sub { color: var(--ink-dim); font-size: 13px; }

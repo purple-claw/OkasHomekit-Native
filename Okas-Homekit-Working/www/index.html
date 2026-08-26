@@ -155,6 +155,13 @@
     &copy; Miantic AV Distribution Pvt. Ltd.
   </footer>
 
+  <!-- Finish upload overlay: board writes config + restarts services (~6s) -->
+  <div class="upload-overlay" id="upOverlay" hidden>
+    <div class="upload-spinner"></div>
+    <div class="up-title">Uploading configuration…</div>
+    <div class="up-sub">Hold up, This may take a moment...</div>
+  </div>
+
   <div class="modal fade" id="cnfMdl" tabindex="-1" aria-labelledby="cnfMdlLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">

@@ -430,6 +430,10 @@ require("../KNX/actHdlr");
     };
 
     mqttRoute = (tp, msg) => {
+        // Empty payload = a retained-message clear (Buffer.alloc(0)) — never a
+        // command. status/# belongs to the mobile app; Node only touches those
+        // topics for retention cleanup, so both are ignored here.
+        if (msg.length === 0 || tp.startsWith('status/')) return;
         let pld;
         try {
             pld = JSON.parse(msg.toString());
