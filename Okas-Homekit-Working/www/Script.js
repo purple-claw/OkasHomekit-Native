@@ -940,6 +940,36 @@ document.getElementById('stage3').addEventListener('change', function (e) {
     }
 });
 
+// ---- Add Room (stage 3) ----
+function openRoomModal() {
+    const inp = document.getElementById('newRoomName');
+    inp.value = '';
+    const modalEl = document.getElementById('roomModal');
+    const modal = new bootstrap.Modal(modalEl);
+    // Enter saves too
+    const onKey = (e) => { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('roomSaveBtn').click(); } };
+    inp.addEventListener('keydown', onKey, { once: true });
+    modalEl.addEventListener('shown.bs.modal', () => inp.focus(), { once: true });
+    document.getElementById('roomSaveBtn').onclick = () => {
+        const name = inp.value.trim();
+        if (!name) { inp.focus(); return; }
+        // unique name — rooms merge by name on the board (makFile.php)
+        let final = name;
+        let i = 2;
+        while (KNXdata.rooms.some((r) => r.name === final)) { final = `${name} (${i++})`; }
+        KNXdata.rooms.push({
+            id: final, name: final, imagePath: null, loads: [],
+            createdAt: new Date().toISOString(), isFavorite: false
+        });
+        persistKNXSession();
+        shwLds();
+        modal.hide();
+        studioSel = KNXdata.rooms.length - 1;
+        renderStudio();
+    };
+    modal.show();
+}
+
 function openMoveDialog(boardIdx) {
     const ld = KNXdata.loads[boardIdx - 1];
     const ownerIdx = KNXdata.rooms.findIndex((r) => (r.loads || []).includes(boardIdx));

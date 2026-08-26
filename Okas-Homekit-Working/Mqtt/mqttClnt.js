@@ -343,6 +343,14 @@ require("../KNX/actHdlr");
         'pos': {
             types: ['Curtain'],
             act: async (lNm, val) => { return await Pos(lNm, val); }
+        },
+        'mov': {
+            types: ['Curtain'],
+            act: async (lNm, val) => { return await Mov(lNm, val); }
+        },
+        'stp': {
+            types: ['Curtain'],
+            act: async (lNm) => { return await Stp(lNm); }
         }
     };
 
@@ -724,7 +732,8 @@ require("../KNX/actHdlr");
             case 'Curtain':
                 return {
                     cPs: vals.Pvi || 0,
-                    tPs: vals.Pos || 0
+                    tPs: vals.Pos || 0,
+                    hasPos: !!(knxLod[lNm].GA && knxLod[lNm].GA.Pos)
                 };
             case 'Scene':
                 return { scn: vals.Scn || 0 };

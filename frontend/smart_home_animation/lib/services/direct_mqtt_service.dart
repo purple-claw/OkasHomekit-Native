@@ -567,6 +567,42 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
+  /// Curtain without a Pos GA: drive it via the Mov GA (KNX 1.008 —
+  /// 1 = Up/Open, 0 = Down/Close).
+  void sendCurtainMovementCommand(String deviceId, bool open) {
+    debugPrint('Sending curtain movement to OKAS: loadId=$deviceId, open=$open');
+    final load = _loads[deviceId];
+    if (load == null) return;
+    final ldId = load['ldId'] as int? ?? int.tryParse(deviceId) ?? 1;
+    publish(
+      'command/sndCmd',
+      json.encode({
+        'ldId': ldId,
+        'typ': 'cur',
+        'cmd': {'mov': open ? 1 : 0},
+      }),
+    );
+    if (_loads[deviceId] != null) _loads[deviceId]!['pos'] = open ? 0 : 100;
+    if (_devices[deviceId] != null) _devices[deviceId]!['pos'] = open ? 0 : 100;
+    notifyListeners();
+  }
+
+  /// Curtain Stop via the Stp GA.
+  void sendCurtainStopCommand(String deviceId) {
+    debugPrint('Sending curtain stop to OKAS: loadId=$deviceId');
+    final load = _loads[deviceId];
+    if (load == null) return;
+    final ldId = load['ldId'] as int? ?? int.tryParse(deviceId) ?? 1;
+    publish(
+      'command/sndCmd',
+      json.encode({
+        'ldId': ldId,
+        'typ': 'cur',
+        'cmd': {'stp': 1},
+      }),
+    );
+  }
+
   void sendCurtainPositionCommand(String deviceId, int position) {
     debugPrint(
       'Sending curtain position to OKAS: loadId=$deviceId, position=$position',
@@ -1174,6 +1210,9 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
               sta?['cPs'] as int? ??
               sta?['pos'] as int? ??
               0;
+          // Capability flag from the board: does this curtain have a Pos GA?
+          // Without one the sheet degrades to Open/Close (Mov) + Stop (Stp).
+          final curtainHasPos = sta?['hasPos'] != false;
 
           final loadMap = <String, dynamic>{
             'id': loadId.toString(),
@@ -1194,6 +1233,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
             'fanSpeedStep': fanSpeedStep,
             'cPs': curtainPos,
             'pos': curtainPos,
+            'hasPos': curtainHasPos,
             'originalData': load,
           };
 
@@ -1218,6 +1258,7 @@ class DirectMQTTService extends ChangeNotifier with WidgetsBindingObserver {
             'fanSpeedStep': fanSpeedStep,
             'cPs': curtainPos,
             'pos': curtainPos,
+            'hasPos': curtainHasPos,
           };
 
           _devices[loadId.toString()] = deviceMap;

@@ -1090,6 +1090,9 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
           final cur = mqtt.loads[id] ?? load;
           final double pos = ((cur['tPs'] ?? cur['cPs'] ?? 0) as num)
               .toDouble();
+          // No Pos GA configured -> the curtain is Open/Close only:
+          // buttons drive Mov, Stop drives Stp, and the slider is hidden.
+          final bool hasPos = cur['hasPos'] != false;
           return FigmaLoadSheet(
             title: 'MOVEMENT',
             isOn: pos > 0,
@@ -1103,11 +1106,13 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
                 CurtainVisualization(position: pos.clamp(0, 100) / 100),
                 const SizedBox(height: 14),
                 Text(
-                  pos == 0
-                      ? 'Fully Open'
-                      : pos == 100
-                      ? 'Fully Closed'
-                      : '${pos.round()}%',
+                  hasPos
+                      ? (pos == 0
+                          ? 'Fully Open'
+                          : pos == 100
+                          ? 'Fully Closed'
+                          : '${pos.round()}%')
+                      : 'Open / Close',
                   style: const TextStyle(
                     color: SHColors.primary,
                     fontSize: 26,
@@ -1125,28 +1130,42 @@ class _RoomLoadsScreenState extends State<RoomLoadsScreen> {
                   ),
                 ),
                 const SizedBox(height: 14),
-                FigmaSlider(
-                  value: pos.clamp(0, 100),
-                  min: 0,
-                  max: 100,
-                  divisions: 100,
-                  onChanged: (v) {
-                    mqtt.sendCurtainPositionCommand(id, v.round());
-                  },
-                ),
-                const SizedBox(height: 16),
+                if (hasPos) ...[
+                  FigmaSlider(
+                    value: pos.clamp(0, 100),
+                    min: 0,
+                    max: 100,
+                    divisions: 100,
+                    onChanged: (v) {
+                      mqtt.sendCurtainPositionCommand(id, v.round());
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                ],
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _curtainBtn('Open', 0, pos, (v) {
-                      mqtt.sendCurtainPositionCommand(id, v);
-                    }),
-                    _curtainBtn('Stop', -1, pos, (v) {
-                      mqtt.sendCurtainPositionCommand(id, 50);
-                    }),
-                    _curtainBtn('Close', 100, pos, (v) {
-                      mqtt.sendCurtainPositionCommand(id, v);
-                    }),
+                    if (hasPos) ...[
+                      _curtainBtn('Open', 0, pos, (v) {
+                        mqtt.sendCurtainPositionCommand(id, v);
+                      }),
+                      _curtainBtn('Stop', -1, pos, (v) {
+                        mqtt.sendCurtainStopCommand(id);
+                      }),
+                      _curtainBtn('Close', 100, pos, (v) {
+                        mqtt.sendCurtainPositionCommand(id, v);
+                      }),
+                    ] else ...[
+                      _curtainBtn('Open', 1, pos, (v) {
+                        mqtt.sendCurtainMovementCommand(id, true);
+                      }),
+                      _curtainBtn('Stop', -1, pos, (v) {
+                        mqtt.sendCurtainStopCommand(id);
+                      }),
+                      _curtainBtn('Close', 0, pos, (v) {
+                        mqtt.sendCurtainMovementCommand(id, false);
+                      }),
+                    ],
                   ],
                 ),
               ],

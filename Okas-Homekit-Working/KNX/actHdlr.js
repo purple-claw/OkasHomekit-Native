@@ -311,11 +311,43 @@ require('./knxBridge');
     };
 
     Mov = async (lNm, val) => {
-        return { ok: false, err: 'Curtain movement not Yet supported.' };
+        // KNX 1.008: 1 = Up/Open, 0 = Down/Close.
+        try {
+            let res = knxCmd(lNm, 'Mov', val);
+            if (!res.ok) return res;
+            knxLod[lNm].Val.Mov = val;
+            knxLod[lNm].Val.Mvi = val;
+            dbg.Inf(`Curtain ${val ? 'Open' : 'Close'} sent to ${lNm}.`);
+            if (typeof global.mqttRptSts === 'function') {
+                global.mqttRptSts(lNm);
+            }
+            return { ok: true };
+        } catch (e) {
+            dbg.Err(`Unable to send Curtain Movement command to ${lNm} : ${e}.`);
+            return { ok: false, err: e.message };
+        }
+    };
+
+    Stp = async (lNm) => {
+        try {
+            let res = knxCmd(lNm, 'Stp', 1);
+            if (!res.ok) return res;
+            dbg.Inf(`Curtain Stop sent to ${lNm}.`);
+            if (typeof global.mqttRptSts === 'function') {
+                global.mqttRptSts(lNm);
+            }
+            return { ok: true };
+        } catch (e) {
+            dbg.Err(`Unable to send Curtain Stop command to ${lNm} : ${e}.`);
+            return { ok: false, err: e.message };
+        }
     };
 
     Pos = async (lNm, val) => {
         try {
+            if (!knxLod[lNm].GA.Pos) {
+                return { ok: false, err: 'No position control (Pos) configured for this curtain' };
+            }
             let res = knxCmd(lNm, 'Pos', val);
             if (!res.ok) {
                 dbg.Err(`Unable to send Curtain Position command to ${lNm}: ${res.err}.`);
