@@ -112,11 +112,6 @@ require("../KNX/actHdlr");
         saveAppScenes();
     };
 
-    // A fresh config upload (makFile.php) swaps the load list AND the rooms:
-    // rooms are part of the uploaded config now (Data/rooms.json written by
-    // PHP), so they survive the reset. App scenes, the per-load status cache,
-    // and the broker's retained state are still wiped, then re-seeded from
-    // the new files — no window where a stale list and a fresh config mix.
     const resetBoardState = () => {
         const marker = path.join(__dirname, '..', 'Data', '.configReset');
         if (!fs.existsSync(marker)) return;
