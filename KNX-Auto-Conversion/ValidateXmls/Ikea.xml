@@ -1,0 +1,1379 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<GroupAddress-Export xmlns="http://knx.org/xml/ga-export/01">
+  <GroupRange Name="Ikea P2 Lavel " RangeStart="1" RangeEnd="2047" Unfiltered="true">
+    <GroupRange Name="P2 SA1 n SA2" RangeStart="1" RangeEnd="255" Unfiltered="true">
+      <GroupAddress Name="P2 SA1 CH1 on/off" Address="0/0/1" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH1 on/off Status" Address="0/0/2" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH2 on/off " Address="0/0/3" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH2 on/off Status" Address="0/0/4" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH3 on/off" Address="0/0/5" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH3 on/off Stauts" Address="0/0/6" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH4 on/off " Address="0/0/7" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH4 on/off Stauts" Address="0/0/8" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH5 on/off " Address="0/0/9" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH5 on/off Stauts" Address="0/0/10" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH6 on/off   " Address="0/0/11" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH6 on/off Stauts" Address="0/0/12" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH7 on/off   " Address="0/0/13" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH7 on/off Stauts" Address="0/0/14" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH8 on/off   " Address="0/0/15" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH8 on/off Stauts" Address="0/0/16" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH9 on/off " Address="0/0/17" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH9 on/off Stauts" Address="0/0/18" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH10 on/off " Address="0/0/19" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH10 on/off Stauts" Address="0/0/20" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH11 on/off " Address="0/0/21" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH11 on/off Stauts" Address="0/0/22" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH12 on/off " Address="0/0/23" Unfiltered="true" />
+      <GroupAddress Name="P2 SA1 CH12 on/off  Stauts" Address="0/0/24" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH1 on/off  " Address="0/0/25" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH1 on/off  Stauts" Address="0/0/26" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH2 on/off  " Address="0/0/27" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH2 on/off  Stauts" Address="0/0/28" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH3 on/off  " Address="0/0/29" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH3 on/off Stauts" Address="0/0/30" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH4 on/off " Address="0/0/31" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH4 on/off Stauts" Address="0/0/32" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH5 on/off " Address="0/0/33" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH5 on/off Stauts" Address="0/0/34" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH6 on/off " Address="0/0/35" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH6 on/off Stauts" Address="0/0/36" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH7 on/off " Address="0/0/37" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH7 on/off Stauts" Address="0/0/38" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH8 on/off" Address="0/0/39" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH8 on/off Status" Address="0/0/40" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH9 on/off " Address="0/0/41" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH9 on/off Status" Address="0/0/42" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH10 on/off " Address="0/0/43" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH10 on/off Status" Address="0/0/44" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH11 on/off " Address="0/0/45" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH11 on/off Status" Address="0/0/46" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH12 on/off " Address="0/0/47" Unfiltered="true" />
+      <GroupAddress Name="P2 SA2 CH12 on/off Status" Address="0/0/48" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="P2 SA3 n SA4" RangeStart="256" RangeEnd="511" Unfiltered="true">
+      <GroupAddress Name="P2 SA3 CH1 on/off" Address="0/1/0" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH1 on/off Status" Address="0/1/1" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH2 on/off " Address="0/1/2" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH2 on/off Status" Address="0/1/3" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH3 on/off " Address="0/1/4" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH3 on/off Status" Address="0/1/5" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH4 on/off " Address="0/1/6" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH4 on/off Status" Address="0/1/7" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH5 on/off" Address="0/1/8" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH5 on/off Status" Address="0/1/9" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH6 on/off " Address="0/1/10" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH6 on/off Status" Address="0/1/11" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH7 on/off " Address="0/1/12" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH7 on/off Status" Address="0/1/13" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH8 on/off " Address="0/1/14" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH8 on/off Status" Address="0/1/15" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH9 on/off " Address="0/1/16" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH9 on/off Status" Address="0/1/17" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH10 on/off " Address="0/1/18" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH10 on/off Status" Address="0/1/19" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH11 on/off " Address="0/1/20" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH11 on/off Status" Address="0/1/21" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH12 on/off " Address="0/1/22" Unfiltered="true" />
+      <GroupAddress Name="P2 SA3 CH12 on/off Status" Address="0/1/23" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH1 on/off " Address="0/1/24" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH1 on/off Status" Address="0/1/25" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH2 on/off " Address="0/1/26" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH2 on/off Status" Address="0/1/27" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH3 on/off " Address="0/1/28" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH3 on/off Status" Address="0/1/29" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH4 on/off " Address="0/1/30" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH4 on/off Status" Address="0/1/31" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH5 on/off " Address="0/1/32" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH5 on/off Status" Address="0/1/33" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH6 on/off " Address="0/1/34" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH6 on/off Status" Address="0/1/35" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH7 on/off " Address="0/1/36" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH7 on/off Status" Address="0/1/37" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH8 on/off " Address="0/1/38" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH8 on/off Status" Address="0/1/39" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH9 on/off " Address="0/1/40" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH9 on/off Status" Address="0/1/41" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH10 on/off " Address="0/1/42" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH10 on/off Status" Address="0/1/43" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH11 on/off " Address="0/1/44" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH11 on/off Status" Address="0/1/45" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH12 on/off " Address="0/1/46" Unfiltered="true" />
+      <GroupAddress Name="P2 SA4 CH12 on/off Status" Address="0/1/47" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="P2 SA5 n SA6" RangeStart="512" RangeEnd="767" Unfiltered="true">
+      <GroupAddress Name="P2 SA5 CH1 on/off" Address="0/2/0" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH1 on/off Status" Address="0/2/1" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH2 on/off " Address="0/2/2" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH2 on/off Status" Address="0/2/3" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH3 on/off " Address="0/2/4" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH3 on/off Status" Address="0/2/5" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH4 on/off " Address="0/2/6" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH4 on/off Status" Address="0/2/7" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH5 on/off " Address="0/2/8" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH5 on/off Status" Address="0/2/9" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH6 on/off " Address="0/2/10" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH6 on/off Status" Address="0/2/11" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH7 on/off " Address="0/2/12" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH7 on/off Status" Address="0/2/13" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH8 on/off " Address="0/2/14" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH8 on/off  Status" Address="0/2/15" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH9 on/off " Address="0/2/16" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH9 on/off  Status" Address="0/2/17" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH10 on/off  " Address="0/2/18" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH10 on/off Status " Address="0/2/19" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH11 on/off  " Address="0/2/20" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH11 on/off Status" Address="0/2/21" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH12 on/off " Address="0/2/22" Unfiltered="true" />
+      <GroupAddress Name="P2 SA5 CH12 on/off Status" Address="0/2/23" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH1 on/off " Address="0/2/24" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH1 on/off Status" Address="0/2/25" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH2 on/off " Address="0/2/26" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH2 on/off Status" Address="0/2/27" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH3 on/off " Address="0/2/28" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH3 on/off Status" Address="0/2/29" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH4 on/off " Address="0/2/30" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH4 on/off Status" Address="0/2/31" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH5 on/off " Address="0/2/32" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH5 on/off Status" Address="0/2/33" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH6 on/off " Address="0/2/34" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH6 on/off Status" Address="0/2/35" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH7 on/off " Address="0/2/36" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH7 on/off Status" Address="0/2/37" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH8 on/off " Address="0/2/38" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH8 on/off Status" Address="0/2/39" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH9 on/off " Address="0/2/40" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH9 on/off Status" Address="0/2/41" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH10 on/off " Address="0/2/42" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH10 on/off Status" Address="0/2/43" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH11 on/off " Address="0/2/44" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH11 on/off  Status" Address="0/2/45" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH12 on/off  " Address="0/2/46" Unfiltered="true" />
+      <GroupAddress Name="P2 SA6 CH12 on/off  Status" Address="0/2/47" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="Dummy" RangeStart="768" RangeEnd="1023" Unfiltered="true">
+      <GroupAddress Name="Sa1 SA2" Address="0/3/0" Unfiltered="true" />
+      <GroupAddress Name="SA 3 Sa4" Address="0/3/1" Unfiltered="true" />
+      <GroupAddress Name="SA 5 Sa6" Address="0/3/2" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="SAE" RangeStart="1024" RangeEnd="1279" Unfiltered="true">
+      <GroupAddress Name="P2 SAE CH1 On/off" Address="0/4/0" Unfiltered="true" />
+      <GroupAddress Name="P2 SAE CH1 On/off Status" Address="0/4/1" Unfiltered="true" />
+      <GroupAddress Name="P2 SAE CH2 On/off" Address="0/4/2" Unfiltered="true" />
+      <GroupAddress Name="P2 SAE CH2 On/off Status" Address="0/4/3" Unfiltered="true" />
+      <GroupAddress Name="P2 SAE CH3 On/off" Address="0/4/4" Unfiltered="true" />
+      <GroupAddress Name="P2 SAE CH3 On/off Status" Address="0/4/5" Unfiltered="true" />
+      <GroupAddress Name="P2 SAE CH4 On/off" Address="0/4/6" Unfiltered="true" />
+      <GroupAddress Name="P2 SAE CH4 On/off Status" Address="0/4/7" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="P2 Sensors" RangeStart="1280" RangeEnd="1535" Unfiltered="true">
+      <GroupAddress Name="1.0.3" Address="0/5/0" Unfiltered="true" />
+      <GroupAddress Name="1.0.4" Address="0/5/1" Unfiltered="true" />
+      <GroupAddress Name="1.0.5" Address="0/5/2" Unfiltered="true" />
+      <GroupAddress Name="1.0.6" Address="0/5/3" Unfiltered="true" />
+      <GroupAddress Name="1.0.7" Address="0/5/4" Unfiltered="true" />
+      <GroupAddress Name="1.0.8" Address="0/5/5" Unfiltered="true" />
+      <GroupAddress Name="1.0.9" Address="0/5/6" Unfiltered="true" />
+      <GroupAddress Name="1.0.10" Address="0/5/7" Unfiltered="true" />
+      <GroupAddress Name="1.0.11" Address="0/5/8" Unfiltered="true" />
+      <GroupAddress Name="1.0.12" Address="0/5/9" Unfiltered="true" />
+      <GroupAddress Name="1.0.13" Address="0/5/10" Unfiltered="true" />
+      <GroupAddress Name="1.0.14" Address="0/5/11" Unfiltered="true" />
+      <GroupAddress Name="1.0.15" Address="0/5/12" Unfiltered="true" />
+      <GroupAddress Name="1.0.16" Address="0/5/13" Unfiltered="true" />
+      <GroupAddress Name="1.0.17" Address="0/5/14" Unfiltered="true" />
+      <GroupAddress Name="1.0.18" Address="0/5/15" Unfiltered="true" />
+      <GroupAddress Name="1.0.19" Address="0/5/16" Unfiltered="true" />
+      <GroupAddress Name="1.0.20" Address="0/5/17" Unfiltered="true" />
+      <GroupAddress Name="1.0.21" Address="0/5/18" Unfiltered="true" />
+      <GroupAddress Name="1.0.22" Address="0/5/19" Unfiltered="true" />
+      <GroupAddress Name="1.0.23" Address="0/5/20" Unfiltered="true" />
+      <GroupAddress Name="1.0.24" Address="0/5/21" Unfiltered="true" />
+      <GroupAddress Name="1.0.25" Address="0/5/22" Unfiltered="true" />
+      <GroupAddress Name="1.0.26" Address="0/5/23" Unfiltered="true" />
+      <GroupAddress Name="1.0.27" Address="0/5/24" Unfiltered="true" />
+      <GroupAddress Name="1.0.28" Address="0/5/25" Unfiltered="true" />
+      <GroupAddress Name="1.0.29" Address="0/5/26" Unfiltered="true" />
+      <GroupAddress Name="1.0.30" Address="0/5/27" Unfiltered="true" />
+      <GroupAddress Name="1.0.31" Address="0/5/28" Unfiltered="true" />
+      <GroupAddress Name="1.0.32" Address="0/5/29" Unfiltered="true" />
+      <GroupAddress Name="1.0.33" Address="0/5/30" Unfiltered="true" />
+      <GroupAddress Name="1.0.34" Address="0/5/31" Unfiltered="true" />
+      <GroupAddress Name="1.0.35" Address="0/5/32" Unfiltered="true" />
+      <GroupAddress Name="1.0.36" Address="0/5/33" Unfiltered="true" />
+      <GroupAddress Name="1.0.37" Address="0/5/34" Unfiltered="true" />
+      <GroupAddress Name="1.0.38" Address="0/5/35" Unfiltered="true" />
+      <GroupAddress Name="1.0.39" Address="0/5/36" Unfiltered="true" />
+      <GroupAddress Name="1.0.40" Address="0/5/37" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="P2 Sensors 2" RangeStart="1536" RangeEnd="1791" Unfiltered="true">
+      <GroupAddress Name="1.1.3" Address="0/6/0" Unfiltered="true" />
+      <GroupAddress Name="1.1.4" Address="0/6/1" Unfiltered="true" />
+      <GroupAddress Name="1.1.5" Address="0/6/2" Unfiltered="true" />
+      <GroupAddress Name="1.1.6" Address="0/6/3" Unfiltered="true" />
+      <GroupAddress Name="1.1.7" Address="0/6/4" Unfiltered="true" />
+      <GroupAddress Name="1.1.8" Address="0/6/5" Unfiltered="true" />
+      <GroupAddress Name="1.1.9" Address="0/6/6" Unfiltered="true" />
+      <GroupAddress Name="1.1.10" Address="0/6/7" Unfiltered="true" />
+      <GroupAddress Name="1.1.11" Address="0/6/8" Unfiltered="true" />
+      <GroupAddress Name="1.1.12" Address="0/6/9" Unfiltered="true" />
+      <GroupAddress Name="1.1.13" Address="0/6/10" Unfiltered="true" />
+      <GroupAddress Name="1.1.14" Address="0/6/11" Unfiltered="true" />
+      <GroupAddress Name="1.1.15" Address="0/6/12" Unfiltered="true" />
+      <GroupAddress Name="1.1.16" Address="0/6/13" Unfiltered="true" />
+      <GroupAddress Name="1.1.17" Address="0/6/14" Unfiltered="true" />
+      <GroupAddress Name="1.1.18" Address="0/6/15" Unfiltered="true" />
+      <GroupAddress Name="1.1.19" Address="0/6/16" Unfiltered="true" />
+      <GroupAddress Name="1.1.20" Address="0/6/17" Unfiltered="true" />
+      <GroupAddress Name="1.1.21" Address="0/6/18" Unfiltered="true" />
+      <GroupAddress Name="1.1.22" Address="0/6/19" Unfiltered="true" />
+      <GroupAddress Name="1.1.23" Address="0/6/20" Unfiltered="true" />
+      <GroupAddress Name="1.1.24" Address="0/6/21" Unfiltered="true" />
+      <GroupAddress Name="1.1.25" Address="0/6/22" Unfiltered="true" />
+      <GroupAddress Name="1.1.26" Address="0/6/23" Unfiltered="true" />
+      <GroupAddress Name="1.1.27" Address="0/6/24" Unfiltered="true" />
+      <GroupAddress Name="1.1.28" Address="0/6/25" Unfiltered="true" />
+      <GroupAddress Name="1.1.29" Address="0/6/26" Unfiltered="true" />
+      <GroupAddress Name="1.1.30" Address="0/6/27" Unfiltered="true" />
+      <GroupAddress Name="1.1.31" Address="0/6/28" Unfiltered="true" />
+      <GroupAddress Name="1.1.32" Address="0/6/29" Unfiltered="true" />
+      <GroupAddress Name="1.1.33" Address="0/6/30" Unfiltered="true" />
+      <GroupAddress Name="1.1.34" Address="0/6/31" Unfiltered="true" />
+      <GroupAddress Name="1.1.35" Address="0/6/32" Unfiltered="true" />
+      <GroupAddress Name="1.1.36" Address="0/6/33" Unfiltered="true" />
+      <GroupAddress Name="1.1.37" Address="0/6/34" Unfiltered="true" />
+      <GroupAddress Name="1.1.38" Address="0/6/35" Unfiltered="true" />
+      <GroupAddress Name="1.1.39" Address="0/6/36" Unfiltered="true" />
+      <GroupAddress Name="1.1.40" Address="0/6/37" Unfiltered="true" />
+      <GroupAddress Name="1.1.41" Address="0/6/38" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="P2 Sensors 3" RangeStart="1792" RangeEnd="2047" Unfiltered="true">
+      <GroupAddress Name="1.2.3" Address="0/7/0" Unfiltered="true" />
+      <GroupAddress Name="1.2.4" Address="0/7/1" Unfiltered="true" />
+      <GroupAddress Name="1.2.5" Address="0/7/2" Unfiltered="true" />
+      <GroupAddress Name="1.2.6" Address="0/7/3" Unfiltered="true" />
+      <GroupAddress Name="1.2.7" Address="0/7/4" Unfiltered="true" />
+      <GroupAddress Name="1.2.8" Address="0/7/5" Unfiltered="true" />
+      <GroupAddress Name="1.2.9" Address="0/7/6" Unfiltered="true" />
+      <GroupAddress Name="1.2.10" Address="0/7/7" Unfiltered="true" />
+      <GroupAddress Name="1.2.11" Address="0/7/8" Unfiltered="true" />
+      <GroupAddress Name="1.2.12" Address="0/7/9" Unfiltered="true" />
+      <GroupAddress Name="1.2.13" Address="0/7/10" Unfiltered="true" />
+      <GroupAddress Name="1.2.14" Address="0/7/11" Unfiltered="true" />
+      <GroupAddress Name="1.2.15" Address="0/7/12" Unfiltered="true" />
+      <GroupAddress Name="1.2.16" Address="0/7/13" Unfiltered="true" />
+      <GroupAddress Name="1.2.17" Address="0/7/14" Unfiltered="true" />
+      <GroupAddress Name="1.2.18" Address="0/7/15" Unfiltered="true" />
+      <GroupAddress Name="1.2.19" Address="0/7/16" Unfiltered="true" />
+      <GroupAddress Name="1.2.20" Address="0/7/17" Unfiltered="true" />
+      <GroupAddress Name="1.2.21" Address="0/7/18" Unfiltered="true" />
+      <GroupAddress Name="1.2.22" Address="0/7/19" Unfiltered="true" />
+      <GroupAddress Name="1.2.23" Address="0/7/20" Unfiltered="true" />
+      <GroupAddress Name="1.2.24" Address="0/7/21" Unfiltered="true" />
+      <GroupAddress Name="1.2.25" Address="0/7/22" Unfiltered="true" />
+      <GroupAddress Name="1.2.26" Address="0/7/23" Unfiltered="true" />
+      <GroupAddress Name="1.2.27" Address="0/7/24" Unfiltered="true" />
+      <GroupAddress Name="1.2.28" Address="0/7/25" Unfiltered="true" />
+      <GroupAddress Name="1.2.29" Address="0/7/26" Unfiltered="true" />
+      <GroupAddress Name="1.2.30" Address="0/7/27" Unfiltered="true" />
+      <GroupAddress Name="1.2.31" Address="0/7/28" Unfiltered="true" />
+      <GroupAddress Name="1.2.32" Address="0/7/29" Unfiltered="true" />
+      <GroupAddress Name="1.2.33" Address="0/7/30" Unfiltered="true" />
+      <GroupAddress Name="1.2.34" Address="0/7/31" Unfiltered="true" />
+      <GroupAddress Name="1.2.35" Address="0/7/32" Unfiltered="true" />
+      <GroupAddress Name="1.2.36" Address="0/7/33" Unfiltered="true" />
+      <GroupAddress Name="1.2.37" Address="0/7/34" Unfiltered="true" />
+      <GroupAddress Name="1.2.38" Address="0/7/35" Unfiltered="true" />
+      <GroupAddress Name="1.2.39" Address="0/7/36" Unfiltered="true" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="Ikea P1 Lavel " RangeStart="2048" RangeEnd="4095" Unfiltered="true">
+    <GroupRange Name="P1 SA 1 And SA 2" RangeStart="2048" RangeEnd="2303" Unfiltered="true">
+      <GroupAddress Name="P1 SA1 CH1 On/off" Address="1/0/0" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH1 On/off Status" Address="1/0/1" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH2 On/off" Address="1/0/2" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH2 On/off Status" Address="1/0/3" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH3 On/off " Address="1/0/4" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH3 On/off Status" Address="1/0/5" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH4 On/off" Address="1/0/6" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH4 On/off Status" Address="1/0/7" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH5 On/off " Address="1/0/8" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH5 On/off Status" Address="1/0/9" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH6 On/off " Address="1/0/10" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH6 On/off Status" Address="1/0/11" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH7 On/off " Address="1/0/12" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH7 On/off Status" Address="1/0/13" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH8 On/off " Address="1/0/14" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH8 On/off Status" Address="1/0/15" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH9 On/off " Address="1/0/16" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH9 On/off Status" Address="1/0/17" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH10 On/off " Address="1/0/18" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH10 On/off Status" Address="1/0/19" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH11 On/off " Address="1/0/20" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH11 On/off Status" Address="1/0/21" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH12 On/off " Address="1/0/22" Unfiltered="true" />
+      <GroupAddress Name="P1 SA1 CH12 On/off Status" Address="1/0/23" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH1 On/off " Address="1/0/24" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH1 On/off Status" Address="1/0/25" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH2 On/off " Address="1/0/26" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH2 On/off Status" Address="1/0/27" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH3 On/off " Address="1/0/28" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH3 On/off Status" Address="1/0/29" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH4 On/off " Address="1/0/30" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH4 On/off Status" Address="1/0/31" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH5 On/off " Address="1/0/32" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH5 On/off Status" Address="1/0/33" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH6 On/off " Address="1/0/34" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH6 On/off Status" Address="1/0/35" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH7 On/off " Address="1/0/36" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH7 On/off Status" Address="1/0/37" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH8 On/off " Address="1/0/38" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH8 On/off Status" Address="1/0/39" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH9 On/off " Address="1/0/40" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH9 On/off Status" Address="1/0/41" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH10 On/off " Address="1/0/42" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH10 On/off Status" Address="1/0/43" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH11 On/off " Address="1/0/44" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH11 On/off Status" Address="1/0/45" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH12 On/off " Address="1/0/46" Unfiltered="true" />
+      <GroupAddress Name="P1 SA2 CH12 On/off Status" Address="1/0/47" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="P1 SA 3 And SA 4" RangeStart="2304" RangeEnd="2559" Unfiltered="true">
+      <GroupAddress Name="P1 SA3 CH1 on/off" Address="1/1/0" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH1 on/off Status" Address="1/1/1" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH2 on/off " Address="1/1/2" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH2 on/off Status" Address="1/1/3" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH3 on/off " Address="1/1/4" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH3 on/off Status" Address="1/1/5" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH4 on/off" Address="1/1/6" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH4 on/off Status" Address="1/1/7" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH5 on/off " Address="1/1/8" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH5 on/off Status" Address="1/1/9" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH6 on/off" Address="1/1/10" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH6 on/off Status" Address="1/1/11" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH7 on/off " Address="1/1/12" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH7 on/off Status" Address="1/1/13" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH8 on/off " Address="1/1/14" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH8 on/off Status" Address="1/1/15" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH9 on/off " Address="1/1/16" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH9 on/off Status" Address="1/1/17" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH10 on/off " Address="1/1/18" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH10 on/off Status" Address="1/1/19" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH11 on/off" Address="1/1/20" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH11 on/off Status" Address="1/1/21" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH12 on/off " Address="1/1/22" Unfiltered="true" />
+      <GroupAddress Name="P1 SA3 CH12 on/off Status" Address="1/1/23" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH1 on/off" Address="1/1/24" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH1 on/off Status" Address="1/1/25" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH2 on/off " Address="1/1/26" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH2 on/off Status" Address="1/1/27" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH3 on/off " Address="1/1/28" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH3 on/off Status" Address="1/1/29" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH4 on/off " Address="1/1/30" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH4 on/off Status" Address="1/1/31" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH5 on/off " Address="1/1/32" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH5 on/off Status" Address="1/1/33" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH6 on/off " Address="1/1/34" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH6 on/off Status" Address="1/1/35" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH7 on/off " Address="1/1/36" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH7 on/off Status" Address="1/1/37" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH8 on/off " Address="1/1/38" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH8 on/off Status" Address="1/1/39" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH9 on/off " Address="1/1/40" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH9 on/off Status" Address="1/1/41" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH10 on/off " Address="1/1/42" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH10 on/off Status" Address="1/1/43" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH11 on/off" Address="1/1/44" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH11 on/off Status" Address="1/1/45" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH12 on/off " Address="1/1/46" Unfiltered="true" />
+      <GroupAddress Name="P1 SA4 CH12 on/off Status" Address="1/1/47" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="P1 SA 5 And SA 6" RangeStart="2560" RangeEnd="2815" Unfiltered="true">
+      <GroupAddress Name="P1 SA5 CH1 on/off" Address="1/2/0" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH1 on/off Status" Address="1/2/1" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH2 on/off " Address="1/2/2" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH2 on/off Status" Address="1/2/3" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH3 on/off " Address="1/2/4" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH3 on/off Status" Address="1/2/5" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH4 on/off " Address="1/2/6" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH4 on/off Status" Address="1/2/7" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH5 on/off " Address="1/2/8" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH5 on/off Status" Address="1/2/9" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH6 on/off " Address="1/2/10" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH6 on/off Status" Address="1/2/11" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH7 on/off " Address="1/2/12" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH7 on/off Status" Address="1/2/13" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH8 on/off " Address="1/2/14" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH8 on/off Status" Address="1/2/15" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH9 on/off " Address="1/2/16" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH9 on/off Status" Address="1/2/17" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH10 on/off " Address="1/2/18" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH10 on/off Status" Address="1/2/19" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH11 on/off " Address="1/2/20" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH11 on/off Status" Address="1/2/21" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH12 on/off " Address="1/2/22" Unfiltered="true" />
+      <GroupAddress Name="P1 SA5 CH12 on/off Status" Address="1/2/23" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH1 on/off " Address="1/2/24" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH1 on/off Status" Address="1/2/25" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH2 on/off " Address="1/2/26" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH2 on/off Status" Address="1/2/27" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH3 on/off " Address="1/2/28" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH3 on/off Status" Address="1/2/29" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH4 on/off " Address="1/2/30" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH4 on/off Status" Address="1/2/31" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH5 on/off " Address="1/2/32" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH5 on/off Status" Address="1/2/33" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH6 on/off " Address="1/2/34" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH6 on/off Status" Address="1/2/35" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH7 on/off " Address="1/2/36" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH7 on/off Status" Address="1/2/37" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH8 on/off " Address="1/2/38" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH8 on/off Status" Address="1/2/39" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH9 on/off " Address="1/2/40" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH9 on/off Status" Address="1/2/41" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH10 on/off " Address="1/2/42" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH10 on/off Status" Address="1/2/43" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH11 on/off " Address="1/2/44" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH11 on/off Status" Address="1/2/45" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH12 on/off " Address="1/2/46" Unfiltered="true" />
+      <GroupAddress Name="P1 SA6 CH12 on/off Status" Address="1/2/47" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="Dummy" RangeStart="2816" RangeEnd="3071" Unfiltered="true">
+      <GroupAddress Name="SA 1 SA 2" Address="1/3/0" Unfiltered="true" />
+      <GroupAddress Name="SA 3 SA 4" Address="1/3/1" Unfiltered="true" />
+      <GroupAddress Name="SA 5 SA 6" Address="1/3/2" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="SAE" RangeStart="3072" RangeEnd="3327" Unfiltered="true">
+      <GroupAddress Name="P1 SAE CH 1 On/off" Address="1/4/0" Unfiltered="true" />
+      <GroupAddress Name="P1 SAE CH 1 On/off &amp; Status" Address="1/4/1" Unfiltered="true" />
+      <GroupAddress Name="P1 SAE CH 2 On/off" Address="1/4/2" Unfiltered="true" />
+      <GroupAddress Name="P1 SAE CH 2 On/off &amp; Status" Address="1/4/3" Unfiltered="true" />
+      <GroupAddress Name="P1 SAE CH 3 On/off" Address="1/4/4" Unfiltered="true" />
+      <GroupAddress Name="P1 SAE CH 3 On/off &amp; Status" Address="1/4/5" Unfiltered="true" />
+      <GroupAddress Name="P1 SAE CH 4 On/off" Address="1/4/6" Unfiltered="true" />
+      <GroupAddress Name="P1 SAE CH 4 On/off &amp; Status" Address="1/4/7" Unfiltered="true" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="Ikea GR Lavel" RangeStart="4096" RangeEnd="6143" Unfiltered="true">
+    <GroupRange Name="Marketing Office" RangeStart="4096" RangeEnd="4351" Unfiltered="true">
+      <GroupAddress Name="GR SA1 CH1 RR On/Off" Address="2/0/0" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH1 RR On/Off Status" Address="2/0/1" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH2 LR On/Off " Address="2/0/2" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH2 LR On/Off Status" Address="2/0/3" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH3 RY On/Off" Address="2/0/4" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH3 RY On/Off Status" Address="2/0/5" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH4 LY On/Off " Address="2/0/6" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH4 LY On/Off Status" Address="2/0/7" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH5 RB On/Off " Address="2/0/8" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH5 RB On/Off Status" Address="2/0/9" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH6 LB On/Off " Address="2/0/10" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH6 LB On/Off Status" Address="2/0/11" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH7 RE On/Off" Address="2/0/12" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH7 RE On/Off Status" Address="2/0/13" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH8 LE On/Off " Address="2/0/14" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH8 LE On/Off Status" Address="2/0/15" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH1 RR On/Off " Address="2/0/16" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH1 RR On/Off Status" Address="2/0/17" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH2 LR On/Off " Address="2/0/18" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH2 LR On/Off Status" Address="2/0/19" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH3 RY On/Off " Address="2/0/20" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH3 RY On/Off Status" Address="2/0/21" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH4 LY On/Off " Address="2/0/22" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH4 LY On/Off Status" Address="2/0/23" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH5 RB On/Off" Address="2/0/24" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH5 RB On/Off Status" Address="2/0/25" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH6 LB On/Off " Address="2/0/26" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH6 LB On/Off Status" Address="2/0/27" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH7 RE On/Off" Address="2/0/28" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH7 RE On/Off Status" Address="2/0/29" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH8 LE On/Off " Address="2/0/30" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH8 LE On/Off Status" Address="2/0/31" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH1 RR On/Off " Address="2/0/32" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH1 RR On/Off Status" Address="2/0/33" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH2 LR On/Off " Address="2/0/34" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH2 LR On/Off Status" Address="2/0/35" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH3 RY On/Off " Address="2/0/36" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH3 RY On/Off Status" Address="2/0/37" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH4 LY On/Off " Address="2/0/38" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH4 LY On/Off Status" Address="2/0/39" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH5 RB On/Off " Address="2/0/40" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH5 RB On/Off Status" Address="2/0/41" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH6 LB On/Off" Address="2/0/42" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH6 LB On/Off  Status" Address="2/0/43" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH7 RE On/Off " Address="2/0/44" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH7 RE On/Off  Status" Address="2/0/45" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH8 LE On/Off  " Address="2/0/46" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH8 LE On/Off  Status" Address="2/0/47" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH1 RR On/Off  " Address="2/0/48" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH1 RR On/Off  Status" Address="2/0/49" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH2 LR On/Off  " Address="2/0/50" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH2 LR On/Off  Status" Address="2/0/51" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH3 RY On/Off  " Address="2/0/52" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH3 RY On/Off  Status" Address="2/0/53" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH4 LY On/Off  " Address="2/0/54" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH4 LY On/Off Status" Address="2/0/55" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH5 RB On/Off  " Address="2/0/56" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH5 RB On/Off Status" Address="2/0/57" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH6 LB On/Off  " Address="2/0/58" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH6 LB On/Off Status" Address="2/0/59" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH7 RE On/Off  " Address="2/0/60" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH7 RE On/Off Status" Address="2/0/61" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH8 LE On/Off " Address="2/0/62" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH8 LE On/Off Status" Address="2/0/63" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH1 RR On/Off " Address="2/0/64" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH1 RR On/Off Status" Address="2/0/65" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH2 LR On/Off " Address="2/0/66" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH2 LR On/Off Status" Address="2/0/67" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH3 RY On/Off " Address="2/0/68" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH3 RY On/Off Status" Address="2/0/69" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH4 LY On/Off " Address="2/0/70" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH4 LY On/Off Status" Address="2/0/71" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH5 RB On/Off" Address="2/0/72" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH5 RB On/Off Status" Address="2/0/73" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH6 LB On/Off " Address="2/0/74" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH6 LB On/Off Status" Address="2/0/75" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH7 RE On/Off " Address="2/0/76" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH7 RE On/Off Status" Address="2/0/77" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH8 LE On/Off " Address="2/0/78" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH8 LE On/Off Status" Address="2/0/79" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH1 RR On/Off " Address="2/0/80" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH1 RR On/Off Status" Address="2/0/81" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH2 LR On/Off " Address="2/0/82" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH2 LR On/Off Status" Address="2/0/83" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH3 RY On/Off " Address="2/0/84" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH3 RY On/Off Status" Address="2/0/85" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH4 LY On/Off " Address="2/0/86" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH4 LY On/Off Status" Address="2/0/87" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH5 RB On/Off " Address="2/0/88" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH5 RB On/Off Status" Address="2/0/89" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH6 LB On/Off " Address="2/0/90" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH6 LB On/Off Status" Address="2/0/91" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH7 RE On/Off " Address="2/0/92" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH7 RE On/Off Status" Address="2/0/93" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH8 LE On/Off " Address="2/0/94" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH8 LE On/Off Status" Address="2/0/95" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH1 RR On/Off " Address="2/0/96" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH1 RR On/Off Status" Address="2/0/97" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH2 LR On/Off " Address="2/0/98" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH2 LR On/Off Status" Address="2/0/99" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH3 RY On/Off " Address="2/0/100" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH3 RY On/Off Status" Address="2/0/101" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH4 LY On/Off " Address="2/0/102" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH4 LY On/Off Status" Address="2/0/103" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH5 RB On/Off " Address="2/0/104" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH5 RB On/Off Status" Address="2/0/105" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH6 LB On/Off " Address="2/0/106" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH6 LB On/Off Status" Address="2/0/107" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH7 RE On/Off " Address="2/0/108" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH7 RE On/Off Status" Address="2/0/109" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH8 LE On/Off " Address="2/0/110" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH8 LE On/Off Status" Address="2/0/111" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH1 RR On/Off " Address="2/0/112" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH1 RR On/Off Status" Address="2/0/113" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH2 LR On/Off " Address="2/0/114" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH2 LR On/Off Status" Address="2/0/115" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH3 RY On/Off " Address="2/0/116" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH3 RY On/Off Status" Address="2/0/117" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH4 LY On/Off " Address="2/0/118" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH4 LY On/Off Status" Address="2/0/119" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH5 RB On/Off " Address="2/0/120" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH5 RB On/Off Status" Address="2/0/121" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH6 LB On/Off " Address="2/0/122" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH6 LB On/Off Status" Address="2/0/123" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH7 RE On/Off " Address="2/0/124" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH7 RE On/Off Status" Address="2/0/125" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH8 LE On/Off " Address="2/0/126" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH8 LE On/Off Status" Address="2/0/127" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH1 RR On/Off " Address="2/0/128" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH1 RR On/Off Status" Address="2/0/129" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH2 LR On/Off " Address="2/0/130" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH2 LR On/Off Status" Address="2/0/131" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH3 RY On/Off " Address="2/0/132" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH3 RY On/Off Status" Address="2/0/133" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH4 LY On/Off " Address="2/0/134" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH4 LY On/Off Status" Address="2/0/135" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH5 RB On/Off " Address="2/0/136" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH5 RB On/Off Status" Address="2/0/137" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH6 LB On/Off " Address="2/0/138" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH6 LB On/Off Status" Address="2/0/139" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH7 RE On/Off " Address="2/0/140" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH7 RE On/Off Status" Address="2/0/141" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH8 LE On/Off " Address="2/0/142" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH8 LE On/Off Status" Address="2/0/143" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH1 RR On/Off" Address="2/0/144" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH1 RR On/Off Status" Address="2/0/145" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH2 LR On/Off " Address="2/0/146" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH2 LR On/Off Status" Address="2/0/147" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH3 RY On/Off " Address="2/0/148" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH3 RY On/Off Status" Address="2/0/149" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH4 LY On/Off " Address="2/0/150" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH4 LY On/Off Status" Address="2/0/151" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH5 RB On/Off " Address="2/0/152" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH5 RB On/Off Status" Address="2/0/153" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH6 LB On/Off " Address="2/0/154" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH6 LB On/Off Status" Address="2/0/155" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH7 RE On/Off " Address="2/0/156" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH7 RE On/Off Status" Address="2/0/157" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH8 RE On/Off " Address="2/0/158" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH8 RE On/Off Status" Address="2/0/159" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH1 RR On/Off " Address="2/0/160" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH1 RR On/Off Status" Address="2/0/161" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH2 LR On/Off " Address="2/0/162" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH2 LR On/Off Status" Address="2/0/163" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH3 RY On/Off " Address="2/0/164" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH3 RY On/Off Status" Address="2/0/165" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH4 LY On/Off " Address="2/0/166" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH4 LY On/Off Status" Address="2/0/167" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH5 RB On/Off " Address="2/0/168" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH5 RB On/Off Status" Address="2/0/169" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH6 LB On/Off" Address="2/0/170" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH6 LB On/Off Status" Address="2/0/171" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH7 RE On/Off " Address="2/0/172" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH7 RE On/Off Status" Address="2/0/173" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH8 LE On/Off " Address="2/0/174" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH8 LE On/Off Status" Address="2/0/175" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH1 RR On/Off " Address="2/0/176" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH1 RR On/Off Status" Address="2/0/177" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH2 LR On/Off " Address="2/0/178" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH2 LR On/Off Status" Address="2/0/179" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH3 RY On/Off " Address="2/0/180" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH3 RY On/Off Status" Address="2/0/181" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH4 LY On/Off " Address="2/0/182" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH4 LY On/Off Status" Address="2/0/183" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH5 RB On/Off " Address="2/0/184" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH5 RB On/Off Status" Address="2/0/185" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH6 LB On/Off " Address="2/0/186" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH6 LB On/Off Status" Address="2/0/187" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH7 RE On/Off " Address="2/0/188" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH7 RE On/Off Status" Address="2/0/189" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH8 LE On/Off " Address="2/0/190" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH8 LE On/Off Status" Address="2/0/191" Unfiltered="true" />
+      <GroupAddress Name="GR SA13 CH1 RR On/Off " Address="2/0/192" Unfiltered="true" />
+      <GroupAddress Name="GR SA13 CH1 RR On/Off Status" Address="2/0/193" Unfiltered="true" />
+      <GroupAddress Name="GR SA13 CH2 LR On/Off " Address="2/0/194" Unfiltered="true" />
+      <GroupAddress Name="GR SA13 CH2 LR On/Off Status" Address="2/0/195" Unfiltered="true" />
+      <GroupAddress Name="GR SA13 CH3 RY On/Off " Address="2/0/196" Unfiltered="true" />
+      <GroupAddress Name="GR SA13 CH3 RY On/Off Status" Address="2/0/197" Unfiltered="true" />
+      <GroupAddress Name="GR SA13 CH4 LY On/Off " Address="2/0/198" Unfiltered="true" />
+      <GroupAddress Name="GR SA13 CH4 LY On/Off Status" Address="2/0/199" Unfiltered="true" />
+      <GroupAddress Name="GR SA13 CH5 RB On/Off " Address="2/0/200" Unfiltered="true" />
+      <GroupAddress Name="GR SA13 CH5 RB On/Off Status" Address="2/0/201" Unfiltered="true" />
+      <GroupAddress Name="GR SA13 CH6 LB On/Off " Address="2/0/202" Unfiltered="true" />
+      <GroupAddress Name="GR SA13 CH6 LB On/Off Status" Address="2/0/203" Unfiltered="true" />
+      <GroupAddress Name="GR SA13 CH7 RE On/Off " Address="2/0/204" Unfiltered="true" />
+      <GroupAddress Name="GR SA13 CH7 RE On/Off Status" Address="2/0/205" Unfiltered="true" />
+      <GroupAddress Name="GR SA13 CH8 LE On/Off" Address="2/0/206" Unfiltered="true" />
+      <GroupAddress Name="GR SA13 CH8 LE On/Off Status" Address="2/0/207" Unfiltered="true" />
+      <GroupAddress Name="GR SA14 CH1 RR On/Off " Address="2/0/208" Unfiltered="true" />
+      <GroupAddress Name="GR SA14 CH1 RR On/Off Status" Address="2/0/209" Unfiltered="true" />
+      <GroupAddress Name="GR SA14 CH2 LR On/Off " Address="2/0/210" Unfiltered="true" />
+      <GroupAddress Name="GR SA14 CH2 LR On/Off Status" Address="2/0/211" Unfiltered="true" />
+      <GroupAddress Name="GR SA14 CH3 RY On/Off " Address="2/0/212" Unfiltered="true" />
+      <GroupAddress Name="GR SA14 CH3 RY On/Off Status" Address="2/0/213" Unfiltered="true" />
+      <GroupAddress Name="GR SA14 CH4 LY On/Off " Address="2/0/214" Unfiltered="true" />
+      <GroupAddress Name="GR SA14 CH4 LY On/Off Status" Address="2/0/215" Unfiltered="true" />
+      <GroupAddress Name="GR SA14 CH5 RB On/Off " Address="2/0/216" Unfiltered="true" />
+      <GroupAddress Name="GR SA14 CH5 RB On/Off Status" Address="2/0/217" Unfiltered="true" />
+      <GroupAddress Name="GR SA14 CH6 LB On/Off " Address="2/0/218" Unfiltered="true" />
+      <GroupAddress Name="GR SA14 CH6 LB On/Off Status" Address="2/0/219" Unfiltered="true" />
+      <GroupAddress Name="GR SA14 CH7 RE On/Off " Address="2/0/220" Unfiltered="true" />
+      <GroupAddress Name="GR SA14 CH7 RE On/Off Status" Address="2/0/221" Unfiltered="true" />
+      <GroupAddress Name="GR SA14 CH8 LE On/Off " Address="2/0/222" Unfiltered="true" />
+      <GroupAddress Name="GR SA14 CH8 LE On/Off Status" Address="2/0/223" Unfiltered="true" />
+      <GroupAddress Name="GR SA15 CH1 RR On/Off " Address="2/0/224" Unfiltered="true" />
+      <GroupAddress Name="GR SA15 CH1 RR On/Off Status" Address="2/0/225" Unfiltered="true" />
+      <GroupAddress Name="GR SA15 CH2 LR On/Off " Address="2/0/226" Unfiltered="true" />
+      <GroupAddress Name="GR SA15 CH2 LR On/Off Status" Address="2/0/227" Unfiltered="true" />
+      <GroupAddress Name="GR SA15 CH3 RY On/Off " Address="2/0/228" Unfiltered="true" />
+      <GroupAddress Name="GR SA15 CH3 RY On/Off Status" Address="2/0/229" Unfiltered="true" />
+      <GroupAddress Name="GR SA15 CH4 LY On/Off " Address="2/0/230" Unfiltered="true" />
+      <GroupAddress Name="GR SA15 CH4 LY On/Off Status" Address="2/0/231" Unfiltered="true" />
+      <GroupAddress Name="GR SA15 CH5 RB On/Off " Address="2/0/232" Unfiltered="true" />
+      <GroupAddress Name="GR SA15 CH5 RB On/Off Status" Address="2/0/233" Unfiltered="true" />
+      <GroupAddress Name="GR SA15 CH6 LB On/Off " Address="2/0/234" Unfiltered="true" />
+      <GroupAddress Name="GR SA15 CH6 LB On/Off Status" Address="2/0/235" Unfiltered="true" />
+      <GroupAddress Name="GR SA15 CH7 RE On/Off " Address="2/0/236" Unfiltered="true" />
+      <GroupAddress Name="GR SA15 CH7 RE On/Off Status" Address="2/0/237" Unfiltered="true" />
+      <GroupAddress Name="GR SA15 CH8 LE On/Off " Address="2/0/238" Unfiltered="true" />
+      <GroupAddress Name="GR SA15 CH8 LE On/Off Status" Address="2/0/239" Unfiltered="true" />
+      <GroupAddress Name="GR SA16 CH1 RR On/Off " Address="2/0/240" Unfiltered="true" />
+      <GroupAddress Name="GR SA16 CH1 RR On/Off Status" Address="2/0/241" Unfiltered="true" />
+      <GroupAddress Name="GR SA16 CH2 LR On/Off " Address="2/0/242" Unfiltered="true" />
+      <GroupAddress Name="GR SA16 CH2 LR On/Off Status" Address="2/0/243" Unfiltered="true" />
+      <GroupAddress Name="GR SA16 CH3 RY On/Off " Address="2/0/244" Unfiltered="true" />
+      <GroupAddress Name="GR SA16 CH3 RY On/Off Status" Address="2/0/245" Unfiltered="true" />
+      <GroupAddress Name="GR SA16 CH4 LY On/Off " Address="2/0/246" Unfiltered="true" />
+      <GroupAddress Name="GR SA16 CH4 LY On/Off Status" Address="2/0/247" Unfiltered="true" />
+      <GroupAddress Name="GR SA16 CH5 RB On/Off" Address="2/0/248" Unfiltered="true" />
+      <GroupAddress Name="GR SA16 CH5 RB On/Off Status" Address="2/0/249" Unfiltered="true" />
+      <GroupAddress Name="GR SA16 CH6 LB On/Off " Address="2/0/250" Unfiltered="true" />
+      <GroupAddress Name="GR SA16 CH6 LB On/Off Status" Address="2/0/251" Unfiltered="true" />
+      <GroupAddress Name="GR SA16 CH7 RE On/Off" Address="2/0/252" Unfiltered="true" />
+      <GroupAddress Name="GR SA16 CH7 RE On/Off Status" Address="2/0/253" Unfiltered="true" />
+      <GroupAddress Name="GR SA16 CH8 LE On/Off " Address="2/0/254" Unfiltered="true" />
+      <GroupAddress Name="GR SA16 CH8 LE On/Off Status" Address="2/0/255" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="Sales Check Out Area" RangeStart="4352" RangeEnd="4607" Unfiltered="true">
+      <GroupAddress Name="GR SA1 CH1 RR On/Off" Address="2/1/0" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH1 RR On/Off Status" Address="2/1/1" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH2 LR On/Off " Address="2/1/2" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH2 LR On/Off Status" Address="2/1/3" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH3 RY On/Off " Address="2/1/4" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH3 RY On/Off Status" Address="2/1/5" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH4 LY On/Off " Address="2/1/6" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH4 LY On/Off Status" Address="2/1/7" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH5 RB On/Off " Address="2/1/8" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH5 RB On/Off Status" Address="2/1/9" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH6 LB On/Off " Address="2/1/10" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH6 LB On/Off Status" Address="2/1/11" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH7 RE On/Off " Address="2/1/12" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH7 RE On/Off Status" Address="2/1/13" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH8 LE On/Off " Address="2/1/14" Unfiltered="true" />
+      <GroupAddress Name="GR SA1 CH8 LE On/Off Status" Address="2/1/15" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH1 RR On/Off" Address="2/1/16" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH1 RR On/Off Status" Address="2/1/17" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH2 LR On/Off" Address="2/1/18" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH2 LR On/Off Status" Address="2/1/19" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH3 RY On/Off " Address="2/1/20" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH3 RY On/Off Status" Address="2/1/21" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH4 LY On/Off " Address="2/1/22" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH4 LY On/Off Status" Address="2/1/23" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH5 RB On/Off " Address="2/1/24" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH5 RB On/Off Status" Address="2/1/25" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH6 LB On/Off " Address="2/1/26" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH6 LB On/Off Status" Address="2/1/27" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH7 RE On/Off " Address="2/1/28" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH7 RE On/Off Status" Address="2/1/29" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH8 LE On/Off " Address="2/1/30" Unfiltered="true" />
+      <GroupAddress Name="GR SA2 CH8 LE On/Off Status" Address="2/1/31" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH1 RR On/Off" Address="2/1/32" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH1 RR On/Off Status" Address="2/1/33" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH2 LR On/Off " Address="2/1/34" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH2 LR On/Off Status" Address="2/1/35" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH3 RY On/Off " Address="2/1/36" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH3 RY On/Off Status" Address="2/1/37" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH4 LY On/Off " Address="2/1/38" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH4 LY On/Off Status" Address="2/1/39" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH5 RB On/Off " Address="2/1/40" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH5 RB On/Off Status" Address="2/1/41" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH6 LB On/Off" Address="2/1/42" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH6 LB On/Off Status" Address="2/1/43" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH7 RE On/Off " Address="2/1/44" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH7 RE On/Off Status" Address="2/1/45" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH8 LE On/Off" Address="2/1/46" Unfiltered="true" />
+      <GroupAddress Name="GR SA3 CH8 LE On/Off Status" Address="2/1/47" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH1 RR On/Off" Address="2/1/48" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH1 RR On/Off Status" Address="2/1/49" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH2 LR On/Off " Address="2/1/50" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH2 LR On/Off Status" Address="2/1/51" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH3 RY On/Off " Address="2/1/52" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH3 RY On/Off Status" Address="2/1/53" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH4 LY On/Off " Address="2/1/54" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH4 LY On/Off Status" Address="2/1/55" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH5 RB On/Off " Address="2/1/56" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH5 RB On/Off Status" Address="2/1/57" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH6 LB On/Off" Address="2/1/58" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH6 LB On/Off Status" Address="2/1/59" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH7 RE On/Off " Address="2/1/60" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH7 RE On/Off Status" Address="2/1/61" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH8 LE On/Off " Address="2/1/62" Unfiltered="true" />
+      <GroupAddress Name="GR SA4 CH8 LE On/Off Status" Address="2/1/63" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH1 RR On/Off" Address="2/1/65" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH1 RR On/Off Status" Address="2/1/66" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH2 LR On/Off " Address="2/1/67" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH2 LR On/Off Status" Address="2/1/68" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH3 RY On/Off " Address="2/1/69" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH3 RY On/Off Status" Address="2/1/70" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH4 LY On/Off " Address="2/1/71" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH4 LY On/Off Status" Address="2/1/72" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH5 RB On/Off " Address="2/1/73" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH5 RB On/Off Status" Address="2/1/74" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH6 LB On/Off" Address="2/1/75" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH6 LB On/Off Status" Address="2/1/76" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH7 RE On/Off " Address="2/1/77" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH7 RE On/Off Status" Address="2/1/78" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH8 LE On/Off " Address="2/1/79" Unfiltered="true" />
+      <GroupAddress Name="GR SA5 CH8 LE On/Off Status" Address="2/1/80" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH1 RR On/Off" Address="2/1/81" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH1 RR On/Off Status" Address="2/1/82" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH2 LR On/Off " Address="2/1/83" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH2 LR On/Off Status" Address="2/1/84" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH3 RY On/Off" Address="2/1/85" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH3 RY On/Off Status" Address="2/1/86" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH4 LY On/Off" Address="2/1/87" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH4 LY On/Off Status" Address="2/1/88" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH5 RB On/Off " Address="2/1/89" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH5 RB On/Off Status" Address="2/1/90" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH6 LB On/Off" Address="2/1/91" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH6 LB On/Off  Status" Address="2/1/92" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH7 RE On/Off  " Address="2/1/93" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH7 RE On/Off Status" Address="2/1/94" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH8 LE On/Off " Address="2/1/95" Unfiltered="true" />
+      <GroupAddress Name="GR SA6 CH8 LE On/Off Status" Address="2/1/96" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH1 RR On/Off" Address="2/1/97" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH1 RR On/Off Status" Address="2/1/98" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH2 LR On/Off " Address="2/1/99" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH2 LR On/Off Status" Address="2/1/100" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH3 RY On/Off " Address="2/1/101" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH3 RY On/Off  Status" Address="2/1/102" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH4 LY On/Off  " Address="2/1/103" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH4 LY On/Off Status" Address="2/1/104" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH5 RB On/Off " Address="2/1/105" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH5 RB On/Off Status" Address="2/1/106" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH6 LB On/Off " Address="2/1/107" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH6 LB On/Off Status" Address="2/1/108" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH7 RE On/Off " Address="2/1/109" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH7 RE On/Off Status" Address="2/1/110" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH8 LE On/Off " Address="2/1/111" Unfiltered="true" />
+      <GroupAddress Name="GR SA7 CH8 LE On/Off Status" Address="2/1/112" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH1 RR On/Off" Address="2/1/113" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH1 RR On/Off Status" Address="2/1/114" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH2 LR On/Off " Address="2/1/115" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH2 LR On/Off Status" Address="2/1/116" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH3 RY On/Off " Address="2/1/117" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH3 RY On/Off Status" Address="2/1/118" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH4 LY On/Off" Address="2/1/119" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH4 LY On/Off Status" Address="2/1/120" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH5 RB On/Off " Address="2/1/121" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH5 RB On/Off Status" Address="2/1/122" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH6 LB On/Off " Address="2/1/123" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH6 LB On/Off Status" Address="2/1/124" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH7 RE On/Off" Address="2/1/125" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH7 RE On/Off Status" Address="2/1/126" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH8 LE On/Off" Address="2/1/127" Unfiltered="true" />
+      <GroupAddress Name="GR SA8 CH8 LE On/Off Status" Address="2/1/128" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH1 RR On/Off " Address="2/1/129" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH1 RR On/Off Status" Address="2/1/130" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH2 LR On/Off " Address="2/1/131" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH2 LR On/Off Status" Address="2/1/132" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH3 RY On/Off " Address="2/1/133" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH3 RY On/Off Status" Address="2/1/134" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH4 LY On/Off " Address="2/1/135" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH4 LY On/Off Status" Address="2/1/136" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH5 RB On/Off " Address="2/1/137" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH5 RB On/Off Status" Address="2/1/138" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH6 LB On/Off " Address="2/1/139" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH6 LB On/Off Status" Address="2/1/140" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH7 RE On/Off " Address="2/1/141" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH7 RE On/Off Status" Address="2/1/142" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH8 LE On/Off " Address="2/1/143" Unfiltered="true" />
+      <GroupAddress Name="GR SA9 CH8 LE On/Off Status" Address="2/1/144" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH1 RR On/Off" Address="2/1/145" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH1 RR On/Off Status" Address="2/1/146" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH2 LR On/Off " Address="2/1/147" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH2 LR On/Off Status" Address="2/1/148" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH3 RY On/Off " Address="2/1/149" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH3 RY On/Off Status" Address="2/1/150" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH4 LY On/Off" Address="2/1/151" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH4 LY On/Off Status" Address="2/1/152" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH5 RB On/Off " Address="2/1/153" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH5 RB On/Off Status" Address="2/1/154" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH6 LB On/Off" Address="2/1/155" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH6 LB On/Off Status" Address="2/1/156" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH7 RE On/Off" Address="2/1/157" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH7 RE On/Off Status" Address="2/1/158" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH8 LE On/Off " Address="2/1/159" Unfiltered="true" />
+      <GroupAddress Name="GR SA10 CH8 LE On/Off Status" Address="2/1/160" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH1 RR On/Off" Address="2/1/161" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH1 RR On/Off Status" Address="2/1/162" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH2 LR On/Off " Address="2/1/163" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH2 LR On/Off Status " Address="2/1/164" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH3 RY On/Off  " Address="2/1/165" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH3 RY On/Off Status  " Address="2/1/166" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH4 LY On/Off  " Address="2/1/167" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH4 LY On/Off Status" Address="2/1/168" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH5 RB On/Off " Address="2/1/169" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH5 RB On/Off Status" Address="2/1/170" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH6 LB On/Off " Address="2/1/171" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH6 LB On/Off  Status" Address="2/1/172" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH7 RE On/Off  " Address="2/1/173" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH7 RE On/Off Status" Address="2/1/174" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH8 LE On/Off " Address="2/1/175" Unfiltered="true" />
+      <GroupAddress Name="GR SA11 CH8 LE On/Off Status" Address="2/1/176" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH1 RR On/Off" Address="2/1/177" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH1 RR On/Off Status" Address="2/1/178" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH2 LR On/Off" Address="2/1/179" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH2 LR On/Off Status" Address="2/1/180" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH3 RY On/Off" Address="2/1/181" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH3 RY On/Off Status" Address="2/1/182" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH4 LY On/Off " Address="2/1/183" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH4 LY On/Off Status" Address="2/1/184" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH5 RB On/Off " Address="2/1/185" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH5 RB On/Off Status" Address="2/1/186" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH6 LB On/Off " Address="2/1/187" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH6 LB On/Off Status" Address="2/1/188" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH7 RE On/Off" Address="2/1/189" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH7 RE On/Off Status" Address="2/1/190" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH8 LE On/Off " Address="2/1/191" Unfiltered="true" />
+      <GroupAddress Name="GR SA12 CH8 LE On/Off Status" Address="2/1/192" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="Marketing Area" RangeStart="4608" RangeEnd="4863" Unfiltered="true">
+      <GroupAddress Name="Marketing Area L1 Lighting On/off " Address="2/2/0" Unfiltered="true" />
+      <GroupAddress Name="Marketing Area L1 Lighting On/off Status" Address="2/2/1" Unfiltered="true" />
+      <GroupAddress Name="Marketing Area L2 Lighting On/off" Address="2/2/2" Unfiltered="true" />
+      <GroupAddress Name="Marketing Area L2 Lighting On/off Status" Address="2/2/3" Unfiltered="true" />
+      <GroupAddress Name="Marketing Area L3 Lighting On/off" Address="2/2/4" Unfiltered="true" />
+      <GroupAddress Name="Marketing Area L3 Lighting On/off Status" Address="2/2/5" Unfiltered="true" />
+      <GroupAddress Name="Marketing Area L4 Lighting On/off" Address="2/2/6" Unfiltered="true" />
+      <GroupAddress Name="Marketing Area L4 Lighting On/off Status" Address="2/2/7" Unfiltered="true" />
+      <GroupAddress Name="Marketing Area Emergency L1 On/off " Address="2/2/8" Unfiltered="true" />
+      <GroupAddress Name="Marketing Area Emergency L1 On/off &amp; Status" Address="2/2/9" Unfiltered="true" />
+      <GroupAddress Name="Marketing Area Emergency L2 On/off" Address="2/2/10" Unfiltered="true" />
+      <GroupAddress Name="Marketing Area Emergency L2 On/off &amp; Status" Address="2/2/11" Unfiltered="true" />
+      <GroupAddress Name="Marketing Area Emergency L3 On/off " Address="2/2/12" Unfiltered="true" />
+      <GroupAddress Name="Marketing Area Emergency L3 On/off &amp; Status" Address="2/2/13" Unfiltered="true" />
+      <GroupAddress Name="Marketing Area Emergency L4 On/off" Address="2/2/14" Unfiltered="true" />
+      <GroupAddress Name="Marketing Area Emergency L4 On/off &amp; Status" Address="2/2/15" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="Sales Check Out Area Lighting" RangeStart="4864" RangeEnd="5119" Unfiltered="true">
+      <GroupAddress Name="Sales Check Out Area L1 Lighting On/Off" Address="2/3/0" Unfiltered="true" />
+      <GroupAddress Name="Sales Check Out Area L1 Lighting On/Off Status" Address="2/3/1" Unfiltered="true" />
+      <GroupAddress Name="Sales Check Out Area L2 Lighting On/Off" Address="2/3/2" Unfiltered="true" />
+      <GroupAddress Name="Sales Check Out Area L2 Lighting On/Off Status" Address="2/3/3" Unfiltered="true" />
+      <GroupAddress Name="Sales Check Out Area L3 Lighting On/Off" Address="2/3/4" Unfiltered="true" />
+      <GroupAddress Name="Sales Check Out Area L3 Lighting On/Off Status" Address="2/3/5" Unfiltered="true" />
+      <GroupAddress Name="Sales Check Out Area L4 Lighting On/Off" Address="2/3/6" Unfiltered="true" />
+      <GroupAddress Name="Sales Check Out Area L4 Lighting On/Off Status" Address="2/3/7" Unfiltered="true" />
+      <GroupAddress Name="Sales Check Out Area Emergency L1 On/off" Address="2/3/8" Unfiltered="true" />
+      <GroupAddress Name="Sales Check Out Area Emergency L1 On/off &amp; Status" Address="2/3/9" Unfiltered="true" />
+      <GroupAddress Name="Sales Check Out Area Emergency L2 On/off " Address="2/3/10" Unfiltered="true" />
+      <GroupAddress Name="Sales Check Out Area Emergency L2 On/off &amp; Status" Address="2/3/11" Unfiltered="true" />
+      <GroupAddress Name="Sales Check Out Area Emergency L3 On/off " Address="2/3/12" Unfiltered="true" />
+      <GroupAddress Name="Sales Check Out Area Emergency L3 On/off &amp; Status" Address="2/3/13" Unfiltered="true" />
+      <GroupAddress Name="Sales Check Out Area Emergency L4 On/off " Address="2/3/14" Unfiltered="true" />
+      <GroupAddress Name="Sales Check Out Area Emergency L4 On/off &amp; Status" Address="2/3/15" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="Emergency Stop" RangeStart="5120" RangeEnd="5375" Unfiltered="true">
+      <GroupAddress Name="Emergency Push Button" Address="2/4/0" Unfiltered="true" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="Ikea L1 Lavel" RangeStart="6144" RangeEnd="8191" Unfiltered="true">
+    <GroupRange Name="L1 Area { Show Room Area }" RangeStart="6144" RangeEnd="6399" Unfiltered="true">
+      <GroupAddress Name="Tap Off Box -1 { Relay no 1 } Right Side Sub Bus Truncking 1 Red Phase On/off" Address="3/0/0" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -1 { Relay no 1 } Right Side Sub Bus Truncking 1 Red Phase On/off Status" Address="3/0/1" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -1 { Relay no 1 } Left Side Sub Bus Truncking 1 Red Phase On/off " Address="3/0/2" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -1 { Relay no 1 } Left Side Sub Bus Truncking 1 Red Phase On/off Status" Address="3/0/3" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -1 { Relay no 1 } Right Side Sub Bus Truncking 1 Yellow Phase On/off" Address="3/0/4" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -1 { Relay no 1 } Right Side Sub Bus Truncking 1 Yellow Phase On/off Status" Address="3/0/5" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -1 { Relay no 1 } Left Side Sub Bus Truncking 1 Yellow Phase On/off" Address="3/0/6" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -1 { Relay no 1 } Left Side Sub Bus Truncking 1 Yellow Phase On/off Status" Address="3/0/7" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -1 { Relay no 1 } Right Side Sub Bus Truncking 1 Blue Phase On/off" Address="3/0/8" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -1 { Relay no 1 } Right Side Sub Bus Truncking 1 Blue Phase On/off Status" Address="3/0/9" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -1 { Relay no 1 } Left Side Sub Bus Truncking 1 Blue Phase On/off" Address="3/0/10" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -1 { Relay no 1 } Left Side Sub Bus Truncking 1 Blue Phase On/off Status" Address="3/0/11" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -2 { Relay no 2 } Right Side Sub Bus Truncking 2 Red Phase On/off" Address="3/0/12" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -2 { Relay no 2 } Right Side Sub Bus Truncking 2 Red Phase On/off Status" Address="3/0/13" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -2 { Relay no 2 } Left Side Sub Bus Truncking 2 Red Phase On/off" Address="3/0/14" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -2 { Relay no 2 } Left Side Sub Bus Truncking 2 Red Phase On/off Status" Address="3/0/15" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -2 { Relay no 2 } Right Side Sub Bus Truncking 2 Yellow Phase On/off" Address="3/0/16" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -2 { Relay no 2 } Right Side Sub Bus Truncking 2 Yellow Phase On/off Status" Address="3/0/17" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -2 { Relay no 2 } Left Side Sub Bus Truncking 2 Yellow Phase On/off" Address="3/0/18" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -2 { Relay no 2 } Left Side Sub Bus Truncking 2 Yellow Phase On/off Status" Address="3/0/19" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -2 { Relay no 2 } Right Side Sub Bus Truncking 2 Blue Phase On/off" Address="3/0/20" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -2 { Relay no 2 } Right Side Sub Bus Truncking 2 Blue Phase On/off Status" Address="3/0/21" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -2 { Relay no 2 } Left Side Sub Bus Truncking 2 Blue Phase On/off" Address="3/0/22" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -2 { Relay no 2 } Left Side Sub Bus Truncking 2 Blue Phase On/off Status" Address="3/0/23" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -3 { Relay no 3 } Right Side Sub Bus Truncking 3 Red Phase On/off" Address="3/0/24" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -3 { Relay no 3 } Right Side Sub Bus Truncking 3 Red Phase On/off Status" Address="3/0/25" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -3 { Relay no 3 } Left Side Sub Bus Truncking 3 Red Phase On/off" Address="3/0/26" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -3 { Relay no 3 } Left Side Sub Bus Truncking 3 Red Phase On/off Status" Address="3/0/27" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -3 { Relay no 3 } Right Side Sub Bus Truncking 3 Yellow Phase On/off" Address="3/0/28" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -3 { Relay no 3 } Right Side Sub Bus Truncking 3 Yellow Phase On/off Status" Address="3/0/29" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -3 { Relay no 3 } Left Side Sub Bus Truncking 3 Yellow Phase On/off" Address="3/0/30" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -3 { Relay no 3 } Left Side Sub Bus Truncking 3 Yellow Phase On/off Status" Address="3/0/31" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -3 { Relay no 3 } Right Side Sub Bus Truncking 3 Blue Phase On/off" Address="3/0/32" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -3 { Relay no 3 } Right Side Sub Bus Truncking 3 Blue Phase On/off Status" Address="3/0/33" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -3 { Relay no 3 } Left Side Sub Bus Truncking 3 Blue Phase On/off" Address="3/0/34" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -3 { Relay no 3 } Left Side Sub Bus Truncking 3 Blue Phase On/off Status" Address="3/0/35" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -4 { Relay no 4 } Right Side Sub Bus Truncking 4 Red Phase On/off" Address="3/0/36" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -4 { Relay no 4 } Right Side Sub Truncking Bus 4 Red Phase On/off Status" Address="3/0/37" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -4 { Relay no 4 } Left Side Sub Bus Truncking 4 Red Phase On/off" Address="3/0/38" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -4 { Relay no 4 } Left Side Sub Bus Truncking 4 Red Phase On/off Status" Address="3/0/39" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -4 { Relay no 4 } Right Side SubTruncking 4 Yellow Phase On/off" Address="3/0/40" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -4 { Relay no 4 } Right Side SubTruncking 4 Yellow Phase On/off Status" Address="3/0/41" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -4 { Relay no 4 } Left Side Sub Bus Truncking 4 Yellow Phase On/off" Address="3/0/42" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -4 { Relay no 4 } Left Side Sub Bus Truncking 4 Yellow Phase On/off Status" Address="3/0/43" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -4 { Relay no 4 } Right Side Sub Bus Truncking 4 Blue Phase On/off" Address="3/0/44" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -4 { Relay no 4 } Right Side Sub Bus Truncking 4 Blue Phase On/off Status" Address="3/0/45" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -4 { Relay no 4 } Left Side Sub Bus Truncking 4 Blue Phase On/off" Address="3/0/46" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -4 { Relay no 4 } Left Side Sub Bus Truncking 4 Blue Phase On/off Status" Address="3/0/47" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -5 { Relay no 5 } Right Side Sub Bus Truncking 5 Red Phase On/off" Address="3/0/48" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -5 { Relay no 5 } Right Side Sub Bus Truncking 5 Red Phase On/off Status" Address="3/0/49" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -5 { Relay no 5 } Left Side Sub Bus Truncking 5 Red Phase On/off" Address="3/0/50" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -5 { Relay no 5 } Left Side Sub Bus Truncking 5 Red Phase On/off Status" Address="3/0/51" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -5 { Relay no 5 } Right Side Sub Bus Truncking 5 Yellow Phase On/off" Address="3/0/52" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -5 { Relay no 5 } Right Side Sub Bus Truncking 5 Yellow Phase On/off Status" Address="3/0/53" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -5 { Relay no 5 } Left Side Sub Bus Truncking 5 Yellow Phase On/off" Address="3/0/54" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -5 { Relay no 5 } Left Side Sub Bus Truncking 5 Yellow Phase On/off Status" Address="3/0/55" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -5 { Relay no 5 } Right Side Sub Bus Truncking 5 Blue Phase On/off" Address="3/0/56" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -5 { Relay no 5 } Right Side Sub Bus Truncking 5 Blue Phase On/off Status" Address="3/0/57" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -5 { Relay no 5 } Left Side Sub Bus Truncking 5 Blue Phase On/off" Address="3/0/58" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -5 { Relay no 5 } Left Side Sub Bus Truncking 5 Blue Phase On/off Status" Address="3/0/59" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 6 { Relay no 6 } Right Side Sub Bus Truncking 6 Red Phase On/off" Address="3/0/60" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 6 { Relay no 6 } Right Side Sub Bus Truncking 6 Red Phase On/off Status" Address="3/0/61" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 6 { Relay no 6 } Left Side Sub Bus Truncking 6 Red Phase On/off" Address="3/0/62" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 6 { Relay no 6 } Left Side Sub Bus Truncking 6 Red Phase On/off Status" Address="3/0/63" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 6 { Relay no 6 } Right Side Sub Bus Truncking 6 Yellow Phase On/off" Address="3/0/64" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 6 { Relay no 6 } Right Side Sub Bus Truncking 6 Yellow Phase On/off Status" Address="3/0/65" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 6 { Relay no 6 } Left Side Sub Bus Truncking 6 Yellow Phase On/off" Address="3/0/66" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 6 { Relay no 6 } Left Side Sub Bus Truncking 6 Yellow Phase On/off Status" Address="3/0/67" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 6 { Relay no 6 } Right Side Sub Bus Truncking 6 Blue Phase On/off" Address="3/0/68" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 6 { Relay no 6 } Right Side Sub Bus Truncking 6 Blue Phase On/off Status" Address="3/0/69" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 6 { Relay no 6 } Left Side Sub Bus Truncking 6 Blue Phase On/off" Address="3/0/70" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 6 { Relay no 6 } Left Side Sub Bus Truncking 6 Blue Phase On/off Status" Address="3/0/71" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -7 { Relay no 7 } Right Side Sub Bus Truncking 7 Red Phase On/off" Address="3/0/72" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -7 { Relay no 7 } Right Side Sub Bus Truncking 7 Red Phase On/off Status" Address="3/0/73" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -7 { Relay no 7 } Left Side Sub Bus Truncking 7 Red Phase On/off" Address="3/0/74" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -7 { Relay no 7 } Left Side Sub Bus Truncking 7 Red Phase On/off Status" Address="3/0/75" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -7 { Relay no 7 } Right Side Sub Bus Truncking 7 Yellow Phase On/off" Address="3/0/76" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -7 { Relay no 7 } Right Side Sub Bus Truncking 7 Yellow Phase On/off Status" Address="3/0/77" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -7 { Relay no 7 } Left Side Sub Bus Truncking 7 Yellow Phase On/off" Address="3/0/78" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -7 { Relay no 7 } Left Side Sub Bus Truncking 7 Yellow Phase On/off Status" Address="3/0/79" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -7 { Relay no 7 } Right Side Sub Bus Truncking 7 Blue Phase On/off" Address="3/0/80" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -7 { Relay no 7 } Right Side Sub Bus Truncking 7 Blue Phase On/off Status" Address="3/0/81" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -7 { Relay no 7 } Left Side Sub Bus Truncking 7 Blue Phase On/off" Address="3/0/82" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box -7 { Relay no 7 } Left Side Sub Bus Truncking 7 Blue Phase On/off Status" Address="3/0/83" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 8 { Relay no 8 } Right Side Sub Bus Truncking 8 Red Phase On/off" Address="3/0/84" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 8 { Relay no 8 } Right Side Sub Bus Truncking 8 Red Phase On/off Status" Address="3/0/85" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 8 { Relay no 8 } Left Side Sub Bus Truncking 8 Red Phase On/off" Address="3/0/86" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 8 { Relay no 8 } Left Side Sub Bus Truncking 8 Red Phase On/off Status" Address="3/0/87" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 8 { Relay no 8 } Right Side Sub Bus Truncking 8 Yellow Phase On/off" Address="3/0/88" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 8 { Relay no 8 } Right Side Sub Bus Truncking 8 Yellow Phase On/off Status" Address="3/0/89" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 8 { Relay no 8 } Left Side Sub Bus Truncking 8 Yellow Phase On/off" Address="3/0/90" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 8 { Relay no 8 } Left Side Sub Bus Truncking 8 Yellow Phase On/off Status" Address="3/0/91" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 8 { Relay no 8 } Right Side Sub Bus Truncking 8 Blue Phase On/off" Address="3/0/92" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 8 { Relay no 8 } Right Side Sub Bus Truncking 8 Blue Phase On/off Status" Address="3/0/93" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 8 { Relay no 8 } Left Side Sub Bus Truncking 8 Blue Phase On/off" Address="3/0/94" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 8 { Relay no 8 } Left Side Sub Bus Truncking 8 Blue Phase On/off Status" Address="3/0/95" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 9 { Relay no 9 } Right Side Sub Bus Truncking 9 Red Phase On/off" Address="3/0/96" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 9 { Relay no 9 } Right Side Sub Bus Truncking 9 Red Phase On/off Status" Address="3/0/97" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 9 { Relay no 9 } Left Side Sub Bus Truncking 9 Red Phase On/off" Address="3/0/98" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 9 { Relay no 9 } Left Side Sub Bus Truncking 9 Red Phase On/off Status" Address="3/0/99" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 9 { Relay no 9 } Right Side Sub Bus Truncking 9 Yellow Phase On/off" Address="3/0/100" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 9 { Relay no 9 } Right Side Sub Bus Truncking 9 Yellow Phase On/off Status" Address="3/0/101" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 9 { Relay no 9 } Left Side Sub Bus Truncking 9 Yellow Phase On/off" Address="3/0/102" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 9 { Relay no 9 } Left Side Sub Bus Truncking 9 Yellow Phase On/off Status" Address="3/0/103" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 9 { Relay no 9 } Right Side Sub Bus Truncking 9 Blue Phase On/off" Address="3/0/104" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 9 { Relay no 9 } Right Side Sub Bus Truncking 9 Blue Phase On/off Status" Address="3/0/105" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 9 { Relay no 9 } Left Side Sub Bus Truncking 9 Blue Phase On/off" Address="3/0/106" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 9 { Relay no 9 } Left Side Sub Bus Truncking 9 Blue Phase On/off Status" Address="3/0/107" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 10 { Relay no 10 } Right Side Sub Bus Truncking 10 Red Phase On/off" Address="3/0/108" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 10 { Relay no 10 } Right Side Sub Bus Truncking 10 Red Phase On/off Status" Address="3/0/109" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 10 { Relay no 10 } Left Side Sub Bus Truncking 10 Red Phase On/off" Address="3/0/110" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 10 { Relay no 10 } Left Side Sub Bus Truncking 10 Red Phase On/off Status" Address="3/0/111" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 10 { Relay no 10 } Right Side Sub Bus Truncking 10 Yellow Phase On/off" Address="3/0/112" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 10 { Relay no 10 } Right Side Sub Bus Truncking 10 Yellow Phase On/off Status" Address="3/0/113" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 10 { Relay no 10 } Left Side Sub Bus Truncking 10 Yellow Phase On/off" Address="3/0/114" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 10 { Relay no 10 } Left Side Sub Bus Truncking 10 Yellow Phase On/off Status" Address="3/0/115" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 10 { Relay no 10 } Right Side Sub Bus Truncking 10 Blue Phase On/off" Address="3/0/116" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 10 { Relay no 10 } Right Side Sub Bus Truncking 10 Blue Phase On/off Status" Address="3/0/117" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 10 { Relay no 10 } Left Side Sub Bus Truncking 10 Blue Phase On/off" Address="3/0/118" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 10 { Relay no 10 } Left Side Sub Bus Truncking 10 Blue Phase On/off Status" Address="3/0/119" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 11 { Relay no 11 } Right Side Sub Bus Truncking 11 Red Phase On/off" Address="3/0/120" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 11 { Relay no 11 } Right Side Sub Bus Truncking 11 Red Phase On/off Status" Address="3/0/121" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 11 { Relay no 11 } Left Side Sub Bus Truncking 11 Red Phase On/off" Address="3/0/122" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 11 { Relay no 11 } Left Side Sub Bus Truncking 11 Red Phase On/off Status" Address="3/0/123" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 11 { Relay no 11 } Right Side Sub Bus Truncking 11 Yellow Phase On/off" Address="3/0/124" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 11 { Relay no 11 } Right Side Sub Bus Truncking 11 Yellow Phase On/off Status" Address="3/0/125" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 11 { Relay no 11 } Left Side Sub Bus Truncking 11 Yellow Phase On/off" Address="3/0/126" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 11 { Relay no 11 } Left Side Sub Bus Truncking 11 Yellow Phase On/off Status" Address="3/0/127" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 11 { Relay no 11 } Right Side Sub Bus Truncking 11 Blue Phase On/off" Address="3/0/128" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 11 { Relay no 11 } Right Side Sub Bus Truncking 11 Blue Phase On/off Status" Address="3/0/129" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 11 { Relay no 11 } Left Side Sub Bus Truncking 11 Blue Phase On/off" Address="3/0/130" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 11 { Relay no 11 } Left Side Sub Bus Truncking 11 Blue Phase On/off Status" Address="3/0/131" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 12 { Relay no 12 } Right Side Sub Bus Truncking 12 Red Phase On/off" Address="3/0/132" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 12 { Relay no 12 } Right Side Sub Bus Truncking 12 Red Phase On/off Status" Address="3/0/133" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 12 { Relay no 12 } Left Side Sub Bus Truncking 12 Red Phase On/off" Address="3/0/134" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 12 { Relay no 12 } Left Side Sub Bus Truncking 12 Red Phase On/off Status" Address="3/0/135" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 12 { Relay no 12 } Right Side Sub Bus Truncking 12 Yellow Phase On/off" Address="3/0/136" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 12 { Relay no 12 } Right Side Sub Bus Truncking 12 Yellow Phase On/off Status" Address="3/0/137" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 12 { Relay no 12 } Left Side Sub Bus Truncking 12 Yellow Phase On/off" Address="3/0/138" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 12 { Relay no 12 } Left Side Sub Bus Truncking 12 Yellow Phase On/off Status" Address="3/0/139" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 12 { Relay no 12 } Right Side Sub Bus Truncking 12 Blue Phase On/off" Address="3/0/140" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 12 { Relay no 12 } Right Side Sub Bus Truncking 12 Blue Phase On/off Status" Address="3/0/141" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 12 { Relay no 12 } Left Side Sub Bus Truncking 12 Blue Phase On/off" Address="3/0/142" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 12 { Relay no 12 } Left Side Sub Bus Truncking 12 Blue Phase On/off Status" Address="3/0/143" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 13 { Relay no 13 } Right Side Sub Bus Truncking 13 Red Phase On/off" Address="3/0/144" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 13 { Relay no 13 } Right Side Sub Bus Truncking 13 Red Phase On/off Status" Address="3/0/145" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 13 { Relay no 13 } Left Side Sub Bus Truncking 13 Red Phase On/off" Address="3/0/146" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 13 { Relay no 13 } Left Side Sub Bus Truncking 13 Red Phase On/off Status" Address="3/0/147" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 13 { Relay no 13 } Right Side Sub Bus Truncking 13 Yellow Phase On/off" Address="3/0/148" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 13 { Relay no 13 } Right Side Sub Bus Truncking 13 Yellow Phase On/off Status" Address="3/0/149" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 13 { Relay no 13 } Left Side Sub Bus Truncking 13 Yellow Phase On/off" Address="3/0/150" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 13 { Relay no 13 } Left Side Sub Bus Truncking 13 Yellow Phase On/off Status" Address="3/0/151" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 13 { Relay no 13 } Right Side Sub Bus Truncking 13 Blue Phase On/off" Address="3/0/152" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 13 { Relay no 13 } Right Side Sub Bus Truncking 13 Blue Phase On/off Status" Address="3/0/153" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 13 { Relay no 13 } Left Side Sub Bus Truncking 13 Blue Phase On/off" Address="3/0/154" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 13 { Relay no 13 } Left Side Sub Bus Truncking 13 Blue Phase On/off Status" Address="3/0/155" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 14 { Relay no 14 } Right Side Sub Bus Truncking 14 Red Phase On/off" Address="3/0/156" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 14 { Relay no 14 } Right Side Sub Bus Truncking 14 Red Phase On/off Status" Address="3/0/157" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 14 { Relay no 14 } Left Side Sub Bus Truncking 14 Red Phase On/off" Address="3/0/158" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 14 { Relay no 14 } Left Side Sub Bus Truncking 14 Red Phase On/off Status" Address="3/0/159" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 14 { Relay no 14 } Right Side Sub Bus Truncking 14 Yellow Phase On/off" Address="3/0/160" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 14 { Relay no 14 } Right SideBus Truncking 14 Yellow Phase On/off Status Sub " Address="3/0/161" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 14 { Relay no 14 } Left Side Sub Bus Truncking 14 Yellow Phase On/off" Address="3/0/162" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 14 { Relay no 14 } Left Side Sub Bus Truncking 14 Yellow Phase On/off Status" Address="3/0/163" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 14 { Relay no 14 }  Right Side Sub Bus Truncking 14 Blue Phase On/off" Address="3/0/164" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 14 { Relay no 14 }  Right Side Sub Bus Truncking 14 Blue Phase On/off Status" Address="3/0/165" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 14 { Relay no 14 }  Left Side Sub Bus Truncking 14 Blue Phase On/off" Address="3/0/166" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 14 { Relay no 14 }  Left Side Sub Bus Truncking 14 Blue Phase On/off Status" Address="3/0/167" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 15 { Relay no 15 } Right Side Sub Bus Truncking 15 Red Phase On/off" Address="3/0/168" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 15 { Relay no 15 } Right Side Sub Bus Truncking 15 Red Phase On/off Status" Address="3/0/169" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 15 { Relay no 15 } Left Side Sub Bus Truncking 15 Red Phase On/off" Address="3/0/170" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 15 { Relay no 15 } Left Side Sub Bus Truncking 15 Red Phase On/off Status" Address="3/0/171" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 15 { Relay no 15 } Right Side Sub Bus Truncking 15 Yellow Phase On/off" Address="3/0/172" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 15 { Relay no 15 } Right Side Sub Bus Truncking 15 Yellow Phase On/off Status" Address="3/0/173" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 15 { Relay no 15 } Left Side Sub Bus Truncking 15 Yellow Phase On/off Status" Address="3/0/174" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 15 { Relay no 15 } Left Side Sub Bus Truncking 15 Yellow Phase On/off Status" Address="3/0/175" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 15 { Relay no 15 } Right Side Sub Bus Truncking 15 Blue Phase On/off" Address="3/0/176" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 15 { Relay no 15 } Right Side Sub Bus Truncking 15 Blue Phase On/off Status" Address="3/0/177" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 15 { Relay no 15 } Left Side Sub Bus Truncking 15 Blue Phase On/off" Address="3/0/178" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 15 { Relay no 15 } Left Side Sub Bus Truncking 15 Blue Phase On/off Status" Address="3/0/179" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 16 { Relay no 16 } Right Side Sub Bus Truncking 16 Red Phase On/off" Address="3/0/180" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 16 { Relay no 16 } Right Side Sub Bus Truncking 16 Red Phase On/off Status" Address="3/0/181" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 16 { Relay no 16 } Left Side Sub Bus Truncking 16 Red Phase On/off" Address="3/0/182" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 16 { Relay no 16 } Left Side Sub Bus Truncking 16 Red Phase On/off Status" Address="3/0/183" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 16 { Relay no 16 } Right Side Sub Bus Truncking 16 Yellow Phase On/off" Address="3/0/184" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 16 { Relay no 16 } Right Side Sub Bus Truncking 16 Yellow Phase On/off Status" Address="3/0/185" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 16 { Relay no 16 } Left Side Sub Bus Truncking 16 Yellow Phase On/off" Address="3/0/186" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 16 { Relay no 16 } Left Side Sub Bus Truncking 16 Yellow Phase On/off Status" Address="3/0/187" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 16 { Relay no 16 } Right Side Sub Bus Truncking 16 Blue Phase On/off" Address="3/0/188" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 16 { Relay no 16 } Right Side Sub Bus Truncking 16 Blue Phase On/off Status" Address="3/0/189" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 16 { Relay no 16 } Left Side Sub Bus Truncking 16 Blue Phase On/off" Address="3/0/190" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 16 { Relay no 16 } Left Side Sub Bus Truncking 16 Blue Phase On/off Status" Address="3/0/191" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 17 { Relay no 17 } Right Side Sub Bus Truncking 17 Red Phase On/off" Address="3/0/192" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 17 { Relay no 17 } Right Side Sub Bus Truncking 17 Red Phase On/off Status" Address="3/0/193" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 17 { Relay no 17 } Left Side Sub Bus Truncking 17 Red Phase On/off" Address="3/0/194" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 17 { Relay no 17 } Left Side Sub Bus Truncking 17 Red Phase On/off Status" Address="3/0/195" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 17 { Relay no 17 } Right Side Sub Bus Truncking 17 Yellow Phase On/off" Address="3/0/196" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 17 { Relay no 17 } Right Side Sub Bus Truncking 17 Yellow Phase On/off Status" Address="3/0/197" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 17 { Relay no 17 } Left Side Sub Bus Truncking 17 Yellow Phase On/off" Address="3/0/198" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 17 { Relay no 17 } Left Side Sub Bus Truncking 17 Yellow Phase On/off Status" Address="3/0/199" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 17 { Relay no 17 } Right Side Sub Bus Truncking 17 Blue Phase On/off" Address="3/0/200" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 17 { Relay no 17 } Right Side Sub Bus Truncking 17 Blue Phase On/off Status" Address="3/0/201" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 17 { Relay no 17 } Left Side Sub Bus Truncking 17 Blue Phase On/off" Address="3/0/202" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 17 { Relay no 17 } Left Side Sub Bus Truncking 17 Blue Phase On/off Status" Address="3/0/203" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 18 { Relay no 18 } Right Side Sub Bus Truncking 18 Red Phase On/off" Address="3/0/204" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 18 { Relay no 18 } Right Side Sub Bus Truncking 18 Red Phase On/off Status" Address="3/0/205" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 18 { Relay no 18 } Left Side Sub Bus Truncking 18 Red Phase On/off" Address="3/0/206" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 18 { Relay no 18 } Left Side Sub Bus Truncking 18 Red Phase On/off Status" Address="3/0/207" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 18 { Relay no 18 } Right Side Sub Bus Truncking 18 Yellow Phase On/off" Address="3/0/208" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 18 { Relay no 18 } Right Side Sub Bus Truncking 18 Yellow Phase On/off Status" Address="3/0/209" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 18 { Relay no 18 } Left Side Sub Bus Truncking 18 Yellow Phase On/off" Address="3/0/210" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 18 { Relay no 18 } Left Side Sub Bus Truncking 18 Yellow Phase On/off Status" Address="3/0/211" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 18 { Relay no 18 } Right Side Sub Bus Truncking 18 Blue Phase On/off" Address="3/0/212" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 18 { Relay no 18 } Right Side Sub Bus Truncking 18 Blue Phase On/off Status" Address="3/0/213" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 18 { Relay no 18 } Left Side Sub Bus Truncking 18 Blue Phase On/off" Address="3/0/214" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 18 { Relay no 18 } Left Side Sub Bus Truncking 18 Blue Phase On/off Status" Address="3/0/215" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 19 { Relay no 19 } Right Side Sub Bus Truncking 19 Red Phase On/off" Address="3/0/216" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 19 { Relay no 19 } Right Side Sub Bus Truncking 19 Red Phase On/off Status" Address="3/0/217" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 19 { Relay no 19 } Left Side Sub Bus Truncking 19 Red Phase On/off" Address="3/0/218" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 19 { Relay no 19 } Left Side Sub Bus Truncking 19 Red Phase On/off Status" Address="3/0/219" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 19 { Relay no 19 } Right Side Sub Bus Truncking 19 Yellow Phase On/off" Address="3/0/220" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 19 { Relay no 19 } Right Side Sub Bus Truncking 19 Yellow Phase On/off Status" Address="3/0/221" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 19 { Relay no 19 } Left Side Sub Bus Truncking 19 Yellow Phase On/off" Address="3/0/222" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 19 { Relay no 19 } Left Side Sub Bus Truncking 19 Yellow Phase On/off Status" Address="3/0/223" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 19 { Relay no 19 } Right Side Sub Bus Truncking 19 Blue Phase On/off" Address="3/0/224" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 19 { Relay no 19 } Right Side Sub Bus Truncking 19 Blue Phase On/off Status" Address="3/0/225" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 19 { Relay no 19 } Left Side Sub Bus Truncking 19 Blue Phase On/off" Address="3/0/226" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 19 { Relay no 19 } Left Side Sub Bus Truncking 19 Blue Phase On/off Status" Address="3/0/227" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 20 { Relay no 20 } Right Side Sub Bus Truncking 20 Red Phase On/off" Address="3/0/228" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 20 { Relay no 20 } Right Side Sub Bus Truncking 20 Red Phase On/off Status" Address="3/0/229" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 20 { Relay no 20 } Left Side Sub Bus Truncking 20 Red Phase On/off" Address="3/0/230" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 20 { Relay no 20 } Left Side Sub Bus Truncking 20 Red Phase On/off Status" Address="3/0/231" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 20 { Relay no 20 } Right Side Sub Bus Truncking 20 Yellow Phase On/off" Address="3/0/232" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 20 { Relay no 20 } Right Side Sub Bus Truncking 20 Yellow Phase On/off Status" Address="3/0/233" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 20 { Relay no 20 } Left Side Sub Bus Truncking 20 Yellow Phase On/off" Address="3/0/234" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 20 { Relay no 20 } Left Side Sub Bus Truncking 20 Yellow Phase On/off Status" Address="3/0/235" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 20 { Relay no 20 } Right Side Sub Bus Truncking 20 Blue Phase On/off" Address="3/0/236" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 20 { Relay no 20 } Right Side Sub Bus Truncking 20 Blue Phase On/off Status" Address="3/0/237" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 20 { Relay no 20 } Left Side Sub Bus Truncking 20 Blue Phase On/off" Address="3/0/238" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 20 { Relay no 20 } Left Side Sub Bus Truncking 20 Blue Phase On/off Status" Address="3/0/239" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 21 { Relay no 21 } Right Side Sub Bus Truncking 21 Red Phase On/off" Address="3/0/240" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 21 { Relay no 21 } Right Side Sub Bus Truncking 21 Red Phase On/off Status" Address="3/0/241" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 21 { Relay no 21 } Left Side Sub Bus Truncking 21 Red Phase On/off" Address="3/0/242" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 21 { Relay no 21 } Left Side Sub Bus Truncking 21 Red Phase On/off Status" Address="3/0/243" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 21 { Relay no 21 } Right Side Sub Bus Truncking 21 Yellow Phase On/off" Address="3/0/244" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 21 { Relay no 21 } Right Side Sub Bus Truncking 21 Yellow Phase On/off Status" Address="3/0/245" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 21 { Relay no 21 } Left Side Sub Bus Truncking 21 Yellow Phase On/off" Address="3/0/246" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 21 { Relay no 21 } Left Side Sub Bus Truncking 21 Yellow Phase On/off Status" Address="3/0/247" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 21 { Relay no 21 } Right Side Sub Bus Truncking 21 Blue Phase On/off" Address="3/0/248" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 21 { Relay no 21 } Right Side Sub Bus Truncking 21 Blue Phase On/off Status" Address="3/0/249" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 21 { Relay no 21 } Left Side Sub Bus Truncking 21 Blue Phase On/off" Address="3/0/250" Unfiltered="true" />
+      <GroupAddress Name="Tap Off Box - 21 { Relay no 21 } Left Side Sub Bus Truncking 21 Blue Phase On/off Status" Address="3/0/251" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="All On/Off" RangeStart="6400" RangeEnd="6655" Unfiltered="true">
+      <GroupAddress Name="Grid 1 All On/Off" Address="3/1/0" Unfiltered="true" />
+      <GroupAddress Name="Grid 2 All On/Off" Address="3/1/1" Unfiltered="true" />
+      <GroupAddress Name="Grid 3 All On/Off" Address="3/1/2" Unfiltered="true" />
+      <GroupAddress Name="Grid 4 All On/Off " Address="3/1/3" Unfiltered="true" />
+      <GroupAddress Name="Grid 5 All On/Off " Address="3/1/4" Unfiltered="true" />
+      <GroupAddress Name="OFF " Address="3/1/6" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="Show Room Area" RangeStart="6656" RangeEnd="6911" Unfiltered="true">
+      <GroupAddress Name="Showroom Area L1 Lighting On/Off " Address="3/2/0" Unfiltered="true" />
+      <GroupAddress Name="Showroom Area L1 Lighting On/Off Status" Address="3/2/1" Unfiltered="true" />
+      <GroupAddress Name="Showroom Area L2 Lighting On/Off" Address="3/2/2" Unfiltered="true" />
+      <GroupAddress Name="Showroom Area L2 Lighting On/Off Status" Address="3/2/3" Unfiltered="true" />
+      <GroupAddress Name="Showroom Area L3 Lighting On/Off" Address="3/2/4" Unfiltered="true" />
+      <GroupAddress Name="Showroom Area L3 Lighting On/Off Status" Address="3/2/5" Unfiltered="true" />
+      <GroupAddress Name="Showroom Area L4 Lighting On/Off" Address="3/2/6" Unfiltered="true" />
+      <GroupAddress Name="Showroom Area L4 Lighting On/Off Status" Address="3/2/7" Unfiltered="true" />
+      <GroupAddress Name="Showroom Area Emergency L1 On/off" Address="3/2/8" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Showroom Area Emergency L1 On/off &amp; Status" Address="3/2/9" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Showroom Area Emergency L2 On/off" Address="3/2/10" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Showroom Area Emergency L2 On/off &amp; Status" Address="3/2/11" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Showroom Area Emergency L3 On/off" Address="3/2/12" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Showroom Area Emergency L3 On/off &amp; Status" Address="3/2/13" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Showroom Area Emergency L4 On/off" Address="3/2/14" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Showroom Area Emergency L4 On/off &amp; Status" Address="3/2/15" Unfiltered="true" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="Restaurant Area " RangeStart="6912" RangeEnd="7167" Unfiltered="true">
+      <GroupAddress Name="Restaurant Area L1 Lighting On/off" Address="3/3/0" Unfiltered="true" />
+      <GroupAddress Name="Restaurant Area L1 Lighting On/off Status" Address="3/3/1" Unfiltered="true" />
+      <GroupAddress Name="Restaurant Area L2 Lighting On/off" Address="3/3/2" Unfiltered="true" />
+      <GroupAddress Name="Restaurant Area L2 Lighting On/off Status" Address="3/3/3" Unfiltered="true" />
+      <GroupAddress Name="Restaurant Area L3 Lighting On/off" Address="3/3/4" Unfiltered="true" />
+      <GroupAddress Name="Restaurant Area L3 Lighting On/off Status" Address="3/3/5" Unfiltered="true" />
+      <GroupAddress Name="Restaurant Area L4 Lighting On/off" Address="3/3/6" Unfiltered="true" />
+      <GroupAddress Name="Restaurant Area L4 Lighting On/off Status" Address="3/3/7" Unfiltered="true" />
+      <GroupAddress Name="Restaurant Area Emergency L1 On/off" Address="3/3/8" Unfiltered="true" />
+      <GroupAddress Name="Restaurant Area Emergency L1 On/off &amp; Status" Address="3/3/9" Unfiltered="true" />
+      <GroupAddress Name="Restaurant Area Emergency L2 On/off " Address="3/3/10" Unfiltered="true" />
+      <GroupAddress Name="Restaurant Area Emergency L2 On/off &amp; Status" Address="3/3/11" Unfiltered="true" />
+      <GroupAddress Name="Restaurant Area Emergency L3 On/off" Address="3/3/12" Unfiltered="true" />
+      <GroupAddress Name="Restaurant Area Emergency L3 On/off &amp; Status" Address="3/3/13" Unfiltered="true" />
+      <GroupAddress Name="Restaurant Area Emergency L4 On/off" Address="3/3/14" Unfiltered="true" />
+      <GroupAddress Name="Restaurant Area Emergency L4 On/off &amp; Status" Address="3/3/15" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="Office Area" RangeStart="7168" RangeEnd="7423" Unfiltered="true">
+      <GroupAddress Name="Office Area L1 Lighting On/off" Address="3/4/0" Unfiltered="true" />
+      <GroupAddress Name="Office Area L1 Lighting On/off Status" Address="3/4/1" Unfiltered="true" />
+      <GroupAddress Name="Office Area L2 Lighting On/off " Address="3/4/2" Unfiltered="true" />
+      <GroupAddress Name="Office Area L2 Lighting On/off Status" Address="3/4/3" Unfiltered="true" />
+      <GroupAddress Name="Office Area L3 Lighting On/off" Address="3/4/4" Unfiltered="true" />
+      <GroupAddress Name="Office Area L3 Lighting On/off Status" Address="3/4/5" Unfiltered="true" />
+      <GroupAddress Name="Office Area L4 Lighting On/off" Address="3/4/6" Unfiltered="true" />
+      <GroupAddress Name="Office Area L4 Lighting On/off Status" Address="3/4/7" Unfiltered="true" />
+      <GroupAddress Name="Co-Worker Area Sensor" Address="3/4/8" Unfiltered="true" />
+      <GroupAddress Name="Co-Worker Area Sensor 2" Address="3/4/9" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="Ware House" RangeStart="7424" RangeEnd="7679" Unfiltered="true">
+      <GroupAddress Name="Ware House Emergency L1 On/off" Address="3/5/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Emergency L1 On/off Status" Address="3/5/1" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Emergency L2 On/off" Address="3/5/2" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Emergency L2 On/off Status" Address="3/5/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Emergency L3 On/off" Address="3/5/4" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Emergency L3 On/off Status" Address="3/5/5" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Emergency L4 On/off" Address="3/5/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Emergency L4 On/off Status" Address="3/5/7" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line1 R Phase On/off &amp; Status" Address="3/5/8" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line1 Y Phase On/off &amp; Status" Address="3/5/9" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line1 B Phase On/off &amp; Status" Address="3/5/10" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line2 R Phase On/off &amp; Status" Address="3/5/11" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line2 Y Phase On/off &amp; Status" Address="3/5/12" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line2 B Phase On/off &amp; Status" Address="3/5/13" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line3 R Phase On/off &amp; Status" Address="3/5/14" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line3 Y Phase On/off &amp; Status" Address="3/5/15" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line3 B Phase On/off &amp; Status" Address="3/5/16" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line4 R Phase On/off &amp; Status" Address="3/5/17" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line4 Y Phase On/off &amp; Status" Address="3/5/18" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line4 B Phase On/off &amp; Status" Address="3/5/19" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line5 R Phase On/off &amp; Status" Address="3/5/20" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line5 Y Phase On/off &amp; Status" Address="3/5/21" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line5 B Phase On/off &amp; Status" Address="3/5/22" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line6 R Phase On/off &amp; Status" Address="3/5/23" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line6 Y Phase On/off &amp; Status" Address="3/5/24" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line6 B Phase On/off &amp; Status" Address="3/5/25" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line7 R Phase On/off &amp; Status" Address="3/5/26" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line7 Y Phase On/off &amp; Status" Address="3/5/27" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line7 B Phase On/off &amp; Status" Address="3/5/28" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line8 R Phase On/off &amp; Status" Address="3/5/29" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line8 Y Phase On/off &amp; Status" Address="3/5/30" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line8 B Phase On/off &amp; Status" Address="3/5/31" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line9 R Phase On/off &amp; Status" Address="3/5/32" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line9 Y Phase On/off &amp; Status" Address="3/5/33" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line9 B Phase On/off &amp; Status" Address="3/5/34" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line10 R Phase On/off &amp; Status" Address="3/5/35" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line10 Y Phase On/off &amp; Status" Address="3/5/36" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line10 B Phase On/off &amp; Status" Address="3/5/37" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line11 R Phase On/off &amp; Status" Address="3/5/38" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line11 Y Phase On/off &amp; Status" Address="3/5/39" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line11 B Phase On/off &amp; Status" Address="3/5/40" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line12 R Phase On/off &amp; Status" Address="3/5/41" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line12 Y Phase On/off &amp; Status" Address="3/5/42" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware house Line12 B Phase On/off &amp; Status" Address="3/5/43" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Goods Receiving Ch1 On/off &amp; Status" Address="3/5/44" Unfiltered="true" />
+      <GroupAddress Name="Ware House Goods Receiving Ch2 On/off &amp; Status" Address="3/5/45" Unfiltered="true" />
+      <GroupAddress Name="Ware House Goods Receiving Ch3 On/off &amp; Status" Address="3/5/46" Unfiltered="true" />
+      <GroupAddress Name="Ware House Goods Receiving Ch4 On/off &amp; Status" Address="3/5/47" Unfiltered="true" />
+      <GroupAddress Name="Ware House Goods Receiving Ch5 On/off &amp; Status" Address="3/5/48" Unfiltered="true" />
+      <GroupAddress Name="Ware House Goods Receiving Ch6 On/off &amp; Status" Address="3/5/49" Unfiltered="true" />
+      <GroupAddress Name="Ware House Goods Receiving Ch7 On/off &amp; Status" Address="3/5/50" Unfiltered="true" />
+      <GroupAddress Name="Ware House Goods Receiving Ch8 On/off &amp; Status" Address="3/5/51" Unfiltered="true" />
+      <GroupAddress Name="Ware House Goods Receiving Ch9 On/off &amp; Status" Address="3/5/52" Unfiltered="true" />
+      <GroupAddress Name="Ware House Goods Receiving Ch10 On/off &amp; Status" Address="3/5/53" Unfiltered="true" />
+      <GroupAddress Name="Ware House Goods Receiving Ch11 On/off &amp; Status" Address="3/5/54" Unfiltered="true" />
+      <GroupAddress Name="Ware House Goods Receiving Ch12 On/off &amp; Status" Address="3/5/55" Unfiltered="true" />
+      <GroupAddress Name="Ware House Sensors Line 1 Master &amp; Slave " Address="3/5/56" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 1 Switching" Address="3/5/57" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 2 Master &amp; Slave " Address="3/5/58" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 2 Switching" Address="3/5/59" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 3 Master &amp; Slave " Address="3/5/60" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 3 Switching" Address="3/5/61" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 4 Master &amp; Slave " Address="3/5/62" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 4 Switching" Address="3/5/63" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 5 Master &amp; Slave " Address="3/5/64" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 5 Switching" Address="3/5/65" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 6 Master &amp; Slave " Address="3/5/66" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 6 Switching" Address="3/5/67" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 7 Master &amp; Slave " Address="3/5/68" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 7 Switching" Address="3/5/69" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 8 Master &amp; Slave " Address="3/5/70" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 8 Switching" Address="3/5/71" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 9 Master &amp; Slave " Address="3/5/72" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 9 Switching" Address="3/5/73" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 10  Master &amp; Slave " Address="3/5/74" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 10 Switching" Address="3/5/75" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 11 Master &amp; Slave " Address="3/5/76" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 11 Switching" Address="3/5/77" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 12 Master &amp; Slave " Address="3/5/78" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ware House Sensors Line 12 Switching" Address="3/5/79" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Good Receiving Area Master &amp; Slave 1" Address="3/5/80" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Good Receiving Area Switching 1" Address="3/5/81" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Good Receiving Area Master &amp; Slave 2" Address="3/5/82" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Good Receiving Area Switching 2" Address="3/5/83" Unfiltered="true" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="Kitchen area" RangeStart="7680" RangeEnd="7935" Unfiltered="true">
+      <GroupAddress Name="Kitchen Area Lighting L1 On/off" Address="3/6/0" Unfiltered="true" />
+      <GroupAddress Name="Kitchen Area Lighting L1 On/off &amp; Status" Address="3/6/1" Unfiltered="true" />
+      <GroupAddress Name="Kitchen Area Lighting L2 On/off" Address="3/6/2" Unfiltered="true" />
+      <GroupAddress Name="Kitchen Area Lighting L2 On/off &amp; Status" Address="3/6/3" Unfiltered="true" />
+      <GroupAddress Name="Kitchen Area Lighting L3 On/off " Address="3/6/4" Unfiltered="true" />
+      <GroupAddress Name="Kitchen Area Lighting L3 On/off &amp; Status" Address="3/6/5" Unfiltered="true" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="Ikea L2 Lavel" RangeStart="8192" RangeEnd="10239">
+    <GroupRange Name="Call Center Area" RangeStart="8192" RangeEnd="8447">
+      <GroupAddress Name="L2 Output 1 On/off &amp; status" Address="4/0/0" />
+      <GroupAddress Name="L2 Output 2 On/off &amp; status" Address="4/0/1" />
+      <GroupAddress Name="L2 Output 3 On/off &amp; status" Address="4/0/2" />
+      <GroupAddress Name="L2 Output 4 On/off &amp; status" Address="4/0/3" />
+      <GroupAddress Name="L2 Output 5 On/off &amp; status" Address="4/0/4" />
+      <GroupAddress Name="L2 Output 6 On/off &amp; status" Address="4/0/5" />
+      <GroupAddress Name="L2 Output 7 On/off &amp; status" Address="4/0/6" />
+      <GroupAddress Name="L2 Output 8 On/off &amp; status" Address="4/0/7" />
+      <GroupAddress Name="L2 Output 9 On/off &amp; status" Address="4/0/8" />
+      <GroupAddress Name="L2 Output 10 On/off &amp; status" Address="4/0/9" />
+      <GroupAddress Name="L2 Output 11 On/off &amp; status" Address="4/0/10" />
+      <GroupAddress Name="L2 Output 12 On/off &amp; status" Address="4/0/11" />
+      <GroupAddress Name="ND 1" Address="4/0/12" />
+      <GroupAddress Name="ND 2" Address="4/0/13" />
+      <GroupAddress Name="ND 3" Address="4/0/14" />
+      <GroupAddress Name="ND 4" Address="4/0/15" />
+      <GroupAddress Name="ND 5 &amp; 6" Address="4/0/16" />
+      <GroupAddress Name="ND 7" Address="4/0/17" />
+      <GroupAddress Name="ND 8" Address="4/0/18" />
+    </GroupRange>
+  </GroupRange>
+</GroupAddress-Export>

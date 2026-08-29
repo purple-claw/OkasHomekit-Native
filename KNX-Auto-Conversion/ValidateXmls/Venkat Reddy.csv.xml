@@ -1,0 +1,430 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<GroupAddress-Export xmlns="http://knx.org/xml/ga-export/01">
+  <GroupRange Name="Ground Floor" RangeStart="1" RangeEnd="2047">
+    <GroupRange Name="Kitchen" RangeStart="1" RangeEnd="255">
+      <GroupAddress Name="DL2/D2G1-L1 Toggle" Address="0/0/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D2G1-L1 FB" Address="0/0/2" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D2G1-L1 Bright/Dark" Address="0/0/3" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL2/D2G1-L1 Value" Address="0/0/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D2G1-L1 Value FB" Address="0/0/5" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D2G2-L2 Toggle" Address="0/0/6" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D2G2-L2 FB" Address="0/0/7" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D2G2-L2 Bright/Dark" Address="0/0/8" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL2/D2G2-L2 Value" Address="0/0/9" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D2G2-L2 Value FB" Address="0/0/10" DPTs="DPST-5-1" />
+      <GroupAddress Name="D1/O1-CHL Toggle" Address="0/0/11" DPTs="DPST-1-1" />
+      <GroupAddress Name="D1/O1-CHL FB" Address="0/0/12" DPTs="DPST-1-1" />
+      <GroupAddress Name="D1/O1-CHL Bright/Dark" Address="0/0/13" DPTs="DPST-3-7" />
+      <GroupAddress Name="D1/O1-CHL Value" Address="0/0/14" DPTs="DPST-5-1" />
+      <GroupAddress Name="D1/O1-CHL Value FB" Address="0/0/15" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Dining" RangeStart="256" RangeEnd="511">
+      <GroupAddress Name="DL2/D2G3-L1 Toggle" Address="0/1/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D2G3-L1 FB" Address="0/1/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D2G3-L1 Bright/Dark" Address="0/1/2" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL2/D2G3-L1 Value" Address="0/1/3" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D2G3-L1 Value FB" Address="0/1/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D2G4-L2 Toggle" Address="0/1/5" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D2G4-L2 FB" Address="0/1/6" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D2G4-L2 Bright/Dark" Address="0/1/7" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL2/D2G4-L2 Value" Address="0/1/8" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D2G4-L2 Value FB" Address="0/1/9" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D1ECG21-CL Toggle" Address="0/1/10" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D1ECG21-CL FB" Address="0/1/11" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D1ECG21-CL Bright/Dark" Address="0/1/12" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL2/D1ECG21-CL Value" Address="0/1/13" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D1ECG21-CL Value FB" Address="0/1/14" DPTs="DPST-5-1" />
+      <GroupAddress Name="D2/O1-CHL Toggle" Address="0/1/15" DPTs="DPST-1-1" />
+      <GroupAddress Name="D2/O1-CHL FB" Address="0/1/16" DPTs="DPST-1-1" />
+      <GroupAddress Name="D2/O1-CHL Bright/Dark" Address="0/1/17" DPTs="DPST-3-7" />
+      <GroupAddress Name="D2/O1-CHL Value" Address="0/1/18" DPTs="DPST-5-1" />
+      <GroupAddress Name="D2/O1-CHL Value FB" Address="0/1/19" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Drawing" RangeStart="512" RangeEnd="767">
+      <GroupAddress Name="DL2/D1G1-L1 Toggle" Address="0/2/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D1G1-L1 FB" Address="0/2/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D1G1-L1 Bright/Dark" Address="0/2/2" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL2/D1G1-L1 Value" Address="0/2/3" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D1G1-L1 Value FB" Address="0/2/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D1G2-L2 Toggle" Address="0/2/5" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D1G2-L2 FB" Address="0/2/6" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D1G2-L2 Bright/Dark" Address="0/2/7" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL2/D1G2-L2 Value" Address="0/2/8" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D1G2-L2 Value FB" Address="0/2/9" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D1G3-CL Toggle" Address="0/2/10" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D1G3-CL FB" Address="0/2/11" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D1G3-CL Bright/Dark" Address="0/2/12" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL2/D1G3-CL Value" Address="0/2/13" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D1G3-CL Value FB" Address="0/2/14" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D1ECG2-CG Toggle" Address="0/2/15" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D1ECG2-CG FB" Address="0/2/16" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D1ECG2-CG Bright/Dark" Address="0/2/17" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL2/D1ECG2-CG Value" Address="0/2/18" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D1ECG2-CG Value FB" Address="0/2/19" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D1ECG37-WPL Toggle" Address="0/2/20" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D1ECG37-WPL FB" Address="0/2/21" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D1ECG37-WPL Bright/Dark" Address="0/2/22" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL2/D1ECG37-WPL Value" Address="0/2/23" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D1ECG37-WPL Value FB" Address="0/2/24" DPTs="DPST-5-1" />
+      <GroupAddress Name="A1/O1-WL Toggle" Address="0/2/25" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/O1-WL FB" Address="0/2/26" DPTs="DPST-1-1" />
+      <GroupAddress Name="D4/01-CHL Toggle" Address="0/2/27" DPTs="DPST-1-1" />
+      <GroupAddress Name="D4/01-CHL FB" Address="0/2/28" DPTs="DPST-1-1" />
+      <GroupAddress Name="D4/01-CHL Bright/Dark" Address="0/2/29" DPTs="DPST-3-7" />
+      <GroupAddress Name="D4/01-CHL Value" Address="0/2/30" DPTs="DPST-5-1" />
+      <GroupAddress Name="D4/01-CHL Value FB" Address="0/2/31" DPTs="DPST-5-1" />
+      <GroupAddress Name="D4/02-CHL 2 Toggle" Address="0/2/32" DPTs="DPST-1-1" />
+      <GroupAddress Name="D4/02-CHL 2 FB" Address="0/2/33" DPTs="DPST-1-1" />
+      <GroupAddress Name="D4/02-CHL 2 Bright/Dark" Address="0/2/34" DPTs="DPST-3-7" />
+      <GroupAddress Name="D4/02-CHL 2 Value" Address="0/2/35" DPTs="DPST-5-1" />
+      <GroupAddress Name="D4/02-CHL 2 Value FB" Address="0/2/36" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Bedroom" RangeStart="768" RangeEnd="1023">
+      <GroupAddress Name="DL2/D1G5-CL Toggle" Address="0/3/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D1G5-CL FB" Address="0/3/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D1G5-CL Bright/Dark" Address="0/3/2" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL2/D1G5-CL Value" Address="0/3/3" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D1G5-CL Value FB" Address="0/3/4" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Common Area" RangeStart="1024" RangeEnd="1279">
+      <GroupAddress Name="DL2/D2G5-L1 Toggle" Address="0/4/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D2G5-L1 FB" Address="0/4/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D2G5-L1 Bright/Dark" Address="0/4/2" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL2/D2G5-L1 Value" Address="0/4/3" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D2G5-L1 Value FB" Address="0/4/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D1G4-L2 Toggle" Address="0/4/5" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D1G4-L2 FB" Address="0/4/6" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D1G4-L2 Bright/Dark" Address="0/4/7" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL2/D1G4-L2 Value" Address="0/4/8" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D1G4-L2 Value FB" Address="0/4/9" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D2G9-Step CL Toggle" Address="0/4/10" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D2G9-Step CL FB" Address="0/4/11" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D2G9-Step CL Bright/Dark" Address="0/4/12" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL2/D2G9-Step CL Value" Address="0/4/13" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D2G9-Step CL Value FB" Address="0/4/14" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="TV Area" RangeStart="1280" RangeEnd="1535">
+      <GroupAddress Name="DL2/D2G6-L1 Toggle" Address="0/5/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D2G6-L1 FB" Address="0/5/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D2G6-L1 Bright/Dark" Address="0/5/2" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL2/D2G6-L1 Value" Address="0/5/3" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D2G6-L1 Value FB" Address="0/5/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D2G7-L2 Toggle" Address="0/5/5" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D2G7-L2 FB" Address="0/5/6" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D2G7-L2 Bright/Dark" Address="0/5/7" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL2/D2G7-L2 Value" Address="0/5/8" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D2G7-L2 Value FB" Address="0/5/9" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D2G8-CL Toggle" Address="0/5/10" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D2G8-CL FB" Address="0/5/11" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D2G8-CL Bright/Dark" Address="0/5/12" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL2/D2G8-CL Value" Address="0/5/13" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D2G8-CL Value FB" Address="0/5/14" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D2ECG25-CG Toggle" Address="0/5/15" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D2ECG25-CG FB" Address="0/5/16" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D2ECG25-CG Bright/Dark" Address="0/5/17" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL2/D2ECG25-CG Value" Address="0/5/18" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D2ECG25-CG Value FB" Address="0/5/19" DPTs="DPST-5-1" />
+      <GroupAddress Name="D2/O2-CHL1 Toggle" Address="0/5/20" DPTs="DPST-1-1" />
+      <GroupAddress Name="D2/O2-CHL1 FB" Address="0/5/21" DPTs="DPST-1-1" />
+      <GroupAddress Name="D2/O2-CHL1 Bright/Dark" Address="0/5/22" DPTs="DPST-3-7" />
+      <GroupAddress Name="D2/O2-CHL1 Value" Address="0/5/23" DPTs="DPST-5-1" />
+      <GroupAddress Name="D2/O2-CHL1 Value FB" Address="0/5/24" DPTs="DPST-5-1" />
+      <GroupAddress Name="D2/O3-CHL2 Toggle" Address="0/5/25" DPTs="DPST-1-1" />
+      <GroupAddress Name="D2/O3-CHL2 FB" Address="0/5/26" DPTs="DPST-1-1" />
+      <GroupAddress Name="D2/O3-CHL2 Bright/Dark" Address="0/5/27" DPTs="DPST-3-7" />
+      <GroupAddress Name="D2/O3-CHL2 Value" Address="0/5/28" DPTs="DPST-5-1" />
+      <GroupAddress Name="D2/O3-CHL2 Value FB" Address="0/5/29" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Outdoor Area" RangeStart="1536" RangeEnd="1791">
+      <GroupAddress Name="D2/O4-CHL Toggle" Address="0/6/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="D2/O4-CHL FB" Address="0/6/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="D2/O4-CHL Bright/Dark" Address="0/6/2" DPTs="DPST-3-7" />
+      <GroupAddress Name="D2/O4-CHL Value" Address="0/6/3" DPTs="DPST-5-1" />
+      <GroupAddress Name="D2/O4-CHL Value FB" Address="0/6/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL3/G7-CL Toggle" Address="0/6/5" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL3/G7-CL FB" Address="0/6/6" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL3/G7-CL Bright/Dark" Address="0/6/7" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL3/G7-CL Value" Address="0/6/8" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL3/G7-CL Value FB" Address="0/6/9" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL3/G8-DWL Toggle" Address="0/6/10" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL3/G8-DWL FB" Address="0/6/11" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL3/G8-DWL Bright/Dark" Address="0/6/12" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL3/G8-DWL Value" Address="0/6/13" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL3/G8-DWL Value FB" Address="0/6/14" DPTs="DPST-5-1" />
+      <GroupAddress Name="D4/O3-SB CHL Toggle" Address="0/6/15" DPTs="DPST-1-1" />
+      <GroupAddress Name="D4/O3-SB CHL FB" Address="0/6/16" DPTs="DPST-1-1" />
+      <GroupAddress Name="D4/O3-SB CHL Bright/Dark" Address="0/6/17" DPTs="DPST-3-7" />
+      <GroupAddress Name="D4/O3-SB CHL Value" Address="0/6/18" DPTs="DPST-5-1" />
+      <GroupAddress Name="D4/O3-SB CHL Value FB" Address="0/6/19" DPTs="DPST-5-1" />
+      <GroupAddress Name="D4/O4-WB CHL Toggle" Address="0/6/20" DPTs="DPST-1-1" />
+      <GroupAddress Name="D4/O4-WB CHL FB" Address="0/6/21" DPTs="DPST-1-1" />
+      <GroupAddress Name="D4/O4-WB CHL Bright/Dark" Address="0/6/22" DPTs="DPST-3-7" />
+      <GroupAddress Name="D4/O4-WB CHL Value" Address="0/6/23" DPTs="DPST-5-1" />
+      <GroupAddress Name="D4/O4-WB CHL Value FB" Address="0/6/24" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Priority Switch" RangeStart="1792" RangeEnd="2047">
+      <GroupAddress Name="GF Master Switch" Address="0/7/0" DPTs="DPST-1-1" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="First Floor" RangeStart="2048" RangeEnd="4095">
+    <GroupRange Name="FF-SF Steps" RangeStart="2048" RangeEnd="2303">
+      <GroupAddress Name="DL1/D2G9-DWL Toggle" Address="1/0/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G9-DWL FB" Address="1/0/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G9-DWL Bright/Dark" Address="1/0/2" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2G9-DWL Value" Address="1/0/3" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G9-DWL Value FB" Address="1/0/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G10-CL Toggle" Address="1/0/5" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G10-CL FB" Address="1/0/6" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G10-CL Bright/Dark" Address="1/0/7" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2G10-CL Value" Address="1/0/8" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G10-CL Value FB" Address="1/0/9" DPTs="DPST-5-1" />
+      <GroupAddress Name="D3/O1-CHL Toggle" Address="1/0/10" DPTs="DPST-1-1" />
+      <GroupAddress Name="D3/O1-CHL FB" Address="1/0/11" DPTs="DPST-1-1" />
+      <GroupAddress Name="D3/O1-CHL Bright/Dark" Address="1/0/12" DPTs="DPST-3-7" />
+      <GroupAddress Name="D3/O1-CHL Value" Address="1/0/13" DPTs="DPST-5-1" />
+      <GroupAddress Name="D3/O1-CHL Value FB" Address="1/0/14" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2ECG55-Step CL Toggle" Address="1/0/15" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2ECG55-Step CL FB" Address="1/0/16" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2ECG55-Step CL Bright/Dark" Address="1/0/17" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2ECG55-Step CL Value" Address="1/0/18" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2ECG55-Step CL Value FB" Address="1/0/19" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="MBR" RangeStart="2304" RangeEnd="2559">
+      <GroupAddress Name="DL1/D2G13-CL Toggle" Address="1/1/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G13-CL FB" Address="1/1/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G13-CL Bright/Dark" Address="1/1/2" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2G13-CL Value" Address="1/1/3" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G13-CL Value FB" Address="1/1/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G11-CG Toggle" Address="1/1/5" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G11-CG FB" Address="1/1/6" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G11-CG Bright/Dark" Address="1/1/7" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2G11-CG Value" Address="1/1/8" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G11-CG Value FB" Address="1/1/9" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="FF Bed" RangeStart="2560" RangeEnd="2815">
+      <GroupAddress Name="DL1/D2G12-CL Toggle" Address="1/2/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G12-CL FB" Address="1/2/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G12-CL Bright/Dark" Address="1/2/2" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2G12-CL Value" Address="1/2/3" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G12-CL Value FB" Address="1/2/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2ECG49-CG Toggle" Address="1/2/5" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2ECG49-CG FB" Address="1/2/6" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2ECG49-CG Bright/Dark" Address="1/2/7" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2ECG49-CG Value" Address="1/2/8" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2ECG49-CG Value FB" Address="1/2/9" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="GBR" RangeStart="2816" RangeEnd="3071">
+      <GroupAddress Name="DL1/D2G14-CL1 Toggle" Address="1/3/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G14-CL1 FB" Address="1/3/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G14-CL1 Bright/Dark" Address="1/3/2" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2G14-CL1 Value" Address="1/3/3" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G14-CL1 Value FB" Address="1/3/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2ECG54-CL2 Toggle" Address="1/3/5" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2ECG54-CL2 FB" Address="1/3/6" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2ECG54-CL2 Bright/Dark" Address="1/3/7" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2ECG54-CL2 Value" Address="1/3/8" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2ECG54-CL2 Value FB" Address="1/3/9" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Bar" RangeStart="3072" RangeEnd="3327">
+      <GroupAddress Name="DL2/D1G6-L Toggle" Address="1/4/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D1G6-L FB" Address="1/4/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D1G6-L Bright/Dark" Address="1/4/2" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL2/D1G6-L Value" Address="1/4/3" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D1G6-L Value FB" Address="1/4/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D1ECG25-CL Toggle" Address="1/4/5" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D1ECG25-CL FB" Address="1/4/6" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL2/D1ECG25-CL Bright/Dark" Address="1/4/7" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL2/D1ECG25-CL Value" Address="1/4/8" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL2/D1ECG25-CL Value FB" Address="1/4/9" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Common Area" RangeStart="3328" RangeEnd="3583">
+      <GroupAddress Name="DL1/D2G15-L/L Toggle" Address="1/5/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G15-L/L FB" Address="1/5/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G15-L/L Bright/Dark" Address="1/5/2" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2G15-L/L Value" Address="1/5/3" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G15-L/L Value FB" Address="1/5/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL3/G6-FFB/DWL Toggle" Address="1/5/5" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL3/G6-FFB/DWL FB" Address="1/5/6" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL3/G6-FFB/DWL Bright/Dark" Address="1/5/7" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL3/G6-FFB/DWL Value" Address="1/5/8" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL3/G6-FFB/DWL Value FB" Address="1/5/9" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="DH Area" RangeStart="3584" RangeEnd="3839">
+      <GroupAddress Name="DL1/D1G1-DWL1 Toggle" Address="1/6/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D1G1-DWL1 FB" Address="1/6/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D1G1-DWL1 Bright/Dark" Address="1/6/2" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D1G1-DWL1 Value" Address="1/6/3" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D1G1-DWL1 Value FB" Address="1/6/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D1G2-DWL2 Toggle" Address="1/6/5" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D1G2-DWL2 FB" Address="1/6/6" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D1G2-DWL2 Bright/Dark" Address="1/6/7" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D1G2-DWL2 Value" Address="1/6/8" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D1G2-DWL2 Value FB" Address="1/6/9" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D1G3-DWL3 Toggle" Address="1/6/10" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D1G3-DWL3 FB" Address="1/6/11" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D1G3-DWL3 Bright/Dark" Address="1/6/12" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D1G3-DWL3 Value" Address="1/6/13" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D1G3-DWL3 Value FB" Address="1/6/14" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D1G4-CL1 Toggle" Address="1/6/15" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D1G4-CL1 FB" Address="1/6/16" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D1G4-CL1 Bright/Dark" Address="1/6/17" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D1G4-CL1 Value" Address="1/6/18" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D1G4-CL1 Value FB" Address="1/6/19" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D1G5-CL2 Toggle" Address="1/6/20" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D1G5-CL2 FB" Address="1/6/21" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D1G5-CL2 Bright/Dark" Address="1/6/22" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D1G5-CL2 Value" Address="1/6/23" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D1G5-CL2 Value FB" Address="1/6/24" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D1G6-CL3 Toggle" Address="1/6/25" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D1G6-CL3 FB" Address="1/6/26" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D1G6-CL3 Bright/Dark" Address="1/6/27" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D1G6-CL3 Value" Address="1/6/28" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D1G6-CL3 Value FB" Address="1/6/29" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D1G7-CL4 Toggle" Address="1/6/30" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D1G7-CL4 FB" Address="1/6/31" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D1G7-CL4 Bright/Dark" Address="1/6/32" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D1G7-CL4 Value" Address="1/6/33" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D1G7-CL4 Value FB" Address="1/6/34" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D1G8-CL5 Toggle" Address="1/6/35" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D1G8-CL5 FB" Address="1/6/36" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D1G8-CL5 Bright/Dark" Address="1/6/37" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D1G8-CL5 Value" Address="1/6/38" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D1G8-CL5 Value FB" Address="1/6/39" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D1G9-PDL Toggle" Address="1/6/40" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D1G9-PDL FB" Address="1/6/41" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D1G9-PDL Bright/Dark" Address="1/6/42" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D1G9-PDL Value" Address="1/6/43" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D1G9-PDL Value FB" Address="1/6/44" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D1G10-PGL Toggle" Address="1/6/45" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D1G10-PGL FB" Address="1/6/46" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D1G10-PGL Bright/Dark" Address="1/6/47" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D1G10-PGL Value" Address="1/6/48" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D1G10-PGL Value FB" Address="1/6/49" DPTs="DPST-5-1" />
+      <GroupAddress Name="D3/O3/4-CHL1 Toggle" Address="1/6/50" DPTs="DPST-1-1" />
+      <GroupAddress Name="D3/O3/4-CHL1 FB" Address="1/6/51" DPTs="DPST-1-1" />
+      <GroupAddress Name="D3/O3/4-CHL1 Bright/Dark" Address="1/6/52" DPTs="DPST-3-7" />
+      <GroupAddress Name="D3/O3/4-CHL1 Value" Address="1/6/53" DPTs="DPST-5-1" />
+      <GroupAddress Name="D3/O3/4-CHL1 Value FB" Address="1/6/54" DPTs="DPST-5-1" />
+      <GroupAddress Name="D1/O2-CHL Toggle" Address="1/6/55" DPTs="DPST-1-1" />
+      <GroupAddress Name="D1/O2-CHL FB" Address="1/6/56" DPTs="DPST-1-1" />
+      <GroupAddress Name="D1/O2-CHL Bright/Dark" Address="1/6/57" DPTs="DPST-3-7" />
+      <GroupAddress Name="D1/O2-CHL Value" Address="1/6/58" DPTs="DPST-5-1" />
+      <GroupAddress Name="D1/O2-CHL Value FB" Address="1/6/59" DPTs="DPST-5-1" />
+      <GroupAddress Name="D1/O3-CHL Toggle" Address="1/6/60" DPTs="DPST-1-1" />
+      <GroupAddress Name="D1/O3-CHL FB" Address="1/6/61" DPTs="DPST-1-1" />
+      <GroupAddress Name="D1/O3-CHL Bright/Dark" Address="1/6/62" DPTs="DPST-3-7" />
+      <GroupAddress Name="D1/O3-CHL Value" Address="1/6/63" DPTs="DPST-5-1" />
+      <GroupAddress Name="D1/O3-CHL Value FB" Address="1/6/64" DPTs="DPST-5-1" />
+      <GroupAddress Name="D1/O4-CHL Toggle" Address="1/6/65" DPTs="DPST-1-1" />
+      <GroupAddress Name="D1/O4-CHL FB" Address="1/6/66" DPTs="DPST-1-1" />
+      <GroupAddress Name="D1/O4-CHL Bright/Dark" Address="1/6/67" DPTs="DPST-3-7" />
+      <GroupAddress Name="D1/O4-CHL Value" Address="1/6/68" DPTs="DPST-5-1" />
+      <GroupAddress Name="D1/O4-CHL Value FB" Address="1/6/69" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL3/G1-DWL1 Toggle" Address="1/6/70" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL3/G1-DWL1 FB" Address="1/6/71" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL3/G1-DWL1 Bright/Dark" Address="1/6/72" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL3/G1-DWL1 Value" Address="1/6/73" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL3/G1-DWL1 Value FB" Address="1/6/74" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL3/G2-DWL2 Toggle" Address="1/6/75" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL3/G2-DWL2 FB" Address="1/6/76" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL3/G2-DWL2 Bright/Dark" Address="1/6/77" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL3/G2-DWL2 Value" Address="1/6/78" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL3/G2-DWL2 Value FB" Address="1/6/79" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL3/G3-DWL3 Toggle" Address="1/6/80" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL3/G3-DWL3 FB" Address="1/6/81" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL3/G3-DWL3 Bright/Dark" Address="1/6/82" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL3/G3-DWL3 Value" Address="1/6/83" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL3/G3-DWL3 Value FB" Address="1/6/84" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL3/G4-CL Toggle" Address="1/6/85" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL3/G4-CL FB" Address="1/6/86" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL3/G4-CL Bright/Dark" Address="1/6/87" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL3/G4-CL Value" Address="1/6/88" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL3/G4-CL Value FB" Address="1/6/89" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL3/G5-CG Toggle" Address="1/6/90" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL3/G5-CG FB" Address="1/6/91" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL3/G5-CG Bright/Dark" Address="1/6/92" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL3/G5-CG Value" Address="1/6/93" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL3/G5-CG Value FB" Address="1/6/94" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Priority Switch" RangeStart="3840" RangeEnd="4095">
+      <GroupAddress Name="FF Master Switch" Address="1/7/0" DPTs="DPST-1-1" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="Second Floor" RangeStart="4096" RangeEnd="6143">
+    <GroupRange Name="CBR 1" RangeStart="4096" RangeEnd="4351">
+      <GroupAddress Name="DL1/D2G1-CL1 Toggle" Address="2/0/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G1-CL1 FB" Address="2/0/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G1-CL1 Bright/Dark" Address="2/0/2" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2G1-CL1 Value" Address="2/0/3" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G1-CL1 Value FB" Address="2/0/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2ECG15-CL2 Toggle" Address="2/0/5" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2ECG15-CL2 FB" Address="2/0/6" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2ECG15-CL2 Bright/Dark" Address="2/0/7" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2ECG15-CL2 Value" Address="2/0/8" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2ECG15-CL2 Value FB" Address="2/0/9" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2ECG29-CL3 Toggle" Address="2/0/10" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2ECG29-CL3 FB" Address="2/0/11" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2ECG29-CL3 Bright/Dark" Address="2/0/12" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2ECG29-CL3 Value" Address="2/0/13" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2ECG29-CL3 Value FB" Address="2/0/14" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G2-CG Toggle" Address="2/0/15" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G2-CG FB" Address="2/0/16" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G2-CG Bright/Dark" Address="2/0/17" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2G2-CG Value" Address="2/0/18" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G2-CG Value FB" Address="2/0/19" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="CBR 2" RangeStart="4352" RangeEnd="4607">
+      <GroupAddress Name="DL1/D2ECG9-IC Toggle" Address="2/1/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2ECG9-IC FB" Address="2/1/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2ECG9-IC Bright/Dark" Address="2/1/2" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2ECG9-IC Value" Address="2/1/3" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2ECG9-IC Value FB" Address="2/1/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G7-OC Toggle" Address="2/1/5" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G7-OC FB" Address="2/1/6" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G7-OC Bright/Dark" Address="2/1/7" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2G7-OC Value" Address="2/1/8" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G7-OC Value FB" Address="2/1/9" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2ECG32-CG Toggle" Address="2/1/10" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2ECG32-CG FB" Address="2/1/11" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2ECG32-CG Bright/Dark" Address="2/1/12" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2ECG32-CG Value" Address="2/1/13" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2ECG32-CG Value FB" Address="2/1/14" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Hall" RangeStart="4608" RangeEnd="4863">
+      <GroupAddress Name="DL1/D2G3-CEL1 Toggle" Address="2/2/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G3-CEL1 FB" Address="2/2/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G3-CEL1 Bright/Dark" Address="2/2/2" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2G3-CEL1 Value" Address="2/2/3" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G3-CEL1 Value FB" Address="2/2/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G4-CEL2 Toggle" Address="2/2/5" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G4-CEL2 FB" Address="2/2/6" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G4-CEL2 Bright/Dark" Address="2/2/7" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2G4-CEL2 Value" Address="2/2/8" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G4-CEL2 Value FB" Address="2/2/9" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G5-OC Toggle" Address="2/2/10" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G5-OC FB" Address="2/2/11" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G5-OC Bright/Dark" Address="2/2/12" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2G5-OC Value" Address="2/2/13" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G5-OC Value FB" Address="2/2/14" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G6-IC Toggle" Address="2/2/15" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G6-IC FB" Address="2/2/16" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G6-IC Bright/Dark" Address="2/2/17" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2G6-IC Value" Address="2/2/18" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G6-IC Value FB" Address="2/2/19" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G8-CG Toggle" Address="2/2/20" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G8-CG FB" Address="2/2/21" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL1/D2G8-CG Bright/Dark" Address="2/2/22" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL1/D2G8-CG Value" Address="2/2/23" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL1/D2G8-CG Value FB" Address="2/2/24" DPTs="DPST-5-1" />
+      <GroupAddress Name="D3/O2-CHL Toggle" Address="2/2/25" DPTs="DPST-1-1" />
+      <GroupAddress Name="D3/O2-CHL FB" Address="2/2/26" DPTs="DPST-1-1" />
+      <GroupAddress Name="D3/O2-CHL Bright/Dark" Address="2/2/27" DPTs="DPST-3-7" />
+      <GroupAddress Name="D3/O2-CHL Value" Address="2/2/28" DPTs="DPST-5-1" />
+      <GroupAddress Name="D3/O2-CHL Value FB" Address="2/2/29" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Priority Switch" RangeStart="4864" RangeEnd="5119">
+      <GroupAddress Name="SF Master Switch" Address="2/3/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="Hall Master Switch" Address="2/3/1" DPTs="DPST-1-1" />
+    </GroupRange>
+  </GroupRange>
+</GroupAddress-Export>

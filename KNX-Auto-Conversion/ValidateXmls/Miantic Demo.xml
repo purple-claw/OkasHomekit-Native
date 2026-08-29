@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<GroupAddress-Export xmlns="http://knx.org/xml/ga-export/01">
+  <GroupRange Name="3rd Floor" RangeStart="1" RangeEnd="2047">
+    <GroupRange Name="Big Home Theatre" RangeStart="1" RangeEnd="255">
+      <GroupAddress Name="Big HT Screen Lights ON/OFF" Address="0/0/1" DPTs="DPST-1-7" />
+      <GroupAddress Name="Big HT Screen Lights ON/OFF Status" Address="0/0/2" DPTs="DPST-1-1" />
+      <GroupAddress Name="Big HT Back DL ON/OFF" Address="0/0/3" DPTs="DPST-1-1" />
+      <GroupAddress Name="Big HT Back DL ON/OFF Status" Address="0/0/4" DPTs="DPST-1-1" />
+      <GroupAddress Name="Big HT Back DL Dimming" Address="0/0/5" DPTs="DPST-3-7" />
+      <GroupAddress Name="Big HT Back DL Brightness Value" Address="0/0/6" DPTs="DPST-5-1" />
+      <GroupAddress Name="Big HT Back DL Brightness Value Status" Address="0/0/7" Description=" " DPTs="DPST-5-1" />
+      <GroupAddress Name="scene" Address="0/0/8" DPTs="DPST-18-1" />
+      <GroupAddress Name="Big HT Front DL ON/OFF" Address="0/0/9" DPTs="DPST-1-1" />
+      <GroupAddress Name="Big HT Front DL ON/OFF Status" Address="0/0/10" DPTs="DPST-1-1" />
+      <GroupAddress Name="Big HT Front DL Dimming" Address="0/0/11" DPTs="DPST-3-7" />
+      <GroupAddress Name="Big HT Front DL Brightness Value" Address="0/0/12" DPTs="DPST-5-1" />
+      <GroupAddress Name="Big HT Front DL Brightness Value Status" Address="0/0/13" DPTs="DPST-5-1" />
+      <GroupAddress Name="HT AC ON/OFF" Address="0/0/14" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="Small Home Theatre" RangeStart="256" RangeEnd="511">
+      <GroupAddress Name="Mini HT  Screen Spots ON/OFF" Address="0/1/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="Mini HT  Screen Spots ON/OFF Status" Address="0/1/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="Mini HT Design ight ON/OFF" Address="0/1/4" DPTs="DPST-1-1" />
+      <GroupAddress Name="Mini HT Design Light ON/OFF Status" Address="0/1/5" DPTs="DPST-1-1" />
+      <GroupAddress Name="Mini HT Design Light Dimming" Address="0/1/6" DPTs="DPST-3-7" />
+      <GroupAddress Name="Mini HT Design Light Brightness Value" Address="0/1/7" DPTs="DPST-5-1" />
+      <GroupAddress Name="Mini HT Design Light Brightness Value Status" Address="0/1/8" DPTs="DPST-5-1" />
+      <GroupAddress Name="M&amp;K Left " Address="0/1/9" DPTs="DPST-1-1" />
+      <GroupAddress Name="M&amp;K Right" Address="0/1/10" DPTs="DPST-1-1" />
+      <GroupAddress Name="M&amp;K Center" Address="0/1/11" DPTs="DPST-1-1" />
+      <GroupAddress Name="Zero DB Left" Address="0/1/12" DPTs="DPST-1-1" />
+      <GroupAddress Name="Zero DB Right" Address="0/1/13" DPTs="DPST-1-1" />
+      <GroupAddress Name="Zero DB Center" Address="0/1/14" DPTs="DPST-1-1" />
+      <GroupAddress Name="M&amp;K " Address="0/1/15" DPTs="DPST-1-1" />
+      <GroupAddress Name="Zero DB" Address="0/1/16" DPTs="DPST-1-1" />
+      <GroupAddress Name="All ON/OFF" Address="0/1/17" DPTs="DPST-1-1" />
+      <GroupAddress Name="Small HT DL Lights 30% Scene " Address="0/1/18" DPTs="DPST-1-1" />
+      <GroupAddress Name="Small HT AC" Address="0/1/19" DPTs="DPST-1-1" />
+      <GroupAddress Name="package 1" Address="0/1/20" DPTs="DPST-18-1" />
+      <GroupAddress Name="package 2" Address="0/1/21" DPTs="DPST-18-1" />
+      <GroupAddress Name="Speaker Switching" Address="0/1/22" DPTs="DPST-1-1" />
+      <GroupAddress Name="Mini HT Front Lights ON/OFF" Address="0/1/23" DPTs="DPST-1-1" />
+      <GroupAddress Name="Mini HT Front Lights ON/OFF Status" Address="0/1/24" DPTs="DPST-1-1" />
+      <GroupAddress Name="Mini HT Front Lights Dimming" Address="0/1/25" DPTs="DPST-3-7" />
+      <GroupAddress Name="Mini HT Front Lights Brightness Value" Address="0/1/26" DPTs="DPST-5-1" />
+      <GroupAddress Name="Mini HT Front Lights Brightness Value Status" Address="0/1/27" DPTs="DPST-5-1" />
+      <GroupAddress Name="Mini HT Back Lights ON/OFF" Address="0/1/28" DPTs="DPST-1-1" />
+      <GroupAddress Name="Mini HT Back Lights ON/OFF Status" Address="0/1/29" DPTs="DPST-1-1" />
+      <GroupAddress Name="Mini HT Back Lights Dimming" Address="0/1/30" DPTs="DPST-3-7" />
+      <GroupAddress Name="Mini HT Back Lights Brightness Value" Address="0/1/31" DPTs="DPST-5-1" />
+      <GroupAddress Name="Mini HT Back Lights Brightness Value Status" Address="0/1/32" DPTs="DPST-5-1" />
+      <GroupAddress Name="Movie Mode" Address="0/1/33" DPTs="DPST-1-1" />
+      <GroupAddress Name="Interval Scene" Address="0/1/34" DPTs="DPST-1-1" />
+      <GroupAddress Name="Mini DL ON/OFF" Address="0/1/35" DPTs="DPST-1-1" />
+      <GroupAddress Name="Mini DL Dimming" Address="0/1/36" DPTs="DPST-3-7" />
+      <GroupAddress Name="Mini DL Value" Address="0/1/37" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="HT Passage" RangeStart="512" RangeEnd="767">
+      <GroupAddress Name="HT Passage Lights ON/OFF" Address="0/2/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="HT Passage Lights ON/OFF Status" Address="0/2/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="Logo Board Light 1" Address="0/2/2" DPTs="DPST-1-1" />
+      <GroupAddress Name="Logo Board Light 1 Status" Address="0/2/3" DPTs="DPST-1-11" />
+      <GroupAddress Name="Logo Board Light 2" Address="0/2/4" DPTs="DPST-1-1" />
+      <GroupAddress Name="Logo Board Light 2 Status" Address="0/2/5" DPTs="DPST-1-11" />
+    </GroupRange>
+    <GroupRange Name="Lounge Area" RangeStart="768" RangeEnd="1023">
+      <GroupAddress Name="Track Lights-1 ON/OFF" Address="0/3/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="Track Lights-1 ON/OFF Status" Address="0/3/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="Track Light 2 ON/OFF" Address="0/3/2" DPTs="DPST-1-1" />
+      <GroupAddress Name="Track Light 2 ON/OFF Status" Address="0/3/3" DPTs="DPST-1-1" />
+      <GroupAddress Name="All ON/OFF" Address="0/3/4" DPTs="DPST-1-1" />
+      <GroupAddress Name="Lounge Area Curtain Up/Down" Address="0/3/5" DPTs="DPST-1-8" />
+      <GroupAddress Name="Curtain Up/Down Status" Address="0/3/6" DPTs="DPST-1-3" />
+      <GroupAddress Name="Lounge Area Curtain Stop" Address="0/3/7" DPTs="DPST-1-7" />
+      <GroupAddress Name="Lounge Area Chandilier Light ON/OFF" Address="0/3/8" DPTs="DPST-1-1" />
+      <GroupAddress Name="Lounge Area Chandilier Light ON/OFF Status" Address="0/3/9" DPTs="DPST-1-1" />
+      <GroupAddress Name="Track Light 1 Dimming" Address="0/3/10" DPTs="DPST-3-7" />
+      <GroupAddress Name="Track Light 1 Brightness Value" Address="0/3/11" DPTs="DPST-5-1" />
+      <GroupAddress Name="Track Light 1 Brightness Value Status" Address="0/3/12" DPTs="DPST-5-1" />
+      <GroupAddress Name="Track Light 2 Dimming" Address="0/3/13" DPTs="DPST-3-7" />
+      <GroupAddress Name="Track Light 2 Brightness Value" Address="0/3/14" DPTs="DPST-5-1" />
+      <GroupAddress Name="Track Light 2 Brightness Value Status" Address="0/3/15" DPTs="DPST-5-1" />
+      <GroupAddress Name="Curtain Slider 1byte" Address="0/3/16" DPTs="DPST-5-1" />
+      <GroupAddress Name="Curtain Slider Status" Address="0/3/17" />
+      <GroupAddress Name="Curtain Slat " Address="0/3/18" />
+      <GroupAddress Name="Curtain Slat Status" Address="0/3/19" />
+    </GroupRange>
+    <GroupRange Name="Display Area" RangeStart="1024" RangeEnd="1279">
+      <GroupAddress Name="Display Lights-1 ON/OFF" Address="0/4/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="Display Lights-1 ON/OFF Status" Address="0/4/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="Display Lights-2 ON/OFF" Address="0/4/2" DPTs="DPST-1-1" />
+      <GroupAddress Name="Display Lights-2 ON/OFF Status" Address="0/4/3" DPTs="DPST-1-1" />
+      <GroupAddress Name="Display Track Lights ON/OFF" Address="0/4/4" DPTs="DPST-1-1" />
+      <GroupAddress Name="Display Track Lights ON/OFF Status" Address="0/4/5" DPTs="DPST-1-1" />
+      <GroupAddress Name="Display Area Strip Lights ON/OFF" Address="0/4/6" DPTs="DPST-1-1" />
+      <GroupAddress Name="Display Area Strip Lights ON/OFF Status" Address="0/4/7" DPTs="DPST-1-1" />
+      <GroupAddress Name="Display Area Dali Lights ON/OFF" Address="0/4/8" DPTs="DPST-1-1" />
+      <GroupAddress Name="Display Area Dali Lights ON/OFF Status" Address="0/4/9" DPTs="DPST-1-1" />
+      <GroupAddress Name="Display Area Dali Lights Dimming" Address="0/4/10" DPTs="DPST-3-7" />
+      <GroupAddress Name="Display Area Dali Lights Brightness Value" Address="0/4/11" DPTs="DPST-5-1" />
+      <GroupAddress Name="Display Area Dali Lights Brightness Value Status" Address="0/4/12" DPTs="DPST-5-1" />
+      <GroupAddress Name="Display Area Dali Lights Relative temperature" Address="0/4/13" DPTs="DPST-3-7" />
+      <GroupAddress Name="Display Area Dali Lights Absolute temperature" Address="0/4/14" DPTs="DPST-7-600" />
+      <GroupAddress Name="Display Area Dali Lights Absolute temperature Status" Address="0/4/15" DPTs="DPST-7-600" />
+      <GroupAddress Name="Server Room Lights ON/OFF" Address="0/4/16" />
+      <GroupAddress Name="Server Room Lights ON/OFF Status" Address="0/4/17" />
+      <GroupAddress Name="3" Address="0/4/18" DPTs="DPST-5-1" />
+      <GroupAddress Name="Scene" Address="0/4/19" DPTs="DPST-17-1" />
+      <GroupAddress Name="Server AC" Address="0/4/20" DPTs="DPST-1-1" />
+      <GroupAddress Name="Display Keypad All ON/OFF" Address="0/4/21" DPTs="DPST-1-1" />
+      <GroupAddress Name="TEMP" Address="0/4/22" DPTs="DPST-9-1" />
+    </GroupRange>
+    <GroupRange Name="Garvan Area" RangeStart="1280" RangeEnd="1535">
+      <GroupAddress Name="Garvan Area Dali Lights ON/OFF" Address="0/5/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="Garvan Area Dali Lights ON/OFF Status" Address="0/5/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="Garvan Area Dali Lights Dimming" Address="0/5/2" DPTs="DPST-3-7" />
+      <GroupAddress Name="Garvan Area Dali Lights Brightness Value" Address="0/5/3" DPTs="DPST-5-1" />
+      <GroupAddress Name="Garvan Area Dali Lights Brightness Value Status" Address="0/5/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="Garvan Area Dali Relative temperature" Address="0/5/5" DPTs="DPST-3-7" />
+      <GroupAddress Name="Garvan Area Dali Absolute temperature" Address="0/5/6" DPTs="DPST-7-600" />
+      <GroupAddress Name="Garvan Area Dali Absolute temperature Status" Address="0/5/7" DPTs="DPST-7-600" />
+      <GroupAddress Name="Garvan AC" Address="0/5/8" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="Bar Area" RangeStart="1536" RangeEnd="1791">
+      <GroupAddress Name="Bar Small Spots Lights ON/OFF" Address="0/6/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bar Small Spots Lights ON/OFF Status" Address="0/6/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bar Speaker Light ON/OFF" Address="0/6/2" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bar Speaker Light ON/OFF Status" Address="0/6/3" DPTs="DPST-1-1" />
+      <GroupAddress Name="1" Address="0/6/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="2" Address="0/6/5" DPTs="DPST-5-1" />
+      <GroupAddress Name="Test Brightness" Address="0/6/6" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="VideoWall Area" RangeStart="1792" RangeEnd="2047">
+      <GroupAddress Name="Down Lights ON/OFF" Address="0/7/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights ON/OFF FB" Address="0/7/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights Bright/Dark" Address="0/7/2" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Lights Value" Address="0/7/3" DPTs="DPST-5-1" />
+      <GroupAddress Name="Down Lights Value FB" Address="0/7/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="Videowall Area Dali Lights ON/OFF" Address="0/7/6" DPTs="DPST-1-1" />
+      <GroupAddress Name="Videowall Area Dali Lights ON/OFF Status" Address="0/7/7" DPTs="DPST-1-1" />
+      <GroupAddress Name="Videowall Area Dali Lights Dimming" Address="0/7/8" DPTs="DPST-3-7" />
+      <GroupAddress Name="Videowall Area Dali Lights Brightness Value" Address="0/7/9" DPTs="DPST-5-1" />
+      <GroupAddress Name="Videowall Area Dali Lights Brightness Value Status" Address="0/7/10" DPTs="DPST-5-1" />
+      <GroupAddress Name="Videowall Area Dali Lights Relative temperature" Address="0/7/11" DPTs="DPST-3-7" />
+      <GroupAddress Name="Videowall Area Dali Lights Absolute temperature" Address="0/7/12" DPTs="DPST-7-600" />
+      <GroupAddress Name="Videowall Area Dali Lights Absolute temperature Status" Address="0/7/13" DPTs="DPST-7-600" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="HVAC" RangeStart="2048" RangeEnd="4095">
+    <GroupRange Name="HVAC Testing" RangeStart="2048" RangeEnd="2303">
+      <GroupAddress Name="HT AC ON/OFF" Address="1/0/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="HT AC Setpoint" Address="1/0/1" DPTs="DPST-9-1" />
+      <GroupAddress Name="HT AC Heat/Cool" Address="1/0/2" DPTs="DPST-20-102" />
+      <GroupAddress Name="HT AC Fan Speed" Address="1/0/3" DPTs="DPST-1-7" />
+    </GroupRange>
+    <GroupRange Name="Testing" RangeStart="2304" RangeEnd="2559">
+      <GroupAddress Name="Empty" Address="1/1/0" />
+      <GroupAddress Name="Scene Testing" Address="1/1/2" />
+    </GroupRange>
+    <GroupRange Name="Sensor test" RangeStart="2560" RangeEnd="2815">
+      <GroupAddress Name="Anti Presence output" Address="1/2/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="Presence" Address="1/2/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="True Presence" Address="1/2/2" DPTs="DPST-1-1" />
+      <GroupAddress Name="presence output" Address="1/2/3" DPTs="DPST-1-1" />
+      <GroupAddress Name="Light output 1 swithcing" Address="1/2/4" DPTs="DPST-1-1" />
+      <GroupAddress Name="sensor disable" Address="1/2/5" DPTs="DPST-1-1" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="Dali Test" RangeStart="4096" RangeEnd="6143">
+    <GroupRange Name="Keypad Testing" RangeStart="4096" RangeEnd="4351">
+      <GroupAddress Name="Dali Group ON/OFF" Address="2/0/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dali Group ON/OFF Status" Address="2/0/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dali Group Dimming" Address="2/0/2" DPTs="DPST-3-7" />
+      <GroupAddress Name="Dali Group Brightness Value" Address="2/0/3" DPTs="DPST-5-1" />
+      <GroupAddress Name="Dali Group Brightness Value Status" Address="2/0/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="Dali Group Relative Temp" Address="2/0/5" />
+      <GroupAddress Name="Dali Group Absolute Temp" Address="2/0/6" />
+      <GroupAddress Name="Dali Group Absolute Temp FB" Address="2/0/7" />
+    </GroupRange>
+    <GroupRange Name="Color Test" RangeStart="4352" RangeEnd="4607">
+      <GroupAddress Name="Video Wall Colour Value" Address="2/1/0" DPTs="DPST-7-600" />
+      <GroupAddress Name="Video Wall Colour Value Status" Address="2/1/1" DPTs="DPST-7-600" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="Display Dali Testing" RangeStart="6144" RangeEnd="8191">
+    <GroupRange Name="Display Area" RangeStart="6144" RangeEnd="6399">
+      <GroupAddress Name="DL ON/OFF" Address="3/0/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL ON/OFF Status" Address="3/0/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="DL Dimming" Address="3/0/2" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL Brightness Value" Address="3/0/3" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL Brightness Value Status" Address="3/0/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="DL Relative Temp" Address="3/0/5" DPTs="DPST-3-7" />
+      <GroupAddress Name="DL Absolute Temp" Address="3/0/6" DPTs="DPST-7-600" />
+      <GroupAddress Name="DL Absolute Temp Value" Address="3/0/7" DPTs="DPST-7-600" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="Speaker Switching" RangeStart="8192" RangeEnd="10239">
+    <GroupRange Name="VW Speakers" RangeStart="8192" RangeEnd="8447">
+      <GroupAddress Name="Q Package" Address="4/0/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="C Package" Address="4/0/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="B Package" Address="4/0/2" DPTs="DPST-1-1" />
+    </GroupRange>
+  </GroupRange>
+</GroupAddress-Export>

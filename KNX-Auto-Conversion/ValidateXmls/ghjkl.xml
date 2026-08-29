@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<GroupAddress-Export xmlns="http://knx.org/xml/ga-export/01">
+  <GroupRange Name="Priority" RangeStart="1" RangeEnd="2047">
+    <GroupRange Name="Lighting Priority" RangeStart="1" RangeEnd="255">
+      <GroupAddress Name="A1/1-16,A2/A-H,Priority Control" Address="0/0/1" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="Lighting" RangeStart="2048" RangeEnd="4095">
+    <GroupRange Name="Switching" RangeStart="2048" RangeEnd="2303">
+      <GroupAddress Name="A1/1,MDC-P Toggle" Address="1/0/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/1,MDC-P FB" Address="1/0/1" DPTs="DPST-1-2" />
+      <GroupAddress Name="A1/2,MDC-DL Toggle" Address="1/0/2" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/2,MDC-DL FB" Address="1/0/3" DPTs="DPST-1-2" />
+      <GroupAddress Name="A1/3,AC-P Toggle" Address="1/0/4" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/3,AC-P FB" Address="1/0/5" DPTs="DPST-1-2" />
+      <GroupAddress Name="A1/4,AC-DL Toggle" Address="1/0/6" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/4,AC-DL FB" Address="1/0/7" DPTs="DPST-1-2" />
+      <GroupAddress Name="A1/5,SC-P Toggle" Address="1/0/8" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/5,SC-P FB" Address="1/0/9" DPTs="DPST-1-2" />
+      <GroupAddress Name="A1/6,SC-F Toggle" Address="1/0/10" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/6,SC-F FB" Address="1/0/11" DPTs="DPST-1-2" />
+      <GroupAddress Name="A1/7,WS-P1 Toggle" Address="1/0/12" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/7,WS-P1 FB" Address="1/0/13" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/8,WS-P2 Toggle" Address="1/0/14" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/8,WS-P2 FB" Address="1/0/15" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/9,WS-DL Toggle" Address="1/0/16" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/9,WS-DL FB" Address="1/0/17" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/10,PSG-P Toggle" Address="1/0/18" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/10,PSG-P FB" Address="1/0/19" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/11,CONV-P Toggle" Address="1/0/20" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/11,CONV-P FB" Address="1/0/21" DPTs="DPST-1-2" />
+      <GroupAddress Name="A1/12,CONV-DL Toggle" Address="1/0/22" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/12,CONV-DL FB" Address="1/0/23" DPTs="DPST-1-2" />
+      <GroupAddress Name="A1/13,CONV-CC Toggle" Address="1/0/24" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/13,CONV-CC FB" Address="1/0/25" DPTs="DPST-1-2" />
+      <GroupAddress Name="A1/14,REC-DL1 Toggle" Address="1/0/26" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/14,REC-DL1 FB" Address="1/0/27" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/15,REC-DL2 Toggle" Address="1/0/28" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/15,REC-DL2 FB" Address="1/0/29" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/16,REC-LOGO Toggle" Address="1/0/30" DPTs="DPST-1-1" />
+      <GroupAddress Name="A1/16,REC-LOGO FB" Address="1/0/31" DPTs="DPST-1-2" />
+      <GroupAddress Name="A2/OA,RELAX-L1 Toggle" Address="1/0/32" DPTs="DPST-1-1" />
+      <GroupAddress Name="A2/OA,RELAX-L1 FB" Address="1/0/33" DPTs="DPST-1-2" />
+      <GroupAddress Name="A2/OB,RELAX-L2 Toggle" Address="1/0/34" DPTs="DPST-1-1" />
+      <GroupAddress Name="A2/OB,RELAX-L2 FB" Address="1/0/35" DPTs="DPST-1-1" />
+      <GroupAddress Name="A2/OC,RELAX-L3 Toggle" Address="1/0/36" DPTs="DPST-1-1" />
+      <GroupAddress Name="A2/OC,RELAX-L3 FB" Address="1/0/37" DPTs="DPST-1-2" />
+      <GroupAddress Name="A2/OD,RELAX-L4 Toggle" Address="1/0/38" DPTs="DPST-1-1" />
+      <GroupAddress Name="A2/OD,RELAX-L4 FB" Address="1/0/39" DPTs="DPST-1-1" />
+      <GroupAddress Name="A2/OE,K-L Toggle" Address="1/0/40" DPTs="DPST-1-1" />
+      <GroupAddress Name="A2/OE,K-L FB" Address="1/0/41" DPTs="DPST-1-1" />
+      <GroupAddress Name="A2/OF,ST-L Toggle" Address="1/0/42" DPTs="DPST-1-1" />
+      <GroupAddress Name="A2/OF,ST-L FB" Address="1/0/43" DPTs="DPST-1-2" />
+      <GroupAddress Name="A2/OG,WA-L Toggle" Address="1/0/44" DPTs="DPST-1-1" />
+      <GroupAddress Name="A2/OG,WA-L FB" Address="1/0/45" DPTs="DPST-1-2" />
+      <GroupAddress Name="A2/OH,WA-EF Toggle" Address="1/0/46" DPTs="DPST-1-1" />
+      <GroupAddress Name="A2/OH,WA-EF FB" Address="1/0/47" DPTs="DPST-1-2" />
+      <GroupAddress Name="mode" Address="1/0/51" DPTs="DPST-20-105" />
+      <GroupAddress Name="BTN11" Address="1/0/99" DPTs="DPST-1-1" />
+      <GroupAddress Name="BTN12" Address="1/0/100" DPTs="DPST-1-1" />
+      <GroupAddress Name="Temperature" Address="1/0/200" DPTs="DPST-9-1" />
+      <GroupAddress Name="Humidity" Address="1/0/201" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Dimming" RangeStart="2304" RangeEnd="2559" />
+    <GroupRange Name="nj" RangeStart="2560" RangeEnd="2815">
+      <GroupAddress Name="mnko" Address="1/2/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="Light 1 ON/OFF" Address="1/2/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="Light 1 ON/OFF FB" Address="1/2/2" DPTs="DPST-1-1" />
+      <GroupAddress Name="Light 2 ON/OFF" Address="1/2/3" DPTs="DPST-1-1" />
+      <GroupAddress Name="Light 2 ON/OFF FB" Address="1/2/4" DPTs="DPST-1-1" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="Scenes" RangeStart="4096" RangeEnd="6143">
+    <GroupRange Name="Lighting Scenes" RangeStart="4096" RangeEnd="4351">
+      <GroupAddress Name="A1/1-16,A2/A-H,Scene Control" Address="2/0/0" DPTs="DPST-17-1" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="Sensors" RangeStart="6144" RangeEnd="8191">
+    <GroupRange Name="Keypad Sensors" RangeStart="6144" RangeEnd="6399">
+      <GroupAddress Name="Temperature Sensor" Address="3/0/0" DPTs="DPST-9-1" />
+      <GroupAddress Name="Humidity Sensor" Address="3/0/1" DPTs="DPST-5-1" />
+      <GroupAddress Name="Proximity Sensor" Address="3/0/2" DPTs="DPST-1-1" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="Dali Test" RangeStart="8192" RangeEnd="10239">
+    <GroupRange Name="Dali Lights." RangeStart="8192" RangeEnd="8447">
+      <GroupAddress Name="Dali Light ON/OFF" Address="4/0/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dali Light ON/OFF FB" Address="4/0/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dali Light Dimming" Address="4/0/2" DPTs="DPST-3-7" />
+      <GroupAddress Name="Dali Light Brightness Value" Address="4/0/3" DPTs="DPST-5-1" />
+      <GroupAddress Name="Dali Light Brightness Value FB" Address="4/0/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="Dali Light Relative Color Temp" Address="4/0/5" DPTs="DPST-3-7" />
+      <GroupAddress Name="Dali Light Absolute Color Temp" Address="4/0/6" DPTs="DPST-7-600" />
+      <GroupAddress Name="Dali Light Absolute Color Temp FB" Address="4/0/7" DPTs="DPST-7-600" />
+    </GroupRange>
+    <GroupRange Name="cool master" RangeStart="8448" RangeEnd="8703">
+      <GroupAddress Name="Living L1.001 AC ON/OFF" Address="4/1/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="Living L1.001 AC Setpoint" Address="4/1/1" DPTs="DPST-9-1" />
+      <GroupAddress Name="Living L1.001 AC Fan Speed" Address="4/1/2" DPTs="DPST-5-1" />
+      <GroupAddress Name="Living L1.001 AC Heat/Cool" Address="4/1/3" DPTs="DPST-5-10" />
+    </GroupRange>
+    <GroupRange Name="test button" RangeStart="8704" RangeEnd="8959">
+      <GroupAddress Name="test 1" Address="4/2/0" DPTs="DPST-1-1" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="Fan" RangeStart="10240" RangeEnd="12287">
+    <GroupRange Name="Fan Control" RangeStart="10240" RangeEnd="10495">
+      <GroupAddress Name="Pantry Fan On/Off" Address="5/0/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="Pantry Fan On/Off Feedback" Address="5/0/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="Pantry Fan Speed Up" Address="5/0/2" DPTs="DPST-1-1" />
+      <GroupAddress Name="Pantry Fan Speed Down" Address="5/0/3" DPTs="DPST-1-1" />
+      <GroupAddress Name="Pantry Fan Speed Value" Address="5/0/4" DPTs="DPST-5-1" />
+      <GroupAddress Name="Pantry Fan Speed Value Feedback" Address="5/0/5" DPTs="DPST-5-1" />
+      <GroupAddress Name="Pantry Fan Fan Stage" Address="5/0/6" DPTs="DPST-5-100" />
+      <GroupAddress Name="Pantry Fan Fan Stage Feedback" Address="5/0/7" DPTs="DPST-5-100" />
+      <GroupAddress Name="Pantry fan Up/down" Address="5/0/8" DPTs="DPST-3-7" />
+    </GroupRange>
+  </GroupRange>
+</GroupAddress-Export>

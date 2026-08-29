@@ -1,0 +1,14 @@
+# ETS artefacts
+xmls/
+*.knxproj
+__pycache__/
+*.pyc
+# Converter outputs (single output is KNXdata.json, now generated to --out-dir, not repo)
+KNXdata.json
+okas_*.json
+knxOut.json
+Objects.txt
+# Board sync (dev copy)
+board/
+# OS
+.DS_Store

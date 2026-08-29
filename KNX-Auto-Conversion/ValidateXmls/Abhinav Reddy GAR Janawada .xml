@@ -1,0 +1,1320 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<GroupAddress-Export xmlns="http://knx.org/xml/ga-export/01">
+  <GroupRange Name="New main group" RangeStart="1" RangeEnd="2047">
+    <GroupRange Name="Master bedroom" RangeStart="1" RangeEnd="255">
+      <GroupAddress Name="Switching" Address="0/0/36" Description="MasterBedHallway Down Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="0/0/37" Description="MasterBedHallway Down Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dimming" Address="0/0/38" Description="MasterBedHallway Down Lights (1)" DPTs="DPST-3-7" />
+      <GroupAddress Name="dimming value" Address="0/0/39" Description="MasterBedHallway Down Lights (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Value" Address="0/0/40" Description="MasterBedHallway Down Lights (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Switching" Address="0/0/96" Description="Master Bedroom Master Function" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="0/0/97" Description="Master Bedroom Master Function" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dimming" Address="0/0/98" Description="Master Bedroom Master Function" DPTs="DPST-3-7" />
+      <GroupAddress Name="dimming value" Address="0/0/99" Description="Master Bedroom Master Function" DPTs="DPST-5-1" />
+      <GroupAddress Name="Value" Address="0/0/100" Description="Master Bedroom Master Function" DPTs="DPST-5-1" />
+      <GroupAddress Name="Master Blinds" Address="0/0/101" Description="2. Master Bedroom Master Function" DPTs="DPST-17-1" />
+    </GroupRange>
+    <GroupRange Name="New middle group" RangeStart="256" RangeEnd="511">
+      <GroupAddress Name="Switching" Address="0/1/28" Description="7. Living Hallway Living Hallway (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="0/1/29" Description="7. Living Hallway Living Hallway (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dimming" Address="0/1/30" Description="7. Living Hallway Living Hallway (2)" DPTs="DPST-3-7" />
+      <GroupAddress Name="dimming value" Address="0/1/31" Description="7. Living Hallway Living Hallway (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Value" Address="0/1/32" Description="7. Living Hallway Living Hallway (2)" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="New middle group" RangeStart="512" RangeEnd="767">
+      <GroupAddress Name="Switching" Address="0/2/15" Description="MasterBedHallway 3. Master Bedroom Entrance Down Light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="0/2/16" Description="MasterBedHallway 3. Master Bedroom Entrance Down Light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dimming" Address="0/2/17" Description="MasterBedHallway 3. Master Bedroom Entrance Down Light" DPTs="DPST-3-7" />
+      <GroupAddress Name="dimming value" Address="0/2/18" Description="MasterBedHallway 3. Master Bedroom Entrance Down Light" DPTs="DPST-5-1" />
+      <GroupAddress Name="Value" Address="0/2/19" Description="MasterBedHallway 3. Master Bedroom Entrance Down Light" DPTs="DPST-5-1" />
+      <GroupAddress Name="MasterBed Entry Keypad Scene Module" Address="0/2/45" Description="2. Master Bedroom Master Function" DPTs="DPST-17-1" />
+      <GroupAddress Name="MasterBed Bedside Keypad Scene Module" Address="0/2/46" Description="2. Master Bedroom Master Function" />
+      <GroupAddress Name="MasterBed Sitout Keypad Scene Module" Address="0/2/47" Description="2. Master Bedroom Master Function" DPTs="DPST-17-1" />
+      <GroupAddress Name="South Landscape Lights Scene Off Module" Address="0/2/74" Description="08. Master Bedroom Master Function" DPTs="DPST-17-1" />
+      <GroupAddress Name="South Landscape Lights Scene On Module" Address="0/2/75" Description="08. Master Bedroom Master Function" />
+      <GroupAddress Name="Master Bath Open / Close Scene Link" Address="0/2/79" Description="09. Master Bedroom Bathroom and Wardrobe 0. Master Function" DPTs="DPST-17-1" />
+    </GroupRange>
+    <GroupRange Name="New middle group" RangeStart="768" RangeEnd="1023">
+      <GroupAddress Name="Switching" Address="0/3/10" Description="4. GuestBedHallway Dimmable Lights (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="0/3/11" Description="4. GuestBedHallway Dimmable Lights (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dimming" Address="0/3/12" Description="4. GuestBedHallway Dimmable Lights (2)" DPTs="DPST-3-7" />
+      <GroupAddress Name="dimming value" Address="0/3/13" Description="4. GuestBedHallway Dimmable Lights (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Value" Address="0/3/14" Description="4. GuestBedHallway Dimmable Lights (2)" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="New middle group" RangeStart="1024" RangeEnd="1279">
+      <GroupAddress Name="Switching" Address="0/4/25" Description="5. Son Bedroom Dimmable Lights (5)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="0/4/26" Description="5. Son Bedroom Dimmable Lights (5)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dimming" Address="0/4/27" Description="5. Son Bedroom Dimmable Lights (5)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Dimming" Address="0/4/53" Description="6. Son Bedroom Pendant Light" DPTs="DPST-3-7" />
+      <GroupAddress Name="dimming value" Address="0/4/54" Description="6. Son Bedroom Pendant Light" DPTs="DPST-5-1" />
+      <GroupAddress Name="Value" Address="0/4/55" Description="6. Son Bedroom Pendant Light" DPTs="DPST-5-1" />
+      <GroupAddress Name="Son Master Blind Control" Address="0/4/58" Description="6. Son Bedroom Master Function" />
+      <GroupAddress Name="Scene Control All Off / All On" Address="0/4/59" Description="6. Son Bedroom Master Function" />
+      <GroupAddress Name="Scene Module Ent Keypad" Address="0/4/60" Description="6. Son Bedroom Master Function" />
+      <GroupAddress Name="Scene Control All Off / All On" Address="0/4/61" Description="6. Son Bedroom Master Function" />
+    </GroupRange>
+    <GroupRange Name="New middle group" RangeStart="1280" RangeEnd="1535">
+      <GroupAddress Name="Switching" Address="0/5/35" Description="6. Guest Bedroom Dimmable Lights (7)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="0/5/45" Description="5. Guest Bedroom 7, Fan" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="0/5/46" Description="5. Guest Bedroom 7, Fan" DPTs="DPST-1-1" />
+      <GroupAddress Name="Guest Bed Blind Control" Address="0/5/108" Description="5. Guest Bedroom Master Function" />
+    </GroupRange>
+    <GroupRange Name="New middle group" RangeStart="1536" RangeEnd="1791" />
+    <GroupRange Name="New middle group" RangeStart="1792" RangeEnd="2047">
+      <GroupAddress Name="Switching" Address="0/7/25" Description="9. Dining room Lights (5)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="0/7/26" Description="9. Dining room Lights (5)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dimming" Address="0/7/27" Description="9. Dining room Lights (5)" DPTs="DPST-3-7" />
+      <GroupAddress Name="dimming value" Address="0/7/28" Description="9. Dining room Lights (5)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Value" Address="0/7/29" Description="9. Dining room Lights (5)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Movement" Address="0/7/87" Description="9. Dining room Curtains (7)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Step/Stop" Address="0/7/88" Description="9. Dining room Curtains (7)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Wind alert" Address="0/7/89" Description="9. Dining room Curtains (7)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Rain alert" Address="0/7/90" Description="9. Dining room Curtains (7)" DPTs="DPST-1-5" />
+      <GroupAddress Name="blinds position" Address="0/7/91" Description="9. Dining room Curtains (7)" DPTs="DPST-5-1" />
+      <GroupAddress Name="slat position" Address="0/7/92" Description="9. Dining room Curtains (7)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Movement" Address="0/7/93" Description="9. Dining room Curtains (8)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Step/Stop" Address="0/7/94" Description="9. Dining room Curtains (8)" DPTs="DPST-1-7" />
+      <GroupAddress Name="blinds position" Address="0/7/97" Description="9. Dining room Curtains (8)" DPTs="DPST-5-1" />
+      <GroupAddress Name="slat position" Address="0/7/98" Description="9. Dining room Curtains (8)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Entry Keypad Scene Recall Module" Address="0/7/117" Description="9. Dining room 0. Master Function" />
+      <GroupAddress Name="Master Curtains Open / Close Scene Link" Address="0/7/118" Description="9. Dining room 0. Master Function" DPTs="DPST-17-1" />
+      <GroupAddress Name="Scene Control All Off / All On" Address="0/7/119" Description="9. Dining room 0. Master Function" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="New main group" RangeStart="2048" RangeEnd="4095">
+    <GroupRange Name="New middle group" RangeStart="2048" RangeEnd="2303">
+      <GroupAddress Name="Switching" Address="1/0/15" Description="Entrance Lobby Entrance Lobby Down Lights (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/16" Description="Entrance Lobby Entrance Lobby Down Lights (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dimming" Address="1/0/17" Description="Entrance Lobby Entrance Lobby Down Lights (3)" DPTs="DPST-3-7" />
+      <GroupAddress Name="dimming value" Address="1/0/18" Description="Entrance Lobby Entrance Lobby Down Lights (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Value" Address="1/0/19" Description="Entrance Lobby Entrance Lobby Down Lights (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Switching" Address="1/0/33" Description="7. Living Hallway 0. Master Function" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/34" Description="7. Living Hallway 0. Master Function" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dimming" Address="1/0/35" Description="7. Living Hallway 0. Master Function" DPTs="DPST-3-7" />
+      <GroupAddress Name="dimming value" Address="1/0/36" Description="7. Living Hallway 0. Master Function" DPTs="DPST-5-1" />
+      <GroupAddress Name="Value" Address="1/0/37" Description="7. Living Hallway 0. Master Function" DPTs="DPST-5-1" />
+      <GroupAddress Name="Keypad Scene Recall" Address="1/0/38" Description="7. Living Hallway 0. Master Function" />
+      <GroupAddress Name="Scene Control All Off / All On" Address="1/0/39" Description="7. Living Hallway 0. Master Function" />
+      <GroupAddress Name="Switching" Address="1/0/40" Description="Entrance Lobby 0. Master Function" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/41" Description="Entrance Lobby 0. Master Function" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dimming" Address="1/0/42" Description="Entrance Lobby 0. Master Function" DPTs="DPST-3-7" />
+      <GroupAddress Name="dimming value" Address="1/0/43" Description="Entrance Lobby 0. Master Function" DPTs="DPST-5-1" />
+      <GroupAddress Name="Value" Address="1/0/44" Description="Entrance Lobby 0. Master Function" DPTs="DPST-5-1" />
+      <GroupAddress Name="Keypad Scene Recall" Address="1/0/45" Description="Entrance Lobby 0. Master Function" />
+      <GroupAddress Name="Scene Control All Off / All On" Address="1/0/46" Description="Entrance Lobby 0. Master Function" />
+      <GroupAddress Name="Switching" Address="1/0/47" Description="Utility room Network_Landscape" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/48" Description="Utility room Network_Landscape" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/51" Description="Utility room Network_Landscape (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/52" Description="Utility room Network_Landscape (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/53" Description="Utility room Network_Landscape (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/54" Description="Utility room Network_Landscape (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/55" Description="Utility room Network_Landscape (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/56" Description="Utility room Network_Landscape (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/57" Description="Utility room Network_Landscape (5)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/58" Description="Utility room Network_Landscape (5)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/59" Description="Utility room Network_Landscape (6)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/60" Description="Utility room Network_Landscape (6)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/61" Description="Utility room Network_Landscape (7)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/62" Description="Utility room Network_Landscape (7)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/63" Description="Utility room Network_Landscape (8)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/64" Description="Utility room Network_Landscape (8)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/65" Description="Utility room Network_Landscape (9)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/66" Description="Utility room Network_Landscape (9)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/67" Description="Utility room Network_Landscape (10)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/68" Description="Utility room Network_Landscape (10)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/69" Description="Utility room Network_Landscape (11)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/70" Description="Utility room Network_Landscape (11)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/71" Description="Utility room Network_Landscape (12)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/72" Description="Utility room Network_Landscape (12)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/73" Description="Utility room Network_Landscape (13)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/74" Description="Utility room Network_Landscape (13)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/77" Description="Utility room Network_Landscape (15)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/78" Description="Utility room Network_Landscape (15)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/79" Description="Utility room Network_Landscape (16)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/80" Description="Utility room Network_Landscape (16)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/81" Description="Utility room Network_Landscape (17)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/82" Description="Utility room Network_Landscape (17)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/83" Description="Utility room Network_Landscape (18)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/84" Description="Utility room Network_Landscape (18)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/85" Description="Utility room Network_Landscape (19)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/86" Description="Utility room Network_Landscape (19)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/87" Description="Utility room Network_Landscape (20)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/88" Description="Utility room Network_Landscape (20)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/93" Description="Utility room Network_Landscape (23)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/94" Description="Utility room Network_Landscape (23)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/95" Description="Utility room Network_Landscape (24)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/96" Description="Utility room Network_Landscape (24)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/97" Description="Utility room Network_Landscape (25)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/98" Description="Utility room Network_Landscape (25)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/99" Description="Utility room Network_Landscape (26)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/100" Description="Utility room Network_Landscape (26)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/101" Description="Utility room Network_Landscape (27)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/102" Description="Utility room Network_Landscape (27)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/103" Description="Utility room Network_Landscape (28)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/104" Description="Utility room Network_Landscape (28)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/105" Description="Utility room Network_Landscape (29)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/106" Description="Utility room Network_Landscape (29)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/107" Description="Utility room Network_Landscape (30)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/108" Description="Utility room Network_Landscape (30)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/109" Description="Utility room Network_Landscape (31)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/110" Description="Utility room Network_Landscape (31)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/111" Description="Utility room Network_Landscape (32)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/112" Description="Utility room Network_Landscape (32)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/113" Description="Utility room Network_Landscape (33)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/114" Description="Utility room Network_Landscape (33)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/115" Description="Utility room Network_Landscape (34)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/116" Description="Utility room Network_Landscape (34)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/117" Description="Utility room Network_Landscape (35)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/118" Description="Utility room Network_Landscape (35)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/119" Description="Utility room Network_Landscape (36)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/120" Description="Utility room Network_Landscape (36)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/121" Description="Utility room Network_Landscape (37)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/122" Description="Utility room Network_Landscape (37)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/0/123" Description="Utility room Network_Landscape (38)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/0/124" Description="Utility room Network_Landscape (38)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Hallway Prescence Sensors Enable 0 / Disable 1" Address="1/0/127" Description="02. Living Hallway Prescence Sensor Bedroom Side Living Hallway" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status BedroomSide Hallway Enable 0 / Disable 1" Address="1/0/128" Description="02. Living Hallway Prescence Sensor Bedroom Side Living Hallway" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dimming" Address="1/0/129" Description="02. Living Hallway Prescence Sensor Bedroom Side Living Hallway" DPTs="DPST-3-7" />
+      <GroupAddress Name="dimming value" Address="1/0/130" Description="02. Living Hallway Prescence Sensor Bedroom Side Living Hallway" DPTs="DPST-5-1" />
+      <GroupAddress Name="Value" Address="1/0/131" Description="02. Living Hallway Prescence Sensor Bedroom Side Living Hallway" DPTs="DPST-5-1" />
+      <GroupAddress Name="Lights On/Off" Address="1/0/132" Description="02. Living Hallway Prescence Sensor Bedroom Side Living Hallway" DPTs="DPST-1-1" />
+      <GroupAddress Name="Lights Status" Address="1/0/133" Description="02. Living Hallway Prescence Sensor Bedroom Side Living Hallway" DPTs="DPST-1-1" />
+      <GroupAddress Name="LivingSide Hallway Enable 0 / Disable 1" Address="1/0/134" Description="02. Living Hallway Living Entry Prescence Sensor" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status LivingSide Hallway Enable 0 / Disable 1" Address="1/0/135" Description="02. Living Hallway Living Entry Prescence Sensor" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dimming" Address="1/0/136" Description="02. Living Hallway Living Entry Prescence Sensor" DPTs="DPST-3-7" />
+      <GroupAddress Name="dimming value" Address="1/0/137" Description="02. Living Hallway Living Entry Prescence Sensor" DPTs="DPST-5-1" />
+      <GroupAddress Name="Value" Address="1/0/138" Description="02. Living Hallway Living Entry Prescence Sensor" DPTs="DPST-5-1" />
+      <GroupAddress Name="Lights On / Off" Address="1/0/139" Description="02. Living Hallway Prescence Sensor Living Entry Side" DPTs="DPST-1-1" />
+      <GroupAddress Name="Lights Status" Address="1/0/140" Description="02. Living Hallway Prescence Sensor Living Entry Side" />
+    </GroupRange>
+    <GroupRange Name="New middle group" RangeStart="2304" RangeEnd="2559" />
+    <GroupRange Name="New middle group" RangeStart="2560" RangeEnd="2815">
+      <GroupAddress Name="Spa Master Scenes" Address="1/2/32" Description="2. Spa 0. Scene Module" DPTs="DPST-17-1" />
+      <GroupAddress Name="SPA Curtains Open / Close" Address="1/2/33" Description="2. Spa 0. Scene Module" DPTs="DPST-17-1" />
+    </GroupRange>
+    <GroupRange Name="New middle group" RangeStart="2816" RangeEnd="3071">
+      <GroupAddress Name="Switching" Address="1/3/19" Description="3. Massage Room Scene Module" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/3/20" Description="3. Massage Room Scene Module" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dimming" Address="1/3/21" Description="3. Massage Room Scene Module" DPTs="DPST-3-7" />
+      <GroupAddress Name="Scene Value" Address="1/3/22" Description="3. Massage Room Scene Module" DPTs="DPST-17-1" />
+      <GroupAddress Name="Value" Address="1/3/23" Description="3. Massage Room Scene Module" DPTs="DPST-5-1" />
+      <GroupAddress Name="Wind alert" Address="1/3/26" Description="3. Massage Room Masssage Room Blind" DPTs="DPST-1-5" />
+      <GroupAddress Name="Rain alert" Address="1/3/27" Description="3. Massage Room Masssage Room Blind" DPTs="DPST-1-5" />
+    </GroupRange>
+    <GroupRange Name="New middle group" RangeStart="3072" RangeEnd="3327">
+      <GroupAddress Name="Switching" Address="1/4/12" Description="1. Hallway Scene Module" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/4/13" Description="1. Hallway Scene Module" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dimming" Address="1/4/14" Description="1. Hallway Scene Module" DPTs="DPST-3-7" />
+      <GroupAddress Name="Welcome Scene value" Address="1/4/15" Description="1. Hallway Scene Module" DPTs="DPST-17-1" />
+      <GroupAddress Name="Value" Address="1/4/16" Description="1. Hallway Scene Module" DPTs="DPST-5-1" />
+      <GroupAddress Name="All Off Scene" Address="1/4/17" Description="1. Hallway Scene Module" DPTs="DPST-17-1" />
+      <GroupAddress Name="All On Scene" Address="1/4/18" Description="1. Hallway Scene Module" DPTs="DPST-17-1" />
+      <GroupAddress Name="Wind alert" Address="1/4/21" Description="4. Gym Sun protection" DPTs="DPST-1-5" />
+      <GroupAddress Name="Rain alert" Address="1/4/22" Description="4. Gym Sun protection" DPTs="DPST-1-5" />
+      <GroupAddress Name="Wind alert" Address="1/4/33" Description="4. Gym Sun protection (2)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Rain alert" Address="1/4/34" Description="4. Gym Sun protection (2)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Master Curtans Open / Close" Address="1/4/37" Description="4. Gym 0. Master" DPTs="DPST-17-1" />
+      <GroupAddress Name="Scene Control All On / All Off" Address="1/4/38" Description="4. Gym 0. Master" DPTs="DPST-17-1" />
+    </GroupRange>
+    <GroupRange Name="New middle group" RangeStart="3328" RangeEnd="3583">
+      <GroupAddress Name="Switching" Address="1/5/0" Description="12. Electrical Room Switchable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/1" Description="12. Electrical Room Switchable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/2" Description="12. Electrical Room Switchable light (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/3" Description="12. Electrical Room Switchable light (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/4" Description="12. Electrical Room Switchable light (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/5" Description="12. Electrical Room Switchable light (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/6" Description="12. Electrical Room Switchable light (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/7" Description="12. Electrical Room Switchable light (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/8" Description="12. Electrical Room Switchable light (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/9" Description="12. Electrical Room Switchable light (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/10" Description="12. Electrical Room Switchable light (5)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/11" Description="12. Electrical Room Switchable light (5)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/12" Description="12. Electrical Room Switchable light (6)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/13" Description="12. Electrical Room Switchable light (6)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/14" Description="12. Electrical Room Switchable light (7)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/15" Description="12. Electrical Room Switchable light (7)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/16" Description="12. Electrical Room Switchable light (8)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/17" Description="12. Electrical Room Switchable light (8)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/18" Description="12. Electrical Room Switchable light (9)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/19" Description="12. Electrical Room Switchable light (9)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/20" Description="12. Electrical Room Switchable light (10)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/21" Description="12. Electrical Room Switchable light (10)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/22" Description="12. Electrical Room Switchable light (11)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/23" Description="12. Electrical Room Switchable light (11)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/24" Description="12. Electrical Room Switchable light (12)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/25" Description="12. Electrical Room Switchable light (12)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/26" Description="12. Electrical Room Switchable light (13)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/27" Description="12. Electrical Room Switchable light (13)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/28" Description="12. Electrical Room Switchable light (14)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/29" Description="12. Electrical Room Switchable light (14)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/30" Description="12. Electrical Room Switchable light (15)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/31" Description="12. Electrical Room Switchable light (15)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/32" Description="12. Electrical Room Switchable light (16)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/33" Description="12. Electrical Room Switchable light (16)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/34" Description="12. Electrical Room Switchable light (17)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/35" Description="12. Electrical Room Switchable light (17)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/36" Description="12. Electrical Room Switchable light (18)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/37" Description="12. Electrical Room Switchable light (18)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/38" Description="12. Electrical Room Switchable light (19)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/39" Description="12. Electrical Room Switchable light (19)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/40" Description="12. Electrical Room Switchable light (20)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/41" Description="12. Electrical Room Switchable light (20)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/42" Description="12. Electrical Room Switchable light (21)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/43" Description="12. Electrical Room Switchable light (21)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/44" Description="12. Electrical Room Switchable light (22)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/45" Description="12. Electrical Room Switchable light (22)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/46" Description="12. Electrical Room Switchable light (23)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/47" Description="12. Electrical Room Switchable light (23)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/48" Description="12. Electrical Room Switchable light (24)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/49" Description="12. Electrical Room Switchable light (24)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/50" Description="12. Electrical Room Switchable light (25)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/51" Description="12. Electrical Room Switchable light (25)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/52" Description="12. Electrical Room Switchable light (26)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/53" Description="12. Electrical Room Switchable light (26)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/54" Description="12. Electrical Room Switchable light (27)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/55" Description="12. Electrical Room Switchable light (27)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/56" Description="12. Electrical Room Switchable light (28)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/57" Description="12. Electrical Room Switchable light (28)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/58" Description="12. Electrical Room Switchable light (29)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/59" Description="12. Electrical Room Switchable light (29)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/60" Description="12. Electrical Room Switchable light (30)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/61" Description="12. Electrical Room Switchable light (30)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/62" Description="12. Electrical Room Switchable light (31)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/63" Description="12. Electrical Room Switchable light (31)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/64" Description="12. Electrical Room Switchable light (32)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/65" Description="12. Electrical Room Switchable light (32)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/66" Description="12. Electrical Room Switchable light (33)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/67" Description="12. Electrical Room Switchable light (33)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/68" Description="12. Electrical Room Switchable light (34)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/69" Description="12. Electrical Room Switchable light (34)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/5/70" Description="12. Electrical Room Switchable light (35)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/5/71" Description="12. Electrical Room Switchable light (35)" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="New middle group" RangeStart="3584" RangeEnd="3839">
+      <GroupAddress Name="Car Ramp Left Spikes Switching" Address="1/6/0" Description="13. Pump room Switchable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Car Ramp Left Spikes Status" Address="1/6/1" Description="13. Pump room Switchable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/2" Description="13. Pump room Switchable light (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/3" Description="13. Pump room Switchable light (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/4" Description="13. Pump room Switchable light (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/5" Description="13. Pump room Switchable light (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/6" Description="13. Pump room Switchable light (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/7" Description="13. Pump room Switchable light (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/8" Description="13. Pump room Switchable light (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/9" Description="13. Pump room Switchable light (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/10" Description="13. Pump room Switchable light (5)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/11" Description="13. Pump room Switchable light (5)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/12" Description="13. Pump room Switchable light (6)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/13" Description="13. Pump room Switchable light (6)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/14" Description="13. Pump room Switchable light (7)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/15" Description="13. Pump room Switchable light (7)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/16" Description="13. Pump room Switchable light (8)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/17" Description="13. Pump room Switchable light (8)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/18" Description="13. Pump room Switchable light (9)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/19" Description="13. Pump room Switchable light (9)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/20" Description="13. Pump room Switchable light (10)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/21" Description="13. Pump room Switchable light (10)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/22" Description="13. Pump room Switchable light (11)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/23" Description="13. Pump room Switchable light (11)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/24" Description="13. Pump room Switchable light (12)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/25" Description="13. Pump room Switchable light (12)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/26" Description="13. Pump room Switchable light (13)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/27" Description="13. Pump room Switchable light (13)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/28" Description="13. Pump room Switchable light (14)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/29" Description="13. Pump room Switchable light (14)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/30" Description="13. Pump room Switchable light (15)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/31" Description="13. Pump room Switchable light (15)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/32" Description="13. Pump room Switchable light (16)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/33" Description="13. Pump room Switchable light (16)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/34" Description="13. Pump room Switchable light (17)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/35" Description="13. Pump room Switchable light (17)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/36" Description="13. Pump room Switchable light (18)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/37" Description="13. Pump room Switchable light (18)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/38" Description="13. Pump room Switchable light (19)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/39" Description="13. Pump room Switchable light (19)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/40" Description="13. Pump room Switchable light (20)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/41" Description="13. Pump room Switchable light (20)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/42" Description="13. Pump room Switchable light (21)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/43" Description="13. Pump room Switchable light (21)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/44" Description="13. Pump room Switchable light (22)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/45" Description="13. Pump room Switchable light (22)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/46" Description="13. Pump room Switchable light (23)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/47" Description="13. Pump room Switchable light (23)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/48" Description="13. Pump room Switchable light (24)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/49" Description="13. Pump room Switchable light (24)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/50" Description="13. Pump room Switchable light (25)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/51" Description="13. Pump room Switchable light (25)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/52" Description="13. Pump room Switchable light (26)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/53" Description="13. Pump room Switchable light (26)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/54" Description="13. Pump room Switchable light (27)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/55" Description="13. Pump room Switchable light (27)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/56" Description="13. Pump room Switchable light (28)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/57" Description="13. Pump room Switchable light (28)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/58" Description="13. Pump room Switchable light (29)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/59" Description="13. Pump room Switchable light (29)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/60" Description="13. Pump room Switchable light (30)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/61" Description="13. Pump room Switchable light (30)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/62" Description="13. Pump room Switchable light (31)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/63" Description="13. Pump room Switchable light (31)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/64" Description="13. Pump room Switchable light (32)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/65" Description="13. Pump room Switchable light (32)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/66" Description="13. Pump room Switchable light (33)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/67" Description="13. Pump room Switchable light (33)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/68" Description="13. Pump room Switchable light (34)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/69" Description="13. Pump room Switchable light (34)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/70" Description="13. Pump room Switchable light (35)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/71" Description="13. Pump room Swimming Pool Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="1/6/74" Description="13. Pump room Front Water Body Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/6/75" Description="13. Pump room Front Water Body Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Gst Hallway Enable 0 / Disable 1" Address="1/6/76" Description="06. Master and GuestBedHallway Prescence Sensor" DPTs="DPST-1-1" />
+      <GroupAddress Name="Gst Hallway Enable 0 / Disable 1 Status" Address="1/6/77" Description="06. Master and GuestBedHallway Prescence Sensor" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dimming" Address="1/6/78" Description="06. Master and GuestBedHallway Prescence Sensor" DPTs="DPST-3-7" />
+      <GroupAddress Name="dimming value" Address="1/6/79" Description="06. Master and GuestBedHallway Prescence Sensor" DPTs="DPST-5-1" />
+      <GroupAddress Name="Value" Address="1/6/80" Description="06. Master and GuestBedHallway Prescence Sensor" DPTs="DPST-5-1" />
+      <GroupAddress Name="Master Hallway Enable 0 / Disable 1" Address="1/6/81" Description="06. Master and GuestBedHallway Prescence Sensor Master Hallway " DPTs="DPST-1-1" />
+      <GroupAddress Name="Status Master Hallway Enable 0 / Disable 1" Address="1/6/82" Description="06. Master and GuestBedHallway Prescence Sensor Master Hallway " DPTs="DPST-1-1" />
+      <GroupAddress Name="Dimming" Address="1/6/83" Description="06. Master and GuestBedHallway Prescence Sensor Master Hallway " DPTs="DPST-3-7" />
+      <GroupAddress Name="dimming value" Address="1/6/84" Description="06. Master and GuestBedHallway Prescence Sensor Master Hallway " DPTs="DPST-5-1" />
+      <GroupAddress Name="Value" Address="1/6/85" Description="06. Master and GuestBedHallway Prescence Sensor Master Hallway " DPTs="DPST-5-1" />
+      <GroupAddress Name="Lights On / Off" Address="1/6/86" Description="06. Master and GuestBedHallway Prescence Sensor Gst Hallway " DPTs="DPST-1-1" />
+      <GroupAddress Name="Lights Status" Address="1/6/87" Description="06. Master and GuestBedHallway Prescence Sensor Gst Hallway " DPTs="DPST-1-1" />
+      <GroupAddress Name="Lights On / Off" Address="1/6/88" Description="06. Master and GuestBedHallway Prescence Sensor Master Hallway " />
+      <GroupAddress Name="Lights Status" Address="1/6/89" Description="06. Master and GuestBedHallway Prescence Sensor Master Hallway " />
+    </GroupRange>
+    <GroupRange Name="New middle group" RangeStart="3840" RangeEnd="4095">
+      <GroupAddress Name="Switching" Address="1/7/14" Description="12. Electrical Room Tree Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="1/7/15" Description="12. Electrical Room Tree Lights" DPTs="DPST-1-1" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="New main group" RangeStart="4096" RangeEnd="6143">
+    <GroupRange Name="New middle group" RangeStart="4096" RangeEnd="4351" />
+    <GroupRange Name="New middle group" RangeStart="4352" RangeEnd="4607">
+      <GroupAddress Name="Switching" Address="2/1/0" Description="Camera Control Switchable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="2/1/1" Description="Camera Control Switchable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="2/1/2" Description="Camera Control Switchable light (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="2/1/3" Description="Camera Control Switchable light (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="2/1/4" Description="Camera Control Switchable light (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="2/1/5" Description="Camera Control Switchable light (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="2/1/6" Description="Camera Control Switchable light (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="2/1/7" Description="Camera Control Switchable light (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="2/1/8" Description="05. Utility room Temple Tree Area Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="2/1/9" Description="05. Utility room Temple Tree Area Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Switching" Address="2/1/10" Description="05. Utility room MBR Sitout Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="2/1/11" Description="05. Utility room MBR Sitout Lights" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="New middle group" RangeStart="4608" RangeEnd="4863" />
+  </GroupRange>
+  <GroupRange Name="Keypad Programming" RangeStart="6144" RangeEnd="8191">
+    <GroupRange Name="MBR" RangeStart="6144" RangeEnd="6399">
+      <GroupAddress Name="Balcony Side KP Curtain Move" Address="3/0/0" DPTs="DPT-1" />
+      <GroupAddress Name="Balcony Side KP Curtain Stop" Address="3/0/1" />
+      <GroupAddress Name="Sitout All ON/off" Address="3/0/2" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitting All Lights On/off" Address="3/0/3" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitting All Lights Dim" Address="3/0/4" DPTs="DPST-3-7" />
+      <GroupAddress Name="Balcony All Lights On/off" Address="3/0/5" DPTs="DPST-1-1" />
+      <GroupAddress Name="Balcony All Lights Dim" Address="3/0/6" DPTs="DPST-3-7" />
+      <GroupAddress Name="All OFF" Address="3/0/7" DPTs="DPST-1-1" />
+      <GroupAddress Name="All On/OFF" Address="3/0/8" DPTs="DPST-1-1" />
+      <GroupAddress Name="All Curtains Open/Close" Address="3/0/9" DPTs="DPT-1" />
+      <GroupAddress Name="Garedn Lights" Address="3/0/10" DPTs="DPT-1" />
+      <GroupAddress Name="Bath Spike Lights" Address="3/0/11" DPTs="DPT-1" />
+    </GroupRange>
+    <GroupRange Name="Living Passage Kp" RangeStart="6400" RangeEnd="6655">
+      <GroupAddress Name="Pool Lights" Address="3/1/0" DPTs="DPT-1" />
+      <GroupAddress Name="All ON/off" Address="3/1/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="All Pillar Floor Lights" Address="3/1/4" DPTs="DPT-1" />
+      <GroupAddress Name="All Pillar Lights" Address="3/1/5" DPTs="DPT-1" />
+    </GroupRange>
+    <GroupRange Name="GBR Keypad" RangeStart="6656" RangeEnd="6911">
+      <GroupAddress Name="All On" Address="3/2/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="All Off" Address="3/2/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="All Curtains " Address="3/2/2" DPTs="DPT-1" />
+      <GroupAddress Name="All Curtain stop" Address="3/2/3" DPTs="DPST-1-8" />
+      <GroupAddress Name="Middle &amp; Corner" Address="3/2/4" DPTs="DPST-1-1" />
+      <GroupAddress Name="Middle &amp; Corner Dim" Address="3/2/5" DPTs="DPST-3-7" />
+      <GroupAddress Name="Fans" Address="3/2/6" DPTs="DPT-1" />
+      <GroupAddress Name="Garden Lights" Address="3/2/7" DPTs="DPT-1" />
+    </GroupRange>
+    <GroupRange Name="Sons Bedroom" RangeStart="6912" RangeEnd="7167">
+      <GroupAddress Name="All On" Address="3/3/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="All Off" Address="3/3/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="All Curtains " Address="3/3/2" DPTs="DPT-1" />
+      <GroupAddress Name="All Curtains Stop" Address="3/3/3" DPTs="DPST-1-8" />
+      <GroupAddress Name="Middle &amp; Corner Light" Address="3/3/4" DPTs="DPST-1-1" />
+      <GroupAddress Name="Middle &amp; Corner Light Dim" Address="3/3/5" DPTs="DPST-3-7" />
+      <GroupAddress Name="Fans" Address="3/3/6" DPTs="DPT-1" />
+      <GroupAddress Name="Garden" Address="3/3/7" DPTs="DPT-1" />
+    </GroupRange>
+    <GroupRange Name="Living Room KP" RangeStart="7168" RangeEnd="7423">
+      <GroupAddress Name="All On" Address="3/4/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="All Off" Address="3/4/1" DPTs="DPST-1-1" />
+      <GroupAddress Name="All Curtain " Address="3/4/2" DPTs="DPT-1" />
+      <GroupAddress Name="All Curtain Stop" Address="3/4/3" DPTs="DPST-1-8" />
+      <GroupAddress Name="Fans" Address="3/4/4" DPTs="DPT-1" />
+      <GroupAddress Name="ENT. Cove Living Cove" Address="3/4/5" DPTs="DPST-1-1" />
+      <GroupAddress Name="Outer &amp; Wall Lights " Address="3/4/6" DPTs="DPST-1-1" />
+      <GroupAddress Name="Outer &amp; Wall Lights Dim" Address="3/4/7" DPTs="DPST-3-7" />
+      <GroupAddress Name="Middle DL " Address="3/4/8" DPTs="DPST-1-1" />
+      <GroupAddress Name="Middle DL Dim" Address="3/4/9" DPTs="DPST-3-7" />
+      <GroupAddress Name="All Chandiliars " Address="3/4/10" DPTs="DPT-1" />
+      <GroupAddress Name="Garden Lights" Address="3/4/12" DPTs="DPT-1" />
+    </GroupRange>
+    <GroupRange Name="Dining Room" RangeStart="7424" RangeEnd="7679">
+      <GroupAddress Name="All OFF" Address="3/5/0" DPTs="DPST-1-1" />
+      <GroupAddress Name="All Curtains " Address="3/5/1" DPTs="DPT-1" />
+      <GroupAddress Name="All Curtains Stop" Address="3/5/2" DPTs="DPST-1-8" />
+      <GroupAddress Name="Mini Dining Curtains" Address="3/5/3" DPTs="DPT-1" />
+      <GroupAddress Name="Mini Dining Curtains Stop" Address="3/5/4" DPTs="DPST-1-8" />
+      <GroupAddress Name="All Dl Lights" Address="3/5/5" DPTs="DPST-1-1" />
+      <GroupAddress Name="All Dl Lights dim" Address="3/5/6" DPTs="DPST-3-7" />
+      <GroupAddress Name="All Fans" Address="3/5/7" DPTs="DPT-1" />
+      <GroupAddress Name="Sitout Side Curtins Open" Address="3/5/8" DPTs="DPT-1" />
+      <GroupAddress Name="Sitout Side Curtins Stop" Address="3/5/9" DPTs="DPST-1-8" />
+      <GroupAddress Name="Mini Dining Side All On/off" Address="3/5/10" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitout All ON/off" Address="3/5/11" DPTs="DPST-1-1" />
+      <GroupAddress Name="Garden" Address="3/5/12" DPTs="DPT-1" />
+    </GroupRange>
+    <GroupRange Name="Ent. Lobby" RangeStart="7680" RangeEnd="7935">
+      <GroupAddress Name="All Off" Address="3/6/0" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="Terrace " RangeStart="7936" RangeEnd="8191">
+      <GroupAddress Name="All On/off" Address="3/7/0" DPTs="DPT-1" />
+      <GroupAddress Name="Sensor Tset" Address="3/7/1" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="Ground Floor" RangeStart="8192" RangeEnd="10239">
+    <GroupRange Name="Master Bedroom" RangeStart="8192" RangeEnd="8447">
+      <GroupAddress Name="Entry Down Switching" Address="4/0/0" Description="Master Bedroom Down Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Entry Down Status" Address="4/0/1" Description="Master Bedroom Down Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Entry Down Dimming" Address="4/0/2" Description="Master Bedroom Down Lights" DPTs="DPST-3-7" />
+      <GroupAddress Name="Entry Down dimming value" Address="4/0/3" Description="Master Bedroom Down Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="Entry Down Value" Address="4/0/4" Description="Master Bedroom Down Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="Dummy" Address="4/0/5" />
+      <GroupAddress Name="Middle Lights Switching" Address="4/0/6" Description="Master Bedroom Down Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Middle Lights Status" Address="4/0/7" Description="Master Bedroom Down Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Middle Lights Dimming" Address="4/0/8" Description="Master Bedroom Down Lights (1)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Middle Lights dimming value" Address="4/0/9" Description="Master Bedroom Down Lights (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Middle Lights Value" Address="4/0/10" Description="Master Bedroom Down Lights (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Window Switching" Address="4/0/11" Description="Master Bedroom Down Lights (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Window Status" Address="4/0/12" Description="Master Bedroom Down Lights (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Window Dimming" Address="4/0/13" Description="Master Bedroom Down Lights (2)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Window dimming value" Address="4/0/14" Description="Master Bedroom Down Lights (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Window Value" Address="4/0/15" Description="Master Bedroom Down Lights (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Middle 2 Switching" Address="4/0/16" Description="Master Bedroom Down Lights (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Middle 2 Status" Address="4/0/17" Description="Master Bedroom Down Lights (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Middle 2 Dimming" Address="4/0/18" Description="Master Bedroom Down Lights (3)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Middle 2 dimming value" Address="4/0/19" Description="Master Bedroom Down Lights (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Middle 2 Value" Address="4/0/20" Description="Master Bedroom Down Lights (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove Light Switching" Address="4/0/21" Description="08. Master Bedroom Cove lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Light Status" Address="4/0/22" Description="08. Master Bedroom 11. Master Bedroom Cove Light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bed Fan Switching" Address="4/0/23" Description="Master Bedroom On/Off" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bed Fan Status" Address="4/0/24" Description="Master Bedroom On/Off" DPTs="DPST-1-1" />
+      <GroupAddress Name="Study Fan Switching" Address="4/0/25" Description="Master Bedroom On/Off (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Study Fan Status" Address="4/0/26" Description="Master Bedroom On/Off (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Varanda Switching" Address="4/0/27" Description="Master Bedroom Down Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Varanda Status" Address="4/0/28" Description="Master Bedroom Down Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Varanda Dimming" Address="4/0/29" Description="Master Bedroom Down Lights (1)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Varanda dimming value" Address="4/0/30" Description="Master Bedroom Down Lights (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Varanda Value" Address="4/0/31" Description="Master Bedroom Down Lights (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sitout Switching" Address="4/0/32" Description="Master Bedroom Down Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitout Status" Address="4/0/33" Description="Master Bedroom Down Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitout Dimming" Address="4/0/34" Description="Master Bedroom Down Lights" DPTs="DPST-3-7" />
+      <GroupAddress Name="Sitout dimming value" Address="4/0/35" Description="Master Bedroom Down Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sitout Value" Address="4/0/36" Description="Master Bedroom Down Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="Balcony Sitout Fan Switching" Address="4/0/37" Description="Master Bedroom On/Off (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Balcony Sitout Fan Status" Address="4/0/38" Description="Master Bedroom On/Off (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bed side Main Movement" Address="4/0/39" Description="Master Bedroom Curtains (3)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Bed side Main Step/Stop" Address="4/0/40" Description="Master Bedroom Curtains (3)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Bed side Main blinds position" Address="4/0/41" Description="Master Bedroom Curtains (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Bed side Main slat position" Address="4/0/42" Description="Master Bedroom Curtains (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Bed Side Sheer Curtain Move" Address="4/0/43" Description="08. Master Bedroom Bed Side Sheer Curtain" />
+      <GroupAddress Name="Bed Side Sheer Curtain Stop" Address="4/0/44" Description="08. Master Bedroom Bed Side Sheer Curtain" />
+      <GroupAddress Name="Study Right Main Movement" Address="4/0/45" Description="Master Bedroom Curtains" DPTs="DPST-1-8" />
+      <GroupAddress Name="Study Right Main Step/Stop" Address="4/0/46" Description="Master Bedroom Curtains" DPTs="DPST-1-7" />
+      <GroupAddress Name="Study Right Main blinds position" Address="4/0/47" Description="Master Bedroom Curtains" DPTs="DPST-5-1" />
+      <GroupAddress Name="Study Right Main slat position" Address="4/0/48" Description="Master Bedroom Curtains" DPTs="DPST-5-1" />
+      <GroupAddress Name="Study Right Sheer Curtain Move" Address="4/0/49" Description="08. Master Bedroom Study Right Sheer Curtain" />
+      <GroupAddress Name="Study Right Sheer Curtain Stop" Address="4/0/50" Description="08. Master Bedroom Study Right Sheer Curtain" />
+      <GroupAddress Name="Study Left Main Movement" Address="4/0/51" Description="Master Bedroom Curtains (1)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Study Left MainStep/Stop" Address="4/0/52" Description="Master Bedroom Curtains (1)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Study Left Main blinds position" Address="4/0/53" Description="Master Bedroom Curtains (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Study Left Main slat position" Address="4/0/54" Description="Master Bedroom Curtains (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Study Left Sheer Curtain Move" Address="4/0/55" Description="08. Master Bedroom Study Left Sheer Curtain" />
+      <GroupAddress Name="Study Left Sheer Curtain Stop" Address="4/0/56" Description="08. Master Bedroom Study Left Sheer Curtain" />
+      <GroupAddress Name="Sitout Side Main Movement" Address="4/0/57" Description="08. Master Bedroom 26. East Sheer Curtain" DPTs="DPST-1-8" />
+      <GroupAddress Name="Sitout Side Main Step/Stop" Address="4/0/58" Description="Master Bedroom Curtains (6)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Sitout Side Main blinds position" Address="4/0/59" Description="Master Bedroom Curtains (6)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sitout Side Main slat position" Address="4/0/60" Description="Master Bedroom Curtains (6)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sitout Side Sheer Movement" Address="4/0/61" Description="Master Bedroom Curtains (4)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Sitout Side Sheer Step/Stop" Address="4/0/62" Description="Master Bedroom Curtains (4)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Sitout Side Sheer blinds position" Address="4/0/63" Description="Master Bedroom Curtains (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sitout Side Sheer slat position" Address="4/0/64" Description="Master Bedroom Curtains (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Varand side Main Movement" Address="4/0/65" Description="Master Bedroom Curtains (2)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Varand side Main Step/Stop" Address="4/0/66" Description="Master Bedroom Curtains (2)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Varand side Main blinds position" Address="4/0/67" Description="Master Bedroom Curtains (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Varand side Main slat position" Address="4/0/68" Description="Master Bedroom Curtains (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Varand side Sheer Movement" Address="4/0/69" Description="Master Bedroom Curtains (5)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Varand side Sheer Step/Stop" Address="4/0/70" Description="Master Bedroom Curtains (5)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Varand side Sheer blinds position" Address="4/0/71" Description="Master Bedroom Curtains (5)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Varand side Sheer slat position" Address="4/0/72" Description="Master Bedroom Curtains (5)" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Master Balcony" RangeStart="8448" RangeEnd="8703" />
+    <GroupRange Name="Master Dressing" RangeStart="8704" RangeEnd="8959">
+      <GroupAddress Name="MBR Closet Passage DL On/Off" Address="4/2/0" Description="Master Bedroom Bathroom and Wardrobe Down Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="MBR Closet Passage DL On/Off tatus" Address="4/2/1" Description="Master Bedroom Bathroom and Wardrobe Down Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="MBR Closet Passage DL Dmming" Address="4/2/2" Description="Master Bedroom Bathroom and Wardrobe Down Lights" DPTs="DPST-3-7" />
+      <GroupAddress Name="MBR Closet Passage DL value" Address="4/2/3" Description="Master Bedroom Bathroom and Wardrobe Down Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="MBR Closet Passage DL Value Status" Address="4/2/4" Description="Master Bedroom Bathroom and Wardrobe Down Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="MBR Closet ON/Off" Address="4/2/5" Description="Master Bedroom Bathroom and Wardrobe Down Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="MBR Closet ON/Off Status" Address="4/2/6" Description="Master Bedroom Bathroom and Wardrobe Down Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="MBR Closet Dim" Address="4/2/7" Description="Master Bedroom Bathroom and Wardrobe Down Lights (1)" DPTs="DPST-3-7" />
+      <GroupAddress Name="MBR Closet value" Address="4/2/8" Description="Master Bedroom Bathroom and Wardrobe Down Lights (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="MBR Closet Dim Value Status" Address="4/2/9" Description="Master Bedroom Bathroom and Wardrobe Down Lights (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="MBR Dressing Blind Move" Address="4/2/10" />
+      <GroupAddress Name="MBR Dressing Blind Stop" Address="4/2/11" />
+      <GroupAddress Name="MBR Closet Profile On/off" Address="4/2/12" Description="Closet Linear" DPTs="DPST-1-1" />
+      <GroupAddress Name="MBR Closet Profile On/off Status" Address="4/2/13" Description="Closet Linear" DPTs="DPST-1-1" />
+      <GroupAddress Name="Blind Movement" Address="4/2/50" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection" DPTs="DPST-1-8" />
+      <GroupAddress Name="Blind Step/Stop" Address="4/2/51" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection" DPTs="DPST-1-7" />
+      <GroupAddress Name="Wind alert" Address="4/2/52" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection" DPTs="DPST-1-5" />
+      <GroupAddress Name="Rain alert" Address="4/2/53" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection" DPTs="DPST-1-5" />
+      <GroupAddress Name="Blind blinds position" Address="4/2/54" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection" DPTs="DPST-5-1" />
+      <GroupAddress Name="Blind slat position" Address="4/2/55" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Master Bath Room" RangeStart="8960" RangeEnd="9215">
+      <GroupAddress Name="Emty" Address="4/3/0" />
+      <GroupAddress Name="Mirror Down Lights On/off" Address="4/3/1" Description="Master Bedroom Bathroom and Wardrobe Down Lights (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Mirror Down Lights On/off Status" Address="4/3/2" Description="Master Bedroom Bathroom and Wardrobe Down Lights (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Mirror Down Lights Dim" Address="4/3/3" Description="Master Bedroom Bathroom and Wardrobe Down Lights (2)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Mirror Down Lights value" Address="4/3/4" Description="Master Bedroom Bathroom and Wardrobe Down Lights (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Mirror Down Lights value Status" Address="4/3/5" Description="Master Bedroom Bathroom and Wardrobe Down Lights (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="MBR Bath Entry On/off" Address="4/3/6" Description="MasterBedHallway Master Bathroom" DPTs="DPST-1-1" />
+      <GroupAddress Name="MBR Bath Entry On/off Status" Address="4/3/7" Description="MasterBedHallway Master Bathroom" DPTs="DPST-1-1" />
+      <GroupAddress Name="MBR Bath Entry Dimming" Address="4/3/8" Description="MasterBedHallway Master Bathroom" DPTs="DPST-3-7" />
+      <GroupAddress Name="MBR Bath Entry value" Address="4/3/9" Description="MasterBedHallway Master Bathroom" DPTs="DPST-5-1" />
+      <GroupAddress Name="MBR Bath Entry Value Status" Address="4/3/10" Description="MasterBedHallway Master Bathroom" DPTs="DPST-5-1" />
+      <GroupAddress Name="MBR Bath Center Lights On/off" Address="4/3/11" Description="MasterBedHallway Master Bathroom (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="MBR Bath Center Lights On/off Status" Address="4/3/12" Description="MasterBedHallway Master Bathroom (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="MBR Bath Center Lights Dim" Address="4/3/13" Description="MasterBedHallway Master Bathroom (1)" DPTs="DPST-3-7" />
+      <GroupAddress Name="MBR Bath Center Lights value" Address="4/3/14" Description="MasterBedHallway Master Bathroom (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="MBR Bath Center Lights Value status" Address="4/3/15" Description="MasterBedHallway Master Bathroom (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="MBR Bath Commode Lights On/off" Address="4/3/16" Description="MasterBedHallway Master Bathroom (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="MBR Bath Commode Lights On/off Status" Address="4/3/17" Description="MasterBedHallway Master Bathroom (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="MBR Bath Commode Lights Dim" Address="4/3/18" Description="MasterBedHallway Master Bathroom (2)" DPTs="DPST-3-7" />
+      <GroupAddress Name="MBR Bath Commode Lights value" Address="4/3/19" Description="MasterBedHallway Master Bathroom (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="MBR Bath Commode Lights Value Status" Address="4/3/20" Description="MasterBedHallway Master Bathroom (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="MBR Bath Shower Lights On/off" Address="4/3/21" Description="MasterBedHallway Master Bathroom (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="MBR Bath Shower Lights On/off Status" Address="4/3/22" Description="MasterBedHallway Master Bathroom (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="MBR Bath Shower Lights Dim" Address="4/3/23" Description="MasterBedHallway Master Bathroom (3)" DPTs="DPST-3-7" />
+      <GroupAddress Name="MBR Bath Shower Lights value" Address="4/3/24" Description="MasterBedHallway Master Bathroom (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="MBR Bath Shower Lights Value Status" Address="4/3/25" Description="MasterBedHallway Master Bathroom (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="MBR Bath Cupboard Lights On/off" Address="4/3/26" Description="MasterBedHallway Master Bathroom (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="MBR Bath Cupboard Lights On/off Status" Address="4/3/27" Description="MasterBedHallway Master Bathroom (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="MBR Bath Cupboard Lights Dimming" Address="4/3/28" Description="MasterBedHallway Master Bathroom (4)" DPTs="DPST-3-7" />
+      <GroupAddress Name="MBR Bath Cupboard Lights value" Address="4/3/29" Description="MasterBedHallway Master Bathroom (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="MBR Bath Cupboard Lights Value Status" Address="4/3/30" Description="MasterBedHallway Master Bathroom (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Bath Entry &amp; Mirror Center On/off" Address="4/3/31" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bath Entry &amp; Mirror Center Dim" Address="4/3/32" DPTs="DPST-3-7" />
+      <GroupAddress Name="Shower &amp; Cupboard Lights On/off" Address="4/3/33" DPTs="DPST-1-1" />
+      <GroupAddress Name="Shower &amp; Cupboard Lights Dim" Address="4/3/34" DPTs="DPST-3-7" />
+      <GroupAddress Name="All Curtain Move" Address="4/3/35" DPTs="DPT-1" />
+      <GroupAddress Name="All Curtain Stop" Address="4/3/36" DPTs="DPST-1-8" />
+      <GroupAddress Name="All On/off" Address="4/3/37" DPTs="DPST-1-1" />
+      <GroupAddress Name="Blind 1 Movement" Address="4/3/56" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection (1)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Blind 1 Step/Stop" Address="4/3/57" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection (1)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Wind alert" Address="4/3/58" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection (1)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Rain alert" Address="4/3/59" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection (1)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Blind 1 blinds position" Address="4/3/60" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Blind 1 slat position" Address="4/3/61" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Blind 2 Movement" Address="4/3/62" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection (2)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Blind 2 Step/Stop" Address="4/3/63" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection (2)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Wind alert" Address="4/3/64" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection (2)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Rain alert" Address="4/3/65" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection (2)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Blind 2 blinds position" Address="4/3/66" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Blind 2 slat position" Address="4/3/67" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Blind 3 Movement" Address="4/3/68" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection (3)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Blind 3 Step/Stop" Address="4/3/69" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection (3)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Wind alert" Address="4/3/70" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection (3)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Rain alert" Address="4/3/71" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection (3)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Blind 3 blinds position" Address="4/3/72" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Blind 3 slat position" Address="4/3/73" Description="09. Master Bedroom Bathroom and Wardrobe Sun protection (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Spike Lights Switching" Address="4/3/74" Description="Utility room Network_Landscape (14)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Spike Lights Status" Address="4/3/75" Description="Utility room Network_Landscape (14)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Spike Lights 2 Switching" Address="4/3/76" Description="Utility room Network_Landscape (22)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Spike Lights Status" Address="4/3/77" Description="Utility room Network_Landscape (22)" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="MBR &amp; GBR Passage " RangeStart="9216" RangeEnd="9471">
+      <GroupAddress Name="Emty" Address="4/4/0" />
+      <GroupAddress Name="MBR Corridor DL Switching" Address="4/4/1" Description="MasterBedHallway Down Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="MBR Corridor DL Status" Address="4/4/2" Description="MasterBedHallway Down Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="MBR Corridor DL Dimming" Address="4/4/3" Description="MasterBedHallway Down Lights" DPTs="DPST-3-7" />
+      <GroupAddress Name="MBR Corridor DL value" Address="4/4/4" Description="MasterBedHallway Down Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="MBR Corridor DL Value Status" Address="4/4/5" Description="MasterBedHallway Down Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="MBR Entry Switching" Address="4/4/6" Description="Master Bedroom 7. Master Bedroom Entrance Light ECG 38" DPTs="DPST-1-1" />
+      <GroupAddress Name="MBR Entry Status" Address="4/4/7" Description="Master Bedroom 7. Master Bedroom Entrance Light" DPTs="DPST-1-1" />
+      <GroupAddress Name="MBR Entry DL Dimming" Address="4/4/8" Description="Master Bedroom 7. Master Bedroom Entrance Light" DPTs="DPST-3-7" />
+      <GroupAddress Name="MBR Entry value" Address="4/4/9" Description="Master Bedroom 7. Master Bedroom Entrance Light" DPTs="DPST-5-1" />
+      <GroupAddress Name="MBR Entry Value Status" Address="4/4/10" Description="Master Bedroom 7. Master Bedroom Entrance Light" DPTs="DPST-5-1" />
+      <GroupAddress Name="Passsage Entry DL Switching" Address="4/4/11" Description="4. GuestBedHallway Dimmable Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Passsage Entry DL Status" Address="4/4/12" Description="4. GuestBedHallway Dimmable Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Passsage Entry DL Dimming" Address="4/4/13" Description="4. GuestBedHallway Dimmable Lights" DPTs="DPST-3-7" />
+      <GroupAddress Name="Passsage Entry DL value" Address="4/4/14" Description="4. GuestBedHallway Dimmable Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="Passsage Entry DL Value Status" Address="4/4/15" Description="4. GuestBedHallway Dimmable Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="GBR Corridor Switching" Address="4/4/16" Description="4. GuestBedHallway Dimmable Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="GBR Corridor Status" Address="4/4/17" Description="4. GuestBedHallway Dimmable Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="GBR Corridor Dimming" Address="4/4/18" Description="4. GuestBedHallway Dimmable Lights (1)" DPTs="DPST-3-7" />
+      <GroupAddress Name="GBR Corridor value" Address="4/4/19" Description="4. GuestBedHallway Dimmable Lights (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="GBR Corridor Value Status" Address="4/4/20" Description="4. GuestBedHallway Dimmable Lights (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="GBR Sons Lobby Switching" Address="4/4/21" Description="6. Guest Bedroom Dimmable Lights (5)" DPTs="DPST-1-1" />
+      <GroupAddress Name="GBR Sons Lobby Status" Address="4/4/22" Description="6. Guest Bedroom Dimmable Lights (5)" DPTs="DPST-1-1" />
+      <GroupAddress Name="GBR Sons Lobby Dimming" Address="4/4/23" Description="6. Guest Bedroom Dimmable Lights (5)" DPTs="DPST-3-7" />
+      <GroupAddress Name="GBR Sons Lobby value" Address="4/4/24" Description="6. Guest Bedroom Dimmable Lights (5)" DPTs="DPST-5-1" />
+      <GroupAddress Name="GBR Sons Lobby value Status" Address="4/4/25" Description="6. Guest Bedroom Dimmable Lights (5)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Chandelier Switching" Address="4/4/26" Description="4. GuestBedHallway Bedrooms Lobby Chandelier" DPTs="DPST-1-1" />
+      <GroupAddress Name="Chandelier Status" Address="4/4/27" Description="4. GuestBedHallway Bedrooms Lobby Chandelier" DPTs="DPST-1-1" />
+      <GroupAddress Name="Wall Lights Switching" Address="4/4/28" Description="6. Guest Bedroom Dimmable Lights (6)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Wall Lights Status" Address="4/4/29" Description="6. Guest Bedroom Dimmable Lights (6)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Landscape Spike Lights witching" Address="4/4/30" Description="Utility room Network_Landscape (21)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Landscape Spike Lights Status" Address="4/4/31" Description="Utility room Network_Landscape (21)" DPTs="DPST-1-1" />
+      <GroupAddress Name="All On/off" Address="4/4/32" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="Landscape ( PUMP Room )" RangeStart="9472" RangeEnd="9727">
+      <GroupAddress Name="Pool Lights Switching" Address="4/5/0" Description="13. Pump room Swimming Pool Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Pool Lights Status" Address="4/5/1" Description="13. Pump room Switchable light (35)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bath Room Switching" Address="4/5/2" Description="7. Living Hallway Pool Toilet Bulkhead" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bath Room Status" Address="4/5/3" Description="7. Living Hallway Pool Toilet Bulkhead" DPTs="DPST-1-1" />
+      <GroupAddress Name="Pool Side Floor Switching" Address="4/5/49" Description="Utility room Network_Landscape (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Pool Side Floor Status" Address="4/5/50" Description="Utility room Network_Landscape (1)" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="Living Passage" RangeStart="9728" RangeEnd="9983">
+      <GroupAddress Name="Living Passage DL Switching" Address="4/6/0" Description="Living Hallway Down Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Living Passage DL Status" Address="4/6/1" Description="Living Hallway Down Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Living Passage DL Dimming" Address="4/6/2" Description="Living Hallway Down Lights (1)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Living Passage DL value" Address="4/6/3" Description="Living Hallway Down Lights (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Living Passage DL Value Status" Address="4/6/4" Description="Living Hallway Down Lights (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Living Passage DL 2 Switching" Address="4/6/5" Description="Living Hallway Down Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Living Passage DL 2 Status" Address="4/6/6" Description="Living Hallway Down Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Living Passage DL 2 Dimming" Address="4/6/7" Description="Living Hallway Down Lights" DPTs="DPST-3-7" />
+      <GroupAddress Name="Living Passage DL 2 value" Address="4/6/8" Description="Living Hallway Down Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="Living Passage DL 2 Value Status" Address="4/6/9" Description="Living Hallway Down Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sensor Slaves" Address="4/6/10" />
+      <GroupAddress Name="Pillar Lights Switching" Address="4/6/11" Description="7. Living Hallway Switchable Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Pillar Lights Status" Address="4/6/12" Description="7. Living Hallway Switchable Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Pillar Floor Lights Switching" Address="4/6/13" Description="7. Living Hallway Switchable Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Pillar Floor Lights Status" Address="4/6/14" Description="7. Living Hallway Switchable Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Nish Lights Switching" Address="4/6/15" Description="Entrance Lobby 6. Nische lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Nish Lights Status" Address="4/6/16" Description="Entrance Lobby 6. Nische lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Wall Washers Switching" Address="4/6/17" Description="7. Living Hallway Living Hallway (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Wall Washers Status" Address="4/6/18" Description="7. Living Hallway Living Hallway (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Wall Washers Dimming" Address="4/6/19" Description="7. Living Hallway Living Hallway (1)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Wall Washers value" Address="4/6/20" Description="7. Living Hallway Living Hallway (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Wall Washers Value Status" Address="4/6/21" Description="7. Living Hallway Living Hallway (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Foot Lamp Switching" Address="4/6/22" Description="Entrance Lobby 7. Foot lamp" DPTs="DPST-1-1" />
+      <GroupAddress Name="Foot Lamp Status" Address="4/6/23" Description="Entrance Lobby 7. Foot lamp" DPTs="DPST-1-1" />
+      <GroupAddress Name="Server room Switching" Address="4/6/24" Description="7. Living Hallway Living Hallway" DPTs="DPST-1-1" />
+      <GroupAddress Name="Status" Address="4/6/25" Description="7. Living Hallway Living Hallway" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dimming" Address="4/6/26" Description="7. Living Hallway Living Hallway" DPTs="DPST-3-7" />
+      <GroupAddress Name="dimming value" Address="4/6/27" Description="7. Living Hallway Living Hallway" DPTs="DPST-5-1" />
+      <GroupAddress Name="Value" Address="4/6/28" Description="7. Living Hallway Living Hallway" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Entrance Passage" RangeStart="9984" RangeEnd="10239">
+      <GroupAddress Name="Ent Pillar Wall Light Switching" Address="4/7/0" Description="7. Living Hallway Switchable Lights (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ent Pillar Wall Light Status" Address="4/7/1" Description="7. Living Hallway Switchable Lights (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ent Pillar Floor Light Switching" Address="4/7/2" Description="7. Living Hallway Switchable Lights (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ent Pillar Floor Light Status" Address="4/7/3" Description="7. Living Hallway Switchable Lights (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ent DL 1 Switching" Address="4/7/6" Description="7. Living Hallway Living Hallway (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ent DL 1 Status" Address="4/7/7" Description="7. Living Hallway Living Hallway (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ent DL 1 Dimming" Address="4/7/8" Description="7. Living Hallway Living Hallway (3)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Ent DL 1 Value" Address="4/7/9" Description="7. Living Hallway Living Hallway (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Ent DL 1 Value Status" Address="4/7/10" Description="7. Living Hallway Living Hallway (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Water Body Spots Switching" Address="4/7/11" Description="7. Living Hallway 11. Water Body Directional Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Water Body Spots Status" Address="4/7/12" Description="7. Living Hallway 11. Water Body Directional Lights" DPTs="DPST-1-1" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="Ground Floor 2" RangeStart="10240" RangeEnd="12287">
+    <GroupRange Name="Sons Bedroom" RangeStart="10240" RangeEnd="10495">
+      <GroupAddress Name="Bed Side Switching" Address="5/0/0" Description="5. Son Bedroom Dimmable Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bed Side Status" Address="5/0/1" Description="5. Son Bedroom Dimmable Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bed Side Dimming" Address="5/0/2" Description="5. Son Bedroom Dimmable Lights" DPTs="DPST-3-7" />
+      <GroupAddress Name="Bed Side dimming value" Address="5/0/3" Description="5. Son Bedroom Dimmable Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="Bed Side Value" Address="5/0/4" Description="5. Son Bedroom Dimmable Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="Middle Lights Switching" Address="5/0/5" Description="5. Son Bedroom Dimmable Lights (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Middle Lights Status" Address="5/0/6" Description="5. Son Bedroom Dimmable Lights (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Middle Lights Dimming" Address="5/0/7" Description="5. Son Bedroom Dimmable Lights (2)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Middle Lights dimming value" Address="5/0/8" Description="5. Son Bedroom Dimmable Lights (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Middle Lights Value Status" Address="5/0/9" Description="5. Son Bedroom Dimmable Lights (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Corner Lights Switching" Address="5/0/10" Description="5. Son Bedroom Dimmable Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Corner Lights Status" Address="5/0/11" Description="5. Son Bedroom Dimmable Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Corner Lights Dimming" Address="5/0/12" Description="5. Son Bedroom Dimmable Lights (1)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Corner Lights value" Address="5/0/13" Description="5. Son Bedroom Dimmable Lights (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Corner Lights Value Status" Address="5/0/14" Description="5. Son Bedroom Dimmable Lights (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Entry Lights Switching" Address="5/0/15" Description="5. Son Bedroom Dimmable Lights (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Entry Lights Status" Address="5/0/16" Description="5. Son Bedroom Dimmable Lights (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Entry Lights Dimming" Address="5/0/17" Description="5. Son Bedroom Dimmable Lights (3)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Entry Lights value" Address="5/0/18" Description="5. Son Bedroom Dimmable Lights (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Entry Lights Value Status" Address="5/0/19" Description="5. Son Bedroom Dimmable Lights (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Pendant Switching" Address="5/0/20" Description="6. Son Bedroom Pendant Light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Pendant Status" Address="5/0/21" Description="6. Son Bedroom Pendant Light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Fan Switching" Address="5/0/22" Description="6. Son Bedroom 6. Fan" DPTs="DPST-1-1" />
+      <GroupAddress Name="Fan Status" Address="5/0/23" Description="6. Son Bedroom 6. Fan" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bathroom Mirro Switching" Address="5/0/24" Description="5. Son Bedroom Dimmable Lights (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bathroom Mirro Status" Address="5/0/25" Description="5. Son Bedroom Dimmable Lights (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bathroom Mirro Dimming" Address="5/0/26" Description="5. Son Bedroom Dimmable Lights (4)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Bathroom Mirro value" Address="5/0/27" Description="5. Son Bedroom Dimmable Lights (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Bathroom Mirro Value Status" Address="5/0/28" Description="5. Son Bedroom Dimmable Lights (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Curtain Main Movement" Address="5/0/29" Description="6. Son Bedroom Curtains" DPTs="DPST-1-8" />
+      <GroupAddress Name="Curtain Main Step/Stop" Address="5/0/30" Description="6. Son Bedroom Curtains" DPTs="DPST-1-7" />
+      <GroupAddress Name="Curtain MainWind alert" Address="5/0/31" Description="6. Son Bedroom Curtains" DPTs="DPST-1-5" />
+      <GroupAddress Name="Curtain Main Rain alert" Address="5/0/32" Description="6. Son Bedroom Curtains" DPTs="DPST-1-5" />
+      <GroupAddress Name="Curtain Main blinds position" Address="5/0/33" Description="6. Son Bedroom Curtains" DPTs="DPST-5-1" />
+      <GroupAddress Name="Curtain Main slat position" Address="5/0/34" Description="6. Son Bedroom Curtains" DPTs="DPST-5-1" />
+      <GroupAddress Name="Curtain Sheer Movement" Address="5/0/35" Description="6. Son Bedroom Curtains (1)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Curtain Sheer Step/Stop" Address="5/0/36" Description="6. Son Bedroom Curtains (1)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Curtain Sheer Wind alert" Address="5/0/37" Description="6. Son Bedroom Curtains (1)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Curtain Sheer Rain alert" Address="5/0/38" Description="6. Son Bedroom Curtains (1)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Curtain Sheer blinds position" Address="5/0/39" Description="6. Son Bedroom Curtains (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Curtain Sheer slat position" Address="5/0/40" Description="6. Son Bedroom Curtains (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Pendent Value Dim" Address="5/0/41" />
+      <GroupAddress Name="Pendent Value " Address="5/0/42" />
+      <GroupAddress Name="Pendent Value Status" Address="5/0/43" />
+      <GroupAddress Name="Sitout Fan Switching" Address="5/0/44" Description="6. Son Bedroom Sitout Fan" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitout Fan Status" Address="5/0/45" Description="6. Son Bedroom Sitout Fan" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitout Lights Switching" Address="5/0/46" Description="6. Son Bedroom Sitout Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitout Lights Status" Address="5/0/47" Description="6. Son Bedroom Sitout Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitout Lights Dimming" Address="5/0/48" Description="6. Son Bedroom Sitout Lights" DPTs="DPST-3-7" />
+      <GroupAddress Name="Sitout Lights dimming value" Address="5/0/49" Description="6. Son Bedroom Sitout Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sitout Lights Value Status" Address="5/0/50" Description="6. Son Bedroom Sitout Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="Dressing Liner Switching" Address="5/0/51" Description="6. Son Bedroom Bath Dress Linear" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dressing Liner Status" Address="5/0/52" Description="6. Son Bedroom Bath Dress Linear" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="Guest Bedroom" RangeStart="10496" RangeEnd="10751">
+      <GroupAddress Name="Bed Side Switching" Address="5/1/0" Description="6. Guest Bedroom Dimmable Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bed Side Status" Address="5/1/1" Description="6. Guest Bedroom Dimmable Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bed Side Dimming" Address="5/1/2" Description="6. Guest Bedroom Dimmable Lights" DPTs="DPST-3-7" />
+      <GroupAddress Name="Bed Side value" Address="5/1/3" Description="6. Guest Bedroom Dimmable Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="Bed Side Value Status" Address="5/1/4" Description="6. Guest Bedroom Dimmable Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="Middle Lights Switching" Address="5/1/5" Description="6. Guest Bedroom Dimmable Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Middle Lights Status" Address="5/1/6" Description="6. Guest Bedroom Dimmable Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Middle Lights Dimming" Address="5/1/7" Description="6. Guest Bedroom Dimmable Lights (1)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Middle Lights value" Address="5/1/8" Description="6. Guest Bedroom Dimmable Lights (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Middle Lights Value Status" Address="5/1/9" Description="6. Guest Bedroom Dimmable Lights (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Corner Lights Switching" Address="5/1/10" Description="6. Guest Bedroom Dimmable Lights (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Corner Lights Status" Address="5/1/11" Description="6. Guest Bedroom Dimmable Lights (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Corner Lights Dimming" Address="5/1/12" Description="6. Guest Bedroom Dimmable Lights (2)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Corner Lights value" Address="5/1/13" Description="6. Guest Bedroom Dimmable Lights (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Corner Lights Value Status" Address="5/1/14" Description="6. Guest Bedroom Dimmable Lights (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Entry Lights Switching" Address="5/1/15" Description="6. Guest Bedroom Dimmable Lights (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Entry Lights Status" Address="5/1/16" Description="6. Guest Bedroom Dimmable Lights (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Entry Lights Dimming" Address="5/1/17" Description="6. Guest Bedroom Dimmable Lights (4)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Entry Lights  value" Address="5/1/18" Description="6. Guest Bedroom Dimmable Lights (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Entry Lights Value" Address="5/1/19" Description="6. Guest Bedroom Dimmable Lights (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Pendant Lights Switching" Address="5/1/20" Description="4. GuestBedHallway Pendant Light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Pendant Lights Status" Address="5/1/21" Description="4. GuestBedHallway Pendant Light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Pendant Lights Dimming" Address="5/1/22" Description="4. GuestBedHallway Pendant Light" DPTs="DPST-3-7" />
+      <GroupAddress Name="Pendant Lights value" Address="5/1/23" Description="4. GuestBedHallway Pendant Light" DPTs="DPST-5-1" />
+      <GroupAddress Name="Pendant Lights Value Status" Address="5/1/24" Description="4. GuestBedHallway Pendant Light" DPTs="DPST-5-1" />
+      <GroupAddress Name="Side Curtain 1 Main Movement" Address="5/1/25" Description="5. Guest Bedroom Curtains" DPTs="DPST-1-8" />
+      <GroupAddress Name="Side Curtain 1 Main Step/Stop" Address="5/1/26" Description="5. Guest Bedroom Curtains" DPTs="DPST-1-7" />
+      <GroupAddress Name="Side Curtain 1 Main  Wind alert" Address="5/1/27" Description="5. Guest Bedroom Curtains" DPTs="DPST-1-5" />
+      <GroupAddress Name="Side Curtain 1 Main Rain alert" Address="5/1/28" Description="5. Guest Bedroom Curtains" DPTs="DPST-1-5" />
+      <GroupAddress Name="Side Curtain 1 Main blinds position" Address="5/1/29" Description="5. Guest Bedroom Curtains" DPTs="DPST-5-1" />
+      <GroupAddress Name="Side Curtain 1 Main slat position" Address="5/1/30" Description="5. Guest Bedroom Curtains" DPTs="DPST-5-1" />
+      <GroupAddress Name="Side Curtain 1 Sheer Movement" Address="5/1/31" Description="5. Guest Bedroom Curtains (7)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Side Curtain 1 Sheer Step/Stop" Address="5/1/32" Description="5. Guest Bedroom Curtains (7)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Side Curtain 1 Sheer Wind alert" Address="5/1/33" Description="5. Guest Bedroom Curtains (7)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Side Curtain 1 Sheer Rain alert" Address="5/1/34" Description="5. Guest Bedroom Curtains (7)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Side Curtain 1 Sheer blinds position" Address="5/1/35" Description="5. Guest Bedroom Curtains (7)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Side Curtain 1 Sheer slat position" Address="5/1/36" Description="5. Guest Bedroom Curtains (7)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Side Curtain 2 Main Movement" Address="5/1/37" Description="5. Guest Bedroom Curtains (4)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Side Curtain 2 Main Step/Stop" Address="5/1/38" Description="5. Guest Bedroom Curtains (4)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Side Curtain 2 Main Wind alert" Address="5/1/39" Description="5. Guest Bedroom Curtains (4)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Side Curtain 2 Main Rain alert" Address="5/1/40" Description="5. Guest Bedroom Curtains (4)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Side Curtain 2 Main blinds position" Address="5/1/41" Description="5. Guest Bedroom Curtains (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Side Curtain 2 Main slat position" Address="5/1/42" Description="5. Guest Bedroom Curtains (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Side Curtain 2 Sheer Movement" Address="5/1/43" Description="5. Guest Bedroom Curtains (1)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Side Curtain 2 Sheer Step/Stop" Address="5/1/44" Description="5. Guest Bedroom Curtains (1)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Side Curtain 2 Sheer Wind alert" Address="5/1/45" Description="5. Guest Bedroom Curtains (1)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Side Curtain 2 Sheer Rain alert" Address="5/1/46" Description="5. Guest Bedroom Curtains (1)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Side Curtain 2 Sheer blinds position" Address="5/1/47" Description="5. Guest Bedroom Curtains (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Side Curtain 2 Sheer slat position" Address="5/1/48" Description="5. Guest Bedroom Curtains (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Front Main Curtain Movement" Address="5/1/49" Description="5. Guest Bedroom Curtains (3)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Front Main Curtain Step/Stop" Address="5/1/50" Description="5. Guest Bedroom Curtains (3)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Front Main Curtain Wind alert" Address="5/1/51" Description="5. Guest Bedroom Curtains (3)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Front Main Curtain Rain alert" Address="5/1/52" Description="5. Guest Bedroom Curtains (3)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Front Main Curtain blinds position" Address="5/1/53" Description="5. Guest Bedroom Curtains (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Front Main Curtain slat position" Address="5/1/54" Description="5. Guest Bedroom Curtains (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Front Sheer Curtain Movement" Address="5/1/55" Description="5. Guest Bedroom Curtains (2)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Front Sheer Curtain Step/Stop" Address="5/1/56" Description="5. Guest Bedroom Curtains (2)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Front Sheer Curtain Wind alert" Address="5/1/57" Description="5. Guest Bedroom Curtains (2)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Front Sheer Curtain Rain alert" Address="5/1/58" Description="5. Guest Bedroom Curtains (2)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Front Sheer Curtain blinds position" Address="5/1/59" Description="5. Guest Bedroom Curtains (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Front Sheer Curtain slat position" Address="5/1/60" Description="5. Guest Bedroom Curtains (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Side Curtain 3 Main Movement" Address="5/1/61" Description="5. Guest Bedroom Curtains (6)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Side Curtain 3 Main Step/Stop" Address="5/1/62" Description="5. Guest Bedroom Curtains (6)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Side Curtain 3 Main Wind alert" Address="5/1/63" Description="5. Guest Bedroom Curtains (6)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Side Curtain 3 Main Rain alert" Address="5/1/64" Description="5. Guest Bedroom Curtains (6)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Side Curtain 3 Main blinds position" Address="5/1/65" Description="5. Guest Bedroom Curtains (6)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Side Curtain 3 Main slat position" Address="5/1/66" Description="5. Guest Bedroom Curtains (6)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Side Curtain 3 Sheer Movement" Address="5/1/67" Description="5. Guest Bedroom Curtains (5)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Side Curtain 3 Sheer Step/Stop" Address="5/1/68" Description="5. Guest Bedroom Curtains (5)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Side Curtain 3 Sheer Wind alert" Address="5/1/69" Description="5. Guest Bedroom Curtains (5)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Side Curtain 3 Sheer Rain alert" Address="5/1/70" Description="5. Guest Bedroom Curtains (5)" DPTs="DPST-1-5" />
+      <GroupAddress Name="Side Curtain 3 Sheer blinds position" Address="5/1/71" Description="5. Guest Bedroom Curtains (5)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Side Curtain 3 Sheer slat position" Address="5/1/72" Description="5. Guest Bedroom Curtains (5)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Fan Switching" Address="5/1/73" Description="5. Guest Bedroom 7, Fan" DPTs="DPST-1-1" />
+      <GroupAddress Name="Fan Status" Address="5/1/74" Description="5. Guest Bedroom 7, Fan" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitout Fan Switching" Address="5/1/75" Description="5. Guest Bedroom Fan Sitout" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitout Fan Status" Address="5/1/76" Description="5. Guest Bedroom Fan Sitout" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitout Lights Switching" Address="5/1/77" Description="6. Guest Bedroom Dimmable Lights (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitout Lights Status" Address="5/1/78" Description="6. Guest Bedroom Dimmable Lights (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitout Lights Dimming" Address="5/1/79" Description="6. Guest Bedroom Dimmable Lights (3)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Sitout Lights dimming value" Address="5/1/80" Description="6. Guest Bedroom Dimmable Lights (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sitout Lights Value Status" Address="5/1/81" Description="6. Guest Bedroom Dimmable Lights (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Dressing Linear Switching" Address="5/1/82" Description="5. Guest Bedroom Bath Dress Linear" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dressing Linear Status" Address="5/1/83" Description="5. Guest Bedroom Bath Dress Linear" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bath Mirror DL Switching" Address="5/1/84" Description="5. Guest Bedroom Bathroom Mirror Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bath Mirror DL Status" Address="5/1/85" Description="5. Guest Bedroom Bathroom Mirror Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bath Mirror DL Dimming" Address="5/1/86" Description="5. Guest Bedroom Bathroom Mirror Lights" DPTs="DPST-3-7" />
+      <GroupAddress Name="Bath Mirror DL value" Address="5/1/87" Description="5. Guest Bedroom Bathroom Mirror Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="Bath Mirror DL Value Status" Address="5/1/88" Description="5. Guest Bedroom Bathroom Mirror Lights" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Living Room" RangeStart="10752" RangeEnd="11007">
+      <GroupAddress Name="Emty" Address="5/2/0" />
+      <GroupAddress Name="Entrence Lights Switching" Address="5/2/1" Description="8. Living room Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Entrence Lights Status" Address="5/2/2" Description="8. Living room Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Entrence Lights Dimming" Address="5/2/3" Description="8. Living room Lights (1)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Entrence Lights value" Address="5/2/4" Description="8. Living room Lights (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Entrence Lights Value Status" Address="5/2/5" Description="8. Living room Lights (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Outer LIghts Switching" Address="5/2/6" Description="8. Living room Lights (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Outer LIghts Status" Address="5/2/7" Description="8. Living room Lights (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Outer LIghts Dimming" Address="5/2/8" Description="8. Living room Lights (2)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Outer LIghts value" Address="5/2/9" Description="8. Living room Lights (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Outer LIghts Value Status" Address="5/2/10" Description="8. Living room Lights (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Inner Middle Switching" Address="5/2/11" Description="8. Living room Lights (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Inner Middle Status" Address="5/2/12" Description="8. Living room Lights (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Inner Middle Dimming" Address="5/2/13" Description="8. Living room Lights (3)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Inner Middle value" Address="5/2/14" Description="8. Living room Lights (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Inner Middle Value Status" Address="5/2/15" Description="8. Living room Lights (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Inner Corner Switching" Address="5/2/16" Description="8. Living room Lights (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Inner Corner Status" Address="5/2/17" Description="8. Living room Lights (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Inner Corner Dimming" Address="5/2/18" Description="8. Living room Lights (4)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Inner Corner Value" Address="5/2/19" Description="8. Living room Lights (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Inner Corner Value Status" Address="5/2/20" Description="8. Living room Lights (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Wall Washers Switching" Address="5/2/21" Description="8. Living room Lights (5)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Wall Washers Status" Address="5/2/22" Description="8. Living room Lights (5)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Wall Washers Dimming" Address="5/2/23" Description="8. Living room Lights (5)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Wall Washers value" Address="5/2/24" Description="8. Living room Lights (5)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Wall Washers Value Status" Address="5/2/25" Description="8. Living room Lights (5)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Chandelier Switching" Address="5/2/26" Description="8. Living room Living Chandelier" DPTs="DPST-1-1" />
+      <GroupAddress Name="Chandelier Status" Address="5/2/27" Description="8. Living room Living Chandelier" DPTs="DPST-1-1" />
+      <GroupAddress Name="Chandelier Dimming" Address="5/2/28" Description="8. Living room Living Chandelier" DPTs="DPST-3-7" />
+      <GroupAddress Name="Chandelier Value" Address="5/2/29" Description="8. Living room Living Chandelier" DPTs="DPST-5-1" />
+      <GroupAddress Name="Chandelier Value Status" Address="5/2/30" Description="8. Living room Living Chandelier" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove Lights Switching" Address="5/2/31" Description="8. Living room Switchable Circuits (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Lights Status" Address="5/2/32" Description="8. Living room Switchable Circuits (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="East Fan Switching" Address="5/2/33" Description="8. Living room Switchable Circuits (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="East Fan Status" Address="5/2/34" Description="8. Living room Switchable Circuits (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="West Fan Switching" Address="5/2/35" Description="8. Living room Switchable Circuits (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="West Fan Status" Address="5/2/36" Description="8. Living room Switchable Circuits (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ent Cove Lights Switching" Address="5/2/37" Description="8. Living room Switchable Circuits" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ent Cove Lights Status" Address="5/2/38" Description="8. Living room Switchable Circuits" DPTs="DPST-1-1" />
+      <GroupAddress Name="Powder Room Entry DL Switching" Address="5/2/39" Description="8. Living room Lights (7)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Powder Room Entry DL Status" Address="5/2/40" Description="8. Living room Lights (7)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Powder Room Entry DL Dimming" Address="5/2/41" Description="8. Living room Lights (7)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Powder Room Entry DL value" Address="5/2/42" Description="8. Living room Lights (7)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Powder Room Entry DL Value Status" Address="5/2/43" Description="8. Living room Lights (7)" DPTs="DPST-5-1" />
+      <GroupAddress Name="SiteOut Lights Switching" Address="5/2/44" Description="8. Living room Lights (8)" DPTs="DPST-1-1" />
+      <GroupAddress Name="SiteOut Lights Status" Address="5/2/45" Description="8. Living room Lights (8)" DPTs="DPST-1-1" />
+      <GroupAddress Name="SiteOut Lights Dimming" Address="5/2/46" Description="8. Living room Lights (8)" DPTs="DPST-3-7" />
+      <GroupAddress Name="SiteOut Lights value" Address="5/2/47" Description="8. Living room Lights (8)" DPTs="DPST-5-1" />
+      <GroupAddress Name="SiteOut Lights Value Status" Address="5/2/48" Description="8. Living room Lights (8)" DPTs="DPST-5-1" />
+      <GroupAddress Name="SiteOut Fan Switching" Address="5/2/49" Description="8. Living room Switchable Circuits (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="SiteOut Fan Status" Address="5/2/50" Description="8. Living room Switchable Circuits (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ent. Pendent Switching" Address="5/2/51" Description="8. Living room Lights (6)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ent. Pendent Status" Address="5/2/52" Description="8. Living room Lights (6)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Ent. Pendent Dimming" Address="5/2/53" Description="8. Living room Lights (6)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Ent. Pendent value" Address="5/2/54" Description="8. Living room Lights (6)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Ent. Pendent Value Status" Address="5/2/55" Description="8. Living room Lights (6)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Back Curtain Movement" Address="5/2/56" Description="8. Living room Curtains (5)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Back Curtain Step/Stop" Address="5/2/57" Description="8. Living room Curtains (5)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Back Curtain blinds position" Address="5/2/58" Description="8. Living room Curtains (5)" DPTs="DPST-5-1" />
+      <GroupAddress Name="BAck Curtain slat position" Address="5/2/59" Description="8. Living room Curtains (5)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Left Side Curtain 1 Movement" Address="5/2/60" Description="8. Living room Curtains (7)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Left Side Curtain 1 Step/Stop" Address="5/2/61" Description="8. Living room Curtains (7)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Left Side Curtain 1 blinds position" Address="5/2/62" Description="8. Living room Curtains (7)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Left Side Curtain 1 slat position" Address="5/2/63" Description="8. Living room Curtains (7)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Left Side Middle Main Movement" Address="5/2/64" Description="8. Living room Curtains (4)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Left Side Middle Main Step/Stop" Address="5/2/65" Description="8. Living room Curtains (4)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Left Side Middle Main blinds position" Address="5/2/66" Description="8. Living room Curtains (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Left Side Middle Main slat position" Address="5/2/67" Description="8. Living room Curtains (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Left Side Middle Sheer Movement" Address="5/2/68" Description="8. Living room Curtains (6)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Left Side Middle Sheer Step/Stop" Address="5/2/69" Description="8. Living room Curtains (6)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Left Side Middle Sheer blinds position" Address="5/2/70" Description="8. Living room Curtains (6)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Left Side Middle Sheer slat position" Address="5/2/71" Description="8. Living room Curtains (6)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Left Side Curtain 2 Movement" Address="5/2/72" Description="8. Living room Curtains (8)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Left Side Curtain 2 Step/Stop" Address="5/2/73" Description="8. Living room Curtains (8)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Left Side Curtain 2 blinds position" Address="5/2/74" Description="8. Living room Curtains (8)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Left Side Curtain 2 slat position" Address="5/2/75" Description="8. Living room Curtains (8)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Right Side Curtain 1 Movement" Address="5/2/76" Description="8. Living room Curtains (1)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Right Side Curtain 1 Step/Stop" Address="5/2/77" Description="8. Living room Curtains (1)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Right Side Curtain 1 blinds position" Address="5/2/78" Description="8. Living room Curtains (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Right Side Curtain 1 slat position" Address="5/2/79" Description="8. Living room Curtains (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Right Side Middle Curtain Main Movement" Address="5/2/80" Description="03. Living room South Blackout Curtain" DPTs="DPST-1-8" />
+      <GroupAddress Name="Right Side Middle Curtain Main Step/Stop" Address="5/2/81" Description="8. Living room Curtains (2)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Right Side Middle Curtain Main blinds position" Address="5/2/82" Description="8. Living room Curtains (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Right Side Middle Curtain Main slat position" Address="5/2/83" Description="8. Living room Curtains (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Right Side Middle Curtain Sheer Step/Stop" Address="5/2/84" Description="8. Living room Curtains" DPTs="DPST-1-7" />
+      <GroupAddress Name="Right Side Middle Curtain Sheer Movement" Address="5/2/85" Description="8. Living room Curtains" DPTs="DPST-1-8" />
+      <GroupAddress Name="Right Side Middle Curtain Sheer blinds position" Address="5/2/86" Description="8. Living room Curtains" DPTs="DPST-5-1" />
+      <GroupAddress Name="Right Side Middle Curtain Sheer slat position" Address="5/2/87" Description="8. Living room Curtains" DPTs="DPST-5-1" />
+      <GroupAddress Name="Right Side Curtain 2 Movement" Address="5/2/88" Description="8. Living room Curtains (3)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Right Side Curtain 2 Step/Stop" Address="5/2/89" Description="8. Living room Curtains (3)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Right Side Curtain 2 blinds position" Address="5/2/90" Description="8. Living room Curtains (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Right Side Curtain 2 slat position" Address="5/2/91" Description="8. Living room Curtains (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Entry Curtain Movement" Address="5/2/92" Description="8. Living room Lobby Blackout Curtain" DPTs="DPST-1-8" />
+      <GroupAddress Name="Entry Curtain Step/Stop" Address="5/2/93" Description="8. Living room Lobby Blackout Curtain" DPTs="DPST-1-7" />
+      <GroupAddress Name="Entry Curtain blinds position" Address="5/2/94" Description="8. Living room Lobby Blackout Curtain" DPTs="DPST-5-1" />
+      <GroupAddress Name="Entry Curtain slat position" Address="5/2/95" Description="8. Living room Lobby Blackout Curtain" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Lobby Lights" RangeStart="11008" RangeEnd="11263">
+      <GroupAddress Name="Lobby DL 1 Switching" Address="5/3/0" Description="9. Dining room Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Lobby DL 1 Status" Address="5/3/1" Description="9. Dining room Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Lobby DL 1 Dimming" Address="5/3/2" Description="9. Dining room Lights (1)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Lobby DL 1 dimming value" Address="5/3/3" Description="9. Dining room Lights (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Lobby DL 1 Value Status" Address="5/3/4" Description="9. Dining room Lights (1)" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Dining Room" RangeStart="11264" RangeEnd="11519">
+      <GroupAddress Name="Down Lights Switching" Address="5/4/0" Description="9. Dining room Lights (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights Status" Address="5/4/1" Description="9. Dining room Lights (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights Dimming" Address="5/4/2" Description="9. Dining room Lights (2)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Lights Value" Address="5/4/3" Description="9. Dining room Lights (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Down Lights Value Status" Address="5/4/4" Description="9. Dining room Lights (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Counter Lights Switching" Address="5/4/5" Description="9. Dining room Lights (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Counter Lights Status" Address="5/4/6" Description="9. Dining room Lights (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Counter Lights Dimming" Address="5/4/7" Description="9. Dining room Lights (3)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Counter Lights value" Address="5/4/8" Description="9. Dining room Lights (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Counter Lights Value Status" Address="5/4/9" Description="9. Dining room Lights (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Wall Washers Switching" Address="5/4/10" Description="9. Dining room Lights (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Wall Washers Status" Address="5/4/11" Description="9. Dining room Lights (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Wall Washers Dimming" Address="5/4/12" Description="9. Dining room Lights (4)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Wall Washers Value" Address="5/4/13" Description="9. Dining room Lights (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Wall Washers Value Status" Address="5/4/14" Description="9. Dining room Lights (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Pendant Light Switching" Address="5/4/15" Description="9. Dining room Dining Pendant Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Pendant Light Status" Address="5/4/16" Description="9. Dining room Dining Pendant Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Pendant Light Dimming" Address="5/4/17" Description="9. Dining room Dining Pendant Lights" DPTs="DPST-3-7" />
+      <GroupAddress Name="Pendant Light dimming value" Address="5/4/18" Description="9. Dining room Dining Pendant Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="Pendant Light Value" Address="5/4/19" Description="9. Dining room Dining Pendant Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="Handwash Lights Switching" Address="5/4/20" Description="9. Dining room Dining Bar Counter Cove Light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Handwash Lights Status" Address="5/4/21" Description="9. Dining room Dining Bar Counter Cove Light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Handwash Lights Dimming" Address="5/4/22" Description="9. Dining room Dining Bar Counter Cove Light" DPTs="DPST-3-7" />
+      <GroupAddress Name="Handwash Lights value" Address="5/4/23" Description="9. Dining room Dining Bar Counter Cove Light" DPTs="DPST-5-1" />
+      <GroupAddress Name="Handwash Lights Value Status" Address="5/4/24" Description="9. Dining room Dining Bar Counter Cove Light" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove Lights Switching" Address="5/4/25" Description="9. Dining room Switchable Circuits" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Lights Status" Address="5/4/26" Description="9. Dining room Switchable Circuits" DPTs="DPST-1-1" />
+      <GroupAddress Name="Fan 1 Switching" Address="5/4/27" Description="9. Dining room Switchable Circuits (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Fan 1 Status" Address="5/4/28" Description="9. Dining room Switchable Circuits (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Fan 2 switching" Address="5/4/29" Description="9. Dining room Switchable Circuits (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Fan 2 Status" Address="5/4/30" Description="9. Dining room Switchable Circuits (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Mini Dining Switching" Address="5/4/31" Description="9. Dining room Lights (6)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Mini Dining Status" Address="5/4/32" Description="9. Dining room Lights (6)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Mini Dining Dimming" Address="5/4/33" Description="9. Dining room Lights (6)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Mini Dining Value" Address="5/4/34" Description="9. Dining room Lights (6)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Mini Dining Value Status" Address="5/4/35" Description="9. Dining room Lights (6)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Mini Dining Chandelier Switching" Address="5/4/36" Description="04. Dining room Small Dining Chandelier" DPTs="DPST-1-1" />
+      <GroupAddress Name="Mini Dining Chandelier Status" Address="5/4/37" Description="04. Dining room Small Dining Chandelier" DPTs="DPST-1-1" />
+      <GroupAddress Name="Mini Dining Chandelier Dimming" Address="5/4/38" Description="04. Dining room Small Dining Chandelier" DPTs="DPST-3-7" />
+      <GroupAddress Name="Mini Dining Chandelier dimming value" Address="5/4/39" Description="04. Dining room Small Dining Chandelier" DPTs="DPST-5-1" />
+      <GroupAddress Name="Mini Dining Chandelier Value Status" Address="5/4/40" Description="04. Dining room Small Dining Chandelier" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sitout Middle Lights Switching" Address="5/4/41" Description="9. Dining room Lights (7)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitout Middle Lights Status" Address="5/4/42" Description="9. Dining room Lights (7)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitout Middle Lights Dimming" Address="5/4/43" Description="9. Dining room Lights (7)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Sitout Middle Lights value" Address="5/4/44" Description="9. Dining room Lights (7)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sitout Middle Lights Value Status" Address="5/4/45" Description="9. Dining room Lights (7)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sitout Corner Lights Switching" Address="5/4/46" Description="9. Dining room Lights (8)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitout Corner Lights Status" Address="5/4/47" Description="9. Dining room Lights (8)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitout Corner Lights Dimming" Address="5/4/48" Description="9. Dining room Lights (8)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Sitout Corner Lights Value" Address="5/4/49" Description="9. Dining room Lights (8)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sitout Corner Lights Value Status" Address="5/4/50" Description="9. Dining room Lights (8)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sitout Fan Switching" Address="5/4/51" Description="9. Dining room Switchable Circuits (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitout Fan Status" Address="5/4/52" Description="9. Dining room Switchable Circuits (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitout Side Main Movement" Address="5/4/53" Description="9. Dining room Curtains (2)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Sitout Side Main Step/Stop" Address="5/4/54" Description="9. Dining room Curtains (2)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Sitout Side Main blinds position" Address="5/4/55" Description="9. Dining room Curtains (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sitout Side Main slat position" Address="5/4/56" Description="9. Dining room Curtains (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sitout Side Sheer Movement" Address="5/4/57" Description="9. Dining room Curtains (3)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Sitout Side Sheer Step/Stop" Address="5/4/58" Description="9. Dining room Curtains (3)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Sitout Side Sheer blinds position" Address="5/4/59" Description="9. Dining room Curtains (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sitout Side Sheer slat position" Address="5/4/60" Description="9. Dining room Curtains (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Side Main Movement" Address="5/4/61" Description="9. Dining room Curtains (1)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Side Main Step/Stop" Address="5/4/62" Description="9. Dining room Curtains (1)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Side Main blinds position" Address="5/4/63" Description="9. Dining room Curtains (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Side Main slat position" Address="5/4/64" Description="9. Dining room Curtains (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Side Sheer Movement" Address="5/4/65" Description="9. Dining room Curtains" DPTs="DPST-1-8" />
+      <GroupAddress Name="Side Sheer Step/Stop" Address="5/4/66" Description="9. Dining room Curtains" DPTs="DPST-1-7" />
+      <GroupAddress Name="Side Sheer blinds position" Address="5/4/67" Description="9. Dining room Curtains" DPTs="DPST-5-1" />
+      <GroupAddress Name="Side Sheer slat position" Address="5/4/68" Description="9. Dining room Curtains" DPTs="DPST-5-1" />
+      <GroupAddress Name="Mini Dining Curtain 1 Movement" Address="5/4/69" Description="9. Dining room Curtains (6)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Mini Dining Curtain 1 Step/Stop" Address="5/4/70" Description="9. Dining room Curtains (6)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Mini Dining Curtain 1 blinds position" Address="5/4/71" Description="9. Dining room Curtains (6)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Mini Dining Curtain 1 slat position" Address="5/4/72" Description="9. Dining room Curtains (6)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Mini Dining Curtain 2 Movement" Address="5/4/73" Description="9. Dining room Curtains (4)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Mini Dining Curtain 2 Step/Stop" Address="5/4/74" Description="9. Dining room Curtains (4)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Mini Dining Curtain 2 blinds position" Address="5/4/75" Description="9. Dining room Curtains (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Mini Dining Curtain 2 slat position" Address="5/4/76" Description="9. Dining room Curtains (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Mini Dining Curtain 3 Movement" Address="5/4/77" Description="9. Dining room Curtains (5)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Mini Dining Curtain 3 Step/Stop" Address="5/4/78" Description="9. Dining room Curtains (5)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Mini Dining Curtain 3 blinds position" Address="5/4/79" Description="9. Dining room Curtains (5)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Mini Dining Curtain 3 slat position" Address="5/4/80" Description="9. Dining room Curtains (5)" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Entrance Lobby &amp; Parking" RangeStart="11520" RangeEnd="11775">
+      <GroupAddress Name="Lobby Lights Switching" Address="5/5/0" Description="Entrance Lobby Entrance Lobby Down Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Lobby Lights Status" Address="5/5/1" Description="Entrance Lobby Entrance Lobby Down Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Lobby Lights Dimming" Address="5/5/2" Description="Entrance Lobby Entrance Lobby Down Lights" DPTs="DPST-3-7" />
+      <GroupAddress Name="Lobby Lights dimming value" Address="5/5/3" Description="Entrance Lobby Entrance Lobby Down Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="Lobby Lights Value Status" Address="5/5/4" Description="Entrance Lobby Entrance Lobby Down Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="Directional Lights Switching" Address="5/5/5" Description="Entrance Lobby 8. Entry Lobby Directional Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Directional Lights Status" Address="5/5/6" Description="Entrance Lobby 8. Entry Lobby Directional Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Directional Lights Dimming" Address="5/5/7" Description="Entrance Lobby 8. Entry Lobby Directional Lights" DPTs="DPST-3-7" />
+      <GroupAddress Name="Directional Lights Value" Address="5/5/8" Description="Entrance Lobby 8. Entry Lobby Directional Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="Directional Lights Value Status" Address="5/5/9" Description="Entrance Lobby 8. Entry Lobby Directional Lights" DPTs="DPST-5-1" />
+      <GroupAddress Name="Foyer Lights Switching" Address="5/5/10" Description="Entrance Lobby Entrance Lobby Down Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Foyer Lights Status" Address="5/5/11" Description="Entrance Lobby Entrance Lobby Down Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Foyer Lights Dimming" Address="5/5/12" Description="Entrance Lobby Entrance Lobby Down Lights (1)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Foyer Lights Value" Address="5/5/13" Description="Entrance Lobby Entrance Lobby Down Lights (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Foyer Lights Value Status" Address="5/5/14" Description="Entrance Lobby Entrance Lobby Down Lights (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Car Porch DL Switching" Address="5/5/15" Description="Entrance Lobby Entrance Lobby Down Lights (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Car Porch DL Status" Address="5/5/16" Description="Entrance Lobby Entrance Lobby Down Lights (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Car Porch DL Dimming" Address="5/5/17" Description="Entrance Lobby Entrance Lobby Down Lights (2)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Car Porch DL dimming value" Address="5/5/18" Description="Entrance Lobby Entrance Lobby Down Lights (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Car Porch DL Value" Address="5/5/19" Description="Entrance Lobby Entrance Lobby Down Lights (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Car Porch Hanging Switching" Address="5/5/20" Description="Entrance Lobby 5. Directional Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Car Porch Hanging Status" Address="5/5/21" Description="Entrance Lobby 5. Directional Lights" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="Terrace" RangeStart="11776" RangeEnd="12031">
+      <GroupAddress Name="Starircase Lights Switching" Address="5/6/0" Description="Terrace/Balcony Dimmable light (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Starircase Lights Status" Address="5/6/1" Description="Terrace/Balcony Dimmable light (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Starircase Lights Dimming" Address="5/6/2" Description="Terrace/Balcony Dimmable light (1)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Starircase Lights dimming value" Address="5/6/3" Description="Terrace/Balcony Dimmable light (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Starircase Lights Value Status" Address="5/6/4" Description="Terrace/Balcony Dimmable light (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Passage Lights 1 Switching" Address="5/6/5" Description="Terrace/Balcony Dimmable light (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Passage Lights 1 Status" Address="5/6/6" Description="Terrace/Balcony Dimmable light (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Passage Lights 1 Dimming" Address="5/6/7" Description="Terrace/Balcony Dimmable light (2)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Passage Lights 1 Value" Address="5/6/8" Description="Terrace/Balcony Dimmable light (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Passage Lights 1 Value Status" Address="5/6/9" Description="Terrace/Balcony Dimmable light (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Conter Lights Switching" Address="5/6/10" Description="Terrace/Balcony Dimmable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Conter Lights Status" Address="5/6/11" Description="Terrace/Balcony Dimmable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Conter Lights Dimming" Address="5/6/12" Description="Terrace/Balcony Dimmable light" DPTs="DPST-3-7" />
+      <GroupAddress Name="Conter Lights Value" Address="5/6/13" Description="Terrace/Balcony Dimmable light" DPTs="DPST-5-1" />
+      <GroupAddress Name="Conter Lights Value Status" Address="5/6/14" Description="Terrace/Balcony Dimmable light" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sitting Lights Switching" Address="5/6/15" Description="Terrace/Balcony Dimmable light (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitting Lights Status" Address="5/6/16" Description="Terrace/Balcony Dimmable light (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitting Lights Dimming" Address="5/6/17" Description="Terrace/Balcony Dimmable light (3)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Sitting Lights value" Address="5/6/18" Description="Terrace/Balcony Dimmable light (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sitting Lights Value Status" Address="5/6/19" Description="Terrace/Balcony Dimmable light (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Passage Lights 2 Switching" Address="5/6/20" Description="Terrace/Balcony Dimmable light (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Passage Lights 2 Status" Address="5/6/21" Description="Terrace/Balcony Dimmable light (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Passage Lights 2 Dimming" Address="5/6/22" Description="Terrace/Balcony Dimmable light (4)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Passage Lights 2 dimming value" Address="5/6/23" Description="Terrace/Balcony Dimmable light (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Passage Lights 2 Value" Address="5/6/24" Description="Terrace/Balcony Dimmable light (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Pendent Light Switching" Address="5/6/25" Description="Terrace/Balcony Switchable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Pendent Light Status" Address="5/6/26" Description="Terrace/Balcony Switchable light" DPTs="DPST-1-1" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="GYM &amp; Spa" RangeStart="12288" RangeEnd="14335">
+    <GroupRange Name="Passage" RangeStart="12288" RangeEnd="12543">
+      <GroupAddress Name="Varandah DL Switching" Address="6/0/0" Description="1. Hallway Dimmable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Varandah DL Status" Address="6/0/1" Description="1. Hallway Dimmable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Varandah DL Dimming" Address="6/0/2" Description="1. Hallway Dimmable light" DPTs="DPST-3-7" />
+      <GroupAddress Name="Varandah DL dimming value" Address="6/0/3" Description="1. Hallway Dimmable light" DPTs="DPST-5-1" />
+      <GroupAddress Name="Varandah DL Value &amp; Status" Address="6/0/4" Description="1. Hallway Dimmable light" DPTs="DPST-5-1" />
+      <GroupAddress Name="Passage Lights Switching" Address="6/0/5" Description="1. Hallway Dimmable light (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Passage Lights Status" Address="6/0/6" Description="1. Hallway Dimmable light (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Passage Lights Dimming" Address="6/0/7" Description="1. Hallway Dimmable light (1)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Passage Lights dimming value" Address="6/0/8" Description="1. Hallway Dimmable light (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Passage Lights Value &amp; Status" Address="6/0/9" Description="1. Hallway Dimmable light (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Bar Lights Switching" Address="6/0/10" Description="1. Hallway Dimmable light (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bar Lights Status" Address="6/0/11" Description="1. Hallway Dimmable light (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bar Lights Dimming" Address="6/0/12" Description="1. Hallway Dimmable light (2)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Bar Lights dimming value" Address="6/0/13" Description="1. Hallway Dimmable light (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Bar Lights Value Status" Address="6/0/14" Description="1. Hallway Dimmable light (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sitout Lights Switching" Address="6/0/15" Description="1. Hallway Dimmable light (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitout Lights Status" Address="6/0/16" Description="1. Hallway Dimmable light (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitout Lights Dimming" Address="6/0/17" Description="1. Hallway Dimmable light (3)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Sitout Lights dimming value" Address="6/0/18" Description="1. Hallway Dimmable light (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sitout Lights Value Status" Address="6/0/19" Description="1. Hallway Dimmable light (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sitout Fan Switching" Address="6/0/20" Description="1. Hallway Fan (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sitout Fan Status" Address="6/0/21" Description="1. Hallway Fan (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Landscape Lights 1 Switching" Address="6/0/22" Description="4. Gym Landscape Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Landscape Lights 1 Status" Address="6/0/23" Description="4. Gym Landscape Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Landscape Lights 2 Switching" Address="6/0/24" Description="4. Gym Landscape Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Landscape Lights 2 Status" Address="6/0/25" Description="4. Gym Landscape Lights (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Entry Fan Switching" Address="6/0/26" Description="1. Hallway Fan" DPTs="DPST-1-1" />
+      <GroupAddress Name="Entry Fan Status" Address="6/0/27" Description="1. Hallway Fan" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bar Fan Switching" Address="6/0/28" Description="1. Hallway Fan (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bar Fan Status" Address="6/0/29" Description="1. Hallway Fan (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Passage &amp; Bar Lights" Address="6/0/30" DPTs="DPST-1-1" />
+      <GroupAddress Name="Passage &amp; Bar Dim" Address="6/0/31" DPTs="DPST-3-7" />
+      <GroupAddress Name="All Landscap Lights " Address="6/0/32" DPTs="DPT-1" />
+      <GroupAddress Name="All On/off" Address="6/0/33" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="Spa" RangeStart="12544" RangeEnd="12799">
+      <GroupAddress Name="Down Lights Switching" Address="6/1/0" Description="2. Spa Dimmable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights Status" Address="6/1/1" Description="2. Spa Dimmable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights Dimming" Address="6/1/2" Description="2. Spa Dimmable light" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Lights dimming value" Address="6/1/3" Description="2. Spa Dimmable light" DPTs="DPST-5-1" />
+      <GroupAddress Name="Down Lights Value Status" Address="6/1/4" Description="2. Spa Dimmable light" DPTs="DPST-5-1" />
+      <GroupAddress Name="Mirror Light Switching" Address="6/1/5" Description="2. Spa Dimmable light (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Mirror Light Status" Address="6/1/6" Description="2. Spa Dimmable light (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Mirror Light Dimming" Address="6/1/7" Description="2. Spa Dimmable light (1)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Mirror Light dimming value" Address="6/1/8" Description="2. Spa Dimmable light (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Mirror Light Value" Address="6/1/9" Description="2. Spa Dimmable light (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Shower Lights Switching" Address="6/1/10" Description="2. Spa Dimmable light (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Shower Lights Status" Address="6/1/11" Description="2. Spa Dimmable light (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Shower Lights Dimming" Address="6/1/12" Description="2. Spa Dimmable light (2)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Shower Lights dimming value" Address="6/1/13" Description="2. Spa Dimmable light (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Shower Lights Value Status" Address="6/1/14" Description="2. Spa Dimmable light (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cupboard Light Switching" Address="6/1/15" Description="2. Spa Dimmable light (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cupboard Light Status" Address="6/1/16" Description="2. Spa Dimmable light (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cupboard Light Dimming" Address="6/1/17" Description="2. Spa Dimmable light (3)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cupboard Light dimming value" Address="6/1/18" Description="2. Spa Dimmable light (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cupboard Light Value Status" Address="6/1/19" Description="2. Spa Dimmable light (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Lanscap Lights Switching" Address="6/1/20" Description="Utility room Network_Landscape (39)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Lanscap Lights Status" Address="6/1/21" Description="Utility room Network_Landscape (39)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Shower Blind Movement" Address="6/1/22" Description="2. Spa Sun protection" DPTs="DPST-1-8" />
+      <GroupAddress Name="Shower Blind Step/Stop" Address="6/1/23" Description="2. Spa Sun protection" DPTs="DPST-1-7" />
+      <GroupAddress Name="Shower Blind blinds position" Address="6/1/24" Description="2. Spa Sun protection" DPTs="DPST-5-1" />
+      <GroupAddress Name="Shower Blind slat position" Address="6/1/25" Description="2. Spa Sun protection" DPTs="DPST-5-1" />
+      <GroupAddress Name="Spa Blind Movement" Address="6/1/26" Description="2. Spa Sun protection (1)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Spa Blind Step/Stop" Address="6/1/27" Description="2. Spa Sun protection (1)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Spa Blind blinds position" Address="6/1/28" Description="2. Spa Sun protection (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Spa Blind slat position" Address="6/1/29" Description="2. Spa Sun protection (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="All Curtains move" Address="6/1/30" DPTs="DPT-1" />
+      <GroupAddress Name="All Curtain stop" Address="6/1/31" DPTs="DPST-1-8" />
+      <GroupAddress Name="Mirror &amp; Cupboard Lights " Address="6/1/32" DPTs="DPT-1" />
+      <GroupAddress Name="Mirror &amp; Cupboard Lights Dim" Address="6/1/33" DPTs="DPST-3-7" />
+      <GroupAddress Name="All On/off" Address="6/1/34" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="Massage Room" RangeStart="12800" RangeEnd="13055">
+      <GroupAddress Name="Down Lights Switching" Address="6/2/0" Description="3. Massage Room Dimmable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights Status" Address="6/2/1" Description="3. Massage Room Dimmable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights Dimming" Address="6/2/2" Description="3. Massage Room Dimmable light" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Lights dimming value" Address="6/2/3" Description="3. Massage Room Dimmable light" DPTs="DPST-5-1" />
+      <GroupAddress Name="Down Lights Value Status" Address="6/2/4" Description="3. Massage Room Dimmable light" DPTs="DPST-5-1" />
+      <GroupAddress Name="Wall Washers Switching" Address="6/2/5" Description="3. Massage Room Dimmable light (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Wall Washers Status" Address="6/2/6" Description="3. Massage Room Dimmable light (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Wall Washers Dimming" Address="6/2/7" Description="3. Massage Room Dimmable light (1)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Wall Washers dimming value" Address="6/2/8" Description="3. Massage Room Dimmable light (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Wall Washers Value Status" Address="6/2/9" Description="3. Massage Room Dimmable light (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove Light Switching" Address="6/2/10" Description="3. Massage Room Dimmable light (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Light Status" Address="6/2/11" Description="3. Massage Room Dimmable light (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Light Dimming" Address="6/2/12" Description="3. Massage Room Dimmable light (2)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove Light value" Address="6/2/13" Description="3. Massage Room Dimmable light (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove Light Value Status" Address="6/2/14" Description="3. Massage Room Dimmable light (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Pendent Lights Switching" Address="6/2/15" Description="3. Massage Room Switchable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Pendent Lights Status" Address="6/2/16" Description="3. Massage Room Switchable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Fan Switching" Address="6/2/17" Description="3. Massage Room Switchable light (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Fan Status" Address="6/2/18" Description="3. Massage Room Switchable light (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Blinds Movement" Address="6/2/19" Description="3. Massage Room Masssage Room Blind" DPTs="DPST-1-8" />
+      <GroupAddress Name="Blinds Step/Stop" Address="6/2/20" Description="3. Massage Room Masssage Room Blind" DPTs="DPST-1-7" />
+      <GroupAddress Name="Blinds position" Address="6/2/21" Description="3. Massage Room Masssage Room Blind" DPTs="DPST-5-1" />
+      <GroupAddress Name="Blinds slat position" Address="6/2/22" Description="3. Massage Room Masssage Room Blind" DPTs="DPST-5-1" />
+      <GroupAddress Name="Down &amp; Wall Washer" Address="6/2/23" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down &amp; Wall Washer Dim" Address="6/2/24" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove &amp; Pendent" Address="6/2/25" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove &amp; Pendent Dim" Address="6/2/26" DPTs="DPST-3-7" />
+      <GroupAddress Name="All On/off" Address="6/2/27" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="GYM" RangeStart="13056" RangeEnd="13311">
+      <GroupAddress Name="Profile Switching" Address="6/3/0" Description="4. Gym 1. Linear Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Profile Status" Address="6/3/1" Description="4. Gym 1. Linear Lights" DPTs="DPST-1-1" />
+      <GroupAddress Name="Left Blinds Movement" Address="6/3/2" Description="4. Gym Sun protection" DPTs="DPST-1-8" />
+      <GroupAddress Name="Left Blinds Step/Stop" Address="6/3/3" Description="4. Gym Sun protection" DPTs="DPST-1-7" />
+      <GroupAddress Name="Left Blinds blinds position" Address="6/3/4" Description="4. Gym Sun protection" DPTs="DPST-5-1" />
+      <GroupAddress Name="Left Blinds slat position" Address="6/3/5" Description="4. Gym Sun protection" DPTs="DPST-5-1" />
+      <GroupAddress Name="Right Blinds Movement" Address="6/3/6" Description="4. Gym Sun protection (1)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Right Blinds Step/Stop" Address="6/3/7" Description="4. Gym Sun protection (1)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Right Blinds blinds position" Address="6/3/8" Description="4. Gym Sun protection (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Right Blinds slat position" Address="6/3/9" Description="4. Gym Sun protection (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Blinds Movement" Address="6/3/10" Description="4. Gym Sun protection (2)" DPTs="DPST-1-8" />
+      <GroupAddress Name="Blinds Step/Stop" Address="6/3/11" Description="4. Gym Sun protection (2)" DPTs="DPST-1-7" />
+      <GroupAddress Name="Blinds blinds position" Address="6/3/12" Description="4. Gym Sun protection (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Blinds slat position" Address="6/3/13" Description="4. Gym Sun protection (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="All On/off" Address="6/3/14" DPTs="DPST-1-1" />
+      <GroupAddress Name="All Curtains Move" Address="6/3/15" DPTs="DPT-1" />
+      <GroupAddress Name="All Curtains Stop" Address="6/3/16" DPTs="DPST-1-8" />
+      <GroupAddress Name="Down Lights Switching" Address="6/3/17" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights Switching Status" Address="6/3/18" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights Dimming" Address="6/3/19" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Lights Value" Address="6/3/20" DPTs="DPST-5-1" />
+      <GroupAddress Name="Down Lights Value Status" Address="6/3/21" DPTs="DPST-5-1" />
+      <GroupAddress Name="Fan Switching" Address="6/3/22" DPTs="DPT-1" />
+      <GroupAddress Name="Fan Switching Status" Address="6/3/23" DPTs="DPT-1" />
+    </GroupRange>
+    <GroupRange Name="South Gazebo" RangeStart="13312" RangeEnd="13567">
+      <GroupAddress Name="Down Lights 1 Switching" Address="6/4/0" Description="Terrace Dimmable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights 1 Status" Address="6/4/1" Description="Terrace Dimmable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights 1 Dimming" Address="6/4/2" Description="Terrace Dimmable light" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Lights 1 value" Address="6/4/3" Description="Terrace Dimmable light" DPTs="DPST-5-1" />
+      <GroupAddress Name="Down Lights 1 Value Status" Address="6/4/4" Description="Terrace Dimmable light" DPTs="DPST-5-1" />
+      <GroupAddress Name="Down Lights 2 Switching" Address="6/4/5" Description="Terrace Dimmable light (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights 2 Status" Address="6/4/6" Description="Terrace Dimmable light (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights 2 Dimming" Address="6/4/7" Description="Terrace Dimmable light (1)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Lights 2 value" Address="6/4/8" Description="Terrace Dimmable light (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Down Lights 2 Value Status" Address="6/4/9" Description="Terrace Dimmable light (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Fan 1 Switching" Address="6/4/10" Description="Terrace Switchable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Fan 1 Status" Address="6/4/11" Description="Terrace Switchable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Fan 2 Switching" Address="6/4/12" Description="Terrace Switchable light (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Fan 2 Status" Address="6/4/13" Description="Terrace Switchable light (1)" DPTs="DPST-1-1" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="Parking" RangeStart="14336" RangeEnd="16383">
+    <GroupRange Name="Parking" RangeStart="14336" RangeEnd="14591">
+      <GroupAddress Name="Closed Parking Shutter 1 Switching" Address="7/0/0" Description="Parking place Dimmable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Closed Parking Shutter 1 Status" Address="7/0/1" Description="Parking place Dimmable light" DPTs="DPST-1-1" />
+      <GroupAddress Name="Closed Parking Shutter 1 Dimming" Address="7/0/2" Description="Parking place Dimmable light" DPTs="DPST-3-7" />
+      <GroupAddress Name="Closed Parking Shutter 1 dimming value" Address="7/0/3" Description="Parking place Dimmable light" DPTs="DPST-5-1" />
+      <GroupAddress Name="Closed Parking Shutter 1 Value" Address="7/0/4" Description="Parking place Dimmable light" DPTs="DPST-5-1" />
+      <GroupAddress Name="Closed Parking Shutter 2 Switching" Address="7/0/5" Description="Parking place Dimmable light (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Closed Parking Shutter 2 Status" Address="7/0/6" Description="Parking place Dimmable light (1)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Closed Parking Shutter 2 Dimming" Address="7/0/7" Description="Parking place Dimmable light (1)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Closed Parking Shutter 2 dimming value" Address="7/0/8" Description="Parking place Dimmable light (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Closed Parking Shutter 2 Value" Address="7/0/9" Description="Parking place Dimmable light (1)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Closed Parking Shutter 3 Switching" Address="7/0/10" Description="Parking place Dimmable light (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Closed Parking Shutter 3 Status" Address="7/0/11" Description="Parking place Dimmable light (2)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Closed Parking Shutter 3 Dimming" Address="7/0/12" Description="Parking place Dimmable light (2)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Closed Parking Shutter 3 dimming value" Address="7/0/13" Description="Parking place Dimmable light (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Closed Parking Shutter 3 Value" Address="7/0/14" Description="Parking place Dimmable light (2)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Closed Parking Shutter 4 Switching" Address="7/0/15" Description="Parking place Dimmable light (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Closed Parking Shutter 4 Status" Address="7/0/16" Description="Parking place Dimmable light (3)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Closed Parking Shutter 4 Dimming" Address="7/0/17" Description="Parking place Dimmable light (3)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Closed Parking Shutter 4 dimming value" Address="7/0/18" Description="Parking place Dimmable light (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Closed Parking Shutter 4 Value" Address="7/0/19" Description="Parking place Dimmable light (3)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Open Parking 1 Switching" Address="7/0/20" Description="Parking place Dimmable light (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Open Parking 1 Status" Address="7/0/21" Description="Parking place Dimmable light (4)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Open Parking 1 Dimming" Address="7/0/22" Description="Parking place Dimmable light (4)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Open Parking 1 dimming value" Address="7/0/23" Description="Parking place Dimmable light (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Open Parking 1 Value" Address="7/0/24" Description="Parking place Dimmable light (4)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Open Parking 2 Switching" Address="7/0/25" Description="Parking place Dimmable light (5)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Open Parking 2 Status" Address="7/0/26" Description="Parking place Dimmable light (5)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Open Parking 2 Dimming" Address="7/0/27" Description="Parking place Dimmable light (5)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Open Parking 2 dimming value" Address="7/0/28" Description="Parking place Dimmable light (5)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Open Parking 2 Value" Address="7/0/29" Description="Parking place Dimmable light (5)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Stor Ent. Switching" Address="7/0/30" Description="Parking place Dimmable light (6)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Stor Ent. Status" Address="7/0/31" Description="Parking place Dimmable light (6)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Stor Ent. Dimming" Address="7/0/32" Description="Parking place Dimmable light (6)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Stor Ent. dimming value" Address="7/0/33" Description="Parking place Dimmable light (6)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Stor Ent. Value" Address="7/0/34" Description="Parking place Dimmable light (6)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Stor Lights Switching" Address="7/0/35" Description="Parking place Dimmable light (7)" DPTs="DPST-1-1" />
+      <GroupAddress Name="Stor Lights Status" Address="7/0/36" Description="Parking place Dimmable light (7)" DPTs="DPT-1" />
+      <GroupAddress Name="Stor Lights Dimming" Address="7/0/37" Description="Parking place Dimmable light (7)" DPTs="DPST-3-7" />
+      <GroupAddress Name="Stor Lights dimming value" Address="7/0/38" Description="Parking place Dimmable light (7)" DPTs="DPST-5-1" />
+      <GroupAddress Name="Stor Lights Value" Address="7/0/39" Description="Parking place Dimmable light (7)" DPTs="DPST-5-1" />
+      <GroupAddress Name="All On/off" Address="7/0/40" DPTs="DPST-1-1" />
+      <GroupAddress Name="Closed Parking 1" Address="7/0/41" DPTs="DPT-1" />
+      <GroupAddress Name="Closed Parking 1 Dim" Address="7/0/42" DPTs="DPST-3-7" />
+      <GroupAddress Name="Closed Parking 2" Address="7/0/43" DPTs="DPST-1-1" />
+      <GroupAddress Name="Closed Parking 2 Dim" Address="7/0/44" DPTs="DPST-3-7" />
+      <GroupAddress Name="Open Parking " Address="7/0/45" DPTs="DPST-1-1" />
+      <GroupAddress Name="Open Parking Dim" Address="7/0/46" DPTs="DPST-3-7" />
+    </GroupRange>
+  </GroupRange>
+</GroupAddress-Export>

@@ -1,0 +1,771 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<GroupAddress-Export xmlns="http://knx.org/xml/ga-export/01">
+  <GroupRange Name="Celllar 02" RangeStart="1" RangeEnd="2047" Unfiltered="true" />
+  <GroupRange Name="Celllar 01" RangeStart="2048" RangeEnd="4095" Unfiltered="true">
+    <GroupRange Name="Lounge / Dance Floor" RangeStart="2048" RangeEnd="2303" Unfiltered="true">
+      <GroupAddress Name="Corner Down Lights On/off &amp; status" Address="1/0/0" Unfiltered="true" />
+      <GroupAddress Name="Corner Down Lights Dim" Address="1/0/1" Unfiltered="true" />
+      <GroupAddress Name="Corner Down Lights Value &amp; status" Address="1/0/2" Unfiltered="true" />
+      <GroupAddress Name="Middle Down Lights On/off &amp; status" Address="1/0/3" Unfiltered="true" />
+      <GroupAddress Name="Middle Down Lights Dim" Address="1/0/4" Unfiltered="true" />
+      <GroupAddress Name="Middle Down Lights Value &amp; status" Address="1/0/5" Unfiltered="true" />
+      <GroupAddress Name="Down Lights On/off &amp; status" Address="1/0/6" Unfiltered="true" />
+      <GroupAddress Name="Down Lights Dim" Address="1/0/7" Unfiltered="true" />
+      <GroupAddress Name="Down Lights Value &amp; status" Address="1/0/8" Unfiltered="true" />
+      <GroupAddress Name="Spot Lights On/off &amp; status" Address="1/0/9" Unfiltered="true" />
+      <GroupAddress Name="Spot Lights Dim" Address="1/0/10" Unfiltered="true" />
+      <GroupAddress Name="Spot Lights Value &amp; status" Address="1/0/11" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="Home office / Waiting Room" RangeStart="2304" RangeEnd="2559" Unfiltered="true">
+      <GroupAddress Name="Down Lights On/off &amp; status" Address="1/1/0" Unfiltered="true" />
+      <GroupAddress Name="Down Lights Dim" Address="1/1/1" Unfiltered="true" />
+      <GroupAddress Name="Down Lights Value &amp; status" Address="1/1/2" Unfiltered="true" />
+      <GroupAddress Name="Cove Light On/off &amp; status" Address="1/1/3" Unfiltered="true" />
+      <GroupAddress Name="Cove Light Dim" Address="1/1/4" Unfiltered="true" />
+      <GroupAddress Name="Cove Light Value &amp; status" Address="1/1/5" Unfiltered="true" />
+      <GroupAddress Name="Waiting Room Light On/off &amp; status" Address="1/1/6" Unfiltered="true" />
+      <GroupAddress Name="Waiting Room Light Dim" Address="1/1/7" Unfiltered="true" />
+      <GroupAddress Name="Waiting Room Light Value &amp; status" Address="1/1/8" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="Poker Room" RangeStart="2560" RangeEnd="2815" Unfiltered="true">
+      <GroupAddress Name="Down Lights On/off &amp; status" Address="1/2/0" Unfiltered="true" />
+      <GroupAddress Name="Down Lights Dim" Address="1/2/1" Unfiltered="true" />
+      <GroupAddress Name="Down Lights Value &amp; status" Address="1/2/2" Unfiltered="true" />
+      <GroupAddress Name="Cove Light On/off &amp; status" Address="1/2/3" Unfiltered="true" />
+      <GroupAddress Name="Cove Light Dim" Address="1/2/4" Unfiltered="true" />
+      <GroupAddress Name="Cove Light Value &amp; status" Address="1/2/5" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="Bar Conter" RangeStart="2816" RangeEnd="3071" Unfiltered="true" />
+    <GroupRange Name="Kitchen &amp; Service Pantry" RangeStart="3072" RangeEnd="3327" Unfiltered="true" />
+    <GroupRange Name="Lift Lobby &amp; " RangeStart="3328" RangeEnd="3583" Unfiltered="true" />
+    <GroupRange Name="Entertainment Area" RangeStart="3584" RangeEnd="3839" Unfiltered="true" />
+    <GroupRange Name="Car Parking " RangeStart="3840" RangeEnd="4095" Unfiltered="true" />
+  </GroupRange>
+  <GroupRange Name="Ground Floor" RangeStart="4096" RangeEnd="6143" Unfiltered="true">
+    <GroupRange Name="Guest Bedroom" RangeStart="4096" RangeEnd="4351" Unfiltered="true">
+      <GroupAddress Name="Down Lights On/off &amp; status" Address="2/0/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights Dim" Address="2/0/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Lights Value &amp; status" Address="2/0/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Profile Lights On/off &amp; status" Address="2/0/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Profile Lights Dim" Address="2/0/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Profile Lights Value &amp; status" Address="2/0/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove Light On/off &amp; status" Address="2/0/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Light Dim" Address="2/0/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove Light Value &amp; status" Address="2/0/8" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Foot Lamp On/off &amp; status" Address="2/0/9" Unfiltered="true" />
+      <GroupAddress Name="Foot Lamp Dim" Address="2/0/10" Unfiltered="true" />
+      <GroupAddress Name="Foot Lamp Value &amp; status" Address="2/0/11" Unfiltered="true" />
+      <GroupAddress Name="Fan On/off &amp; status" Address="2/0/12" Unfiltered="true" />
+      <GroupAddress Name="Fan Light On/off &amp; status" Address="2/0/13" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="Lift Lobby &amp; Stair Case" RangeStart="4352" RangeEnd="4607" Unfiltered="true">
+      <GroupAddress Name="Lift Lobby Lights On/off &amp; status" Address="2/1/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Lift Lobby Lights Dim" Address="2/1/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Lift Lobby Lights value &amp; status" Address="2/1/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Passage Lights On/off &amp; status" Address="2/1/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Passage Lights Dim" Address="2/1/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Passage Lights value &amp; status" Address="2/1/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Service Lift Lights On/off &amp; status" Address="2/1/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Service Lift Lights Dim" Address="2/1/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Service Lift Lights value &amp; status" Address="2/1/8" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Powder Room Lights On/off &amp; status" Address="2/1/9" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Powder Room Lights Dim" Address="2/1/10" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Powder Room Lights value &amp; status" Address="2/1/11" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Lift Lobby Wall Lights On/off &amp; status" Address="2/1/12" Unfiltered="true" />
+      <GroupAddress Name="Emty" Address="2/1/13" Unfiltered="true" />
+      <GroupAddress Name="Emty" Address="2/1/14" Unfiltered="true" />
+      <GroupAddress Name="Emty" Address="2/1/15" Unfiltered="true" />
+      <GroupAddress Name="Stair Case Railing Lights On/off &amp; status" Address="2/1/16" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Stair Case Railing Lights Dim" Address="2/1/17" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Stair Case Railing Lights Value &amp; status" Address="2/1/18" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Stair Case Stepup Lights On/off &amp; status" Address="2/1/19" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Stair Case Stepup Lights Dim" Address="2/1/20" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Stair Case Stepup Lights Value &amp; status" Address="2/1/21" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Stair Case Wall Strip Lights On/off &amp; status" Address="2/1/23" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Stair Case Wall Strip Lights Dim" Address="2/1/24" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Stair Case Wall Strip Lights Value &amp; status" Address="2/1/25" Unfiltered="true" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Dining" RangeStart="4608" RangeEnd="4863" Unfiltered="true">
+      <GroupAddress Name="Down Lights On/off &amp; status" Address="2/2/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights Dim" Address="2/2/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Lights Value &amp; status" Address="2/2/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Corner Lights On/off &amp; status" Address="2/2/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Corner Lights Dim" Address="2/2/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Corner Lights Value &amp; status" Address="2/2/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Spot Lights On/off &amp; status" Address="2/2/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Spot Lights Dim" Address="2/2/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Spot Lights Value &amp; status" Address="2/2/8" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove Light On/off &amp; status" Address="2/2/9" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Light Dim" Address="2/2/10" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove Light Value &amp; status" Address="2/2/11" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Dining Table Light 1 On/off &amp; status" Address="2/2/12" Unfiltered="true" />
+      <GroupAddress Name="Dining Table Light 2 On/off &amp; status" Address="2/2/13" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="Dry Kitchen" RangeStart="4864" RangeEnd="5119" Unfiltered="true">
+      <GroupAddress Name="Down Lights On/off &amp; status" Address="2/3/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights Dim" Address="2/3/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Lights Value &amp; status" Address="2/3/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Corner Lights On/off &amp; status" Address="2/3/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Corner Lights Dim" Address="2/3/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Corner Lights Value &amp; status" Address="2/3/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove Light on/off &amp; status" Address="2/3/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Light Dim" Address="2/3/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove Light Value &amp; status" Address="2/3/8" Unfiltered="true" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Pooja &amp; Grand Room" RangeStart="5120" RangeEnd="5375" Unfiltered="true">
+      <GroupAddress Name="Pooja Down Lights On/off &amp; status" Address="2/4/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Pooja Down Lights Dim" Address="2/4/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Pooja Down Lights Value &amp; status" Address="2/4/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Pooja Cove Light On/off &amp; status" Address="2/4/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Pooja Cove Light Dim" Address="2/4/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Pooja Cove Light Value &amp; status" Address="2/4/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Pooja Wall Strip Light On/off &amp; status" Address="2/4/6" Unfiltered="true" />
+      <GroupAddress Name="Pooja Wall Light On/off &amp; status" Address="2/4/7" Unfiltered="true" />
+      <GroupAddress Name="Grand Room Down Light On/off &amp; status" Address="2/4/8" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Grand Room Down Light Dim" Address="2/4/9" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Grand Room Down Light Value &amp; status" Address="2/4/10" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Grand Room Cove Light On/off &amp; status" Address="2/4/11" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Grand Room Cove Light Dim" Address="2/4/12" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Grand Room Cove Light Value &amp; status" Address="2/4/13" Unfiltered="true" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Drawing Room" RangeStart="5376" RangeEnd="5631" Unfiltered="true">
+      <GroupAddress Name="Down Light On/off &amp; status" Address="2/5/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Light Dim" Address="2/5/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Light Value &amp; status" Address="2/5/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Blade Light On/off &amp; status" Address="2/5/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Blade Light Dim" Address="2/5/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Blade Light Value &amp; status" Address="2/5/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Profile Light On/off &amp; status" Address="2/5/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Profile Light Dim" Address="2/5/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Profile Light Value &amp; status" Address="2/5/8" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove Light On/off &amp; status" Address="2/5/9" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Light Dim" Address="2/5/10" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove Light Value &amp; status" Address="2/5/11" Unfiltered="true" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Foyer &amp; Entrance" RangeStart="5632" RangeEnd="5887" Unfiltered="true" />
+    <GroupRange Name="Lawn Area" RangeStart="5888" RangeEnd="6143" Unfiltered="true" />
+  </GroupRange>
+  <GroupRange Name="First Floor" RangeStart="6144" RangeEnd="8191" Unfiltered="true">
+    <GroupRange Name="Home Theater" RangeStart="6144" RangeEnd="6399" Unfiltered="true">
+      <GroupAddress Name="Front Lights On/off &amp; status" Address="3/0/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Front Lights Dim" Address="3/0/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Front Lights Value &amp; status" Address="3/0/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Down Lights On/off &amp; status" Address="3/0/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights Dim" Address="3/0/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Lights Value &amp; status" Address="3/0/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Wall Strip Lights On/off &amp; status" Address="3/0/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Wall Strip Lights Dim" Address="3/0/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Wall Strip Lights Value &amp; status" Address="3/0/8" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Wall Lights On/off &amp; status" Address="3/0/9" Unfiltered="true" />
+      <GroupAddress Name="Wall Lights Dim" Address="3/0/10" Unfiltered="true" />
+      <GroupAddress Name="Wall Lights Value &amp; status" Address="3/0/11" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="Library" RangeStart="6400" RangeEnd="6655" Unfiltered="true">
+      <GroupAddress Name="Down Lights On/off &amp; status" Address="3/1/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights Dim" Address="3/1/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Lights Value &amp; status" Address="3/1/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove Lights On/off &amp; status" Address="3/1/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Lights Dim" Address="3/1/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove Lights Value &amp; status" Address="3/1/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Chandiler On/off &amp; status" Address="3/1/6" Unfiltered="true" />
+      <GroupAddress Name="Chandiler Dim" Address="3/1/7" Unfiltered="true" />
+      <GroupAddress Name="Chandiler Value &amp; status" Address="3/1/8" Unfiltered="true" />
+      <GroupAddress Name="Caboard Light On/off &amp; status" Address="3/1/9" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="Entertainment Lounge" RangeStart="6656" RangeEnd="6911" Unfiltered="true">
+      <GroupAddress Name="Side Down Light On/off &amp; status" Address="3/2/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Side Down Light Dim" Address="3/2/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Side Down Light Value &amp; status" Address="3/2/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Lounge Down Light 1 On/off &amp; status" Address="3/2/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Lounge Down Light 1 Dim" Address="3/2/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Lounge Down Light 1 Value &amp; status" Address="3/2/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Lounge Down Light 2 On/off &amp; status" Address="3/2/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Lounge Down Light 2 Dim" Address="3/2/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Lounge Down Light 2 Value &amp; status" Address="3/2/8" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Profile Light On/off &amp; status" Address="3/2/9" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Profile Light Dim" Address="3/2/10" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Profile Light Value &amp; status" Address="3/2/11" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove Lights On/off &amp; status" Address="3/2/12" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Lights Dim" Address="3/2/13" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove Lights Value &amp; status" Address="3/2/14" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Chandiler On/off &amp; status" Address="3/2/15" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="Salon" RangeStart="6912" RangeEnd="7167" Unfiltered="true">
+      <GroupAddress Name="Down Light On/off &amp; status" Address="3/3/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Light Dim" Address="3/3/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Light Value &amp; status" Address="3/3/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Middle Lights On/off &amp; status" Address="3/3/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Middle Lights Dim" Address="3/3/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Middle Lights Value &amp; status" Address="3/3/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove Lights On/off &amp; status" Address="3/3/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Lights Dim" Address="3/3/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove Lights Value &amp; status" Address="3/3/8" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Balcony Floor Lights On/off &amp; status" Address="3/3/9" Unfiltered="true" />
+      <GroupAddress Name="Main Curtain Move" Address="3/3/10" Unfiltered="true" />
+      <GroupAddress Name="Main Curtain Stop" Address="3/3/11" Unfiltered="true" />
+      <GroupAddress Name="Sheer Curtain Move" Address="3/3/12" Unfiltered="true" />
+      <GroupAddress Name="Sheer Curtain Stop" Address="3/3/13" Unfiltered="true" />
+      <GroupAddress Name="Blind 1 Curtain Move" Address="3/3/14" Unfiltered="true" />
+      <GroupAddress Name="Blind 1 Curtain Stop" Address="3/3/15" Unfiltered="true" />
+      <GroupAddress Name="Blind 2 Curtain Move" Address="3/3/16" Unfiltered="true" />
+      <GroupAddress Name="Blind 2 Curtain Stop" Address="3/3/17" Unfiltered="true" />
+      <GroupAddress Name="Blind 3 Curtain Move" Address="3/3/18" Unfiltered="true" />
+      <GroupAddress Name="Blind 3 Curtain Stop" Address="3/3/19" Unfiltered="true" />
+      <GroupAddress Name="Blind 4 Curtain Move" Address="3/3/20" Unfiltered="true" />
+      <GroupAddress Name="Blind 4 Curtain Stop" Address="3/3/21" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="Lift Lobby" RangeStart="7168" RangeEnd="7423" Unfiltered="true">
+      <GroupAddress Name="Passage Light On/off &amp; status" Address="3/4/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Passage Light Dim" Address="3/4/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Passage Light Value &amp; status" Address="3/4/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Lift Lobby Light On/off &amp; status" Address="3/4/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Lift Lobby Light Dim" Address="3/4/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Lift Lobby Light Value &amp; status" Address="3/4/5" Unfiltered="true" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Gym Room" RangeStart="7424" RangeEnd="7679" Unfiltered="true">
+      <GroupAddress Name="Corner lights On/off &amp; status" Address="3/5/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Corner lights Dim" Address="3/5/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Corner lights Value &amp; status" Address="3/5/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Middle lights On/off &amp; status" Address="3/5/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Middle lights Dim" Address="3/5/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Middle lights Value &amp; status" Address="3/5/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Profile light On/off &amp; status" Address="3/5/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Profile light Dim" Address="3/5/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Profile light Value &amp; status" Address="3/5/8" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove light On/off &amp; status" Address="3/5/9" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove light Dim" Address="3/5/10" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove light Value &amp; status" Address="3/5/11" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Chandelier 1 On/off &amp; status" Address="3/5/12" Unfiltered="true" />
+      <GroupAddress Name="Chandelier 1 Dim" Address="3/5/13" Unfiltered="true" />
+      <GroupAddress Name="Chandelier 1 Value &amp; status" Address="3/5/14" Unfiltered="true" />
+      <GroupAddress Name="Chandelier 2 On/off &amp; status" Address="3/5/15" Unfiltered="true" />
+      <GroupAddress Name="Chandelier 2 Dim" Address="3/5/16" Unfiltered="true" />
+      <GroupAddress Name="Chandelier 2 Value &amp; status" Address="3/5/17" Unfiltered="true" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="Second Floor" RangeStart="8192" RangeEnd="10239" Unfiltered="true">
+    <GroupRange Name="Play Area" RangeStart="8192" RangeEnd="8447" Unfiltered="true">
+      <GroupAddress Name="Study Down Lights on/off &amp; status" Address="4/0/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Study Down Lights Dim" Address="4/0/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Study Down Lights value &amp; status" Address="4/0/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Play Area Side Down 1 Lights On/off &amp; status" Address="4/0/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Play Area Side Down 1 Lights Dim" Address="4/0/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Play Area Side Down 1 Lights value &amp; status" Address="4/0/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Play Area Side Down 2 Lights On/off &amp; status" Address="4/0/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Play Area Side Down 2 Lights Dim" Address="4/0/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Play Area Side Down 2 Lights value &amp; status" Address="4/0/8" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Passage Down Lights On/off &amp; status" Address="4/0/9" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Passage Down Lights Dim" Address="4/0/10" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Passage Down Lights value &amp; status" Address="4/0/11" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Spot Lights On/off &amp; status" Address="4/0/12" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Spot Lights Dim" Address="4/0/13" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Spot Lights value &amp; status" Address="4/0/14" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Track Lights On/off &amp; status" Address="4/0/15" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Track Lights Dim" Address="4/0/16" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Track Lights value &amp; status" Address="4/0/17" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sun Profile Strip Lights On/off &amp; status" Address="4/0/18" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sun Profile Strip Lights Strip Dim" Address="4/0/19" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Sun Profile Strip Lights Strip value &amp; status" Address="4/0/20" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sun Profile Down Lights On/off &amp; status" Address="4/0/21" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sun Profile Down Lights Dim" Address="4/0/22" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Sun Profile Down Lights value &amp; status" Address="4/0/23" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove Lights On/off &amp; status" Address="4/0/24" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Lights Dim" Address="4/0/25" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove Lights value &amp; status" Address="4/0/26" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Lift Lobby lights On/off &amp; status" Address="4/0/27" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Lift Lobby lights Dim" Address="4/0/28" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Lift Lobby lights value &amp; status" Address="4/0/29" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Service Lift lights On/off &amp; status" Address="4/0/30" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Service Lift lights Dim" Address="4/0/31" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Service Lift lights value &amp; status" Address="4/0/32" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Stair case Wall lights On/off &amp; status" Address="4/0/33" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Stair case Wall lights Dim" Address="4/0/34" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Stair case Wall lights value &amp; status" Address="4/0/35" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Out side Elevation Lights" Address="4/0/36" Unfiltered="true" />
+      <GroupAddress Name="Study Main Curtain Move" Address="4/0/37" Unfiltered="true" />
+      <GroupAddress Name="Study Main Curtain Stop" Address="4/0/38" Unfiltered="true" />
+      <GroupAddress Name="Study Sheer Curtain Move" Address="4/0/39" Unfiltered="true" />
+      <GroupAddress Name="Study Sheer Curtain Stop" Address="4/0/40" Unfiltered="true" />
+      <GroupAddress Name="Play Area Main Curtain Move" Address="4/0/41" Unfiltered="true" />
+      <GroupAddress Name="Play Area Main Curtain Stop" Address="4/0/42" Unfiltered="true" />
+      <GroupAddress Name="Play Area Sheer Curtain Move" Address="4/0/43" Unfiltered="true" />
+      <GroupAddress Name="Play Area Sheer Curtain Stop" Address="4/0/44" Unfiltered="true" />
+      <GroupAddress Name="Mutli touch" Address="4/0/45" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Button 1 on/off " Address="4/0/46" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Button 1 Dim" Address="4/0/47" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Button 2 On/off" Address="4/0/48" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Button 2 Dim" Address="4/0/49" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Button 3 Move" Address="4/0/50" Unfiltered="true" DPTs="DPST-1-8" />
+      <GroupAddress Name="Button 3 Stop" Address="4/0/51" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Button 4 Move" Address="4/0/52" Unfiltered="true" DPTs="DPST-1-8" />
+      <GroupAddress Name="Button 4 Stop" Address="4/0/53" Unfiltered="true" DPTs="DPST-1-7" />
+      <GroupAddress Name="Dh Light on/off &amp; Satatu" Address="4/0/54" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dh Light Dim" Address="4/0/55" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Dh Light Value &amp; status" Address="4/0/56" Unfiltered="true" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Children Bedroom 1" RangeStart="8448" RangeEnd="8703" Unfiltered="true">
+      <GroupAddress Name="Front Down Lights On/off &amp; Status" Address="4/1/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Front Down Lights Dim" Address="4/1/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Front Down Lights Value &amp; Status" Address="4/1/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Down Lights On/off &amp; Status" Address="4/1/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights Dim" Address="4/1/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Lights Value &amp; Status" Address="4/1/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Profile Lights On/off &amp; Status" Address="4/1/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Profile Lights Dim" Address="4/1/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Profile Lights Value &amp; Status" Address="4/1/8" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Emty" Address="4/1/9" Unfiltered="true" />
+      <GroupAddress Name="Cove Lights On/off &amp; Status" Address="4/1/10" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Lights Dim" Address="4/1/11" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove Lights Value &amp; Status" Address="4/1/12" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Spot Light On/off &amp; Status" Address="4/1/13" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Spot Light Dim" Address="4/1/14" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Spot Light Value &amp; Status" Address="4/1/15" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Sky Light On/off &amp; Status" Address="4/1/16" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Sky Light Dim" Address="4/1/17" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Sky Light Value &amp; Status" Address="4/1/18" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Dressing Lights On/off &amp; Status" Address="4/1/19" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dressing Lights Dim" Address="4/1/20" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Dressing Lights Value &amp; Status" Address="4/1/21" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Bath Down Lights 1 On/off &amp; Status" Address="4/1/22" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bath Down Lights 1 Dim" Address="4/1/23" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Bath Down Lights 1 Value &amp; Status" Address="4/1/24" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Bath Down Lights 2 On/off &amp; Status" Address="4/1/25" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bath Down Lights 2 Dim" Address="4/1/26" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Bath Down Lights 2 Value &amp; Status" Address="4/1/27" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Foot Lamp On/off &amp; status" Address="4/1/28" Unfiltered="true" />
+      <GroupAddress Name="Foot Lamp Dim" Address="4/1/29" Unfiltered="true" />
+      <GroupAddress Name="Foot Lamp Value &amp; status" Address="4/1/30" Unfiltered="true" />
+      <GroupAddress Name="Hanging Light On/off &amp; Status" Address="4/1/31" Unfiltered="true" />
+      <GroupAddress Name="Fan On/off &amp; Status" Address="4/1/32" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Fan Light On/off &amp; Status" Address="4/1/33" Unfiltered="true" />
+      <GroupAddress Name="Exaust Fan On/off &amp; Status" Address="4/1/34" Unfiltered="true" />
+      <GroupAddress Name="Main Curtain Move" Address="4/1/35" Unfiltered="true" />
+      <GroupAddress Name="Main Curtain Stop" Address="4/1/36" Unfiltered="true" />
+      <GroupAddress Name="Sheer Curtain Move" Address="4/1/37" Unfiltered="true" />
+      <GroupAddress Name="Sheer Curtain Stop" Address="4/1/38" Unfiltered="true" />
+      <GroupAddress Name="Small Window Main Move" Address="4/1/39" Unfiltered="true" />
+      <GroupAddress Name="Small Window Main Stop" Address="4/1/40" Unfiltered="true" />
+      <GroupAddress Name="Small Window Sheer Move" Address="4/1/41" Unfiltered="true" />
+      <GroupAddress Name="Small Window Sheer Stop" Address="4/1/42" Unfiltered="true" />
+      <GroupAddress Name="Button 1 on/off " Address="4/1/43" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Button 1 Dim" Address="4/1/44" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Button 2 On/off" Address="4/1/45" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Button 2 Dim" Address="4/1/46" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Button 3 Move" Address="4/1/47" Unfiltered="true" DPTs="DPST-1-8" />
+      <GroupAddress Name="Button 3 Stop" Address="4/1/48" Unfiltered="true" DPTs="DPST-1-7" />
+      <GroupAddress Name="Button 4 Move" Address="4/1/49" Unfiltered="true" DPTs="DPST-1-8" />
+      <GroupAddress Name="Button 4 Stop" Address="4/1/50" Unfiltered="true" DPTs="DPST-1-7" />
+      <GroupAddress Name="Mutli touch" Address="4/1/51" Unfiltered="true" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="Children Bedroom 2" RangeStart="8704" RangeEnd="8959" Unfiltered="true">
+      <GroupAddress Name="Front Down Lights On/off &amp; Status" Address="4/2/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Front Down Lights Dim" Address="4/2/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Front Down Lights Value &amp; Status" Address="4/2/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Down Lights On/off &amp; Status" Address="4/2/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights Dim" Address="4/2/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Lights Value &amp; Status" Address="4/2/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Profile Lights On/off &amp; Status" Address="4/2/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Profile Lights Dim" Address="4/2/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Profile Lights Value &amp; Status" Address="4/2/8" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Emty" Address="4/2/9" Unfiltered="true" />
+      <GroupAddress Name="Cove Lights On/off &amp; Status" Address="4/2/10" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Lights Dim" Address="4/2/11" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove Lights Value &amp; Status" Address="4/2/12" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Dressing Lights On/off &amp; Status" Address="4/2/13" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dressing Lights Dim" Address="4/2/14" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Dressing Lights Value &amp; Status" Address="4/2/15" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Bath Down Lights 1 On/off &amp; Status" Address="4/2/16" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bath Down Lights 1 Dim" Address="4/2/17" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Bath Down Lights 1 Value &amp; Status" Address="4/2/18" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Bath Down Lights 2 On/off &amp; Status" Address="4/2/19" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bath Down Lights 2 Dim" Address="4/2/20" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Bath Down Lights 2 Value &amp; Status" Address="4/2/21" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Foot Lamp On/off &amp; status" Address="4/2/22" Unfiltered="true" />
+      <GroupAddress Name="Foot Lamp Dim" Address="4/2/23" Unfiltered="true" />
+      <GroupAddress Name="Foot Lamp Value &amp; status" Address="4/2/24" Unfiltered="true" />
+      <GroupAddress Name="Fan On/off &amp; Status" Address="4/2/25" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Fan Light On/off &amp; Status" Address="4/2/26" Unfiltered="true" />
+      <GroupAddress Name="Exaust Fan On/off &amp; Status" Address="4/2/27" Unfiltered="true" />
+      <GroupAddress Name="Main Curtain Move" Address="4/2/28" Unfiltered="true" DPTs="DPST-1-8" />
+      <GroupAddress Name="Main Curtain Stop" Address="4/2/29" Unfiltered="true" DPTs="DPST-1-7" />
+      <GroupAddress Name="Sheer Curtain Move" Address="4/2/30" Unfiltered="true" DPTs="DPST-1-8" />
+      <GroupAddress Name="Sheer Curtain Stop" Address="4/2/31" Unfiltered="true" DPTs="DPST-1-7" />
+      <GroupAddress Name="Button 1 on/off " Address="4/2/32" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Button 1 Dim" Address="4/2/33" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Button 2 On/off" Address="4/2/34" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Button 2 Dim" Address="4/2/35" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Mutli touch" Address="4/2/40" Unfiltered="true" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="Children Bedroom 3" RangeStart="8960" RangeEnd="9215" Unfiltered="true">
+      <GroupAddress Name="Down Light 1 On/off &amp; status" Address="4/3/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Light 1 Dim" Address="4/3/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Light 1 Value &amp; status" Address="4/3/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Down Light 2 On/off &amp; status" Address="4/3/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Light 2 Dim" Address="4/3/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Light 2 Value &amp; status" Address="4/3/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Side Spots On/off &amp; status" Address="4/3/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Side Spots Dim" Address="4/3/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Side Spots Value &amp; status" Address="4/3/8" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Side DL On/off &amp; Status" Address="4/3/9" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Side DL Dim" Address="4/3/10" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Side DL Value &amp; Status" Address="4/3/11" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Bed Spots On/off &amp; status" Address="4/3/12" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bed Spots Dim" Address="4/3/13" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Bed Spots Value &amp; status" Address="4/3/14" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove On/off &amp; status" Address="4/3/15" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Dim" Address="4/3/16" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove Value &amp; status" Address="4/3/17" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Dressing Light On/off &amp; Status" Address="4/3/18" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dressing Light Dim" Address="4/3/19" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Dressing Light Value &amp; Status" Address="4/3/20" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Bath DL 1 Light On/off &amp; Status" Address="4/3/21" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bath DL 1 Light Dim" Address="4/3/22" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Bath DL 1 Light Value &amp; Status" Address="4/3/23" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Bath DL 2 Light On/off &amp; Status" Address="4/3/24" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bath DL 2 Light Dim" Address="4/3/25" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Bath DL 2 Light Value &amp; Status" Address="4/3/26" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Foot Lamp On/off &amp; status" Address="4/3/27" Unfiltered="true" />
+      <GroupAddress Name="Foot Lamp Dim" Address="4/3/28" Unfiltered="true" />
+      <GroupAddress Name="Foot Lamp Value &amp; status" Address="4/3/29" Unfiltered="true" />
+      <GroupAddress Name="Fan On/off &amp; Status" Address="4/3/30" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Fan Light On/off &amp; Status" Address="4/3/31" Unfiltered="true" />
+      <GroupAddress Name="Exaust Fan On/off &amp; Status" Address="4/3/32" Unfiltered="true" />
+      <GroupAddress Name="Main Curtain Move" Address="4/3/33" Unfiltered="true" />
+      <GroupAddress Name="Main Curtain Stop" Address="4/3/34" Unfiltered="true" />
+      <GroupAddress Name="Sheer Curtain Move" Address="4/3/35" Unfiltered="true" />
+      <GroupAddress Name="Sheer Curtain Stop" Address="4/3/36" Unfiltered="true" />
+      <GroupAddress Name="Small Main Curtain Move" Address="4/3/37" Unfiltered="true" />
+      <GroupAddress Name="Small Main Curtain Stop" Address="4/3/38" Unfiltered="true" />
+      <GroupAddress Name="Small Sheer Curtain Move" Address="4/3/39" Unfiltered="true" />
+      <GroupAddress Name="Small Sheer Curtain Stop" Address="4/3/40" Unfiltered="true" />
+      <GroupAddress Name="Button 1 on/off " Address="4/3/41" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Button 1 Dim" Address="4/3/42" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Button 2 On/off" Address="4/3/43" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Button 2 Dim" Address="4/3/44" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Button 3 Move" Address="4/3/45" Unfiltered="true" DPTs="DPST-1-8" />
+      <GroupAddress Name="Button 3 Stop" Address="4/3/46" Unfiltered="true" DPTs="DPST-1-7" />
+      <GroupAddress Name="Button 4 Move" Address="4/3/47" Unfiltered="true" DPTs="DPST-1-8" />
+      <GroupAddress Name="Button 4 Stop" Address="4/3/48" Unfiltered="true" DPTs="DPST-1-7" />
+      <GroupAddress Name="Mutli touch" Address="4/3/49" Unfiltered="true" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="Children Bedroom 4" RangeStart="9216" RangeEnd="9471" Unfiltered="true">
+      <GroupAddress Name="Down Lights On/off &amp; Status" Address="4/4/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights Dim" Address="4/4/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Lights Value &amp; Status" Address="4/4/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Side Down Lights On/off &amp; Status" Address="4/4/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Side Down Lights Dim" Address="4/4/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Side Down Lights Value &amp; Status" Address="4/4/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Spot Lights On/off &amp; Status" Address="4/4/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Spot Lights Dim" Address="4/4/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Spot Lights Value &amp; Status" Address="4/4/8" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove Light On/off &amp; Status" Address="4/4/9" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Light Dim" Address="4/4/10" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove Light Value &amp; Status" Address="4/4/11" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Dressing Light On/off &amp; Status" Address="4/4/12" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Dressing Light Dim" Address="4/4/13" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Dressing Light Value &amp; Status" Address="4/4/14" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Bath DL 1 Light On/off &amp; Status" Address="4/4/15" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bath DL 1 Light Dim" Address="4/4/16" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Bath DL 1 Light Value &amp; Status" Address="4/4/17" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Bath DL 2 Light On/off &amp; Status" Address="4/4/18" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bath DL 2 Light Dim" Address="4/4/19" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Bath DL 2 Light Value &amp; Status" Address="4/4/20" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Foot Lamp On/off &amp; status" Address="4/4/21" Unfiltered="true" />
+      <GroupAddress Name="Foot Lamp Dim" Address="4/4/22" Unfiltered="true" />
+      <GroupAddress Name="Foot Lamp Value &amp; status" Address="4/4/23" Unfiltered="true" />
+      <GroupAddress Name="Fan On/off &amp; Status" Address="4/4/24" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Fan Light On/off &amp; Status" Address="4/4/25" Unfiltered="true" />
+      <GroupAddress Name="Wall Point On/off &amp; Status" Address="4/4/26" Unfiltered="true" />
+      <GroupAddress Name="Exaust Fan On/off &amp; Status" Address="4/4/27" Unfiltered="true" />
+      <GroupAddress Name="Main Curtain Move" Address="4/4/28" Unfiltered="true" />
+      <GroupAddress Name="Main Curtain Stop" Address="4/4/29" Unfiltered="true" />
+      <GroupAddress Name="Sheer Curtain Move" Address="4/4/30" Unfiltered="true" />
+      <GroupAddress Name="Sheer Curtain Stop" Address="4/4/31" Unfiltered="true" />
+      <GroupAddress Name="Small Main Curtain Move" Address="4/4/32" Unfiltered="true" />
+      <GroupAddress Name="Small Main Curtain Stop" Address="4/4/33" Unfiltered="true" />
+      <GroupAddress Name="Small Sheer Curtain Move" Address="4/4/34" Unfiltered="true" />
+      <GroupAddress Name="Small Sheer Curtain Stop" Address="4/4/35" Unfiltered="true" />
+      <GroupAddress Name="Button 1 on/off " Address="4/4/36" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Button 1 Dim" Address="4/4/37" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Button 2 On/off" Address="4/4/38" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Button 2 Dim" Address="4/4/39" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Button 3 Move" Address="4/4/40" Unfiltered="true" DPTs="DPST-1-8" />
+      <GroupAddress Name="Button 3 Stop" Address="4/4/41" Unfiltered="true" DPTs="DPST-1-7" />
+      <GroupAddress Name="Button 4 Move" Address="4/4/42" Unfiltered="true" DPTs="DPST-1-8" />
+      <GroupAddress Name="Button 4 Stop" Address="4/4/43" Unfiltered="true" DPTs="DPST-1-7" />
+      <GroupAddress Name="Mutli touch" Address="4/4/44" Unfiltered="true" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="Stair Case" RangeStart="9472" RangeEnd="9727" Unfiltered="true">
+      <GroupAddress Name="Track Lights On/off &amp; Status" Address="4/5/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Track Lights Dim" Address="4/5/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Track Lights Value &amp; Status" Address="4/5/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Railing Lights On/off &amp; status" Address="4/5/3" Unfiltered="true" />
+      <GroupAddress Name="Blind 1 Move" Address="4/5/4" Unfiltered="true" />
+      <GroupAddress Name="Blind 1 Stop" Address="4/5/5" Unfiltered="true" />
+      <GroupAddress Name="Blind 2 Move" Address="4/5/6" Unfiltered="true" />
+      <GroupAddress Name="Blind 2 Stop" Address="4/5/7" Unfiltered="true" />
+      <GroupAddress Name="Blind 3 Move" Address="4/5/8" Unfiltered="true" />
+      <GroupAddress Name="Blind 3 Stop" Address="4/5/9" Unfiltered="true" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="Third Floor" RangeStart="10240" RangeEnd="12287" Unfiltered="true">
+    <GroupRange Name="Master Bedroom" RangeStart="10240" RangeEnd="10495" Unfiltered="true">
+      <GroupAddress Name="Bedside Down Light On/off &amp; Status" Address="5/0/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Bedside Down Light Dim" Address="5/0/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Bedside Down Light Value &amp; Status" Address="5/0/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Front Down Light On/off &amp; Status" Address="5/0/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Front Down Light Dim" Address="5/0/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Front Down Light Value &amp; Status" Address="5/0/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Side Down Light On/off &amp; Status" Address="5/0/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Side Down Light Dim" Address="5/0/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Side Down Light Value &amp; Status" Address="5/0/8" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Middle Cove Light On/off &amp; Status" Address="5/0/9" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Middle Cove Light Dim" Address="5/0/10" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Middle Cove Light Value &amp; Status" Address="5/0/11" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Main Cove On/off &amp; status" Address="5/0/12" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Main Cove Dim" Address="5/0/13" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Main Cove Value &amp; status" Address="5/0/14" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Foot Lamp On/off &amp; status" Address="5/0/15" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Foot Lamp Dim" Address="5/0/16" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Foot Lamp Value &amp; status" Address="5/0/17" Unfiltered="true" />
+      <GroupAddress Name="Wall lights 1 On/off &amp; Status" Address="5/0/18" Unfiltered="true" />
+      <GroupAddress Name="Wall lights 2 On/off &amp; Status" Address="5/0/19" Unfiltered="true" />
+      <GroupAddress Name="Fan On/off &amp; Status" Address="5/0/20" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Fan Light On/off &amp; Status" Address="5/0/21" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Motorized Window Triggering Move" Address="5/0/22" Unfiltered="true" DPTs="DPST-1-8" />
+      <GroupAddress Name="Motorized Window Triggering Stop" Address="5/0/23" Unfiltered="true" DPTs="DPST-1-7" />
+      <GroupAddress Name="Main Curtain Move" Address="5/0/24" Unfiltered="true" DPTs="DPST-1-8" />
+      <GroupAddress Name="Main Curtain Stop" Address="5/0/25" Unfiltered="true" DPTs="DPST-1-7" />
+      <GroupAddress Name="Sheer Curtain Move" Address="5/0/26" Unfiltered="true" DPTs="DPST-1-8" />
+      <GroupAddress Name="Sheer Curtain Stop" Address="5/0/27" Unfiltered="true" DPTs="DPST-1-7" />
+      <GroupAddress Name="Button 1 On/off" Address="5/0/28" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Button 1 Dim" Address="5/0/29" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Button 2 On/off" Address="5/0/30" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Button 2 Dim" Address="5/0/31" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Mutti button" Address="5/0/35" Unfiltered="true" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="Master Den" RangeStart="10496" RangeEnd="10751" Unfiltered="true">
+      <GroupAddress Name="Corner Down Lights On/off &amp; Status" Address="5/1/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Corner Down Lights Dim" Address="5/1/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Corner Down Lights Value &amp; Status" Address="5/1/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Middle Down Lights On/off &amp; Status" Address="5/1/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Middle Down Lights Dim" Address="5/1/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Middle Down Lights Value &amp; Status" Address="5/1/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Middle Cove Lights On/off &amp; Status" Address="5/1/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Middle Cove Lights Dim" Address="5/1/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Middle Cove Lights Value &amp; Status" Address="5/1/8" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Foot Lamp On/off &amp; Status" Address="5/1/9" Unfiltered="true" />
+      <GroupAddress Name="Foot Lamp Dim" Address="5/1/10" Unfiltered="true" />
+      <GroupAddress Name="Foot Lamp Value &amp; Status" Address="5/1/11" Unfiltered="true" />
+      <GroupAddress Name="Chandelier light On/off &amp; Status" Address="5/1/12" Unfiltered="true" />
+      <GroupAddress Name="Main Curtain Move" Address="5/1/13" Unfiltered="true" DPTs="DPST-1-8" />
+      <GroupAddress Name="Main Curtain Stop" Address="5/1/14" Unfiltered="true" DPTs="DPST-1-7" />
+      <GroupAddress Name="Sheer Curtain Move" Address="5/1/15" Unfiltered="true" DPTs="DPST-1-8" />
+      <GroupAddress Name="Sheer Curtain Stop" Address="5/1/16" Unfiltered="true" DPTs="DPST-1-7" />
+      <GroupAddress Name="Window Curtain main Move" Address="5/1/17" Unfiltered="true" />
+      <GroupAddress Name="Window Curtain main Stop" Address="5/1/18" Unfiltered="true" />
+      <GroupAddress Name="Window Curtain Sheer move" Address="5/1/19" Unfiltered="true" />
+      <GroupAddress Name="Window Curtain sheer stop" Address="5/1/20" Unfiltered="true" />
+      <GroupAddress Name="Button1 On/off" Address="5/1/22" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Button1 Dim" Address="5/1/23" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Button2 On/off" Address="5/1/24" Unfiltered="true" />
+      <GroupAddress Name="Button2 Dim" Address="5/1/25" Unfiltered="true" />
+      <GroupAddress Name="Button3 Move" Address="5/1/26" Unfiltered="true" DPTs="DPST-1-8" />
+      <GroupAddress Name="Button3 Stop" Address="5/1/27" Unfiltered="true" DPTs="DPST-1-7" />
+      <GroupAddress Name="Button4 Move" Address="5/1/28" Unfiltered="true" DPTs="DPST-1-8" />
+      <GroupAddress Name="Button4 Stop" Address="5/1/29" Unfiltered="true" DPTs="DPST-1-7" />
+    </GroupRange>
+    <GroupRange Name="Master Bathroom" RangeStart="10752" RangeEnd="11007" Unfiltered="true">
+      <GroupAddress Name="Shower Lights On/off &amp; Status" Address="5/2/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Shower Lights Dim" Address="5/2/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Shower Lights Value &amp; Status" Address="5/2/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Down Lights On/off &amp; Status" Address="5/2/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights Dim" Address="5/2/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Lights Value &amp; Status" Address="5/2/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Spot Lights On/off &amp; Status" Address="5/2/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Spot Lights Dim" Address="5/2/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Spot Lights Value &amp; Status" Address="5/2/8" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove Light On/off &amp; Status" Address="5/2/9" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Light Dim" Address="5/2/10" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove Light Value&amp; Status" Address="5/2/11" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="TV side DL On/off &amp; status" Address="5/2/12" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="TV side DL Dim" Address="5/2/13" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="TV side DL  Value &amp; status" Address="5/2/14" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Shower &amp; Ex Fan" Address="5/2/15" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Magic Glass 2 nos" Address="5/2/16" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Shower Lights Spot On/off &amp; Status" Address="5/2/18" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Magic Glass 1 On/off &amp; Status" Address="5/2/19" Unfiltered="true" />
+      <GroupAddress Name="Magic Glass 2 On/off &amp; Status" Address="5/2/20" Unfiltered="true" />
+      <GroupAddress Name="Pendent On/off &amp; Status" Address="5/2/21" Unfiltered="true" />
+      <GroupAddress Name="Chandelier light On/off &amp; Status" Address="5/2/22" Unfiltered="true" />
+      <GroupAddress Name="Ex Fan On/off &amp; Status" Address="5/2/23" Unfiltered="true" />
+      <GroupAddress Name="Ex Fan On/off &amp; Status" Address="5/2/24" Unfiltered="true" />
+      <GroupAddress Name="Button3 Move" Address="5/2/25" Unfiltered="true" DPTs="DPST-1-8" />
+      <GroupAddress Name="Button3 Stop" Address="5/2/26" Unfiltered="true" DPTs="DPST-1-7" />
+      <GroupAddress Name="Button4 Move" Address="5/2/27" Unfiltered="true" DPTs="DPST-1-8" />
+      <GroupAddress Name="Button4 Stop" Address="5/2/28" Unfiltered="true" DPTs="DPST-1-7" />
+      <GroupAddress Name="Multi Button" Address="5/2/29" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cammode light On/off " Address="5/2/30" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cammode light Dim" Address="5/2/31" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cammode light Value &amp; status" Address="5/2/32" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="TV &amp; Bath Tube On/off" Address="5/2/33" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="TV &amp; Bath Tube Dim" Address="5/2/34" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Mirror TV Strip Light On/off &amp; status" Address="5/2/35" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Mirror TV Strip Light Dim" Address="5/2/36" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Mirror TV Strip Light Value &amp; status" Address="5/2/37" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove &amp; Strip light " Address="5/2/38" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove &amp; Strip light Dim" Address="5/2/39" Unfiltered="true" DPTs="DPST-3-7" />
+    </GroupRange>
+    <GroupRange Name="Dressing room" RangeStart="11008" RangeEnd="11263" Unfiltered="true">
+      <GroupAddress Name="Down Lights 1 On/off &amp; Status" Address="5/3/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights 1 Dim" Address="5/3/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Lights 1 Value &amp; Status" Address="5/3/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Down Lights 2 On/off &amp; Status" Address="5/3/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down Lights 2 Dim" Address="5/3/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down Lights 2 Value &amp; Status" Address="5/3/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove On/off &amp; Status" Address="5/3/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Dim" Address="5/3/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove Value &amp; Status" Address="5/3/8" Unfiltered="true" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="His WIC" RangeStart="11264" RangeEnd="11519" Unfiltered="true">
+      <GroupAddress Name="Corner Down Lights On/off &amp; Status" Address="5/4/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Corner Down Lights Dim" Address="5/4/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Corner Down Lights Value &amp; Status" Address="5/4/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Middle Down Lights On/off &amp; Status" Address="5/4/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Middle Down Lights Dim" Address="5/4/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Middle Down Lights Value &amp; Status" Address="5/4/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove Lights On/off &amp; Status" Address="5/4/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Lights Dim" Address="5/4/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove Lights Value &amp; Status" Address="5/4/8" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Chandelier On/off &amp; Status" Address="5/4/9" Unfiltered="true" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="Her WIC" RangeStart="11520" RangeEnd="11775" Unfiltered="true">
+      <GroupAddress Name="Corner Down Lights On/off &amp; Status" Address="5/5/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Corner Down Lights Dim" Address="5/5/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Corner Down Lights Value &amp; Status" Address="5/5/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Middle Down Lights On/off &amp; Status" Address="5/5/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Middle Down Lights Dim" Address="5/5/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Middle Down Lights Value &amp; Status" Address="5/5/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove Lights On/off &amp; Status" Address="5/5/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Lights Dim" Address="5/5/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove Lights Value &amp; Status" Address="5/5/8" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Foot Lamp On/off &amp; status" Address="5/5/9" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Foot Lamp Dim" Address="5/5/10" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Foot Lamp Value &amp; status" Address="5/5/11" Unfiltered="true" />
+      <GroupAddress Name="Chandelier On/off &amp; Status" Address="5/5/12" Unfiltered="true" DPTs="DPST-1-1" />
+    </GroupRange>
+    <GroupRange Name="Coverde Balcony" RangeStart="11776" RangeEnd="12031" Unfiltered="true">
+      <GroupAddress Name="Corner Down Lights On/off &amp; status" Address="5/6/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Corner Down Lights Dim" Address="5/6/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Corner Down Lights Value &amp; status" Address="5/6/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Middle Down Lights On/off &amp; status" Address="5/6/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Middle Down Lights Dim" Address="5/6/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Middle Down Lights Value &amp; status" Address="5/6/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove Lights On/off &amp; status" Address="5/6/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Lights Dim" Address="5/6/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove Lights Value &amp; status" Address="5/6/8" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Chandelier On/off &amp; status" Address="5/6/9" Unfiltered="true" />
+      <GroupAddress Name="Magic Glass 1 On/off &amp; status" Address="5/6/10" Unfiltered="true" />
+      <GroupAddress Name="Magic Glass 2 On/off &amp; status" Address="5/6/11" Unfiltered="true" />
+      <GroupAddress Name="Wall Lights On/off &amp; status" Address="5/6/12" Unfiltered="true" />
+      <GroupAddress Name="Wall Strip Lights On/off &amp; status" Address="5/6/13" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Balcony side Curain Main Move" Address="5/6/14" Unfiltered="true" DPTs="DPST-1-8" />
+      <GroupAddress Name="Balcony side Curain main Stop" Address="5/6/15" Unfiltered="true" DPTs="DPST-1-7" />
+      <GroupAddress Name="Balcony side Curain Sheer Move" Address="5/6/16" Unfiltered="true" DPTs="DPST-1-8" />
+      <GroupAddress Name="Balcony side Curain Sheer Stop" Address="5/6/17" Unfiltered="true" DPTs="DPST-1-7" />
+      <GroupAddress Name="Button1 On/off" Address="5/6/18" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Button1 Dim" Address="5/6/19" Unfiltered="true" DPTs="DPST-3-7" />
+    </GroupRange>
+    <GroupRange Name="Lift lobby" RangeStart="12032" RangeEnd="12287" Unfiltered="true">
+      <GroupAddress Name="Lift Lobby Down lights On/off &amp; Status" Address="5/7/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Lift Lobby Down lights Dim" Address="5/7/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Lift Lobby Down lights Value &amp; Status" Address="5/7/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Terrace Side Down lights On/off &amp; Status" Address="5/7/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Terrace Side Down lights Dim" Address="5/7/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Terrace Side Down lights Value &amp; Status" Address="5/7/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="MBR Side Down lights On/off &amp; Status" Address="5/7/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="MBR Side Down lights Dim" Address="5/7/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="MBR Side Down lights Value &amp; Status" Address="5/7/8" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Wide corridor Down lights On/off &amp; Status" Address="5/7/9" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Wide corridor Down lights Dim" Address="5/7/10" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Wide corridor Down lights Value &amp; Status" Address="5/7/11" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Service Lift Down lights On/off &amp; Status" Address="5/7/12" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Service Lift Down lights Dim" Address="5/7/13" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Service Lift Down lights Value &amp; Status" Address="5/7/14" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Powder Room Down lights On/off &amp; Status" Address="5/7/15" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Powder Room Down lights Dim" Address="5/7/16" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Powder Room Down lights Value &amp; Status" Address="5/7/17" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Powder Room Ex Fan On/off &amp; Status" Address="5/7/18" Unfiltered="true" />
+      <GroupAddress Name="Lift Lobby Chandelier On/off &amp; Status" Address="5/7/19" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Lift Lobby Wall Light On/off &amp; Status" Address="5/7/20" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Powder Room sensor" Address="5/7/21" Unfiltered="true" DPTs="DPST-1-1" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="Terrace Floor" RangeStart="12288" RangeEnd="14335" Unfiltered="true">
+    <GroupRange Name="Lift Lobby" RangeStart="12288" RangeEnd="12543" Unfiltered="true">
+      <GroupAddress Name="Lift lobby sensor Light On/off &amp; status" Address="6/0/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Lift lobby sensor LightDim" Address="6/0/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Lift lobby sensor Light Value &amp; status" Address="6/0/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Lift lobby Down Light  on/off &amp; status" Address="6/0/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Lift lobby Down Light Dim" Address="6/0/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Lift lobby Down Light Value &amp; status" Address="6/0/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Stair Case Down Light On/off &amp; Status" Address="6/0/6" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Stair Case Down Light Dim" Address="6/0/7" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Stair Case Down Light Value &amp; status" Address="6/0/8" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove Light On/off &amp; status" Address="6/0/9" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Light Dim" Address="6/0/10" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove Light value &amp; status" Address="6/0/11" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Stair case lights On/off  &amp; status" Address="6/0/12" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Stair case lights Dim" Address="6/0/13" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Stair case lights value &amp; status" Address="6/0/14" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Wall Lights On/off &amp; status" Address="6/0/15" Unfiltered="true" />
+      <GroupAddress Name="Main Curtain Move" Address="6/0/16" Unfiltered="true" />
+      <GroupAddress Name="Main Curtain Stop" Address="6/0/17" Unfiltered="true" />
+      <GroupAddress Name="Sheer Curtain Move" Address="6/0/18" Unfiltered="true" />
+      <GroupAddress Name="Sheer Curtain Stop" Address="6/0/19" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="Outdoor" RangeStart="12544" RangeEnd="12799" Unfiltered="true">
+      <GroupAddress Name="Garden Lights 1 On/off &amp; status" Address="6/1/0" Unfiltered="true" />
+      <GroupAddress Name="Garden Lights 2 On/off &amp; status" Address="6/1/1" Unfiltered="true" />
+      <GroupAddress Name="Garden Lights 3 On/off &amp; status" Address="6/1/2" Unfiltered="true" />
+      <GroupAddress Name="Garden Lights 4 On/off &amp; status" Address="6/1/3" Unfiltered="true" />
+      <GroupAddress Name="Garden Lights 5 On/off &amp; status" Address="6/1/4" Unfiltered="true" />
+      <GroupAddress Name="Sky lounge out side Wall Light 1 On/off &amp; status" Address="6/1/5" Unfiltered="true" />
+      <GroupAddress Name="Sky lounge out side Wall Light 2 On/off &amp; status" Address="6/1/6" Unfiltered="true" />
+      <GroupAddress Name="Elevation Light On/off &amp; status" Address="6/1/7" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="Powder room" RangeStart="12800" RangeEnd="13055" Unfiltered="true">
+      <GroupAddress Name="Down Light On/off &amp; status" Address="6/2/0" Unfiltered="true" />
+      <GroupAddress Name="Ex Fan On/off &amp; status" Address="6/2/1" Unfiltered="true" />
+    </GroupRange>
+    <GroupRange Name="Servise Lift" RangeStart="13056" RangeEnd="13311" Unfiltered="true">
+      <GroupAddress Name="Down light On/off &amp; status" Address="6/3/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down light Dim" Address="6/3/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down light Value &amp; status" Address="6/3/2" Unfiltered="true" DPTs="DPST-5-1" />
+    </GroupRange>
+    <GroupRange Name="Sky lounge" RangeStart="13312" RangeEnd="13567" Unfiltered="true">
+      <GroupAddress Name="Down light On/off &amp; status" Address="6/4/0" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Down light Dim" Address="6/4/1" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Down light Value &amp; status" Address="6/4/2" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Cove Light On/off &amp; Status " Address="6/4/3" Unfiltered="true" DPTs="DPST-1-1" />
+      <GroupAddress Name="Cove Light Dim" Address="6/4/4" Unfiltered="true" DPTs="DPST-3-7" />
+      <GroupAddress Name="Cove Light Value &amp; Status" Address="6/4/5" Unfiltered="true" DPTs="DPST-5-1" />
+      <GroupAddress Name="Balocny Light On/off &amp; status" Address="6/4/6" Unfiltered="true" />
+      <GroupAddress Name="Left Main Curtain Move" Address="6/4/7" Unfiltered="true" />
+      <GroupAddress Name="Left Main Curtain Stop" Address="6/4/8" Unfiltered="true" />
+      <GroupAddress Name="Left Sheer Curtain Move" Address="6/4/9" Unfiltered="true" />
+      <GroupAddress Name="Left Sheer Curtain Stop" Address="6/4/10" Unfiltered="true" />
+      <GroupAddress Name="Right Main Curtain Move" Address="6/4/11" Unfiltered="true" />
+      <GroupAddress Name="Right Main Curtain Stop" Address="6/4/12" Unfiltered="true" />
+      <GroupAddress Name="Right Sheer Curtain Move" Address="6/4/13" Unfiltered="true" />
+      <GroupAddress Name="Right Sheer Curtain Stop" Address="6/4/14" Unfiltered="true" />
+      <GroupAddress Name="Front Main Curtain Move" Address="6/4/15" Unfiltered="true" />
+      <GroupAddress Name="Front Main Curtain Stop" Address="6/4/16" Unfiltered="true" />
+      <GroupAddress Name="Front Sheer Curtain Move" Address="6/4/17" Unfiltered="true" />
+      <GroupAddress Name="Front Sheer Curtain Stop" Address="6/4/18" Unfiltered="true" />
+    </GroupRange>
+  </GroupRange>
+  <GroupRange Name="Raf paper" RangeStart="14336" RangeEnd="16383">
+    <GroupRange Name="MBR bath" RangeStart="14336" RangeEnd="14591" />
+  </GroupRange>
+</GroupAddress-Export>
