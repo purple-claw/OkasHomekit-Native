@@ -34,7 +34,7 @@ until the gateway returns. The implementation:
   `DISCONNECT_RESPONSE` handshake (gateway gone mid-session) cannot wedge
   the loop.
 - `Data/loadData.json` is **only read at startup**. Changing `gwIP` while
-  the service is running has no effect — `systemctl restart OhKnxKnx.service`
+  the service is running has no effect — `systemctl restart callisto.service`
   is required to pick up the new IP.
 
 To switch the active gateway on the live board:
@@ -42,8 +42,8 @@ To switch the active gateway on the live board:
 ```bash
 ssh root@okas-homekit.local
 sed -i 's/"gwIP": "OLD.IP"/"gwIP": "NEW.IP"/' /home/OhKnx/Data/loadData.json
-systemctl restart OhKnxKnx.service
-journalctl -u OhKnxKnx.service -f
+systemctl restart callisto.service
+journalctl -u callisto.service -f
 ```
 
 The bridge will connect immediately if the gateway is up, or fall into the
@@ -106,9 +106,9 @@ python3 KNX/knx_bridge.py
 On the Debian host, install both systemd units and enable them:
 
 ```bash
-cp runOnce/HkBStartUp.service runOnce/OhKnxKnx.service /etc/systemd/system/
+cp runOnce/sirius.service runOnce/callisto.service /etc/systemd/system/
 systemctl daemon-reload
-systemctl enable --now HkBStartUp.service OhKnxKnx.service
+systemctl enable --now sirius.service callisto.service
 ```
 
 Start order does not matter — each side reconnects on its own, and the KNX link

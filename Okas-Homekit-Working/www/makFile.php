@@ -182,9 +182,9 @@ if ($inDat) {
         }
         sleep(2);
         // Restart KNX bridge first (must reconnect to new gateway), then HomeKit service
-        exec("sudo /usr/bin/systemctl restart OhKnxKnx.service");
+        exec("sudo /usr/bin/systemctl restart callisto.service");
         sleep(3);
-        exec("sudo /usr/bin/systemctl restart HkBStartUp.service");
+        exec("sudo /usr/bin/systemctl restart sirius.service");
         unset($rslt, $kVal);
     }
 };

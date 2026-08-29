@@ -1,12 +1,12 @@
 #!/bin/bash
 # =============================================================================
 # OhKnx - KNX Bridge Service Setup Script
-# Registers the Python xknx bridge (OhKnxKnx.service) as a systemd service
+# Registers the Python xknx bridge (callisto.service) as a systemd service
 # that starts automatically on boot. Run as: sudo bash setup-knx-bridge-service.sh
 # =============================================================================
 set -e
 
-SERVICE="OhKnxKnx.service"
+SERVICE="callisto.service"
 SOURCE="/home/OhKnx/runOnce/$SERVICE"
 DEST="/etc/systemd/system/$SERVICE"
 

@@ -8,7 +8,7 @@ set -e
 
 APP_USER="OhKnx"
 APP_HOME="/home/$APP_USER"
-SVC_NAME="HkBStartUp.service"
+SVC_NAME="sirius.service"
 SVC_DEST="/etc/systemd/system/$SVC_NAME"
 SUDOERS_DEST="/etc/sudoers.d/www-data"
 APACHE_ROOT="/var/www/html"

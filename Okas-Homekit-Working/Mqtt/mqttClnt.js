@@ -510,11 +510,11 @@ require("../KNX/actHdlr");
                     // Publish to local watchdog topic or trigger via shell
                     const { exec } = require('child_process');
                     // Restart services in sequence
-                    exec('systemctl restart OhKnxKnx.service', (err) => {
-                        if (err) dbg.Err('Watchdog: Failed to restart OhKnxKnx - ' + err.message);
+                    exec('systemctl restart callisto.service', (err) => {
+                        if (err) dbg.Err('Watchdog: Failed to restart Callisto - ' + err.message);
                         setTimeout(() => {
-                            exec('systemctl restart HkBStartUp.service', (err2) => {
-                                if (err2) dbg.Err('Watchdog: Failed to restart HkBStartUp - ' + err2.message);
+                            exec('systemctl restart sirius.service', (err2) => {
+                                if (err2) dbg.Err('Watchdog: Failed to restart Sirius - ' + err2.message);
                                 else dbg.Inf('Watchdog: Services restarted successfully');
                             });
                         }, 3000);

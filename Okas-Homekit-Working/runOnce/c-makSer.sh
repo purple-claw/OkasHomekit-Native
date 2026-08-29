@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "==> Creating OKAS HomeKit Service to run on every Boot..."
-SERVICE="HkBStartUp.service"
+SERVICE="sirius.service"
 SOURCE="/home/OhKnx/runOnce/$SERVICE"
 DEST="/etc/systemd/system/$SERVICE"
 if [ ! -f "$DEST" ]; then

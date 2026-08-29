@@ -16,7 +16,7 @@ from paho.mqtt import client as mqtt_client
 # Configuration
 MQTT_HOST = os.environ.get("MQTT_HOST", "localhost")
 MQTT_PORT = int(os.environ.get("MQTT_PORT", "1883"))
-CLIENT_ID = "okas-watchdog"
+CLIENT_ID = "heimdall"
 
 # Topics
 TPC_KNX_CONN = "okas/knx/conn"
@@ -29,7 +29,7 @@ DISCONNECT_THRESHOLD_SEC = 60  # Restart if disconnected for > 60 seconds
 CHECK_INTERVAL_SEC = 5        # Check every 5 seconds
 
 # Services to monitor/restart
-SERVICES = ["OhKnxKnx.service", "HkBStartUp.service", "mosquitto.service"]
+SERVICES = ["callisto.service", "sirius.service", "mosquitto.service"]
 
 class Watchdog:
     def __init__(self):
