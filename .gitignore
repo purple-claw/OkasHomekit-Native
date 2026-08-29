@@ -109,3 +109,6 @@ KNX-Auto-Conversion/Objects.txt
 KNX-Auto-Conversion/Miantic Demo Showroom (07-April-26).knxproj
 KNX-Auto-Conversion/knxOut.json.bak
 KNX-Auto-Conversion/__pycache__
+KNX-Auto-Conversion/test
+KNX-Auto-Conversion/ValidateXmls
+.agents
